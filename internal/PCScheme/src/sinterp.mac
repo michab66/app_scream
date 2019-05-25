@@ -1,0 +1,20 @@
+;***************************************
+;*   TIPC Scheme '84 Runtime Support   *
+;*	   Interpreter Macros	       *
+;*				       *
+;*    (C) Copyright 1984 by Texas      *
+;*     Instruments Incorporated.       *
+;*	  All rights reserved.	       *
+;*				       *
+;* Date Written:  2 May 1984	       *
+;* Last Modification:  14 Sept. 1984   *
+;***************************************
+;     Call "printf" to produce error message
+error	  macro	  args
+	  irp	  txt,<args>
+	  lea	  BX,txt
+	  push	  BX
+	  endm
+	  jmp	  printf_c
+	  endm
+

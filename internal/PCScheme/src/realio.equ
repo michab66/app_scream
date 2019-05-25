@@ -1,0 +1,90 @@
+;*******************************************************************************
+;									       *
+; Macros and equates for i/o and graphics which are performed in real mode.    *
+;									       *
+;									       *
+;*******************************************************************************
+
+IFNDEF DOS
+DOS    equ     021h		; Dos Function Request
+ENDIF
+
+IFNDEF RPC
+RPC    equ     0E1h  		; Real Procedure Call
+ENDIF
+
+IFNDEF BLOCK_XFER
+BLOCK_XFER equ 0EC00h		; Block Transfer
+ENDIF
+
+;
+; Entry points within realio.asm for performing text I/O.
+;
+
+REAL_BELL     	equ  0			;ring the bell
+REAL_CLEAR    	equ  1			;clear the screen
+REAL_BORDER   	equ  2			;draw window borders
+REAL_SAVESCR  	equ  3			;save screen contents
+REAL_RESTSCR  	equ  4			;restore screen contents
+REAL_CURON    	equ  5			;turn cursor on
+REAL_CUROFF   	equ  6			;turn cursor off
+REAL_PUTCUR   	equ  7			;position cursor
+REAL_PUTC     	equ  8			;write character
+REAL_SCROLLUP 	equ  9			;scroll up
+REAL_SCROLLDN 	equ  10			;scroll down
+REAL_EGACURS  	equ  11			;ega cursor
+REAL_CHGVMODE	equ  12			;change video mode
+REAL_WRTSTRNG	equ  13			;write string to port
+REAL_WRTBLOCK	equ  14			;write string to display
+
+;
+; The following macro creates the code to call all of the real mode I/O
+; routines. The arguments (which reside on the stack) are moved to the
+; a buffer which resides in real mode, along with one of the above defined
+; function indicators. Then an rpc call is performed, such that the correct
+; real mode xli routine is envoked.
+;
+
+REALIO	 MACRO	FUNCTION,ARGSTART,ARGEND,CONTINUE
+; address arguments
+	 push	es
+	 push	si
+	 push	di
+	 mov	si,bp
+	 add	si,(ARGSTART - 2)              ;ds:si => arguments
+; move arguments to real mode buffer
+	 push   word ptr [si]		       ;save word at this location
+	 mov	word ptr [si],FUNCTION	       ;and replace with function opcode
+	 IFDIF  <ARGSTART>,<ARGEND>	       ;cx = length
+	 mov	cx,((ARGEND + 2) - (ARGSTART - 2))
+	 ELSE
+	 mov	cx,(ARGEND - (ARGSTART - 2))
+	 ENDIF
+	 mov	di,word ptr REAL_BUF_SELECTOR  ;get real buffer selector
+	 mov	es,di
+	 mov	di,word ptr REAL_BUF_TOP       ;get top address of buffer 
+	 sub	di,cx			       ;es:di => real mode buffer	
+	 mov	ax,BLOCK_XFER		       ;xfer block to real memory	
+	 int	DOS
+	 pop	[si]			       ;restore word at this location
+; issue call to real mode handler
+	 mov	al,rpc_handle		;real procedure handle
+	 mov	ah,RPC			;rpc function call
+	 push	di			;stack pointer
+	 push	XLI_REALIO	        ;real i/o function designator
+	 mov	dx,sp
+	 mov	cx,4			;cx = # bytes in rpc buffer
+	 IFNB   <CONTINUE>
+	 mov	bx,2  			;bx = number return bytes
+	 ELSE
+	 xor	bx,bx			;bx = number return bytes
+	 ENDIF
+	 int	DOS
+	 add	sp,4
+	 pop	di
+	 pop	si
+	 pop	es
+         ENDM
+
+
+

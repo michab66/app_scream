@@ -1,0 +1,79 @@
+	  subttl  Structure definitions
+	  page
+
+; Data structures in the child's space
+
+; File block
+file_block struc
+fb_id	  dw	  ?		   ;ID
+fb_flags  dw	  ?		   ;flags
+fb_lut	  dw	  ?,?		   ;lookup table@ (far)
+fb_pb	  dw	  ?,?		   ;parameter block@ (far)
+fb_reserved dw	  8 dup (?)	   ;reserved
+file_block ends
+;
+fb_dummy       equ  fb_reserved	   ;dummy for now
+fb_sysint_addr equ  fb_reserved+2  ;system code (far @ of entry routine)
+
+; Parameter block
+parm_block struc
+pb_select      dw ?		   ;lookup table entry maps to number
+pb_ss	       dw ?		   ;special services
+pb_ss_args     dw 8 dup (?)	   ;special service arguments
+pb_reserved    dw 8 dup (?)	   ;reserved
+pb_rvtype      dw ?		   ;return value type
+pb_rv	       dw 4 dup (?)	   ;return value
+pb_args        dw ?		   ;beginning of passed parameters
+parm_block ends
+
+; Local structures
+
+; The context we will remember for parent or child
+state	  struc
+st_ds	  dw	  0
+st_es	  dw	  0
+st_ss	  dw	  0
+st_sp	  dw	  0
+st_bp	  dw	  0
+state	  ends
+
+; The child's stack at the point it called us
+cstack	  struc
+cs_ret	  dw	  0,0		   ;far return address
+cs_len	  dw	  0		   ;child's length
+cs_psp	  dw	  0		   ;child's PSP
+cstack	  ends
+
+; String search temporary structure
+search_struc struc
+srch_exe   dw	  0		   ;# of child being tested
+srch_dptr  dw	  0,0		   ;seg:offset of child's string
+srch_sptr  dw	  0,0		   ;seg:offset of parent's string
+srch_slen  dw	  0		   ;#chars in Scheme string
+search_struc ends
+
+; Swap structure
+swap_struc struc
+sw_reg	  dw	  0		   ;VM register containing this argument
+sw_offset dw	  0		   ;argument's final location (after
+				   ;packing, etc) in parm block
+swap_struc ends
+
+; Information needed during one xesc call
+xesc_struc struc
+xs_rvptr  dw	  0,0		   ;return value@ (far)
+xs_args   dw	  0,0		   ;first arg@ (far)
+xs_local  dw	  0,0		   ;work area@ (far)
+xs_dest   dw	  0,0		   ;copy data to this dest@ (far)
+xs_pc	  dw	  0,0		   ;bytecode@ into xesc instruction (far)
+xs_select dw	  0		   ;name converted to this number
+xs_flags  dw	  0		   ;flags
+xs_nargs  dw	  0		   ;actual #args in current call
+xs_rvtype dw	  0		   ;return value type
+xs_rvreg  dw	  0		   ;return value goes into this VM register
+xs_pb_segment dw  0		   ;segment address of parm block
+C_fn	  dw	  ?		   ;used during far calls to our C routines
+C_retadr  dw	  ?,?
+xesc_struc ends
+
+

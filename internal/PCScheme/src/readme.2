@@ -1,0 +1,151 @@
+  
+  
+	  THIS IS THE README FILE FOR THE PC SCHEME 3.03 RELEASE
+  
+  
+  A. Materials to be provided by Software Control:
+  
+     1.) Two blank, formatted, double-sided, double-density  (360KB)
+         floppy diskettes.  They should already be formatted.
+  
+     2.) Business Pro with:
+         -  640K memory
+	 -  one high-density (1.2 MByte) floppy drive (drive A)
+	 -  one low-density (360 KByte) drive (drive B)
+	 -  a printer
+	 -  one Winchester hard disk drive with at least 10 Mbytes free
+  
+     3.) MS-DOS Operating System diskette vers. 3.21 (P/N 2538155-1610
+         AND 1611)
+  
+     4.) MACRO ASSEMBLER version 4.00 diskette (P/N 2546114).
+  
+     5.) LATTICE 'C' COMPILER version 3.05  diskettes (P/N 2249759).
+  
+     6.) Dater diskette version 1.20 (P/N 2223081-1610).
+  
+     7.) PC SCHEME version 3.02 diskettes (P/N 2537901-0001, -0002).
+  
+  
+  B. Materials to be provided by the Scheme Development group:
+  
+     1.) TI PC SCHEME SOURCE diskette #1 (P/N 2537903-2620).
+  
+     2.) TI PC SCHEME SOURCE diskette #2 (P/N 2537903-2621).
+  
+     3.) TI PC SCHEME SOURCE diskette #3 (P/N 2537903-2622).
+  
+     4.) TI PC SCHEME SOURCE diskette #4 (P/N 2537903-2623).
+  
+  
+  C. Release procedure steps:
+  
+     1.) Boot the PC from MS-DOS diskette.
+  
+     2.) Enter the date and time when you are requested to do so.
+  
+     3.) Format the Winchester as follows:
+  
+	    - Type FORMAT E: /S (and pressing RETURN).
+	    - Respond to the prompt for drive type with appropriate number.
+  
+     4.) Copy all the files on the MS-DOS diskette onto the Winchester by
+	 typing:
+  
+	       COPY *.* E:/V (and pressing RETURN)
+  
+     4.1) Modify the CONFIG.SYS file to include at least 15 files:
+  
+	       FILES=20
+	       BUFFERS=15
+  
+     5.) Reboot the system from the Winchester.
+  
+     6.) Enter the date and time when you are requested to do so.
+  
+     7.) Remove the MS-DOS diskette from drive A: and insert the PC SCHEME
+	 SOURCE diskette #1 (P/N 2537903-2620) in drive A:
+  
+     8.) Begin execution of the batch stream to build PC SCHEME:
+  
+	    - Press the PRNT key (to cause subsequent messages to be echoed
+				  to the printer).
+  
+	    - Type A:MASTER
+  
+	 The batch stream will instruct you to insert the diskettes listed
+	 above.  Once the necessary files have been copied to the Winchester,
+	 the actual build process will begin and no further attention is
+	 required until the installation disks are ready to be made
+	 (the batch stream will wait for you at that point).
+  
+     9.) Each of the assemblies in the batch stream should terminate with the
+	 following message:
+  
+	   Warning Severe
+	   Errors  Errors
+	   0	   0
+  
+    10.) C compilations may produce warning messages and this is all right.
+	 There should be no error messages, however.
+  
+    11.) DOS messages about "unable to create directory" during CD commands
+         or "file not found" during DEL commands can be ignored.
+  
+    11.) After the assemblies, compilations, and linking have completed, the
+	 batch stream will invoke the PCS.EXE file several times to compile
+	 the Scheme compiler source files, Scoops source files, and Edwin.
+  
+	 You will see some warning messages like
+  
+	      [WARNING: modifying an 'integrable' variable: xxxxxx]
+  
+	 displayed on the screen, however they will not be written to the
+	 printer.
+  
+    12.) When you are prompted to, insert the first blank formatted 360KB
+         diskette into drive B (*not* drive A) and press RETURN to continue.
+	 At the next prompt, remove the diskette and replace it with the
+	 second blank formatted 360KB diskette in drive B and press RETURN.
+	 At the next prompt, remove the diskette and replace it with the
+	 third blank formatted 360KB diskette in drive B and press RETURN.
+	 At the next prompt, remove the diskette.
+  
+    13.) Label the first diskettes as:
+  
+		PC SCHEME INSTALLATION DISKETTE,
+		Master FDO diskette #1
+		(P/N 2537903-1610).
+  
+	 Label the second diskette as:
+  
+		PC SCHEME AUTOLOAD DISKETTE,
+		Master FDO diskette #2
+		(P/N 2537903-1611).
+  
+	 Label the third diskette as:
+  
+		PC SCHEME PROTECTED MODE INSTALLATION DISKETTE,
+		Master FDO diskette #3
+		(P/N 2537903-1615).
+  
+    14.) You're done.
+  
+  
+***** Addendum for creating 3.5-inch installation disks. *****
+  
+     1.) Assuming that the 3.5" drive is drive C, do the following:
+  
+         - Put a blank, formatted 3.5" diskette into drive C.
+	 - Put the PC Scheme Installation diskette into drive A and do:
+  
+	 	COPY A:*.* C:
+  
+	 - Put the PC Scheme Autoload diskette into drive A (do not
+	   remove the diskette from drive C) and do:
+  
+	   	COPY A:*.* C:
+  
+	 - You're done.  There is only one installation diskette created
+	   when using 3.5" media.
+

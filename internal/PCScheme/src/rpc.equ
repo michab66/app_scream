@@ -1,0 +1,37 @@
+;
+; Dos function requests provided by AIA for performing real procedure calls
+;
+
+RPC_INIT   equ 0E0h		; Initialize RPC
+RPC   	   equ 0E1h		; Issue RPC
+
+;
+; 		Real procedure entry points. 
+;
+;  REALSCHM.ASM is a real procedure which is loaded upon initialization of
+;  Scheme and accessed via real procedure calls. It currently contains a
+;  table of 25 entries (0-24) which contain routines accessable from our
+;  protected mode code. The first 20 entries will contain addresses to 
+;  code within realschm.asm, primarily for things like xli support which
+;  can't be provided in protected mode. The next 5 entries are for system
+;  xli routines. An xli routine is distinguished as a system xli routine by
+;  having the FB_SYSINT flag in the file block set non-zero. Note that the
+;  system xli routines must be in a specified order, as defined in 
+;  PRO2REAL.ASM.
+;  
+;
+RPCINIT    equ 0 	;Initialize real procedure
+RPCRETBUF  equ 0	;Return real procedure buffer address
+RPCTYPE	   equ 1	;Return pc type and graphics info
+RPCLDEXE   equ 2	;Load an XLI file
+RPCUNLDALL equ 3	;Unload all XLI files
+RPCXESC    equ 4	;Perform XESC to an XLI function
+RPCXLISSR  equ 5	;XESC Special Services Return
+RPCTAKCRT  equ 6	;takeover real mode crt interrupt
+RPCRSTCRT  equ 7	;restore real mode system crt interrupt
+; order dependent system xli files (see table in pro2real.asm & realschm.asm)
+XLI_REALIO equ 20	;Perform text I/O
+XLI_GRAPH  equ 21	;Perform Graphics
+
+
+	 

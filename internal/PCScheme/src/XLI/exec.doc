@@ -1,0 +1,72 @@
+"exec"
+
+"exec" runs an application program from PC Scheme.
+
+
+Format:  	(XCALL "exec" <program> <args>)
+
+Parameter:	<program> is a string containing the name of an executable
+		file; the file extension need not be supplied.  The path
+		will be searched if the program does not reside in the
+		current directory.
+
+		<args> is a string containing all the arguments to
+		<program>.
+
+Explanation:	"exec" runs an executable file from PC Scheme.
+		"exec" operates similarly to DOS-CALL, but when used
+		in the proper circumstances it can be much faster.
+		The following three expressions, the first using "exec",
+		the second using DOS-CALL, and the third as you
+		would type it from DOS, have equivalent effect:
+		
+			(XCALL "exec" "prog" "arg1 arg2")
+
+			(DOS-CALL "prog.exe" "arg1 arg2")
+
+			prog arg1 arg2
+
+		By default "exec" allocates a 64K memory
+		block in which to run programs.  The space allocated
+		can be changed through the DOS environment variable
+		"XLI"; its value is the number of kilobytes to reserve.
+		This must be done before entering PC Scheme.  For
+		example, to reserve 32K, you would type in this
+		expression to DOS before invoking PC Scheme:
+
+			set XLI = 32
+
+		The space reserved by "exec" is unavailable for Scheme's
+		heap, thereby diminishing the "usual" heap size.
+
+		The return value from "exec" is the exit code
+		provided by the called program if it successfully
+		executed or -1 if the program could not be found 
+		anywhere in the path.
+
+		"exec" is superior to DOS-CALL when you need quick
+		access to programs and you can give up heap space to do
+		so.  "exec" also provides for path searching and returning
+		a program's exit code.  DOS-CALL is preferable in those
+		cases where larger programs are run or you need maximal
+		heap space, and these considerations outweigh the loss
+		of speed that comes from having to move Scheme out of the
+		way to make room for the program.
+
+Examples:	
+		(XCALL "exec" "edlin" "\\autoexec.bat")	
+			;edit the file \autoexec.bat with DOS EDLIN editor;
+			;remember the double backslash inside Scheme strings
+
+		(XCALL "exec" "chkdsk")
+			;runs the DOS CHKDSK program
+
+		(XCALL "exec" "command" "/c dir *.s")
+			;this shows how to execute DOS intrinsic commands
+			;such as the DOS directory command--this lists
+			;all Scheme source files in the current directory;
+			;control returns immediately to PC Scheme
+
+		(XCALL "exec" "command")
+			;starts a secondary DOS command processor;
+			;use DOS EXIT command to return to PC Scheme

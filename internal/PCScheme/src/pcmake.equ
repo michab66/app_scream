@@ -1,0 +1,12 @@
+;
+; A list of EQU's for the various types of PCs
+;
+UNKNOWN   equ     0
+TIPC      equ     1
+IBMPC     equ     0ffh
+IBMXT     equ     0feh
+IBMJR     equ     0fdh
+IBMAT     equ     0fch		;IBM PC-AT
+IBM80	  equ	  0f8h		;IBM PS/2 Model 80
+IBMTYPE   equ     0f0h		;IBM machine types >= this value
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!-- $Id: scream.jnlp,v 1.1 2002/04/20 15:39:54 michab66 Exp $ -->
+<!-- JNLP File for the Scream scripting engine -->
+<!-- TODO This is obviously not finished... -->
+
+<jnlp spec="1.0+"
+      codebase="http://scream.sourceforge.net/apps"
+      href="scream.jnlp">
+
+  <information>
+    <title>Scream</title>
+    <vendor>Michael G. Binz</vendor>
+    <homepage href="docs/help.html"/>
+    <description>A scripting engine</description>
+    <description kind="short">A scripting engine.  The implemented scripting
+                              language is a subset of Scheme.  The implementation
+                              is done in Java(TM).</description>
+    <icon href="images/swingset2.jpg"/>
+    <offline-allowed/>
+  </information>
+
+  <resources>
+    <j2se version="1.2+"/>
+    <jar href="route64.jar"/>
+  </resources>
+
+  <application-desc main-class="de.michab.scream.SchemeInterpreter"/>
+
+</jnlp>

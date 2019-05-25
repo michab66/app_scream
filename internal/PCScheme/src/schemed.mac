@@ -1,0 +1,99 @@
+;***************************************
+;*   TIPC Scheme '84 Runtime Support   *
+;*	    Assembler Macros	       *
+;*				       *
+;*  (C) Copyright 1984,1985 by Texas   *
+;*     Instruments Incorporated.       *
+;*	  All rights reserved.	       *
+;*				       *
+;* Date Written:  19 April 1984	       *
+;* Last Modification:  06 January 1986 *
+;***************************************
+;     Adjust page number prior to store into pointer
+adjpage	  MACRO	  reg
+	  sal	  reg,1
+	  ENDM
+
+;     Convert page number from physical representation to logical page
+corrpage  MACRO	  reg
+	  shr	  reg,1
+	  ENDM
+
+;     Test if an object in Scheme's memory has been "marked" by
+;     the Garbage Collector  as referenced.  If the GC "marked" bit
+;     is set in the "field" specified, a branch is taken to "label."
+markedp	  MACRO	  field,label
+	  cmp	  byte ptr field,0
+	  jl	  label
+	  ENDM
+
+;     Push the page number and displacement components of a Scheme
+;     pointer onto the runtime stack (parameter passing mechanism)
+pushptr	  MACRO	  addr
+	  push	  addr.car	   ; push the displacement
+	  mov	  AL,addr.car_page ; load the page number,
+	  and	  AX,PAGEMASK	   ;  isolate it, and
+	  push	  AX		   ;  push it on the stack
+	  ENDM
+
+;     Pop the page number and displacement components of a Scheme
+;     pointer from the runtime stack and restore a memory location
+;     (parameter return mechanism)
+popptr	  MACRO	  addr
+	  pop	  AX		   ; Retrieve the page number and
+	  mov	  addr.car_page,AL ;  update pointer in Scheme's memory
+	  pop	  addr.car	   ; Restore displacement in memory
+	  ENDM
+
+;     Save the registers in the macro's argument (a list) in the local
+;     stack in the variables "save_xx", where "xx" is the register name.
+save	  MACRO	  regs
+	  irp	  rr,<regs>
+	  mov	  [BP].save_&&rr,rr
+	  endm
+	  endm
+
+;     Restore the registers in the macro's argument (a list) from the local
+;     stack in the variables "save_xx", where "xx" is the register name.
+restore	  MACRO	  regs
+	  irp	  rr,<regs>
+	  mov	  rr,[BP].save_&&rr
+	  endm
+	  endm
+
+;     Push multiple
+pushm	  MACRO	  objs
+	  irp	  oo,<objs>
+	  push	  oo
+	  endm
+	  endm
+
+;     Pop multiple
+popm	  MACRO	  objs
+	  irp	  oo,<objs>
+	  pop	  oo
+	  endm
+	  endm
+
+;     Call Lattice C routine:  C_call  rtn,<regs>
+;     A call is made to "rtn".	If "rtn" has not been declared, an "extrn"
+;     declaration is generated.	 "<regs>", if specified is the list of
+;     registers which are to be saved prior to the call (see the "save"
+;     macro above).
+C_call	  macro	  rtn,regs,esp
+IFNB	  <regs>
+	  irp	  rr,<regs>
+	  mov	  [BP].save_&&rr,rr
+	  endm
+ENDIF
+IFNB	  <esp>
+	  mov	  AX,DS		   ; make ES point to the current
+	  mov	  ES,AX		   ;  data segment
+ENDIF
+IFNDEF	  rtn
+	  extrn	  rtn:near
+ENDIF
+	  call	  rtn
+	  endm
+
+

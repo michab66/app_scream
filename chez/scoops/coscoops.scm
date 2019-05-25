@@ -1,0 +1,23 @@
+
+; (load "C:/Users/Michael/svn/dev/dev_scream/chez/scoops/binz.scm")
+(compile-file "class.scm" "class.so")
+; (load "C:/Users/Michael/svn/dev/dev_scream/chez/scoops/class.scm")
+(compile-file "methods.scm" "methods.so")
+; (load "C:/Users/Michael/svn/dev/dev_scream/chez/scoops/methods.scm")
+
+(gc)
+(compile-file "meth2.scm" "meth2.so")
+(compile-file "instance.scm" "instance.so")
+(compile-file "inht.scm" "inht.so")
+(gc)
+(compile-file "interf.scm" "interf.so")
+(compile-file "send.scm" "send.so")
+(compile-file "scsend.scm" "scsend.so")
+(gc)
+(compile-file "utl.scm" "utl.so")
+(compile-file "debug.scm" "debug.so")
+(fast-load (%system-file-name "pboot.fsl"))
+(compile-file "expand.scm" "expand.so")
+(gc)
+(compile-file "ldscoop.scm" "ldscoop.so")
+(exit)

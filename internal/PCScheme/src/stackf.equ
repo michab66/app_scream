@@ -1,0 +1,55 @@
+;							=====> STACKF.EQU
+; Copyright 1984,1985 by Texas Instruments Incorporated.
+; All Rights Reserved.
+;
+; Last Modification:  4 August 1985
+
+;     Stack Frame
+;
+;		      +------------------+
+;	Stack base -> |	 stack for prev	 |
+;		      :	 dynamic levels	 :
+;		      |------------------|
+;     Frame pointer ->|	  code base ->	 | \
+;		      |------------------|  | return address
+;		      | return addr disp | /
+;		      |------------------|
+;		      |	  dynamic link	 | caller's FP
+;		      |------------------|
+;		      |   environment    | current environment
+;		      |------------------|
+;		      |	  static link	 | lexical parent's FP
+;		      |------------------|
+;		      |	  closure ptr	 | pointer to routine's closure object
+;		      |------------------|  (or nil, if an open call)
+;		      |	     local	 |
+;		      :	    variable	 :
+;     top of stack -> |	   allocation	 |
+;		      +------------------+
+sf_def	  struc
+
+sf_cb_pag db	  ?		   ; code base pointer page number
+sf_cb_dis dw	  ?		   ; code base pointer displacement
+
+sf_rtag	  db	  SPECFIX*2	   ; return address tag=fixnum
+sf_ret	  dw	  ?		   ; return address displacement
+
+sf_dtag	  db	  SPECFIX*2	   ; dynamic link tag=fixnum
+sf_ddisp  dw	  ?		   ; dynamic link displacement
+
+sf_hpage  db	  ?		   ; heap environment page number
+sf_hdisp  dw	  ?		   ; heap environment displacement
+
+sf_stag	  db	  SPECFIX*2	   ; lex parent's static link tag=fixnum
+sf_sdisp  dw	  ?		   ; lex parent's static link displacement
+
+sf_cl_pg  db	  ?		   ; closure pointer page number
+sf_cl_ds  dw	  ?		   ; closure pointer page number
+
+;		start of local variable allocation area
+sf_dat_p  db	  ?		   ; local variable's page number
+sf_dat_d  dw	  ?		   ; local variable's displacement
+
+sf_def	  ends
+SF_OVHD	  equ	  sf_dat_p-sf_cb_pag ; size of stack frame header
+

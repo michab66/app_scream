@@ -1,0 +1,478 @@
+	   	   PC Scheme Version 3.03 Release Notes
+
+  This document describes the changes in PC Scheme since version 2.0. 
+
+
+PC Scheme 3.0 features
+----------------------
+
+  Version 3.0 contains bug fixes, significant enhancements over 2.0, and
+has been upgraded to the latest Scheme Standard as defined by the "Revised
+Revised Revised (R^3) Report on the Algorithmic Language Scheme." A copy 
+of that report is now included in the 3.0 manuals.
+
+  Also included in this document is a number of features which are not
+documented in the Language Reference Manual nor the User's Guide, but
+which may be useful for programming.
+
+R^3 Report Changes
+------------------
+
+  1. #T and #F now replace #!TRUE and #!FALSE. #!TRUE and #!FALSE are
+     still supported in 3.0, however their use is discouraged and they
+     may not be supported in future versions.
+
+  2. Quasiquote expressions may now be nested and are defined to work
+     with vectors. The keywords UNQUOTE (",") and UNQUOTE-SPLICING (",@")
+     are also now recognized.
+
+  3. The defining form (DEFINE (<variable> <formals>) <body>) no longer
+     expands into a NAMED-LAMBDA as specified in the Report. To support
+     code written under earlier versions of Scheme, the global variable
+     PCS-INTEGRATE-DEFINE may be set non-nil to force the expansion, or
+     nil to conform to the Report. Its default value is #T.
+
+  4. BOOLEAN? is a new procedure which indicates if an object is either
+     #T or #F (ie., (BOOLEAN? #T) => #T).
+
+  5. PROCEDURE? is a new procedure which indicates if an object is a
+     procedure (ie., (PROCEDURE? CAR) => #T).
+
+  6. The expression types NAMED-LAMBDA, REC, and SEQUENCE have been removed
+     from the Report but will continue to be supported as extensions.
+
+  7. The following procedures have been removed from the report, however
+     they will continue to be supported as extensions:
+
+	APPEND!, STRING-NULL?, SUBSTRING-FILL!, SUBSTRING-MOVE-LEFT!,
+	SUBSTRING-MOVE-RIGHT!, OBJECT-HASH, OBJECT-UNHASH, 1+, -1+.
+
+  8. The redundant procedure names <?, <=?, =?, >?, and >=? have been removed
+     from the Report and will be supported in this release, however their use
+     is discouraged and future versions may not support them.
+
+  9. The syntax #!NULL (for the empty list) has been removed from the report.
+     Its usage is also discouraged and may not be supported in the future.
+
+
+
+Bug Fixes
+---------
+
+  1. DEFINE has been corrected to bind a variable in the correct environment.
+     Earlier versions of PCS could incorrectly rebind variables defined in
+     parent environments, if the variable did not exist in the defining
+     environment.
+
+  2. IMPLODE now flags an error if given a non-list object.
+
+  3. NUMBER->STRING has fixes to correct problems with the '(heur) format.
+
+  4. Shift/Break now correctly halts printing of circular lists.
+
+  5. INPUT-PORT? and OUTPUT-PORT? have been corrected to return '() after the
+     port is closed.
+
+  6. Expanded Memory Scheme no longer requires the EMM page frame to be on a
+     64kb boundary.
+
+  7. Drawing a line from x1,y1 to x2,y2 and later erasing it in the
+     direction x2,y2 to x1,y1 now correctly resets all the intermediate
+     pixels.
+
+
+
+Enhancements/New Features
+-------------------------
+
+  1. Graphics has undergone significant changes which are documented in the
+     User's Guide and Language Reference Manual. Following is a synopsis of
+     the changes:
+
+	* The %GRAPHICS primitives now accept a seventh argument to specify
+	  an exclusive-or when drawing pixels or lines.
+
+	* A new %GRAPHICS function has been included which allows you to set
+	  a clipping rectangle which subsequent drawing functions use. All
+	  %GRAPHICS drawing routines now use the clipping rectangle.
+
+	* New graphics functions:
+	     (GET-PEN-COLOR)	- returns the pen's color.
+	     (GET-PEN-POSITION) - returns the pen's position.
+	     (POINT-COLOR)	- returns a point's color value.
+	     (SET-CLIPPING-RECTANGLE! x1 y1 x2 y2) - set clipping rectangle.
+
+	* Modes 14 and 16 for the EGA are now supported.
+
+	* CLEAR-GRAPHICS no longer automatically switches into mode 4, but
+	  remains in the current video mode. SET-VIDEO-MODE! will automati-
+	  cally do a CLEAR-GRAPHICS after changing modes.
+
+  2. EDWIN contains several changes to help in its performance and flexibility.
+
+	* The file EDWIN.INI will be loaded if it exists within the PCS
+	  directory. EDWIN.INI may contain code to customize the display,
+	  or remap the keyboard. See EDWIN.INI for examples.
+
+	* Edwin now loads into its own environment, EDWIN-ENVIRONMENT. This
+	  reduces the number of variables in the USER-GLOBAL-ENVIRONMENT and
+	  allows EDWIN to be removed via the new REMOVE-EDWIN command.
+
+	* REMOVE-EDWIN is a procedure of no arguments which may now be called
+	  to remove references to EDWIN so that it will disappear upon the
+	  next garbage collection. Remember that if EDWIN was loaded from
+	  SCHEME-TOP-LEVEL, the history will still contain pointers to EDWIN,
+	  prohibiting it from being garbage collected. In that case, you must
+	  perform a SCHEME-RESET prior to the garbage collect to remove all
+	  references to EDWIN.
+
+	* EDWIN will now query the user upon exiting Scheme, if its buffers
+	  have been modified but not written back out to the file.
+
+	* The time required to load files into EDWIN's buffer has been
+	  significantly reduced.
+
+  3. PC Scheme now contains an External Language Interface (XLI) to support
+     the calling of subroutines written in other languages. XLI has been
+     tested to work with assembly, C and Pascal. See the chapter "External
+     Language Interface (XLI)" in the User's Guide for more information.
+
+  4. Transcendental functions have been rewritten using XLI and
+     use the 8087/80287 numeric coprocessor when it is available.
+     Accuracy is true double-precision and performance is significantly
+     improved, even without the 8087.  The complete source code of this
+     XLI interface is included.  Refer to the chapter "External Language
+     Interface (XLI)" in the User's Guide for more information.
+
+  5. A semi-interpretive EVAL has been implemented. EVAL now works
+     interpretively until it encounters a binding form (such as LAMBDA,
+     LET, etc.), at which time the compiler will be invoked.
+
+  6. READ-LINE has been implemented as a primitive operation and will now echo
+     to the screen when called to read from the console.
+
+  7. LIST-TAIL has been implemented as a primitive operation. Both LIST-REF
+     and LIST-TAIL gain significant performance increases.
+
+  8. Random I/O is now supported via SET-FILE-POSITION! and GET-FILE-POSITION.
+     See the description in the Language Reference Manual.
+
+  9. Binary file input and output is now supported via OPEN-BINARY-INPUT-FILE
+     and OPEN-BINARY-OUTPUT-FILE procedures. See the description in the
+     Language Reference Manual.
+
+  10. The non-essential procedure STRING->NUMBER from the R^3 Report is now
+      included. See the description in the Language Reference Manual.
+
+  11. #\ESCAPE has been added as a system defined character.
+
+  12. Enhanced error handling is now available, and DOS I/O errors now trap
+      to the inspector, with extended error information available. Reference
+      the User's Guide under the chapter "DEBUGGING" for information on
+      defining your own error handler via *USER-ERROR-HANDLER*.
+
+  13. New procedures EXPAND-MACRO-1, EXPAND-MACRO, and EXPAND. EXPAND-MACRO-1
+      will expand the outer-level of some form once and return the expanded
+      form, EXPAND-MACRO will repeatedly expand the outer-level form until it
+      is no longer a macro, and EXPAND will expand the entire form (outer and
+      inner level forms), returning an expansion.
+
+	Example: (EXPAND-MACRO '(let ((a 1) (b 2)) (foo a b)))
+
+      *** Note ***
+	When expanding various forms with the above procedures, you may
+	encounter references to primitive operations. These primitive oper-
+	ations typically begin with one or more percent signs (%), are
+	generally not available for direct use by the user, and may change
+	in future versions of PC Scheme.
+
+  14. The random number generator can be reseeded using the RANDOMIZE
+      function.  See the description in the Language Reference Manual.
+
+
+
+Corrections to the Manuals
+--------------------------
+
+The following corrections to the User's Guide should be noted.
+
+   1. At the top of page 8-16, the request number to be used for the
+      "swap" special service request was omitted.  The bullet that reads:
+
+	* swap
+
+      should be replaced with:
+
+	* swap (request number = 1)
+
+   2. On page C-1 the symbol "remap" is equated with interrupt 7fh.
+      However, the comment just below it refers to interrupt 60h.
+      The correct interrupt number is 7fh.  Therefore, the comment that reads:
+
+	; This example uses the interrupt at 60h; refer to ...
+
+      should be replaced with:
+
+	; This example uses the interrupt at 7fh; refer to ...
+
+
+
+Undocumented/Non-Standard Features
+----------------------------------
+
+The following features are undocumented features which may or may not be
+supported in future releases. They certainly are not standard Scheme
+features and prohibit portability, but may be useful in some cases.
+
+
+  1. GRAPHICS-WINDOW is a function which may be useful in creating graphics
+     windows. It is currently in an experimental stage, is not fully complete,
+     and is subject to change. Still, it is useful in its current form, and
+     you may try it out at your own risk.
+
+     GRAPHICS-WINDOW is a "marker" function indicating that the next series
+     of MIT graphics functions will execute relative to a specified window
+     instead of the full screen. It takes one argument, a window object
+     (a port), and returns a 2-list of 4-lists.  The first list is the
+     clipping rectangle for the window's interior using window-centered 
+     coordinates, expressed as (left top right bottom), for use by the MIT
+     functions, and the second list is the same rectangle expressed in
+     screen coordinates for use by %GRAPHICS.  It changes the graphics
+     state known by the MIT functions and sets the clipping rectangle to
+     correspond to the window's interior so that further use of the MIT
+     functions will execute relative to the window instead of the full screen.
+     Aside from setting the clipping rectangle, there are no other effects
+     on %GRAPHICS.
+
+     After executing GRAPHICS-WINDOW on a window for the first time, a call
+     to CLEAR-GRAPHICS should be issued to set the pen position and color
+     and erase the graphics plane under the window (which may erase text
+     too if they share the same plane). Further graphics commands are 
+     issued normally.
+
+     To move from one graphics window to another, use GRAPHICS-WINDOW with 
+     the next window.  Note that when you move to another window, the graphics
+     state (window, pen color, and pen position) of the first window is
+     forgotten.  You will need to save it off if you want to come back and
+     start up where you left off.  The functions CURRENT-GRAPHICS-WINDOW,
+     GET-PEN-COLOR, and GET-PEN-POSITION, executed before the switch, will
+     give you this information.
+
+     While executing relative to a window, CLEAR-GRAPHICS will not affect
+     the entire screen.  To reset CLEAR-GRAPHICS to its initial state
+     where it does affect the entire screen, do (GRAPHICS-WINDOW 'SCREEN)
+     followed by (CLEAR-GRAPHICS).  Executing SET-VIDEO-MODE! any time will do
+     this automatically.  Note that (GRAPHICS-WINDOW 'SCREEN) is not the same
+     as (GRAPHICS-WINDOW 'CONSOLE); although the console generally matches the
+     screen, it doesn't have to--it's a window in its own right.
+
+  2. %LOGAND, %LOGIOR, %LOGXOR are procedures of two arguments and are used
+     to perform the bitwise logical operations and, or, and xor. The
+     arguments must be 15 bit integers.
+
+  3. UNBIND is a procedure which may be used to remove bindings from
+     environments. The call to unbind is as follows:
+
+	   (UNBIND 'VAR ENV)
+
+	     Where : VAR is the variable you wish to remove
+		     ENV is any heap allocated environment, including the
+			 user-initial and user-global environments.
+
+     Unbind can be useful in providing user-assisted memory management.
+     If an object which is auto-loadable is unbound via the UNBIND
+     procedure, it may later be auto-loaded again. Therefore, if you
+     define autoload lists, you can maintain some control over what
+     code you desire in memory.
+
+  4. Autoload information created from the function AUTOLOAD-FROM-FILE (see
+     chapter titled "ADVANCED FEATURES" in User's Guide) is stored on a
+     property list under the name PCS-AUTOLOAD-INFO. Scheme defines a number
+     of autoload entries of its own, and any that you add will be consed
+     onto the autoload list. You can see the autoload information by
+     performing (GETPROP 'PCS-AUTOLOAD-INFO).
+
+     The procedure AUTOLOAD-FROM-FILE also takes an optional third argument
+     which indicates the environment that you want the file loaded into. For
+     example
+
+       (autoload-from-file "DEFS.FSL" '(foo bar baz) user-initial-environment)
+
+     will load the file "DEFS.FSL" into the user-initial-environment whenever
+     foo, bar, or baz is referenced. The optional environment argument can
+     be any heap allocated environment. To add or delete entries from the
+     autoload list just write your own functions to modify the list, however
+     if you remove any of the compiler dependent files from the list, a
+     reference to one of its functions will cause errors.
+
+     The undocumented procedure REMOVE-AUTOLOAD-INFO may be used to remove
+     information from the autoload list. REMOVE-AUTOLOAD-INFO takes one
+     argument, the filename of the autoload entry you wish to remove, and
+     then removes the autoload information from the list. This function,
+     along with UNBIND can be used to help the user perform memory manage-
+     ment.
+
+  5. MAKE-HASHED-ENVIRONMENT is a procedure of no arguments which creates
+     an environment in the Scheme heap in the form of a hash table for
+     better accessing. The hash table contains 211 entries; any time a
+     variable is defined in that environment a hash key will be determined
+     via an internal hash function to find the correct entry. This is
+     identical to the user global and user initial environments. A hashed
+     environment's parent is the user-initial-environment.
+
+     A hashed environment will provide better access times than normal
+     environments, given there are a lot of variables in the environment.
+     However, there is certainly a space/time tradeoff to consider. The
+     hashed environment contains much more overhead which will be wasted
+     if you need only a handfull of variables.
+
+     One advantage of the hashed environment, as with all environments,
+     is that if you discard all references to the environment, it will
+     be garbage collected and all the space may be reclaimed. This means
+     that you must keep track of all variables or references which are
+     exported to other environments. Also, if you define a macro within
+     an environment, the macro definition holds a reference to the
+     environment and will prohibit garbage collection of the environment.
+     Macro definitions may be found under the property PCS*MACRO of the
+     macro name declared.
+
+  6. While the 3.0 implementation of transcendental functions is much
+     faster and more accurate and therefore to be preferred, the 2.0
+     version had the advantage of being about half the size.  If space is
+     more important than speed or accuracy, you can do the following:
+
+	1. Invoke PC Scheme as usual, except put a minus sign in front
+	   of the .XLI control file name; this prevents XLI from
+	   loading NEWTRIG.EXE.  For example:
+
+		  pcs (my.ini -my.xli) arg1 arg2
+
+	2. Inside PC Scheme, do:
+	     (eval '(load "oldpmath.fsl") user-global-environment)
+	   If your current directory is not the PC Scheme directory,
+	   you'll need to append the value of the system variable
+	   PCS-SYSDIR to the front of the filename.  The LOAD must be
+	   inside the EVAL so that autoload references to pmath.fsl
+	   will be intercepted correctly.
+
+     It is not absolutely necessary to do step 1 just to use oldpmath.fsl,
+     but the space savings won't be realized without it.  Also, step 2
+     should be done soon upon entering PC Scheme, as various system
+     functions, such as some Edwin commands, require the math functions
+     (whether through XLI\pmath.fsl or through oldpmath.fsl) to be loaded.
+
+PC Scheme 3.02 features
+-----------------------
+  
+The following bugs have been fixed.
+
+  1. There were several obscure bugs in the extended and expanded memory
+     models of PC Scheme which have been corrected.  Also, extended memory
+     performance has been enhanced by about 25%.
+
+  2. PC Scheme 3.02 recognizes an IBM PS/2 Model 80.  IBM has assigned
+     a new machine-type number to it, which is reflected in the value
+     of PCS-MACHINE-TYPE.  More importantly, FREESP in extended memory
+     PC Scheme now works correctly on the Model 80.
+
+  3. EQUAL? on ports no longer causes a type mismatch error.
+
+  4. There was a bug in determining the pathname of NEWTRIG.EXE when
+     PC Scheme had been installed in the root directory.  This usually
+     showed itself when running PC Scheme from floppy disks.
+
+  5. In the form (SET! (ACCESS var env) value), there was a bug in which
+     environment the "value" was placed if the "var" did not already exist.
+
+  6. DOS-CALL no longer depends on the COMSPEC environment variable
+     being listed first in the DOS environment.
+
+  7. Line-lengths for binary files are now automatically set to zero
+     so end-of-line sequences are suppressed.
+
+  8. XLI checks for its version number.  PC Scheme 3.02 uses the same
+     version number as 3.0.  The error message is "[XLI] Version mismatch".
+     Also, the XLI error message "[XLI] The function requested by XCALL is not
+     available" now is followed by the name of the function that failed.
+
+  10. PC Scheme's definition of EQV? says "=" is used to compare numeric
+     arguments.  However, MEMV and ASSV, which are supposed to use EQV?
+     for their equality predicates, were really using EQUAL?.  "=" and
+     EQUAL? return different results when two numeric arguments have
+     different types, so the fix may cause a change of behavior in how
+     MEMV and ASSV work.
+
+  11. Internal "getmem" errors no longer cause an abort to DOS.
+     Instead, the system performs a SCHEME-RESET.  The error generally
+     appears during output of extremely large data structures when
+     I/O buffer space is exhausted, but the data structures themselves
+     remain intact, so this should be adequate recovery in most cases.
+
+  12. A bug in SCOOPS was making the environments in which instance 
+     variables got created be dependent on the order in which the
+     classes were compiled.
+
+The following features are "new" to PC Scheme 3.02.
+
+  1. XLI can now receive error messages from external programs and drop into
+     the Inspector displaying the error message. 
+
+     The external program reports an error as follows.  It formats the
+     parameter block with a string as return value, where the string is
+     the error message.  However, instead of using a return-value type of
+     2 (string), it should use a value of 10 (error-string).  XLI will
+     drop into the Inspector with the error message "[XLI] Error reported
+     by external program" followed on the next line by the external
+     program's error message (note the Inspector uses WRITE to display
+     the message).  The error is not restartable.
+
+     If an external program using this error technique is run under
+     PC Scheme 3.0, XLI reports the different error "[XLI] The return value
+     of XCALL is invalid" and the external program's error message never
+     appears.
+
+     NEWTRIG.EXE has been reimplemented with this technique.  Refer to
+     the file XLI\TRIG_LC.C to examine the source code.
+
+  2. There are a couple more XLI source examples in the XLI directory.
+     One is in assembly language, the other in C.  One provides PC Scheme 
+     with sound capability, and the other demonstrates a way to run
+     DOS-executable files without using DOS-CALL.
+
+  3. %GRAPHICS for EGA has been reimplemented to do direct screen writes.
+     This gives a significant performance boost at the expense of generality,
+     which may affect some EGA clones.  Also, VGA modes 17 and 18 are now
+     supported.
+
+PC Scheme 3.03 features
+-----------------------
+  
+The following bugs have been fixed.
+
+  1. Random I/O has been fixed. If a file is opened with OPEN-EXTEND-FILE,
+     one can perform both input from and output to that file.
+
+  2. An obscure garbage collection bug was fixed which envolved one defining
+     their own top-level. If a user top-level has been defined instead of
+     the Scheme-Top-level, and an out of memory encountered an error message
+     occurred on the next garbage collect.
+
+  3. A garbage collection bug in extended memory was fixed. Compaction of
+     list cells could sometimes cause problems.
+
+  4. A problem with DOS memory fragmentation was fixed. Upon returning from
+     PC Scheme, all of memory was not being returned to DOS. This could some-
+     times cause other programs to fail with "not enough memory" errors.
+
+The following new features have been added:
+
+  1. Support has been added for VGA mode 18.
+
+
+  2. One can now specify when garbage compaction should occur. 
+
+	(GC-GET-COMPACT-COUNT! number) - specifies that a compaction should
+					 occur after every "number" of gc's.
+
+	(GC-GET-COMPACT-COUNT) 	       - returns the current "number".
+

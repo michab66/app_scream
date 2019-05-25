@@ -1,0 +1,185 @@
+IFNDEF BLOCK_XFER
+BLOCK_XFER equ 0EC00h		; Block Transfer
+ENDIF
+
+IFNDEF DOS
+DOS    equ     021h		; Dos Function Request
+ENDIF
+
+;MOVE_ARGS_TO_BUF
+;  Move the specified arguments to a buffer. If the buffer is not
+;  specified, then ES:DI is assumed to contain the address of the
+;  buffer.
+;
+;  The specified args are pushed onto the local stack, and the 
+;  address noted in DS:SI. The args are then moved to the
+;  specifed buffer.
+move_args_to_buf macro args,realaddr,autobump,save
+numbytes = 	0
+	irp	x,<args>
+	numbytes = numbytes + 2
+	push	x
+	endm
+IFNB	<realaddr>
+	les	di,dword ptr ss:&realaddr
+ENDIF
+	mov	cx,numbytes
+	mov	si,sp
+	move_to_real_buf autobump,save
+	add	sp,numbytes
+endm
+
+;MOVE_TO_REAL_BUF
+;  Move CX number of bytes from DS:SI to buffer specifed in ES:DI.
+;  Since the destination may be in real mode, use the AIA Dos
+;  extended function Block_Xfer.
+move_to_real_buf macro autobump,save_offset
+	mov	ax,BLOCK_XFER
+	int	DOS
+IFNB	<autobump>
+IFE     direction
+ 	add	di,cx
+ELSE
+	sub	di,cx
+ENDIF
+ENDIF
+IFNB	<save_offset>
+	mov	ss:&real_buf_offset,di
+ENDIF
+endm
+
+;MOVE_BYTE_TO_BUF
+;  Move one byte from the buffer specified in DS:SI to the
+;  destination address in ES:DI.
+MOVE_BYTE_TO_BUF macro byt,realaddr,autobump
+IFNB	<realaddr>
+	les	di,dword ptr ss:&realaddr
+ENDIF
+	sub	sp,2
+	mov	si,sp
+	mov	byte ptr ss:[si],byt
+	mov	cx,1
+	mov	ax,BLOCK_XFER
+	int	DOS
+IFNB	<autobump>
+IFE     direction
+ 	inc	di
+ELSE
+	dec	di
+ENDIF
+ENDIF
+	add	sp,2
+endm
+
+;MOVE_ARGS_FROM_BUF
+;  Get the specified arguments from a buffer. If the buffer is not
+;  specified, then ES:DI is assumed to contain the address of the
+;  buffer.
+;
+;  The number of bytes specified by the args is allocated on
+;  the local stack, and the address noted in DS:SI. The args
+;  are then moved from the desired buffer onto the local stack,
+;  and popped into the desired args.
+move_args_from_buf macro args,realaddr
+numbytes = 	0
+	irp	x,<args>
+	numbytes = numbytes + 2
+	endm
+IFNB	<realaddr>
+	les	di,dword ptr ss:&realaddr
+ENDIF
+	mov	cx,numbytes
+	sub	sp,cx
+	mov	si,sp
+	move_from_real_buf
+	irp	x,<args>
+	pop	x
+	endm
+endm
+
+;MOVE_FROM_REAL_BUF
+;  Move CX number of bytes from the buffer specified in ES:DI to
+;  the destination address in DS:SI. Swap the source and 
+;  destination registers and perform the AIA Dos extended function
+;  Block_Xfer (in case the source buffer is in real memory).
+move_from_real_buf macro
+	mov	bx,es
+	mov	dx,ds
+	mov	ds,bx
+	mov	es,dx
+	xchg	di,si
+	mov	ax,BLOCK_XFER
+	int	DOS
+	mov	ds,dx
+	mov	es,bx
+	xchg	di,si
+endm
+
+;REAL_BYTE_TO REG
+;  Move a byte from the buffer specified by DS:SI to a register.
+;
+;  ES must equal SS
+real_byte_to_reg macro reg,autobump
+	push	cx
+	mov	cx,1
+	sub	sp,2
+	mov	di,sp
+	mov	ax,BLOCK_XFER
+	int	DOS
+	mov	al,byte ptr es:[di]
+IFNB	<autobump>
+ 	inc	si
+ENDIF
+	add	sp,2
+	pop	cx
+endm
+
+	
+reset_real_buffer_offset macro
+	mov	ss:real_buf_offset,0
+endm
+    
+
+save_real_buffer_offset macro arg
+IFNB <arg>
+	mov	ss:&real_buf_offset,arg
+ELSE
+	mov	ss:&real_buf_offset,di
+ENDIF
+endm
+
+
+direction	  = 0		; direction flag for autoincr/autdecr
+real_buffer_stack = 0		; treat buffer as stack
+
+buffer_is_stack macro
+	direction = 1
+endm
+
+get_real_buffer_stack macro
+	mov	bx,ss:&real_buf_top
+	mov	ss:&real_buf_offset,bx
+	direction = 1
+endm
+
+get_real_buffer macro
+	les	di,dword ptr ss:&real_mode_buffer
+endm
+
+buffer_is_buffer macro
+	direction = 0
+endm
+
+get_real_buffer_top macro reg
+	mov	reg,ss:real_buf_top
+endm
+
+get_buffer macro
+	buffer_is_buffer
+	reset_real_buffer_offset
+	get_real_buffer
+endm
+
+rls_buffer macro
+	reset_real_buffer_offset
+endm
