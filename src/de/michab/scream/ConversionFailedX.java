@@ -36,8 +36,6 @@ public class ConversionFailedX
            } );
   }
 
-
-
   /**
    * Creates an instance of this exception including an optional position
    * argument.
