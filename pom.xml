@@ -25,14 +25,14 @@
         <dependency>
             <groupId>micbinz</groupId>
             <artifactId>smack_old</artifactId>
-            <version>11.398</version>
+            <version>11.69</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/dev_smack-69.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>micbinz</groupId>
             <artifactId>smack</artifactId>
-            <version>11.398</version>
+            <version>11.405</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
