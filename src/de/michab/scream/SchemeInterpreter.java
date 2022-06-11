@@ -7,7 +7,6 @@
  */
 package de.michab.scream;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -763,8 +762,6 @@ public class SchemeInterpreter
       return result.toArray( new String[result.size()] );
   }
 
-
-
   /**
    * Is responsible for triggering the startup phase based on command line and
    * property configuration.  Implements the decision strategy for system
@@ -781,50 +778,48 @@ public class SchemeInterpreter
         new PrintWriter( System.err ),
         parameterExists( "test", argv ) );
 
-    boolean stdIoMode = parameterExists( "cli", argv );
-
-    argv = removeParameters( argv );
-
-    String shell = Localiser.localise( _screamResources, KEY_SCREAM_SHELL );
-
-    if ( stdIoMode )
-    {
+//    boolean stdIoMode = true; // parameterExists( "cli", argv );
+//
+//    argv = removeParameters( argv );
+//
+//    String shell = Localiser.localise( _screamResources, KEY_SCREAM_SHELL );
+//
+//    if ( stdIoMode )
+//    {
         startStandardIoMode();
-    }
-    // Scheme files specified on the command line.
-    else if ( argv.length >= 1 )
-    {
-      log.fine( "Reading command line file: " + argv[0] );
-      try
-      {
-        createSchemeInterpreter( new FileReader( argv[0] ),
-                                 new PrintWriter( System.err ) );
-      }
-      catch ( FileNotFoundException e )
-      {
-        log.warning( "File not found: " + argv[0] );
-      }
-    }
-    // Second comes the shell property key definition.
-    else if ( shell != null && shell.length() > 0 )
-    {
-      log.fine( "Reading shell pk: " + shell );
-      createSchemeInterpreter(
-          getShellReader( shell ),
-          new PrintWriter( System.err ) );
-    }
-    // No shell key set.  We go down...
-    else
-    {
-      log.severe(
-        "Property key <" +
-        KEY_SCREAM_SHELL  +
-        "> not set." );
-      System.exit( 1 );
-    }
+//    }
+//    // Scheme files specified on the command line.
+//    else if ( argv.length >= 1 )
+//    {
+//      log.fine( "Reading command line file: " + argv[0] );
+//      try
+//      {
+//        createSchemeInterpreter( new FileReader( argv[0] ),
+//                                 new PrintWriter( System.err ) );
+//      }
+//      catch ( FileNotFoundException e )
+//      {
+//        log.warning( "File not found: " + argv[0] );
+//      }
+//    }
+//    // Second comes the shell property key definition.
+//    else if ( shell != null && shell.length() > 0 )
+//    {
+//      log.fine( "Reading shell pk: " + shell );
+//      createSchemeInterpreter(
+//          getShellReader( shell ),
+//          new PrintWriter( System.err ) );
+//    }
+//    // No shell key set.  We go down...
+//    else
+//    {
+//      log.severe(
+//        "Property key <" +
+//        KEY_SCREAM_SHELL  +
+//        "> not set." );
+//      System.exit( 1 );
+//    }
   }
-
-
 
   /**
    * Starts Scream in standard IO mode, that is, only the standard IO streams

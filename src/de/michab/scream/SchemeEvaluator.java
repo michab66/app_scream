@@ -11,6 +11,7 @@ import java.io.Writer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import de.michab.scream.FirstClassObject.Unwind;
 import de.michab.scream.binding.SchemeObject;
 
 
@@ -86,12 +87,24 @@ class SchemeEvaluator implements Runnable
   }
 
 
+private FirstClassObject saveEval( FirstClassObject x, Environment e ) throws RuntimeX
+{
+    try
+    {
+        return x.evaluate( e );
+    }
+    catch ( Unwind u )
+    {
+        return u.result();
+    }
+}
 
   /**
    * The thread's worker method.  Finishes either if an EOF token is received
    * on the input queue, or if the the thread is interrupted.
    */
-  public void run()
+  @Override
+public void run()
   {
     Thread currentThread = Thread.currentThread();
 
@@ -116,7 +129,8 @@ class SchemeEvaluator implements Runnable
 
           // Evaluate the expression...
           FirstClassObject result =
-            Continuation.begin( expression, _tle );
+//            Continuation.begin( expression, _tle );
+              saveEval( expression, _tle );
           // ...and print the result.
           _sink.write( FirstClassObject.stringize( result ) );
         }

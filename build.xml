@@ -44,7 +44,8 @@
 	        <include name="asm-all-2.2.1.jar"/>
 	        <include name="jakarta-bcel-20050813.jar"/>
 	        <include name="commons-jci-r291284.jar"/>
-	        <include name="${javaflow}.jar"/>
+            <include name="${javaflow}.jar"/>
+            <include name="dev_smack-69.jar"/>
 	      </fileset>
 	  </path>
 
@@ -105,7 +106,7 @@
     <!-- Instruments the generated .class files. -->
     <target name="rewrite" depends="resource">
     	<echo message="${out.bin}/org/**"/>
-      <javaFlow srcdir="${out.bin}" dstdir="${out.bin}"/>
+<!--      <javaFlow srcdir="${out.bin}" dstdir="${out.bin}"/> -->
     </target>
 
 
@@ -200,11 +201,11 @@
 	</target>
 
 
-    <target name="eclipseBuilderCallback">
+<!--    <target name="eclipseBuilderCallback">
       <jflex
         verbose="true"
         file="${in.src}/de/michab/scream/scanner/Scheme.flex"/>
 
       <javaFlow srcdir="./bin" dstdir="./bin"/>
-    </target>
+    </target> -->
 </project>
