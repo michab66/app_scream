@@ -190,7 +190,8 @@ public class SchemeInterpreter
    */
   private final static String KEY_SCREAM_SHELL = "scream.shell";
 
-
+  //@Resource
+  private static String shell;
 
   /**
    * This is the name of the method that is looked up on the classes that are

@@ -557,16 +557,14 @@ public String toString()
    * @see java.lang.Object#finalize
    */
   @Override
-protected void finalize()
-    throws
-      Throwable
+  protected void finalize()
+          throws
+          Throwable
   {
-    close();
-    // Chain finalisers.
-    super.finalize();
+      close();
+      // Chain finalisers.
+      super.finalize();
   }
-
-
 
   /**
    * Convert this object into the Java type system.  For input ports returns a
@@ -575,15 +573,13 @@ protected void finalize()
    * @return The corresponding Java type for this object.
    */
   @Override
-public Object convertToJava()
+  public Object convertToJava()
   {
     if ( isInputPort() )
       return _inPort;
     else
       return _outPort;
   }
-
-
 
   /**
    * Extends the passed environment with the procedures logically associated
