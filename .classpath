@@ -6,12 +6,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
 	<classpathentry kind="lib" path="lib/ant.jar"/>
-	<classpathentry kind="lib" path="lib/asm-all-2.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/jakarta-bcel-20050813.jar"/>
-	<classpathentry kind="lib" path="lib/commons-jci-r291284.jar"/>
-	<classpathentry kind="lib" path="lib/Javaflow-1.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/dev_smack-69.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
