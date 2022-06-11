@@ -27,6 +27,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jdesktop.smack.util.Localiser;
+import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.binding.SchemeObject;
 import de.michab.scream.scanner.SchemeParser;
@@ -189,8 +190,8 @@ public class SchemeInterpreter
      */
     private final static String KEY_SCREAM_SHELL = "scream.shell";
 
-    //  @Resource
-    //  private static String shell;
+    @Resource
+    private static String shell;
 
     /**
      * This is the name of the method that is looked up on the classes that are
@@ -421,9 +422,6 @@ public class SchemeInterpreter
 
         return filterSymbols( prefix, collector );
     }
-
-
-
 
     /**
      * Selects all the keys starting with the passed <code>prefix</code> from the
@@ -760,6 +758,12 @@ public class SchemeInterpreter
      */
     public static void main( String[] argv )
     {
+        org.smack.util.ServiceManager.getApplicationService(
+                org.smack.util.resource.ResourceManager.class )
+        .injectResources( SchemeInterpreter.class );
+
+        System.out.println( shell );
+
         // Give the init thread a name for debug purposes.
         Thread.currentThread().setName( "screamMain" );
 
