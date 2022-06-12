@@ -7,8 +7,6 @@
  */
 package de.michab.scream;
 
-
-
 /**
  * An exception to be thrown at run-time of a scheme program.  This type of
  * exception gets transformed to a user error message.
@@ -16,6 +14,7 @@ package de.michab.scream;
  * @version $Rev: 194 $
  * @author Michael Binz
  */
+@SuppressWarnings("serial")
 public class RuntimeX
   extends ScreamException
 {
@@ -30,8 +29,6 @@ public class RuntimeX
     super( msg, args );
   }
 
-
-
   /**
    * Create an error message with parameters.
    *
@@ -42,13 +39,12 @@ public class RuntimeX
     super( msg );
   }
 
-
-
   /**
    * (%error-catch expression)
    */
   static private Syntax errorCatchSyntax = new Syntax( "%error-catch" )
   {
+    @Override
     public FirstClassObject activate( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -65,14 +61,13 @@ public class RuntimeX
     }
   };
 
-
-
   /**
    * Scream specific <code>(error ...)</code> procedure.  Interrupts the
    * current computation with a runtime error.
    */
   static private Procedure errorProcedure = new Procedure( "error" )
   {
+    @Override
     protected FirstClassObject apply( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -94,8 +89,6 @@ public class RuntimeX
       throw result;
     }
 
-
-
     /**
      * Makes a human readable string from a FirstClassObject.  That means for
      * a real scheme string that the double quotes are removed -- gnah instead
@@ -114,8 +107,6 @@ public class RuntimeX
       return result;
     }
   };
-
-
 
   /**
    * This is just a standard extendTopLevelEnvironment method as on other

@@ -16,234 +16,234 @@ import de.michab.scream.util.WeakValueMap;
  * Represents the scheme real type.
  */
 public class SchemeDouble
-  extends
-    de.michab.scream.Number
+extends
+de.michab.scream.Number
 {
-  /**
-   * The name of the type as used by error reporting.
-   *
-   * @see FirstClassObject#getTypename()
-   */
-  public static final String TYPE_NAME = "real";
+    /**
+     * The name of the type as used by error reporting.
+     *
+     * @see FirstClassObject#getTypename()
+     */
+    public static final String TYPE_NAME = "real";
 
 
 
-  /**
-   * This object's value.
-   */
-  private final double _value;
+    /**
+     * This object's value.
+     */
+    private final double _value;
 
 
 
-  /**
-   *
-   */
-  private static WeakValueMap<Double, SchemeDouble> _flyweights =
-      new WeakValueMap<Double, SchemeDouble>();
+    /**
+     *
+     */
+    private static WeakValueMap<Double, SchemeDouble> _flyweights =
+            new WeakValueMap<Double, SchemeDouble>();
 
 
 
-  /**
-   * A factory for scheme doubles.  Used for limiting generation for well
-   * known instances as for 1.0, 2.0, ... of this type.
-   * Note that this factory is also responsible for type optimization, i.e.
-   * if an object for 2.0 is created via this factory it may be possible that
-   * an integer object is returned.
-   */
-  static public Number createObject( double v )
-  {
-    Double k = Double.valueOf( v );
-
-    SchemeDouble result = _flyweights.get( k );
-
-    if ( result == null )
+    /**
+     * A factory for scheme doubles.  Used for limiting generation for well
+     * known instances as for 1.0, 2.0, ... of this type.
+     * Note that this factory is also responsible for type optimization, i.e.
+     * if an object for 2.0 is created via this factory it may be possible that
+     * an integer object is returned.
+     */
+    static public Number createObject( double v )
     {
-      result = new SchemeDouble( v );
-      _flyweights.put( k, result );
+        Double k = Double.valueOf( v );
+
+        SchemeDouble result = _flyweights.get( k );
+
+        if ( result == null )
+        {
+            result = new SchemeDouble( v );
+            _flyweights.put( k, result );
+        }
+
+        return result;
     }
 
-    return result;
-  }
 
 
-
-  /**
-   * Create a new SchemeDouble.  This is only accessible via createObject to
-   * allow for caching well known instances like 1.0 etc.
-   */
-  private SchemeDouble( double v )
-  {
-    super( false );
-
-    _value = v;
-  }
-
-
-
-  /**
-   * See FirstClassObject#eqv
-   */
-  @Override
-public boolean eqv( FirstClassObject other )
-  {
-    boolean result;
-
-    try
+    /**
+     * Create a new SchemeDouble.  This is only accessible via createObject to
+     * allow for caching well known instances like 1.0 etc.
+     */
+    private SchemeDouble( double v )
     {
-      result = _value == ((Number)other).asDouble();
-    }
-    // This could catch either a ClassCast or NullPointer exception.  Is the
-    // quickest way to let the VM check for all error conditions.
-    catch ( Exception e )
-    {
-      result = false;
+        super( false );
+
+        _value = v;
     }
 
-    return result;
-  }
 
 
-
-  /**
-   * See java.lang.Object#toString
-   */
-  @Override
-public String toString()
-  {
-    return "" + _value;
-  }
-
-
-
-  /**
-   * @see Number#asLong
-   */
-  @Override
-public long asLong()
-  {
-    return (long)_value;
-  }
-
-
-
-  /**
-   * @see Number#asDouble
-   */
-  @Override
-public double asDouble()
-  {
-    return _value;
-  }
-
-
-
-  /**
-   * @see Number#add
-   */
-  @Override
-public Number add( FirstClassObject other )
-    throws RuntimeX
-  {
-    try
+    /**
+     * See FirstClassObject#eqv
+     */
+    @Override
+    public boolean eqv( FirstClassObject other )
     {
-      return createObject( _value + ((Number)other).asDouble() );
+        boolean result;
+
+        try
+        {
+            result = _value == ((Number)other).asDouble();
+        }
+        // This could catch either a ClassCast or NullPointer exception.  Is the
+        // quickest way to let the VM check for all error conditions.
+        catch ( Exception e )
+        {
+            result = false;
+        }
+
+        return result;
     }
-    // Two exceptions are possible from the code above:  For the failed class
-    // cast or because of a NIL reference.  The handling for both is the same.
-    catch ( Exception e )
+
+
+
+    /**
+     * See java.lang.Object#toString
+     */
+    @Override
+    public String toString()
     {
-      // Do the needed typecheck.  Since 'other' must be NIL or of a type
-      // other than scream.Number this has to fail...
-      Operation.checkArgument( 1, Number.class, other );
-      // ...or we found an internal error.
-      throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        return "" + _value;
     }
-  }
 
 
 
-  /**
-   * @see Number#subtract
-   */
-  @Override
-public Number subtract( FirstClassObject other )
-    throws RuntimeX
-  {
-    try
+    /**
+     * @see Number#asLong
+     */
+    @Override
+    public long asLong()
     {
-      return createObject( _value - ((Number)other).asDouble() );
+        return (long)_value;
     }
-    // Two exceptions are possible from the code above:  For the failed class
-    // cast or because of a NIL reference.  The handling for both is the same.
-    catch ( Exception e )
+
+
+
+    /**
+     * @see Number#asDouble
+     */
+    @Override
+    public double asDouble()
     {
-      // Do the needed typecheck.  Since 'other' must be NIL or of a type
-      // other than scream.Number this has to fail...
-      Operation.checkArgument( 1, Number.class, other );
-      // ...or we found an internal error.
-      throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        return _value;
     }
-  }
 
 
 
-  /**
-   * @see Number#multiply
-   */
-  @Override
-public Number multiply( FirstClassObject other )
-    throws RuntimeX
-  {
-    try
+    /**
+     * @see Number#add
+     */
+    @Override
+    public Number add( FirstClassObject other )
+            throws RuntimeX
     {
-      return createObject( _value * ((Number)other).asDouble() );
+        try
+        {
+            return createObject( _value + ((Number)other).asDouble() );
+        }
+        // Two exceptions are possible from the code above:  For the failed class
+        // cast or because of a NIL reference.  The handling for both is the same.
+        catch ( Exception e )
+        {
+            // Do the needed typecheck.  Since 'other' must be NIL or of a type
+            // other than scream.Number this has to fail...
+            Operation.checkArgument( 1, Number.class, other );
+            // ...or we found an internal error.
+            throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        }
     }
-    // Two exceptions are possible from the code above:  For the failed class
-    // cast or because of a NIL reference.  The handling for both is the same.
-    catch ( Exception e )
+
+
+
+    /**
+     * @see Number#subtract
+     */
+    @Override
+    public Number subtract( FirstClassObject other )
+            throws RuntimeX
     {
-      // Do the needed typecheck.  Since 'other' must be NIL or of a type
-      // other than scream.Number this has to fail...
-      Operation.checkArgument( 1, Number.class, other );
-      // ...or we found an internal error.
-      throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        try
+        {
+            return createObject( _value - ((Number)other).asDouble() );
+        }
+        // Two exceptions are possible from the code above:  For the failed class
+        // cast or because of a NIL reference.  The handling for both is the same.
+        catch ( Exception e )
+        {
+            // Do the needed typecheck.  Since 'other' must be NIL or of a type
+            // other than scream.Number this has to fail...
+            Operation.checkArgument( 1, Number.class, other );
+            // ...or we found an internal error.
+            throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        }
     }
-  }
 
 
 
-  /**
-   * @see Number#divide
-   */
-  @Override
-public Number divide( FirstClassObject other )
-    throws RuntimeX
-  {
-    try
+    /**
+     * @see Number#multiply
+     */
+    @Override
+    public Number multiply( FirstClassObject other )
+            throws RuntimeX
     {
-      return createObject( _value / ((Number)other).asDouble() );
+        try
+        {
+            return createObject( _value * ((Number)other).asDouble() );
+        }
+        // Two exceptions are possible from the code above:  For the failed class
+        // cast or because of a NIL reference.  The handling for both is the same.
+        catch ( Exception e )
+        {
+            // Do the needed typecheck.  Since 'other' must be NIL or of a type
+            // other than scream.Number this has to fail...
+            Operation.checkArgument( 1, Number.class, other );
+            // ...or we found an internal error.
+            throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        }
     }
-    // Two exceptions are possible from the code above:  For the failed class
-    // cast or because of a NIL reference.  The handling for both is the same.
-    catch ( Exception e )
+
+
+
+    /**
+     * @see Number#divide
+     */
+    @Override
+    public Number divide( FirstClassObject other )
+            throws RuntimeX
     {
-      // Do the needed typecheck.  Since 'other' must be NIL or of a type
-      // other than scream.Number this has to fail...
-      Operation.checkArgument( 1, Number.class, other );
-      // ...or we found an internal error.
-      throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        try
+        {
+            return createObject( _value / ((Number)other).asDouble() );
+        }
+        // Two exceptions are possible from the code above:  For the failed class
+        // cast or because of a NIL reference.  The handling for both is the same.
+        catch ( Exception e )
+        {
+            // Do the needed typecheck.  Since 'other' must be NIL or of a type
+            // other than scream.Number this has to fail...
+            Operation.checkArgument( 1, Number.class, other );
+            // ...or we found an internal error.
+            throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        }
     }
-  }
 
 
 
-  /**
-   * Converts this <code>SchemeDouble</code> instance into a
-   * <code>java.lang.Double</code>.
-   */
-  @Override
-public Object convertToJava()
-  {
-    return new Double( _value );
-  }
+    /**
+     * Converts this <code>SchemeDouble</code> instance into a
+     * <code>java.lang.Double</code>.
+     */
+    @Override
+    public Object convertToJava()
+    {
+        return Double.valueOf( _value );
+    }
 }

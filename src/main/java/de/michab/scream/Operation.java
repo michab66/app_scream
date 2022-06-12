@@ -142,7 +142,7 @@ public abstract class Operation
     if ( formalArguments instanceof Symbol )
     {
       // ...this means variable number of arguments.
-      _rest = (Symbol)formalArguments;
+      _rest = formalArguments;
       // Ready.
       return;
     }
@@ -197,7 +197,7 @@ public abstract class Operation
           // Terminate the formal argument list...
           fac.setCdr( Cons.NIL );
           // ...and remember the rest symbol.
-          _rest = (Symbol)cdr;
+          _rest = cdr;
         }
         // Done.  Break out of the loop.
         break;
@@ -466,7 +466,7 @@ public abstract class Operation
    * @param received The array of arguments received.
    * @throws RuntimeX In case the argument lists do not correspond.
    */
-  static protected void checkArguments( Class[] formal,
+  static protected void checkArguments( Class<?>[] formal,
                                         FirstClassObject[] received )
     throws RuntimeX
   {
@@ -476,15 +476,14 @@ public abstract class Operation
       checkArgument( i, formal[i], received[i] );
   }
 
-
-
   /**
    * Conversion of Operation instances into Java objects return constantly
    * <code>null</code>.
    *
    * @return Always <code>null</code>.
    */
-  public Object convertToJava()
+  @Override
+public Object convertToJava()
   {
     // TODO: no conversion possible.  Could convert to action or Method (that
     // second possibility would be pretty cool but also extremely complex.)

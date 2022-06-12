@@ -40,229 +40,229 @@ import org.jdesktop.smack.util.Localiser;
  * @author Michael Binz
  */
 public class ScreamException
-  extends java.lang.Exception
+extends java.lang.Exception
 {
-  /**
-   * Serial version id.
-   */
-  private static final long serialVersionUID = 1L;
+    /**
+     * Serial version id.
+     */
+    private static final long serialVersionUID = 1L;
 
 
 
-  /**
-   * The logger for this class.
-   */
-  private final static Logger _log =
-    Logger.getLogger( ScreamException.class.getName() );
+    /**
+     * The logger for this class.
+     */
+    private final static Logger _log =
+            Logger.getLogger( ScreamException.class.getName() );
 
 
 
-  /**
-   * Delimits the error id from the message.
-   */
-  private final static char ID_DELIMITER = ':';
+    /**
+     * Delimits the error id from the message.
+     */
+    private final static char ID_DELIMITER = ':';
 
 
 
-  /**
-   * The actual error message.  Initialized only by an access to the message
-   * accessor or error id.
-   */
-  private String _errorMessage = null;
+    /**
+     * The actual error message.  Initialized only by an access to the message
+     * accessor or error id.
+     */
+    private String _errorMessage = null;
 
 
 
-  /**
-   * The error id.  Initialized only by an access to the message accessor or
-   * error id.  -2 initial value is returned if error id resolution failed.
-   */
-  private int _errorId = -2;
+    /**
+     * The error id.  Initialized only by an access to the message accessor or
+     * error id.  -2 initial value is returned if error id resolution failed.
+     */
+    private int _errorId = -2;
 
 
 
-  /**
-   * Specifies whether the error message and id have been initialized from
-   * the resource bundle file.
-   */
-  private boolean _lazyInitDone = false;
+    /**
+     * Specifies whether the error message and id have been initialized from
+     * the resource bundle file.
+     */
+    private boolean _lazyInitDone = false;
 
 
 
-  /**
-   * A reference to the resource bundle used to localize error messages.
-   */
-  private static ResourceBundle _errorBundle = null;
+    /**
+     * A reference to the resource bundle used to localize error messages.
+     */
+    private static ResourceBundle _errorBundle = null;
 
 
 
-  /**
-   * A reference to the arguments to be formatted into the error message.
-   */
-  private final Object[] _errorArguments;
+    /**
+     * A reference to the arguments to be formatted into the error message.
+     */
+    private final Object[] _errorArguments;
 
 
 
-  /**
-   * The name of the operation where the exception occurred.
-   */
-  private Symbol _operationName = null;
+    /**
+     * The name of the operation where the exception occurred.
+     */
+    private Symbol _operationName = null;
 
 
 
-  /**
-   * Load the resource bundle.
-   */
-  static
-  {
-    try
+    /**
+     * Load the resource bundle.
+     */
+    static
     {
-      _errorBundle =
-        ResourceBundle.getBundle( "de.michab.scream.ErrorMessages" );
-    }
-    catch ( MissingResourceException e )
-    {
-      _log.severe( "Resource not found: " + e.getMessage() );
-      System.exit( 1 );
-    }
-  }
-
-
-
-  /**
-   * Sets the name of the throwing operation.  Note that this is only set once
-   * and locked.  Further calls to set do <i>not</i> change the operation name
-   * set by the first call to this method.
-   *
-   * @param operation The name of the throwing operation.
-   * @see ScreamException#getOperationName
-   */
-  public void setOperationName( Symbol operation )
-  {
-    if ( _operationName == null )
-      _operationName = operation;
-  }
-
-
-
-  /**
-   * Read the symbolic name of the operation that reported the exception.
-   *
-   * @return The symbolic name of the operation that reported the exception.
-   * @see ScreamException#setOperationName
-   */
-  public Symbol getOperationName()
-  {
-    return _operationName;
-  }
-
-
-
-  /**
-   * Get a numeric error id.  In case there was a misconfiguration in the
-   * resource bundle -2 is returned.
-   *
-   * @return The numeric error id.
-   */
-  public int getId()
-  {
-    if ( ! _lazyInitDone )
-    {
-      _lazyInitDone = true;
-      initialise();
+        try
+        {
+            _errorBundle =
+                    ResourceBundle.getBundle( "de.michab.scream.ErrorMessages" );
+        }
+        catch ( MissingResourceException e )
+        {
+            _log.severe( "Resource not found: " + e.getMessage() );
+            System.exit( 1 );
+        }
     }
 
-    return _errorId;
-  }
 
 
-
-  /**
-   * Get the message from this exception.
-   *
-   * @return This exception's message.
-   */
-  @Override
-public String getMessage()
-  {
-    if ( ! _lazyInitDone )
+    /**
+     * Sets the name of the throwing operation.  Note that this is only set once
+     * and locked.  Further calls to set do <i>not</i> change the operation name
+     * set by the first call to this method.
+     *
+     * @param operation The name of the throwing operation.
+     * @see ScreamException#getOperationName
+     */
+    public void setOperationName( Symbol operation )
     {
-      _lazyInitDone = true;
-      initialise();
+        if ( _operationName == null )
+            _operationName = operation;
     }
 
-    return _errorMessage;
-  }
 
 
-
-  /**
-   * Has the sole purpose to initialize the _errorMessage and _errorId
-   * attributes.
-   */
-  private void initialise()
-  {
-    // Get the original message.  Note that this can neither be null nor the
-    // empty string.  See invariant in constructor.
-    String message = super.getMessage();
-    // Append the number of arguments to the message key.
-    if ( _errorArguments != null  && _errorArguments.length > 0 )
-      message += "_" + _errorArguments.length;
-
-    // Use the message string as the resource key to get the ultimate message.
-    message = Localiser.localise( _errorBundle, message, message );
-
-    // Return the message with the arguments formatted in.
-    _errorMessage = MessageFormat.format( message, _errorArguments );
-
-    // Now get the error id from the message.
-    int colonIdx = _errorMessage.indexOf( ID_DELIMITER );
-    if ( colonIdx == -1 )
-      // No error id specified.
-      return;
-
-    try
+    /**
+     * Read the symbolic name of the operation that reported the exception.
+     *
+     * @return The symbolic name of the operation that reported the exception.
+     * @see ScreamException#setOperationName
+     */
+    public Symbol getOperationName()
     {
-      _errorId = Integer.parseInt(
-        _errorMessage.substring( 0, colonIdx ).trim() );
+        return _operationName;
     }
-    catch ( NumberFormatException e )
+
+
+
+    /**
+     * Get a numeric error id.  In case there was a misconfiguration in the
+     * resource bundle -2 is returned.
+     *
+     * @return The numeric error id.
+     */
+    public int getId()
     {
-      // Do nothing.  _errorId defaults to error code.
+        if ( ! _lazyInitDone )
+        {
+            _lazyInitDone = true;
+            initialise();
+        }
+
+        return _errorId;
     }
-  }
 
 
 
-  /**
-   * Creates a scream exception.
-   *
-   * @param msg The message that will be used as a key into Scream's error
-   *        message resource bundle.
-   */
-  public ScreamException( String msg )
-  {
-    this( msg, null );
-  }
+    /**
+     * Get the message from this exception.
+     *
+     * @return This exception's message.
+     */
+    @Override
+    public String getMessage()
+    {
+        if ( ! _lazyInitDone )
+        {
+            _lazyInitDone = true;
+            initialise();
+        }
+
+        return _errorMessage;
+    }
 
 
 
-  /**
-   * Creates a scream exception.
-   *
-   * @param msg The message that will be used as a key into Scream's error
-   *        message resource bundle.
-   * @param args The arguments to be formatted into the message.
-   * @exception IllegalArgumentException In case the passed message was either
-   *            <code>null</code> or the empty string.
-   */
-  public ScreamException( String msg, Object[] args )
-  {
-    super( msg );
+    /**
+     * Has the sole purpose to initialize the _errorMessage and _errorId
+     * attributes.
+     */
+    private void initialise()
+    {
+        // Get the original message.  Note that this can neither be null nor the
+        // empty string.  See invariant in constructor.
+        String message = super.getMessage();
+        // Append the number of arguments to the message key.
+        if ( _errorArguments != null  && _errorArguments.length > 0 )
+            message += "_" + _errorArguments.length;
 
-    // Ensure that we received a valid non-null and non-empty message.
-    if ( msg == null || msg.length() == 0 )
-      throw new IllegalArgumentException( "ScreamException: Invalid message." );
+        // Use the message string as the resource key to get the ultimate message.
+        message = Localiser.localise( _errorBundle, message, message );
 
-    _errorArguments = args;
-  }
+        // Return the message with the arguments formatted in.
+        _errorMessage = MessageFormat.format( message, _errorArguments );
+
+        // Now get the error id from the message.
+        int colonIdx = _errorMessage.indexOf( ID_DELIMITER );
+        if ( colonIdx == -1 )
+            // No error id specified.
+            return;
+
+        try
+        {
+            _errorId = Integer.parseInt(
+                    _errorMessage.substring( 0, colonIdx ).trim() );
+        }
+        catch ( NumberFormatException e )
+        {
+            // Do nothing.  _errorId defaults to error code.
+        }
+    }
+
+
+
+    /**
+     * Creates a scream exception.
+     *
+     * @param msg The message that will be used as a key into Scream's error
+     *        message resource bundle.
+     */
+    public ScreamException( String msg )
+    {
+        this( msg, null );
+    }
+
+
+
+    /**
+     * Creates a scream exception.
+     *
+     * @param msg The message that will be used as a key into Scream's error
+     *        message resource bundle.
+     * @param args The arguments to be formatted into the message.
+     * @exception IllegalArgumentException In case the passed message was either
+     *            <code>null</code> or the empty string.
+     */
+    public ScreamException( String msg, Object[] args )
+    {
+        super( msg );
+
+        // Ensure that we received a valid non-null and non-empty message.
+        if ( msg == null || msg.length() == 0 )
+            throw new IllegalArgumentException( "ScreamException: Invalid message." );
+
+        _errorArguments = args;
+    }
 }
