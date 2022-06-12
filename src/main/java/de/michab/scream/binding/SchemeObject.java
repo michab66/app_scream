@@ -7,11 +7,30 @@
  */
 package de.michab.scream.binding;
 
-import java.lang.reflect.*;
+import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import de.michab.scream.*;
+import de.michab.scream.Cons;
+import de.michab.scream.ConversionFailedX;
+import de.michab.scream.Environment;
+import de.michab.scream.FirstClassObject;
+import de.michab.scream.Operation;
+import de.michab.scream.Procedure;
+import de.michab.scream.RuntimeX;
+import de.michab.scream.SchemeBoolean;
+import de.michab.scream.SchemeCharacter;
+import de.michab.scream.SchemeDouble;
+import de.michab.scream.SchemeInteger;
+import de.michab.scream.SchemeString;
+import de.michab.scream.Symbol;
+import de.michab.scream.Syntax;
+import de.michab.scream.Vector;
 
 
 
@@ -217,7 +236,8 @@ public class SchemeObject
    * Return the Java object that corresponds to the Scheme object.
    * @return The corresponding Java object.
    */
-  public Object convertToJava()
+  @Override
+public Object convertToJava()
   {
     return _theInstance;
   }
@@ -232,7 +252,8 @@ public class SchemeObject
    * @throws RuntimeX In case of reflection errors.
    * @see de.michab.scream.Operation#activate(Environment, Cons)
    */
-  public FirstClassObject activate( Environment context, FirstClassObject[] args )
+  @Override
+public FirstClassObject activate( Environment context, FirstClassObject[] args )
     throws RuntimeX
   {
     checkMinimumArgumentCount( 1, args );
@@ -330,28 +351,28 @@ public class SchemeObject
 
       // Check for java primitive types
       else if ( formal == java.lang.Boolean.TYPE )
-        result = new java.lang.Boolean( ((SchemeBoolean)actual).getValue() );
+        result = Boolean.valueOf( ((SchemeBoolean)actual).getValue() );
 
       else if ( formal == java.lang.Byte.TYPE )
-        result = new java.lang.Byte( (byte)((SchemeInteger)actual).asLong() );
+        result = Byte.valueOf( (byte)((SchemeInteger)actual).asLong() );
 
       else if ( formal == java.lang.Short.TYPE )
-        result = new java.lang.Short( (short)((SchemeInteger)actual).asLong() );
+        result = Short.valueOf( (short)((SchemeInteger)actual).asLong() );
 
       else if ( formal == java.lang.Integer.TYPE )
-        result = new java.lang.Integer( (int)((SchemeInteger)actual).asLong() );
+        result = Integer.valueOf( (int)((SchemeInteger)actual).asLong() );
 
       else if ( formal == java.lang.Long.TYPE )
-        result = new java.lang.Long( ((SchemeInteger)actual).asLong() );
+        result = Long.valueOf( ((SchemeInteger)actual).asLong() );
 
       else if ( formal == java.lang.Float.TYPE )
-        result = new java.lang.Float( (float)((SchemeDouble)actual).asDouble() );
+        result = Float.valueOf( (float)((SchemeDouble)actual).asDouble() );
 
       else if ( formal == java.lang.Double.TYPE )
-        result = new java.lang.Double( ((SchemeDouble)actual).asDouble() );
+        result = Double.valueOf( ((SchemeDouble)actual).asDouble() );
 
       else if ( formal == java.lang.Character.TYPE )
-        result = new java.lang.Character( ((SchemeCharacter)actual).asCharacter() );
+        result = Character.valueOf( ((SchemeCharacter)actual).asCharacter() );
 
       else if ( formal == java.lang.String.class )
         result = ((SchemeString)actual).getValue();
@@ -398,8 +419,6 @@ public class SchemeObject
       throw new ConversionFailedX( actual, formal );
     }
   }
-
-
 
   /**
    * Converts a vector, something like <code>#(1 2 3 4)</code>, into a Java
@@ -720,7 +739,8 @@ public class SchemeObject
    * @return <code>True</code> if the reference passed into this call is eqv to
    *         this object.
    */
-  public boolean eqv( FirstClassObject other )
+  @Override
+public boolean eqv( FirstClassObject other )
   {
     try
     {
@@ -744,7 +764,8 @@ public class SchemeObject
    *
    * @return A string representation of this object.
    */
-  public String toString()
+  @Override
+public String toString()
   {
     return "@Object:" + _theInstance.getClass().getName() + "=" + _theInstance;
   }
@@ -757,7 +778,8 @@ public class SchemeObject
    * @return The cloned object.
    * @see java.lang.Object#clone
    */
-  public Object clone()
+  @Override
+public Object clone()
   {
     try
     {
@@ -787,6 +809,7 @@ public class SchemeObject
    */
   static private Syntax constructObjectSyntax = new Syntax( "make-object" )
   {
+    @Override
     public FirstClassObject activate( Environment context, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -826,6 +849,7 @@ public class SchemeObject
    */
   static private Procedure wrapObjectProcedure = new Procedure( "object" )
   {
+    @Override
     public FirstClassObject apply( FirstClassObject[] args )
       throws RuntimeX
     {
@@ -854,6 +878,7 @@ public class SchemeObject
    */
   static private Procedure objectPredicateProcedure = new Procedure( "object?" )
   {
+    @Override
     public FirstClassObject apply( FirstClassObject[] args )
       throws RuntimeX
     {
@@ -872,6 +897,7 @@ public class SchemeObject
   static private Procedure describeObjectProcedure =
     new Procedure( "describe-object" )
   {
+    @Override
     public FirstClassObject apply( FirstClassObject[] args )
       throws RuntimeX
     {
@@ -919,6 +945,7 @@ public class SchemeObject
   static private Syntax catchExceptionSyntax =
     new Syntax( "%catch" )
   {
+    @Override
     public FirstClassObject activate( Environment context,
                                       FirstClassObject[] args )
       throws RuntimeX
