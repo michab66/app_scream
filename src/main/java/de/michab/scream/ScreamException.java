@@ -8,14 +8,6 @@
 package de.michab.scream;
 
 import java.text.MessageFormat;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.logging.Logger;
-
-import org.jdesktop.smack.util.Localiser;
-
-
-
 
 /**
  * <p>The base class for all scream specific exceptions.  The message that this
@@ -36,27 +28,12 @@ import org.jdesktop.smack.util.Localiser;
  * resource bundle occur only if either the message itself or the numeric
  * message id are requested from a RuntimeX instance.</p>
  *
- * @version $Rev: 788 $
  * @author Michael Binz
  */
+@SuppressWarnings("serial")
 public class ScreamException
-extends java.lang.Exception
+    extends java.lang.Exception
 {
-    /**
-     * Serial version id.
-     */
-    private static final long serialVersionUID = 1L;
-
-
-
-    /**
-     * The logger for this class.
-     */
-    private final static Logger _log =
-            Logger.getLogger( ScreamException.class.getName() );
-
-
-
     /**
      * Delimits the error id from the message.
      */
@@ -91,7 +68,7 @@ extends java.lang.Exception
     /**
      * A reference to the resource bundle used to localize error messages.
      */
-    private static ResourceBundle _errorBundle = null;
+    //private static ResourceBundle _errorBundle = null;
 
 
 
@@ -109,23 +86,23 @@ extends java.lang.Exception
 
 
 
-    /**
-     * Load the resource bundle.
-     */
-    static
-    {
-        try
-        {
-            _errorBundle =
-                    ResourceBundle.getBundle( "de.michab.scream.ErrorMessages" );
-        }
-        catch ( MissingResourceException e )
-        {
-            _log.severe( "Resource not found: " + e.getMessage() );
-            System.exit( 1 );
-        }
-    }
-
+    //    /**
+    //     * Load the resource bundle.
+    //     */
+    //    static
+    //    {
+    //        try
+    //        {
+    //            _errorBundle =
+    //                    ResourceBundle.getBundle( "de.michab.scream.ErrorMessages" );
+    //        }
+    //        catch ( MissingResourceException e )
+    //        {
+    //            _log.severe( "Resource not found: " + e.getMessage() );
+    //            System.exit( 1 );
+    //        }
+    //    }
+    //
 
 
     /**
@@ -208,11 +185,15 @@ extends java.lang.Exception
         if ( _errorArguments != null  && _errorArguments.length > 0 )
             message += "_" + _errorArguments.length;
 
+        message = ErrorMessages.map.get( message );
         // Use the message string as the resource key to get the ultimate message.
-        message = Localiser.localise( _errorBundle, message, message );
+        //        message = Localiser.localise( _errorBundle, message, message );
+        //        if ( ! message.equals( tmp ) )
+        //            System.out.println( "warn scream x" );
 
         // Return the message with the arguments formatted in.
         _errorMessage = MessageFormat.format( message, _errorArguments );
+
 
         // Now get the error id from the message.
         int colonIdx = _errorMessage.indexOf( ID_DELIMITER );
