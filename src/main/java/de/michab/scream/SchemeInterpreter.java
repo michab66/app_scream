@@ -16,17 +16,13 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jdesktop.smack.util.Localiser;
 import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.binding.SchemeObject;
@@ -98,7 +94,7 @@ public class SchemeInterpreter
     /**
      * The interpreter's resources.
      */
-    private static ResourceBundle _screamResources = null;
+//    private static ResourceBundle _screamResources = null;
 
 
 
@@ -122,7 +118,7 @@ public class SchemeInterpreter
      * Properties file to read.  Note that we never must create a class with the
      * same name!
      */
-    private final static String screamProperties = "de.michab.scream.Scream";
+//    private final static String screamProperties = "de.michab.scream.Scream";
 
 
 
@@ -141,8 +137,10 @@ public class SchemeInterpreter
      * startup.
      * <code>kernel.integrateClasses = fooExtension bar baz</code>
      */
-    private final static String kernelIntegrateClassesP =
-            "kernel.integrateClasses";
+//    private final static String kernelIntegrateClassesP =
+//            "kernel.integrateClasses";
+    @Resource
+    private static String[] integrateClasses;
 
 
 
@@ -154,8 +152,10 @@ public class SchemeInterpreter
      *
      * @see de.michab.scream.SchemeInterpreter#kernelSchemeInstanceExtensionsP
      */
-    private final static String kernelSchemeExtensionsP =
-            "kernel.schemeExtensions";
+//    private final static String kernelSchemeExtensionsP =
+//            "kernel.schemeExtensions";
+    @Resource
+    private static String[] schemeExtensions;
 
 
 
@@ -165,8 +165,10 @@ public class SchemeInterpreter
      *
      * Sample: <code>kernel.regression = tmath.s</code>
      */
-    private final static String kernelSchemeTestsP =
-            "kernel.regression";
+//    private final static String kernelSchemeTestsP =
+//            "kernel.regression";
+    @Resource
+    private static String[] regression;
 
 
 
@@ -180,15 +182,15 @@ public class SchemeInterpreter
      *
      * Sample: <code>kernel.schemeExtensions = math.s common.s patch.s</code>
      */
-    private final static String kernelSchemeInstanceExtensionsP =
-            "kernel.schemeInstanceExtensions";
-
-
+//    private final static String kernelSchemeInstanceExtensionsP =
+//            "kernel.schemeInstanceExtensions";
+    @Resource
+    private static String[] schemeInstanceExtensions;
 
     /**
      *
      */
-    private final static String KEY_SCREAM_SHELL = "scream.shell";
+//    private final static String KEY_SCREAM_SHELL = "scream.shell";
 
     @Resource
     private static String shell;
@@ -199,14 +201,10 @@ public class SchemeInterpreter
      */
     private final static String INIT_NAME = "extendTopLevelEnvironment";
 
-
-
     /**
      * The parser used by this interpreter.
      */
     private final SchemeReader _parser;
-
-
 
     /**
      * The evaluator used by this interpreter.
@@ -273,7 +271,7 @@ public class SchemeInterpreter
 
         processExtensions(
                 _localTle,
-                kernelSchemeInstanceExtensionsP,
+                schemeInstanceExtensions,
                 schemeExtensionPosition,
                 _errorWriter );
         _errorWriter.flush();
@@ -469,19 +467,8 @@ public class SchemeInterpreter
     private static void integrateClasses(
             Environment tle )
     {
-        String classNames =
-                Localiser.localise( _screamResources, kernelIntegrateClassesP );
-
-        if ( null == classNames ||
-                0 == classNames.length() )
-            return;
-
-        // We use the default whitespace delimiters.
-        StringTokenizer classNamesList = new StringTokenizer( classNames );
-
-        while ( classNamesList.hasMoreElements() )
+        for ( var crtClassName : integrateClasses )
         {
-            String crtClassName = classNamesList.nextToken();
             log.info( "Initializing: " + crtClassName );
 
             try
@@ -537,19 +524,19 @@ public class SchemeInterpreter
      */
     private static void processExtensions(
             Environment env,
-            String propertyName,
+            String[] fileNames,
             String packageName,
             PrintWriter err )
     {
-        // Get the base property...
-        String schemeFiles =
-                Localiser.localise( _screamResources, propertyName );
-        // ...and check if there is valid contents.
-        if ( null == schemeFiles || 0 == schemeFiles.length() )
-            // No?  Then we're ready.
-            return;
+//        // Get the base property...
+//        String schemeFiles =
+//                Localiser.localise( _screamResources, propertyName );
+//        // ...and check if there is valid contents.
+//        if ( null == schemeFiles || 0 == schemeFiles.length() )
+//            // No?  Then we're ready.
+//            return;
 
-        String[] fileNames = schemeFiles.split( "\\s" );
+//        String[] fileNames = schemeFiles.split( "\\s" );
 
         // Init the parser...
         SchemeReader sreader = new SchemeReader();
@@ -621,21 +608,19 @@ public class SchemeInterpreter
         // Load extensions defined in scheme source files.
         processExtensions(
                 _topLevelEnvironment,
-                kernelSchemeExtensionsP,
+                schemeExtensions,
                 schemeExtensionPosition,
                 initWriter );
 
         if ( test )
             processExtensions(
                     _topLevelEnvironment.extend( Symbol.createObject( "test-environment" ) ),
-                    kernelSchemeTestsP,
+                    regression,
                     schemeTestPosition,
                     initWriter );
 
         initWriter.flush();
     }
-
-
 
     /**
      * Loads the scheme source file in the port into the passed environment.  The
@@ -669,36 +654,36 @@ public class SchemeInterpreter
      */
     static
     {
-        _screamResources = Localiser.loadResourceBundle( screamProperties );
-
-        if ( _screamResources == null )
-        {
-            log.severe( "Resources not found: " + screamProperties );
-            System.exit( 1 );
-        }
+//        _screamResources = Localiser.loadResourceBundle( screamProperties );
+//
+//        if ( _screamResources == null )
+//        {
+//            log.severe( "Resources not found: " + screamProperties );
+//            System.exit( 1 );
+//        }
     }
 
 
 
-    /**
-     * Reads the shell property key from the properties file and returns a ready
-     * made Reader object made from that.
-     */
-    private static Reader getShellReader( String extensionName )
-    {
-        // The getResourceAsStream in the next line addresses resources relative
-        // to the classes package.  So here we create name like extensions/foo.s
-        String crtFileName = schemeExtensionPosition + extensionName;
-
-        // Try to get a stream on the file...
-        InputStream is =
-                SchemeInterpreter.class.getResourceAsStream( crtFileName );
-        // ...and check if we had success.
-        if ( is == null )
-            return null;
-
-        return new InputStreamReader( is );
-    }
+//    /**
+//     * Reads the shell property key from the properties file and returns a ready
+//     * made Reader object made from that.
+//     */
+//    private static Reader getShellReader( String extensionName )
+//    {
+//        // The getResourceAsStream in the next line addresses resources relative
+//        // to the classes package.  So here we create name like extensions/foo.s
+//        String crtFileName = schemeExtensionPosition + extensionName;
+//
+//        // Try to get a stream on the file...
+//        InputStream is =
+//                SchemeInterpreter.class.getResourceAsStream( crtFileName );
+//        // ...and check if we had success.
+//        if ( is == null )
+//            return null;
+//
+//        return new InputStreamReader( is );
+//    }
 
 
 
@@ -729,27 +714,27 @@ public class SchemeInterpreter
 
 
 
-    /**
-     * Removes parameters from the passed string array.  E.g. if an array of
-     * {"-arg", "michael", "-param", "poop.s" } is passed, then the array
-     * {"michael", "poop.s"} is returned.  Parameters can start with '-' or
-     * '/'.
-     *
-     * @param argv The original parameters.
-     * @return The filtered parameter list.
-     */
-    private static String[] removeParameters( String argv[] )
-    {
-        ArrayList<String> result = new ArrayList<String>();
-
-        for ( String c : argv )
-        {
-            if ( ! c.matches( "[/-].*" ) )
-                result.add( c );
-        }
-
-        return result.toArray( new String[result.size()] );
-    }
+//    /**
+//     * Removes parameters from the passed string array.  E.g. if an array of
+//     * {"-arg", "michael", "-param", "poop.s" } is passed, then the array
+//     * {"michael", "poop.s"} is returned.  Parameters can start with '-' or
+//     * '/'.
+//     *
+//     * @param argv The original parameters.
+//     * @return The filtered parameter list.
+//     */
+//    private static String[] removeParameters( String argv[] )
+//    {
+//        ArrayList<String> result = new ArrayList<String>();
+//
+//        for ( String c : argv )
+//        {
+//            if ( ! c.matches( "[/-].*" ) )
+//                result.add( c );
+//        }
+//
+//        return result.toArray( new String[result.size()] );
+//    }
 
     /**
      * Is responsible for triggering the startup phase based on command line and
@@ -761,8 +746,6 @@ public class SchemeInterpreter
         org.smack.util.ServiceManager.getApplicationService(
                 org.smack.util.resource.ResourceManager.class )
         .injectResources( SchemeInterpreter.class );
-
-        System.out.println( shell );
 
         // Give the init thread a name for debug purposes.
         Thread.currentThread().setName( "screamMain" );
