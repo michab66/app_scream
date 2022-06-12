@@ -16,7 +16,6 @@ import de.michab.scream.scanner.FrontendX;
 import de.michab.scream.scanner.SchemeParser;
 
 
-
 /**
  * A Scheme parser frontend that manages a stack of real parsers
  * on certain Readers.  This is needed to be able to differ the

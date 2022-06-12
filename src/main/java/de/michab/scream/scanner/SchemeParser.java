@@ -8,6 +8,7 @@
 package de.michab.scream.scanner;
 
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.logging.Logger;
 
 import de.michab.scream.Cons;
@@ -129,14 +130,22 @@ public class SchemeParser
       _scanner = new SchemeScanner( source );
   }
 
-
+  /**
+   * Construct a parser for the passed string.
+   *
+   * @param source The string to parse.
+   */
+  public SchemeParser( String source )
+  {
+      this( new StringReader( source ) );
+  }
 
   /**
    * Get the next token from whatever scanner we have.
    *
    * @return The next token read, null on EOF.
    * @throws FrontendX In case of an error.
-   * @see de.michab.scream.scanner.SchemeParser#peekNextToken
+   * @see de.michab.scream.scanner.SchemeParserTest#peekNextToken
    */
   private Token getNextToken()
     throws FrontendX
@@ -163,7 +172,7 @@ public class SchemeParser
    *
    * @return The next token, null on EOF.
    * @throws FrontendX In case of an error.
-   * @see de.michab.scream.scanner.SchemeParser#getNextToken
+   * @see de.michab.scream.scanner.SchemeParserTest#getNextToken
    */
   private Token peekNextToken()
     throws FrontendX
