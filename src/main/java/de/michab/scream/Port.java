@@ -15,7 +15,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 
-import org.jdesktop.smack.util.FileUtils;
+import org.smack.util.FileUtil;
 
 import de.michab.scream.scanner.FrontendX;
 import de.michab.scream.scanner.SchemeParser;
@@ -535,20 +535,16 @@ public String toString()
       return SchemeCharacter.createObject( c );
   }
 
-
-
   /**
    * Closes this port.  This is also done from the finalizer.
    */
   public void close()
   {
-      FileUtils.forceClose( _inPort );
+      FileUtil.forceClose( _inPort );
       _inPort = null;
-      FileUtils.forceClose( _outPort );
+      FileUtil.forceClose( _outPort );
       _outPort = null;
   }
-
-
 
   /**
    * Finalize the object.
