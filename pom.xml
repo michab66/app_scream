@@ -26,13 +26,13 @@
     </repositories>
 
     <dependencies>
-        <dependency>
+<!--        <dependency>
             <groupId>micbinz</groupId>
             <artifactId>smack_old</artifactId>
             <version>11.69</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/dev_smack-69.jar</systemPath>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>micbinz</groupId>
             <artifactId>smack</artifactId>
