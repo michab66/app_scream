@@ -7,8 +7,6 @@
  */
 package de.michab.scream.scanner;
 
-
-
 /**
  * Represents a Token in Scream's front end.  This is independent of the
  * concrete scanner generator used.
@@ -23,8 +21,6 @@ public class Token
    */
   static private Token[] _flyweights = new Token[ SchemeParser.MaxTokenIndex ];
 
-
-
   /**
    * The type of the token.  The possible types are defined as constants in the
    * SchemeParser.
@@ -32,16 +28,12 @@ public class Token
    */
   private final int _type;
 
-
-
   /**
    * The token's value.  This corresponds to the type of the token.  For
    * tokens without a value this is set to the Void.class, so this will
    * never be <code>null</code>.
    */
   private final Object _value;
-
-
 
   /**
    * Creates a new Token for the given type.
@@ -51,8 +43,6 @@ public class Token
     _type = type;
     _value = Void.class;
   }
-
-
 
   /**
    * Creates a new Token for the given type value pair.  Two token types are
@@ -81,10 +71,8 @@ public class Token
   public Token( long value )
   {
     _type = SchemeParser.TkInteger;
-    _value = new Long( value );
+    _value = Long.valueOf( value );
   }
-
-
 
   /**
    * Create a token for the given value and set the type accordingly.
@@ -92,10 +80,8 @@ public class Token
   public Token( char value )
   {
     _type = SchemeParser.TkChar;
-    _value = new Character( value );
+    _value = Character.valueOf( value );
   }
-
-
 
   /**
    * Create a token for the given value and set the type accordingly.
@@ -103,10 +89,8 @@ public class Token
   public Token( boolean value )
   {
     _type = SchemeParser.TkBoolean;
-    _value = value ? Boolean.TRUE : Boolean.FALSE;
+    _value = Boolean.valueOf( value );
   }
-
-
 
   /**
    * Create a token for the given value and set the type accordingly.
@@ -114,10 +98,8 @@ public class Token
   public Token( double value )
   {
     _type = SchemeParser.TkDouble;
-    _value = new Double( value );
+    _value = Double.valueOf( value );
   }
-
-
 
   /**
    * Create a token that holds only type information.  This can be used for
@@ -143,8 +125,6 @@ public class Token
 
     return result;
   }
-
-
 
   /**
    * @see java.lang.Object#toString
@@ -200,8 +180,6 @@ public String toString()
     return result;
   }
 
-
-
   /**
    * Access the token's type as defined as integer constants in SchemeParser.
    *
@@ -212,8 +190,6 @@ public String toString()
   {
     return _type;
   }
-
-
 
   /**
    * Get the token's string value.  This is only successful if the token is
@@ -232,8 +208,6 @@ public String toString()
     }
   }
 
-
-
   /**
    * Get the token's double value.  This is only successful if the token is
    * of type SchemeParser.TkDouble.  If that is not the case, the program
@@ -250,8 +224,6 @@ public String toString()
       throw new InternalError( "Not a double." );
     }
   }
-
-
 
   /**
    * Get the token's character value.  This is only successful if the token is
@@ -270,8 +242,6 @@ public String toString()
     }
   }
 
-
-
   /**
    * Get the token's integer value.  This is only successful if the token is
    * of type SchemeParser.TkInteger.  If that is not the case, the program
@@ -288,8 +258,6 @@ public String toString()
       throw new InternalError( "Not an integer." );
     }
   }
-
-
 
   /**
    * Get the token's boolean value.  This is only successful if the token is
