@@ -3,7 +3,7 @@
  * Scream / Kernel
  *
  * Released under Gnu Public License
- * Copyright (c) 1998-2000 Michael G. Binz
+ * Copyright (c) 1998-2022 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -14,7 +14,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,8 +28,6 @@ import de.michab.scream.binding.SchemeObject;
 import de.michab.scream.scanner.SchemeParser;
 import de.michab.scream.scanner.SchemeScanner;
 import de.michab.scream.scanner.Token;
-
-
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -55,16 +52,10 @@ public class SchemeInterpreter
     private final static Logger log =
             Logger.getLogger( SchemeInterpreter.class.getName() );
 
-
-
-    private final static Charset UTF_8 = StandardCharsets.UTF_8;
-
     /**
      * Denotes whether class initialization has been executed.
      */
     private static boolean _initialised = false;
-
-
 
     /**
      * A reference to the top level environment.  This is a single common
@@ -78,8 +69,6 @@ public class SchemeInterpreter
      */
     private static Environment _topLevelEnvironment = null;
 
-
-
     /**
      * A reference to the per interpreter top level environment.  Parent of this
      * is always _topLevelEnvironment.
@@ -89,38 +78,17 @@ public class SchemeInterpreter
      */
     private final Environment _localTle;
 
-
-
-    /**
-     * The interpreter's resources.
-     */
-//    private static ResourceBundle _screamResources = null;
-
-
-
     /**
      * The symbol being bound to an object reference of the interpreter itself.
      */
     public final static Symbol ANCHOR_SYMBOL =
             Symbol.createObject( "%%interpreter%%" );
 
-
-
     /**
      * Symbol is bound to an error stream.  Available in static initialization.
      */
     public final static Symbol INIT_ERR_STREAM =
             Symbol.createObject( "%%errOut%%" );
-
-
-
-    /**
-     * Properties file to read.  Note that we never must create a class with the
-     * same name!
-     */
-//    private final static String screamProperties = "de.michab.scream.Scream";
-
-
 
     /**
      * This is the relative path to our extensions package.  This is needed
@@ -130,19 +98,13 @@ public class SchemeInterpreter
     private final static String schemeExtensionPosition = "extensions/";
     private final static String schemeTestPosition = "test/";
 
-
-
     /**
      * Property key: specifies additional classes the kernel should load on
      * startup.
      * <code>kernel.integrateClasses = fooExtension bar baz</code>
      */
-//    private final static String kernelIntegrateClassesP =
-//            "kernel.integrateClasses";
     @Resource
     private static String[] integrateClasses;
-
-
 
     /**
      * Property key: specifies additional scheme files the kernel should load on
@@ -152,12 +114,8 @@ public class SchemeInterpreter
      *
      * @see de.michab.scream.SchemeInterpreter#kernelSchemeInstanceExtensionsP
      */
-//    private final static String kernelSchemeExtensionsP =
-//            "kernel.schemeExtensions";
     @Resource
     private static String[] schemeExtensions;
-
-
 
     /**
      * Property key: specifies scheme files containing regression tests.  These
@@ -165,12 +123,8 @@ public class SchemeInterpreter
      *
      * Sample: <code>kernel.regression = tmath.s</code>
      */
-//    private final static String kernelSchemeTestsP =
-//            "kernel.regression";
     @Resource
     private static String[] regression;
-
-
 
     /**
      * Property key: specifies additional scheme files the kernel should load
@@ -276,8 +230,6 @@ public class SchemeInterpreter
         new Thread( _evaluator ).start();
     }
 
-
-
     /**
      * Factory method.  Creates interpreters linked to the passed in and out
      * streams.
@@ -298,8 +250,6 @@ public class SchemeInterpreter
         return new SchemeInterpreter( in, out );
     }
 
-
-
     /**
      * Get the standard input port for this interpreter instance.
      *
@@ -310,8 +260,6 @@ public class SchemeInterpreter
         return _inPort;
     }
 
-
-
     /**
      * Get the standard output port for this interpreter instance.
      *
@@ -321,8 +269,6 @@ public class SchemeInterpreter
     {
         return _outPort;
     }
-
-
 
     /**
      * Get the common error port for the system.  This is normally a reference to
@@ -338,8 +284,6 @@ public class SchemeInterpreter
         return _errorPort;
     }
 
-
-
     /**
      * Return a reference to this interpreter's top level environment.
      *
@@ -349,8 +293,6 @@ public class SchemeInterpreter
     {
         return _localTle;
     }
-
-
 
     /**
      * Return all the bindings whose name starts with the passed prefix from the
@@ -442,8 +384,6 @@ public class SchemeInterpreter
         return result;
     }
 
-
-
     /**
      * Loads all classes defined in the kernel.integrateClasses property and
      * invokes the following method signature on the class:<br>
@@ -496,8 +436,6 @@ public class SchemeInterpreter
             }
         }
     }
-
-
 
     /**
      * This method loads the specified extensions from Scheme source files. These
@@ -556,7 +494,7 @@ public class SchemeInterpreter
             else
             {
                 // We have a stream...
-                Reader isr = new InputStreamReader( is, UTF_8 );
+                Reader isr = new InputStreamReader( is, StandardCharsets.UTF_8 );
                 // ...and load its contents.
                 sreader.push( isr );
             }
@@ -699,8 +637,6 @@ public class SchemeInterpreter
         return false;
     }
 
-
-
 //    /**
 //     * Removes parameters from the passed string array.  E.g. if an array of
 //     * {"-arg", "michael", "-param", "poop.s" } is passed, then the array
@@ -807,8 +743,6 @@ public class SchemeInterpreter
         }
     }
 
-
-
     /**
      * (eval <expression>)
      *
@@ -830,8 +764,6 @@ public class SchemeInterpreter
         }
     };
 
-
-
     /**
      * (scheme-report-environment)
      *
@@ -852,8 +784,6 @@ public class SchemeInterpreter
             return _topLevelEnvironment;
         }
     };
-
-
 
     /**
      * Environment operations setup.
