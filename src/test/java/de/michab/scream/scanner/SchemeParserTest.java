@@ -12,15 +12,42 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.Port;
+
 public class SchemeParserTest
 {
     @Test
-    public void basic(){
-        try {
+    public void unexpectedEndOfInput()
+    {
+        try
+        {
             // Missing closing brace.
             SchemeParser sp = new SchemeParser( "(+ 300 13" );
             var x = sp.getExpression();
             fail();
+        }
+        catch( FrontendX e )
+        {
+            // Unexpected end of input.
+            assertEquals( 37, e.getId() );
+        }
+    }
+
+    @Test
+    public void biExpression()
+    {
+        var x1 = "(+ 300 13)";
+        var x2 = "(+ 4 5)";
+
+        try
+        {
+            SchemeParser sp = new SchemeParser( x1 + x2 );
+            var x = sp.getExpression();
+            assertEquals( x1, x.toString() );
+            var y = sp.getExpression();
+            assertEquals( x2, y.toString() );
+            var z = sp.getExpression();
+            assertEquals( Port.EOF, z );
         }
         catch( FrontendX e )
         {

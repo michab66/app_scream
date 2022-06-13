@@ -182,8 +182,6 @@ public class SchemeInterpreter
      *
      * Sample: <code>kernel.schemeExtensions = math.s common.s patch.s</code>
      */
-//    private final static String kernelSchemeInstanceExtensionsP =
-//            "kernel.schemeInstanceExtensions";
     @Resource
     private static String[] schemeInstanceExtensions;
 
@@ -211,8 +209,6 @@ public class SchemeInterpreter
      */
     private final SchemeEvaluator _evaluator;
 
-
-
     /**
      * The standard input port for this interpreter instance.
      *
@@ -220,16 +216,12 @@ public class SchemeInterpreter
      */
     private final Port _inPort;
 
-
-
     /**
      * The standard output port for this interpreter instance.
      *
      * @see de.michab.scream.SchemeInterpreter#getOutPort
      */
     private final Port _outPort;
-
-
 
     /**
      * The standard common error port for the system.
@@ -239,21 +231,16 @@ public class SchemeInterpreter
      */
     private static Port _errorPort;
 
-
-
     /**
      * @see de.michab.scream.SchemeInterpreter#getErrorPort
      * @see de.michab.scream.SchemeInterpreter#_errorPort
      */
     private static PrintWriter _errorWriter;
 
-
-
     /**
      * Creates an instance of an working Scheme interpreter.  Since the
      * interpreter is multithreaded internally, at some unexpected point in time
-     * it starts reading on the provided Reader and writing onto the Writer.  Be
-     * prepared.
+     * it starts reading on the provided Reader and writing onto the Writer.
      *
      * @param in The reader to use.
      * @param out The writer to use by this interpreter.
