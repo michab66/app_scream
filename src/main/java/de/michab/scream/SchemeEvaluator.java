@@ -89,6 +89,9 @@ class SchemeEvaluator implements Runnable
 
 private FirstClassObject saveEval( FirstClassObject x, Environment e ) throws RuntimeX
 {
+    if ( x == Cons.NIL )
+        return Cons.NIL;
+
     try
     {
         return x.evaluate( e );

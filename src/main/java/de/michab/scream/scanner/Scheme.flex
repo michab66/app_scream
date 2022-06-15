@@ -133,7 +133,7 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
     {
       String longs = yytext();
       // Check if the matched text starts with an explicit plus sign ('+').
-      // This cannot be handled by the Long.parsLong() call below, so the plus
+      // This cannot be handled by the Long.parseLong() call below, so the plus
       // has to be removed before.
       if ( longs.startsWith( "+" ) )
         longs = longs.substring( 1 );

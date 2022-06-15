@@ -157,6 +157,9 @@ public int hashCode()
   @Override
 public boolean equals( Object other )
   {
+      if ( other == Cons.NIL )
+          return false;
+
       try
       {
           return _name.equals( ((Symbol)other)._name );
