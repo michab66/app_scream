@@ -16,4 +16,15 @@ public class SchemeTest
 
         assertEquals( "313", result.toString() );
     }
+
+    @Test
+    public void subtractTest() throws Exception
+    {
+        SchemeInterpreter2 si = new SchemeInterpreter2();
+        var se = si.getScriptEngine();
+
+        var result = se.eval( "(- 320 7)" );
+
+        assertEquals( "313", result.toString() );
+    }
 }
