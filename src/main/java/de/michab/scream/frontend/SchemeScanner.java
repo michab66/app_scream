@@ -5,10 +5,12 @@
  * Released under Gnu Public License
  * Copyright (c) 1998-2000 Michael G. Binz
  */
-package de.michab.scream.scanner;
+package de.michab.scream.frontend;
 
 import java.io.IOException;
 import java.io.Reader;
+
+import de.michab.scream.scanner.SchemeFlexScanner;
 
 
 

@@ -5,7 +5,7 @@
  * Released under Gnu Public License
  * Copyright (c) 1998-2009 Michael G. Binz
  */
-package de.michab.scream.scanner;
+package de.michab.scream.frontend;
 
 import java.io.Reader;
 import java.io.StringReader;

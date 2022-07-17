@@ -12,8 +12,8 @@ import java.io.Reader;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import de.michab.scream.scanner.FrontendX;
-import de.michab.scream.scanner.SchemeParser;
+import de.michab.scream.frontend.FrontendX;
+import de.michab.scream.frontend.SchemeParser;
 
 
 /**

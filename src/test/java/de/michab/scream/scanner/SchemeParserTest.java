@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Port;
+import de.michab.scream.frontend.FrontendX;
+import de.michab.scream.frontend.SchemeParser;
 
 public class SchemeParserTest
 {

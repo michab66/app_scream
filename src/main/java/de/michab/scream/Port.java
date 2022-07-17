@@ -17,8 +17,8 @@ import java.io.Writer;
 
 import org.smack.util.FileUtil;
 
-import de.michab.scream.scanner.FrontendX;
-import de.michab.scream.scanner.SchemeParser;
+import de.michab.scream.frontend.FrontendX;
+import de.michab.scream.frontend.SchemeParser;
 
 
 

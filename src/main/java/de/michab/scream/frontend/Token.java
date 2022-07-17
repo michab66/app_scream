@@ -5,13 +5,13 @@
  * Released under Gnu Public License
  * Copyright (c) 1998,2001 Michael G. Binz
  */
-package de.michab.scream.scanner;
+package de.michab.scream.frontend;
 
 /**
  * Represents a Token in Scream's front end.  This is independent of the
  * concrete scanner generator used.
  *
- * @see de.michab.scream.scanner.SchemeParser
+ * @see de.michab.scream.frontend.SchemeParser
  */
 public class Token
 {
@@ -24,7 +24,7 @@ public class Token
   /**
    * The type of the token.  The possible types are defined as constants in the
    * SchemeParser.
-   * @see de.michab.scream.scanner.SchemeParser
+   * @see de.michab.scream.frontend.SchemeParser
    */
   private final int _type;
 

@@ -25,9 +25,9 @@ import java.util.logging.Logger;
 import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.binding.SchemeObject;
-import de.michab.scream.scanner.SchemeParser;
-import de.michab.scream.scanner.SchemeScanner;
-import de.michab.scream.scanner.Token;
+import de.michab.scream.frontend.SchemeParser;
+import de.michab.scream.frontend.SchemeScanner;
+import de.michab.scream.frontend.Token;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
