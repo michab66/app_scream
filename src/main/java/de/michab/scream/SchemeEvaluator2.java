@@ -10,7 +10,6 @@ package de.michab.scream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.script.Bindings;
@@ -20,9 +19,6 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
 import de.michab.scream.FirstClassObject.Unwind;
-import de.michab.scream.binding.SchemeObject;
-
-
 
 /**
  * Contains a Scheme top level read-eval-print loop.  A SchemeEvaluator reads
@@ -50,31 +46,22 @@ class SchemeEvaluator2 implements ScriptEngine
             Symbol.createObject( "%error-object" );
 
     /**
-     * The stream that receives output.
-     */
-    //private final Writer _sink;
-
-    /**
-     * The reader.
-     */
-    //private final SchemeReader _source;
-
-    /**
      * This interpreter's top level environment.
      */
     private final Environment _tle;
 
+    private final SchemeInterpreter2 _factory;
+
     /**
      * Create a SchemeEvaluator.
      *
-     * @param source A reference to a reader that is used as the incoming source
-     *        of scheme expressions to evaluate.
-     * @param sink A reference to a writer that receives the evaluation results.
      * @param tle An environment used for evaluating the incoming expressions.
      */
     SchemeEvaluator2(
+            SchemeInterpreter2 interpreter,
             Environment tle )
     {
+        _factory = interpreter;
         _tle = tle;
     }
 
@@ -97,146 +84,61 @@ class SchemeEvaluator2 implements ScriptEngine
             Environment environment,
             SchemeReader sreader,
             Writer sink )
+                    throws ScreamException
     {
         Thread currentThread = Thread.currentThread();
 
-        try
+        // Before starting the evaluation we add symbols for error handling to
+        // the TLE.
+        environment.set( ERROR_ID, Cons.NIL );
+        environment.set( ERROR_OBJ, Cons.NIL );
+
+        FirstClassObject result = null;
+
+        // This is the read-eval-print loop.
+        while ( ! currentThread .isInterrupted() )
         {
-            // Before starting the evaluation we add symbols for error handling to
-            // the TLE.
-            environment.set( ERROR_ID, Cons.NIL );
-            environment.set( ERROR_OBJ, Cons.NIL );
+            //                try
+            //                {
+            FirstClassObject expression =
+                    sreader.getExpression();
 
-            FirstClassObject result = null;
+            if ( expression == Port.EOF )
+                break;
 
-            // This is the read-eval-print loop.
-            while ( ! currentThread .isInterrupted() )
-            {
-                try
-                {
-                    FirstClassObject expression =
-                            sreader.getExpression();
-
-                    // In case we received an EOF the evaluator thread can finish.
-                    if ( expression == Port.EOF )
-                        break;
-
-                    // Evaluate the expression...
-                    result =
-                            saveEval( expression, environment );
-                    // ...and print the result.
-                    sink.write( FirstClassObject.stringize( result ) );
-                }
-                catch ( RuntimeX e )
-                {
-                    environment.assign( ERROR_ID, SchemeInteger.createObject( e.getId() ) );
-                    environment.assign( ERROR_OBJ, new SchemeObject( e ) );
-
-                    // Print the name of the operation that reported the problem.
-                    Symbol operationName = e.getOperationName();
-                    if ( operationName == null )
-                        operationName = Symbol.createObject( "top-level" );
-                    sink.write( operationName.toString() );
-                    sink.write( " : " );
-                    // Write the actual error message.
-                    sink.write( e.getMessage() );
-                }
-                catch ( Error e )
-                {
-                    sink.write( e.getMessage() + " " + e );
-                }
-                finally
-                {
-                    sink.write( '\n' );
-                    sink.flush();
-                }
-            }
-
-            return result;
-        }
-        catch ( Exception e )
-        {
-            // Should be impossible to reach.
-            _log.log(
-                    Level.SEVERE,
-                    "Internal error in " + SchemeEvaluator2.class,
-                    e );
-            System.exit( 1 );
+            // Evaluate the expression...
+            result =
+                    saveEval( expression, environment );
+            //                    // ...and print the result.
+            //                    sink.write( FirstClassObject.stringize( result ) );
+            //                }
+            //                catch ( RuntimeX e )
+            //                {
+            //                    environment.assign( ERROR_ID, SchemeInteger.createObject( e.getId() ) );
+            //                    environment.assign( ERROR_OBJ, new SchemeObject( e ) );
+            //
+            //                    // Print the name of the operation that reported the problem.
+            //                    Symbol operationName = e.getOperationName();
+            //                    if ( operationName == null )
+            //                        operationName = Symbol.createObject( "top-level" );
+            //                    sink.write( operationName.toString() );
+            //                    sink.write( " : " );
+            //                    // Write the actual error message.
+            //                    sink.write( e.getMessage() );
+            //                }
+            //                catch ( Error e )
+            //                {
+            //                    sink.write( e.getMessage() + " " + e );
+            //                }
+            //                finally
+            //                {
+            //                    sink.write( '\n' );
+            //                    sink.flush();
+            //                }
         }
 
-        return null;
+        return result;
     }
-
-    //    /**
-    //     * The thread's worker method.  Finishes either if an EOF token is received
-    //     * on the input queue, or if the the thread is interrupted.
-    //     */
-    //    @Override
-    //    public void run()
-    //    {
-    //        Thread currentThread = Thread.currentThread();
-    //
-    //        try
-    //        {
-    //            // Before starting the evaluation we add symbols for error handling to
-    //            // the TLE.
-    //            _tle.set( ERROR_ID, Cons.NIL );
-    //            _tle.set( ERROR_OBJ, Cons.NIL );
-    //
-    //            // This is the read-eval-print loop.
-    //            while ( ! currentThread .isInterrupted() )
-    //            {
-    //                try
-    //                {
-    //                    FirstClassObject expression =
-    //                            _source.getExpression();
-    //
-    //                    // In case we received an EOF the evaluator thread can finish.
-    //                    if ( expression == Port.EOF )
-    //                        break;
-    //
-    //                    // Evaluate the expression...
-    //                    FirstClassObject result =
-    //                            saveEval( expression, _tle );
-    //                    // ...and print the result.
-    //                    _sink.write( FirstClassObject.stringize( result ) );
-    //                }
-    //                catch ( RuntimeX e )
-    //                {
-    //                    _tle.assign( ERROR_ID, SchemeInteger.createObject( e.getId() ) );
-    //                    _tle.assign( ERROR_OBJ, new SchemeObject( e ) );
-    //
-    //                    // Print the name of the operation that reported the problem.
-    //                    Symbol operationName = e.getOperationName();
-    //                    if ( operationName == null )
-    //                        operationName = Symbol.createObject( "top-level" );
-    //                    _sink.write( operationName.toString() );
-    //                    _sink.write( " : " );
-    //                    // Write the actual error message.
-    //                    _sink.write( e.getMessage() );
-    //                }
-    //                catch ( Error e )
-    //                {
-    //                    _sink.write( e.getMessage() + " " + e );
-    //                }
-    //                finally
-    //                {
-    //                    _sink.write( '\n' );
-    //                    _sink.flush();
-    //                }
-    //            }
-    //        }
-    //        catch ( Exception e )
-    //        {
-    //            // Should be impossible to reach.
-    //            _log.log(
-    //                    Level.SEVERE,
-    //                    "Internal error in " + getClass(),
-    //                    e );
-    //            System.exit( 1 );
-    //        }
-    //    }
-
 
     @Override
     public Object eval(String script, ScriptContext context) throws ScriptException {
@@ -258,10 +160,17 @@ class SchemeEvaluator2 implements ScriptEngine
     @Override
     public Object eval(Reader reader) throws ScriptException
     {
-        return evalImpl(
-                _tle,
-                new SchemeReader( reader),
-                new SchemeContext().getWriter() );
+        try
+        {
+            return evalImpl(
+                    _tle,
+                    new SchemeReader( reader),
+                    _context.getWriter() );
+        }
+        catch ( ScreamException e )
+        {
+            throw new ScriptException( e );
+        }
     }
 
     @Override
@@ -279,7 +188,6 @@ class SchemeEvaluator2 implements ScriptEngine
     @Override
     public void put(String key, Object value) {
         // TODO Auto-generated method stub
-
     }
 
     @Override
@@ -306,22 +214,23 @@ class SchemeEvaluator2 implements ScriptEngine
         return null;
     }
 
-    @Override
-    public ScriptContext getContext() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+    private ScriptContext _context = new SchemeContext();
 
     @Override
-    public void setContext(ScriptContext context) {
-        // TODO Auto-generated method stub
-
+    public ScriptContext getContext()
+    {
+        return _context;
     }
 
     @Override
-    public ScriptEngineFactory getFactory() {
-        // TODO Auto-generated method stub
-        return null;
+    public void setContext(ScriptContext context)
+    {
+        _context = context;
+    }
+
+    @Override
+    public ScriptEngineFactory getFactory()
+    {
+        return _factory;
     }
 }

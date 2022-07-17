@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -364,6 +365,23 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
         return result;
     }
 
+    // TODO make better
+    private static FirstClassObject evalNoX(
+            Environment env,
+            SchemeReader sreader,
+            Writer writer
+            )
+    {
+        try
+        {
+            return SchemeEvaluator2.evalImpl( env, sreader, writer );
+        }
+        catch ( ScreamException e )
+        {
+            throw new InternalError( e );
+        }
+    }
+
     /**
      * This method loads the specified extensions from Scheme source files. These
      * have to be located in a special package de.michab.scream.extensions and
@@ -407,7 +425,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
                 Reader isr = new InputStreamReader( is, StandardCharsets.UTF_8 );
                 // ...and load its contents.
                 sreader.push( isr );
-                SchemeEvaluator2.evalImpl( env, sreader, _errorWriter );
+                evalNoX( env, sreader, _errorWriter );
             }
         }
     }
@@ -684,6 +702,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
                 schemeExtensionPosition );
 
         return new SchemeEvaluator2(
+                this,
                 tle );
     }
 }
