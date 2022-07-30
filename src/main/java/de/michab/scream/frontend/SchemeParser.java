@@ -70,42 +70,10 @@ public class SchemeParser
   public final static FirstClassObject UNQUOTE_SPLICING_SYMBOL
     = Symbol.createObject( "unquote-splicing" );
 
-
-
-  /**
-   * Tokens processed by this parser
-   */
-  public static final int TkSymbol = 1;
-  public static final int TkInteger = 2;
-  public static final int TkDouble = 3;
-  public static final int TkArray = 4;
-  public static final int TkList = 5;
-  public static final int TkEnd = 6;
-  public static final int TkString = 7;
-  public static final int TkQuote = 8;
-  public static final int TkDot = 9;
-  public static final int TkBoolean = 10;
-  public static final int TkChar = 11;
-  public static final int TkEof = 12;
-  public static final int TkQuasiQuote = 13;
-  public static final int TkUnquote = 14;
-  public static final int TkUnquoteSplicing = 15;
-
-
-
-  /**
-   * A constant specifying the first unused token index.
-   */
-  public static final int MaxTokenIndex = 16;
-
-
-
   /**
    * This parser's scanner.
    */
   private final SchemeScanner _scanner;
-
-
 
   /**
    * Temporary storage for a peeked token.  Base for a one token lookahead.
@@ -115,8 +83,6 @@ public class SchemeParser
    * @label lookahead
    */
   private Token _peeked = null;
-
-
 
   /**
    * Construct a parser for the passed reader.  Creates its scanner and operates
@@ -201,7 +167,7 @@ public class SchemeParser
       new java.util.Vector<FirstClassObject>();
 
     // As long as we find no array end...
-    while ( TkEnd != peekNextToken().getType() )
+    while ( Tk.End != peekNextToken().getType() )
       // ...just add the expressions to our local vector.
       collector.addElement( parseDatum() );
 
@@ -229,7 +195,7 @@ public class SchemeParser
     throws FrontendX
   {
     // If this is the end of the list...
-    if ( TkEnd == peekNextToken().getType() )
+    if ( Tk.End == peekNextToken().getType() )
     {
       // ...consume the token...
       getNextToken();
@@ -243,7 +209,7 @@ public class SchemeParser
     FirstClassObject cdr = Cons.NIL;
 
     // Check if we are reading a proper list.
-    if ( TkDot == peekNextToken().getType() )
+    if ( Tk.Dot == peekNextToken().getType() )
     {
       // Not proper.  Consume token...
       getNextToken();
@@ -251,7 +217,7 @@ public class SchemeParser
       cdr = parseDatum();
 
       // List has to be finished.
-      if ( TkEnd != getNextToken().getType() )
+      if ( Tk.End != getNextToken().getType() )
         throw new FrontendX( "PARSE_EXPECTED",
                              new Object[]{ ")" } );
     }
@@ -277,48 +243,48 @@ public class SchemeParser
 
     switch ( token.getType() )
     {
-      case TkChar:
+      case Char:
         return SchemeCharacter.createObject( token.characterValue() );
 
-      case TkSymbol:
+      case Symbol:
         return Symbol.createObject( token.stringValue() );
 
-      case TkInteger:
+      case Integer:
         return SchemeInteger.createObject( token.integerValue() );
 
-      case TkDouble:
+      case Double:
         return SchemeDouble.createObject( token.doubleValue() );
 
-      case TkArray:
+      case Array:
         return parseArray();
 
-      case TkList:
+      case List:
         return parseList();
 
-      case TkString:
+      case String:
         return new SchemeString( token.stringValue() );
 
-      case TkQuote:
+      case Quote:
         return new Cons( QUOTE_SYMBOL,
                          new Cons( parseDatum(), Cons.NIL ) );
 
-      case TkQuasiQuote:
+      case QuasiQuote:
         return new Cons( QUASIQUOTE_SYMBOL,
                          new Cons( parseDatum(), Cons.NIL ) );
 
-      case TkUnquote:
+      case Unquote:
         return new Cons( UNQUOTE_SYMBOL,
                          new Cons( parseDatum(), Cons.NIL ) );
 
-      case TkUnquoteSplicing:
+      case UnquoteSplicing:
         return new Cons( UNQUOTE_SPLICING_SYMBOL,
                          new Cons( parseDatum(), Cons.NIL ) );
 
-      case TkBoolean:
+      case Boolean:
         return
           SchemeBoolean.createObject( token.booleanValue() );
 
-      case TkEof:
+      case Eof:
         throw new FrontendX( "PARSE_UNEXPECTED_EOF" );
     }
 
@@ -341,7 +307,7 @@ public class SchemeParser
   {
     Token token = peekNextToken();
 
-    if ( token.getType() == TkEof )
+    if ( token.getType() == Tk.Eof )
       return Port.EOF;
 
     return parseDatum();

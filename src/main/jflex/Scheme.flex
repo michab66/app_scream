@@ -3,9 +3,9 @@
  * Scream: frontend
  *
  * Released under Gnu Public License
- * Copyright (c) 1998-2001 Michael G. Binz
+ * Copyright (c) 1998-2022 Michael G. Binz
  */
-package de.michab.scream.scanner;
+package de.michab.scream.frontend;
 
 %%
 
@@ -20,9 +20,9 @@ package de.michab.scream.scanner;
 %type Token
 %yylexthrow FrontendX
 
-/* Scanner should be able to scan unicode */
+/* Scanner should be able to scan unicode. */
 %unicode
-/* Enable line and column counting */
+/* Enable line and column counting. */
 %line
 %column
 
@@ -92,11 +92,11 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
 
 <YYINITIAL> {
   {IDENTIFIER} {
-    return new Token( SchemeParser.TkSymbol, yytext() );
+    return new Token( Tk.Symbol, yytext() );
   }
 
   {DOT} {
-    return Token.createToken( SchemeParser.TkDot );
+    return Token.createToken( Tk.Dot );
   }
 
   {BOOLEAN} {
@@ -125,7 +125,7 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
     // Remove the double quotes.
     String image = yytext();
     String noQuote = image.substring( 1, image.length()-1 );
-    return new Token( SchemeParser.TkString, noQuote );
+    return new Token( Tk.String, noQuote );
   }
 
   {INTEGER} {
@@ -133,7 +133,7 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
     {
       String longs = yytext();
       // Check if the matched text starts with an explicit plus sign ('+').
-      // This cannot be handled by the Long.parsLong() call below, so the plus
+      // This cannot be handled by the Long.parseLong() call below, so the plus
       // has to be removed before.
       if ( longs.startsWith( "+" ) )
         longs = longs.substring( 1 );
@@ -158,39 +158,39 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
   }
 
   {STARTLIST} {
-    return Token.createToken( SchemeParser.TkList );
+    return Token.createToken( Tk.List );
   }
 
   {STARTARRAY} {
-    return Token.createToken( SchemeParser.TkArray );
+    return Token.createToken( Tk.Array );
   }
 
   {END} {
-    return Token.createToken( SchemeParser.TkEnd );
+    return Token.createToken( Tk.End );
   }
 
   {QUOTE} {
-    return Token.createToken( SchemeParser.TkQuote );
+    return Token.createToken( Tk.Quote );
   }
   {QUASIQUOTE} {
-    return Token.createToken( SchemeParser.TkQuasiQuote );
+    return Token.createToken( Tk.QuasiQuote );
   }
   {UNQUOTE} {
-    return Token.createToken( SchemeParser.TkUnquote );
+    return Token.createToken( Tk.Unquote );
   }
   {UNQUOTE_SPLICING} {
-    return Token.createToken( SchemeParser.TkUnquoteSplicing );
+    return Token.createToken( Tk.UnquoteSplicing );
   }
 
   {SINGLE_LINE_COMMENT} { /* ignore */ }
 
-  {INTERTOKEN_SPACE} {/* ignore, signore */}
+  {INTERTOKEN_SPACE} {/* ignore */}
 
   <<EOF>> {
     // If we reached EOF, we close the reader...
     yyreset( null );
     // ...before doing business as usual.
-    return Token.createToken( SchemeParser.TkEof );
+    return Token.createToken( Tk.Eof );
   }
 
   /*

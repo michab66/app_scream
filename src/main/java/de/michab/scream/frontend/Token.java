@@ -2,10 +2,11 @@
  *
  * Scream: Frontend
  *
- * Released under Gnu Public License
- * Copyright (c) 1998,2001 Michael G. Binz
+ * Copyright (c) 1998,2022 Michael G. Binz
  */
 package de.michab.scream.frontend;
+
+import org.smack.util.EnumArray;
 
 /**
  * Represents a Token in Scream's front end.  This is independent of the
@@ -19,14 +20,15 @@ public class Token
    * Used to implement a flyweight scheme for value-less Tokens.
    * @see createToken
    */
-  static private Token[] _flyweights = new Token[ SchemeParser.MaxTokenIndex ];
+  static private EnumArray<Tk, Token> _flyweights =
+          new EnumArray<Tk, Token>( Tk.class, null );
 
   /**
    * The type of the token.  The possible types are defined as constants in the
    * SchemeParser.
    * @see de.michab.scream.frontend.SchemeParser
    */
-  private final int _type;
+  private final Tk _type;
 
   /**
    * The token's value.  This corresponds to the type of the token.  For
@@ -38,7 +40,7 @@ public class Token
   /**
    * Creates a new Token for the given type.
    */
-  public Token( int type )
+  public Token( Tk type )
   {
     _type = type;
     _value = Void.class;
@@ -53,24 +55,22 @@ public class Token
    * @param value The token's value.
    * @throws IllegalArgumentException Wrong value for the type parameter.
    */
-  public Token( int type, String value )
+  public Token( Tk type, String value )
   {
-    if ( type != SchemeParser.TkString &&
-         type != SchemeParser.TkSymbol )
+    if ( type != Tk.String &&
+         type != Tk.Symbol )
       throw new IllegalArgumentException( "Type neither string nor symbol." );
 
     _type = type;
     _value = value;
   }
 
-
-
   /**
    * Create a token for the given value and set the type accordingly.
    */
   public Token( long value )
   {
-    _type = SchemeParser.TkInteger;
+    _type = Tk.Integer;
     _value = Long.valueOf( value );
   }
 
@@ -79,7 +79,7 @@ public class Token
    */
   public Token( char value )
   {
-    _type = SchemeParser.TkChar;
+    _type = Tk.Char;
     _value = Character.valueOf( value );
   }
 
@@ -88,7 +88,7 @@ public class Token
    */
   public Token( boolean value )
   {
-    _type = SchemeParser.TkBoolean;
+    _type = Tk.Boolean;
     _value = Boolean.valueOf( value );
   }
 
@@ -97,7 +97,7 @@ public class Token
    */
   public Token( double value )
   {
-    _type = SchemeParser.TkDouble;
+    _type = Tk.Double;
     _value = Double.valueOf( value );
   }
 
@@ -108,19 +108,17 @@ public class Token
    * This factory method ensures that only a single instance per token type
    * will be created.
    */
-  public synchronized static Token createToken( int type )
+  public synchronized static Token createToken( Tk type )
   {
-    // Compute the flyweight table idx.
-    int flyweightIdx = type-1;
     // Access the table.
-    Token result = _flyweights[ flyweightIdx ];
+    Token result = _flyweights.get( type );
     // Check if we received a token...
     if ( result == null )
     {
       // ...and create one if not...
       result = new Token( type );
       // ...and put that into the flyweight table.
-      _flyweights[ flyweightIdx ] = result;
+      _flyweights.set( type, result );
     }
 
     return result;
@@ -136,40 +134,40 @@ public String toString()
 
     switch ( _type )
     {
-      case SchemeParser.TkSymbol:
+      case Symbol:
         result = "TkSymbol( " + _value + " )";
         break;
-      case SchemeParser.TkInteger:
+      case Integer:
         result = "TkInteger( " + _value + " )";
         break;
-      case SchemeParser.TkDouble:
+      case Double:
         result = "TkDouble( " + _value + " )";
         break;
-      case SchemeParser.TkArray:
+      case Array:
         result = "TkArray";
         break;
-      case SchemeParser.TkList:
+      case List:
         result = "TkList";
         break;
-      case SchemeParser.TkEnd:
+      case End:
         result = "TkEnd";
         break;
-      case SchemeParser.TkString:
+      case String:
         result = "TkString( " + _value + " )";
         break;
-      case SchemeParser.TkQuote:
+      case Quote:
         result = "TkQuote";
         break;
-      case SchemeParser.TkDot:
+      case Dot:
         result = "TkDot";
         break;
-      case SchemeParser.TkBoolean:
+      case Boolean:
         result = "TkBoolean(" + _value + " )";
         break;
-      case SchemeParser.TkChar:
+      case Char:
         result = "TkChar(" + _value + " )";
         break;
-      case SchemeParser.TkEof:
+      case Eof:
         result = "TkEof";
         break;
       default:
@@ -186,7 +184,7 @@ public String toString()
    * @return This <code>Token</code>'s type.
    * @see SchemeParser
    */
-  public int getType()
+  public Tk getType()
   {
     return _type;
   }

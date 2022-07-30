@@ -10,7 +10,7 @@ package de.michab.scream.frontend;
 import java.io.IOException;
 import java.io.Reader;
 
-import de.michab.scream.scanner.SchemeFlexScanner;
+import de.michab.scream.frontend.SchemeFlexScanner;
 
 
 
@@ -48,13 +48,13 @@ public class SchemeScanner
   {
     // No scanner means that we reached the end of input.
     if ( _scanner == null )
-      return Token.createToken( SchemeParser.TkEof );
+      return Token.createToken( Tk.Eof );
 
     try
     {
       Token token = _scanner.getNextToken();
 
-      if ( token.getType() == SchemeParser.TkEof )
+      if ( token.getType() == Tk.Eof )
       {
           // If we reached EOF, we throw away the scanner...
           _scanner = null;

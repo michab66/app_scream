@@ -16,7 +16,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
@@ -25,9 +24,6 @@ import java.util.logging.Logger;
 import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.binding.SchemeObject;
-import de.michab.scream.frontend.SchemeParser;
-import de.michab.scream.frontend.SchemeScanner;
-import de.michab.scream.frontend.Token;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -294,61 +290,61 @@ public class SchemeInterpreter
         return _localTle;
     }
 
-    /**
-     * Return all the bindings whose name starts with the passed prefix from the
-     * interpreter's top level environment.
-     *
-     * @param prefix A prefix used for subsetting the returned list.
-     * @return A sorted list of symbol names.
-     */
-    public String[] complete( String prefix )
-    {
-        Set<String> collector = new HashSet<String>();
-
-        SchemeScanner preCompleter = new SchemeScanner( new java.io.StringReader( prefix ) );
-
-        // This is the last token before EOF.
-        Token lastToken = null;;
-
-        // Compute that last token.
-        try
-        {
-            for ( Token t = preCompleter.getNextToken() ;
-                    t.getType() != SchemeParser.TkEof ;
-                    t = preCompleter.getNextToken() )
-            {
-                // Put the symbols used in the prefix into our set of elements to
-                // filter.
-                if ( t.getType() == SchemeParser.TkSymbol )
-                {
-                    String tokenName = t.stringValue();
-                    collector.add( tokenName );
-                }
-
-                lastToken = t;
-            }
-        }
-        catch ( Exception e )
-        {
-            return new String[0];
-        }
-
-        // Check if there was a token at all and whether this was a Symbol.
-        if ( lastToken == null || lastToken.getType() != SchemeParser.TkSymbol )
-            return new String[0];
-
-        // Create the prefix we are trying to complete.  If prefix was
-        // "(define (lumumba x) (len" on entry to that method, the prefix will now
-        // be set to "len".
-        prefix = lastToken.stringValue();
-
-        // Put
-        Symbol[] symbols = getTopLevelEnvironment().getDefinedSymbols();
-        for ( int i = 0 ; i < symbols.length ; i++ )
-            collector.add( symbols[i].toString() );
-
-        return filterSymbols( prefix, collector );
-    }
+//    /**
+//     * Return all the bindings whose name starts with the passed prefix from the
+//     * interpreter's top level environment.
+//     *
+//     * @param prefix A prefix used for subsetting the returned list.
+//     * @return A sorted list of symbol names.
+//     */
+//    public String[] complete( String prefix )
+//    {
+//        Set<String> collector = new HashSet<String>();
+//
+//        SchemeScanner preCompleter = new SchemeScanner( new java.io.StringReader( prefix ) );
+//
+//        // This is the last token before EOF.
+//        Token lastToken = null;;
+//
+//        // Compute that last token.
+//        try
+//        {
+//            for ( Token t = preCompleter.getNextToken() ;
+//                    t.getType() != SchemeParser.TkEof ;
+//                    t = preCompleter.getNextToken() )
+//            {
+//                // Put the symbols used in the prefix into our set of elements to
+//                // filter.
+//                if ( t.getType() == SchemeParser.TkSymbol )
+//                {
+//                    String tokenName = t.stringValue();
+//                    collector.add( tokenName );
+//                }
+//
+//                lastToken = t;
+//            }
+//        }
+//        catch ( Exception e )
+//        {
+//            return new String[0];
+//        }
+//
+//        // Check if there was a token at all and whether this was a Symbol.
+//        if ( lastToken == null || lastToken.getType() != SchemeParser.TkSymbol )
+//            return new String[0];
+//
+//        // Create the prefix we are trying to complete.  If prefix was
+//        // "(define (lumumba x) (len" on entry to that method, the prefix will now
+//        // be set to "len".
+//        prefix = lastToken.stringValue();
+//
+//        // Put
+//        Symbol[] symbols = getTopLevelEnvironment().getDefinedSymbols();
+//        for ( int i = 0 ; i < symbols.length ; i++ )
+//            collector.add( symbols[i].toString() );
+//
+//        return filterSymbols( prefix, collector );
+//    }
 
     /**
      * Selects all the keys starting with the passed <code>prefix</code> from the
