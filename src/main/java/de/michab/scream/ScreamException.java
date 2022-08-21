@@ -8,6 +8,11 @@
 package de.michab.scream;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.smack.util.JavaUtil;
+import org.smack.util.StringUtil;
 
 /**
  * <p>The base class for all scream specific exceptions.  The message that this
@@ -90,6 +95,27 @@ public class ScreamException
         }
     }
 
+    private static final Map<String,Code> nameToCode = JavaUtil.make(
+                    () -> {
+                        var result = new HashMap<String, Code>();
+
+                        for ( var c : Code.values() )
+                            result.put( c.toString(), c );
+                        return result;
+                    });
+
+    private static Code getCode( String name )
+    {
+        var result = nameToCode.get( name );
+
+        if ( result != null )
+            return result;
+
+        throw new RuntimeException( "Unknown ScreamException name='" + name + "'" );
+    }
+
+    private final Code _code;
+
     /**
      * Delimits the error id from the message.
      */
@@ -163,6 +189,11 @@ public class ScreamException
         }
 
         return _errorId;
+    }
+
+    public Code getCode()
+    {
+        return _code;
     }
 
     /**
@@ -251,10 +282,13 @@ public class ScreamException
         super( msg );
 
         // Ensure that we received a valid non-null and non-empty message.
-        if ( msg == null || msg.length() == 0 )
+        if ( StringUtil.isEmpty( msg ) )
             throw new IllegalArgumentException( "ScreamException: Invalid message." );
 
-        _errorArguments = args;
+        _code =
+                getCode( msg );
+        _errorArguments =
+                args;
     }
 
     public ScreamException( Code c, Object ... arguments )
