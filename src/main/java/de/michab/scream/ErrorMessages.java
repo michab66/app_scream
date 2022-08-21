@@ -50,7 +50,7 @@ class ErrorMessages
      * @return A resolved vendor id in the form of 'Vendor (0x9999)'.  If the
      * id is not known, then 'Unknown' is returned in place of 'Vendor' above.
      */
-    public final static String resolve( String id )
+    public final static String _resolve( String id )
     {
         var name = map.get( id );
 

@@ -34,12 +34,66 @@ import java.text.MessageFormat;
 public class ScreamException
     extends java.lang.Exception
 {
+    enum Code
+    {
+        INTERNAL_ERROR,
+        NOT_IMPLEMENTED,
+        SYMBOL_NOT_DEFINED,
+        SYMBOL_NOT_ASSIGNABLE,
+        TOO_MANY_SUBEXPRESSIONS,
+        SYNTAX_ERROR,
+        DEFINE_ERROR,
+        EXPECTED_PROPER_LIST,
+        INDEX_OUT_OF_BOUNDS,
+        CALLED_NON_PROCEDURAL,
+        INVALID_ASSOC_LIST,
+        CAR_FAILED,
+        TYPE_ERROR,
+        NOT_ENOUGH_ARGUMENTS,
+        TOO_MANY_ARGUMENTS,
+        WRONG_NUMBER_OF_ARGUMENTS,
+        REQUIRES_EQUIVALENT_CONS_LEN,
+        BAD_BINDING,
+        BAD_CLAUSE,
+        DIVISION_BY_ZERO,
+        PORT_CLOSED,
+        EXPECTED_INPUT_PORT,
+        EXPECTED_OUTPUT_PORT,
+        IO_ERROR,
+        DUPLICATE_FORMAL,
+        INVALID_FORMALS,
+        CLASS_NOT_FOUND,
+        FIELD_NOT_FOUND,
+        METHOD_NOT_FOUND,
+        ILLEGAL_ACCESS,
+        INVOCATION_EXCEPTION,
+        CANT_ACCESS_INSTANCE,
+        CREATION_FAILED,
+        ILLEGAL_ARGUMENT,
+        SCAN_UNBALANCED_QUOTE,
+        SCAN_UNEXPECTED_CHAR,
+        PARSE_EXPECTED,
+        PARSE_UNEXPECTED_EOF,
+        PARSE_UNEXPECTED,
+        INTERRUPTED,
+        CANT_MODIFY_CONSTANT,
+        NO_PROXY,
+        PROXY_CANT_INSTANTIATE,
+        TEST_FAILED,
+        ONLY_IN_QUASIQUOTE_CONTEXT,
+        RADIX_NOT_SUPPORTED;
+
+
+        public int id()
+        {
+            return ordinal() -1;
+        }
+    }
+
     /**
      * Delimits the error id from the message.
      */
     private final static char ID_DELIMITER = ':';
-
-
 
     /**
      * The actual error message.  Initialized only by an access to the message
@@ -47,15 +101,11 @@ public class ScreamException
      */
     private String _errorMessage = null;
 
-
-
     /**
      * The error id.  Initialized only by an access to the message accessor or
      * error id.  -2 initial value is returned if error id resolution failed.
      */
     private int _errorId = -2;
-
-
 
     /**
      * Specifies whether the error message and id have been initialized from
@@ -63,47 +113,15 @@ public class ScreamException
      */
     private boolean _lazyInitDone = false;
 
-
-
-    /**
-     * A reference to the resource bundle used to localize error messages.
-     */
-    //private static ResourceBundle _errorBundle = null;
-
-
-
     /**
      * A reference to the arguments to be formatted into the error message.
      */
     private final Object[] _errorArguments;
 
-
-
     /**
      * The name of the operation where the exception occurred.
      */
     private Symbol _operationName = null;
-
-
-
-    //    /**
-    //     * Load the resource bundle.
-    //     */
-    //    static
-    //    {
-    //        try
-    //        {
-    //            _errorBundle =
-    //                    ResourceBundle.getBundle( "de.michab.scream.ErrorMessages" );
-    //        }
-    //        catch ( MissingResourceException e )
-    //        {
-    //            _log.severe( "Resource not found: " + e.getMessage() );
-    //            System.exit( 1 );
-    //        }
-    //    }
-    //
-
 
     /**
      * Sets the name of the throwing operation.  Note that this is only set once
@@ -119,8 +137,6 @@ public class ScreamException
             _operationName = operation;
     }
 
-
-
     /**
      * Read the symbolic name of the operation that reported the exception.
      *
@@ -131,8 +147,6 @@ public class ScreamException
     {
         return _operationName;
     }
-
-
 
     /**
      * Get a numeric error id.  In case there was a misconfiguration in the
@@ -151,8 +165,6 @@ public class ScreamException
         return _errorId;
     }
 
-
-
     /**
      * Get the message from this exception.
      *
@@ -169,8 +181,6 @@ public class ScreamException
 
         return _errorMessage;
     }
-
-
 
     /**
      * Has the sole purpose to initialize the _errorMessage and _errorId
@@ -212,8 +222,6 @@ public class ScreamException
         }
     }
 
-
-
     /**
      * Creates a scream exception.
      *
@@ -224,8 +232,10 @@ public class ScreamException
     {
         this( msg, null );
     }
-
-
+    public ScreamException( Code c )
+    {
+        this( c.toString() );
+    }
 
     /**
      * Creates a scream exception.
@@ -245,5 +255,10 @@ public class ScreamException
             throw new IllegalArgumentException( "ScreamException: Invalid message." );
 
         _errorArguments = args;
+    }
+
+    public ScreamException( Code c, Object ... arguments )
+    {
+        this( c.toString(), arguments );
     }
 }
