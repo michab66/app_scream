@@ -12,7 +12,7 @@ public class ScreamExceptionTest
     @Test
     public void basic() throws Exception
     {
-        ScreamException se = new ScreamException( ScreamException.Code.INTERNAL_ERROR );
+        var se = new ScreamException( ScreamException.Code.INTERNAL_ERROR );
 
         assertEquals( -1, se.getId() );
     }
