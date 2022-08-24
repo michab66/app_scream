@@ -45,10 +45,8 @@ public class SchemeString
    */
   public SchemeString( int length )
   {
-    this( length, ' ' );
+    this( length, SchemeCharacter.SPACE.asCharacter() );
   }
-
-
 
   /**
    * Create a new string in a specified length, initialised with the passed
@@ -67,8 +65,6 @@ public class SchemeString
     // At last fill the new string with the specified character.
     uncheckedFill( filler );
   }
-
-
 
   /**
    * Create a constant <code>SchemeString</code> from a Java string object.
@@ -325,7 +321,8 @@ public class SchemeString
    * @param other The string to compare with this string.
    * @return <code>true</code> if the passed string is equal to this string.
    */
-  public boolean equal( FirstClassObject other )
+  @Override
+public boolean equal( FirstClassObject other )
   {
     if ( other == Cons.NIL )
       return false;
@@ -350,7 +347,8 @@ public class SchemeString
    * @see SchemeString#getValue
    * @see FirstClassObject#toString
    */
-  public String toString()
+  @Override
+public String toString()
   {
     return "\"" + toStringLiteral() + "\"";
   }
@@ -409,21 +407,18 @@ public class SchemeString
     return count;
   }
 
-
-
   /**
-   * Creates a clone from a given <code>SchemeString</code> object.  Note that
+   * Creates a clone of a given <code>SchemeString</code> object.  Note that
    * the returned string is not constant.
    *
    * @return A clone of this object.
    * @see FirstClassObject#clone
    */
+  @Override
   public Object clone()
   {
     return new SchemeString( getValue(), false );
   }
-
-
 
   /**
    * Converts this this Scheme string object to a corresponding
@@ -431,7 +426,8 @@ public class SchemeString
    *
    * @return An object representing this object in the Java type system.
    */
-  public Object convertToJava()
+  @Override
+public Object convertToJava()
   {
     return _value.toString();
   }
