@@ -24,7 +24,7 @@ public class RuntimeX
    * @param msg The access key into the error message resource bundle.
    * @param args The arguments to be formatted into the error message.
    */
-  public RuntimeX( String msg, Object[] args )
+  public RuntimeX( String msg, Object ... args )
   {
     super( msg, args );
   }

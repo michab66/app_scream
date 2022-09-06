@@ -111,7 +111,7 @@ public class ScreamException
         if ( result != null )
             return result;
 
-        throw new RuntimeException( "Unknown ScreamException name='" + name + "'" );
+        throw new IllegalArgumentException( "Unknown ScreamException name='" + name + "'" );
     }
 
     private final Code _code;
