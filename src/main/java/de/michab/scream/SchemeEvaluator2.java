@@ -19,6 +19,7 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
 import de.michab.scream.FirstClassObject.Unwind;
+import de.michab.scream.binding.SchemeObject;
 
 /**
  * Contains a Scheme top level read-eval-print loop.  A SchemeEvaluator reads
@@ -28,10 +29,16 @@ import de.michab.scream.FirstClassObject.Unwind;
  * @version $Rev: 197 $
  * @author Michael Binz
  */
-class SchemeEvaluator2 implements ScriptEngine
+public class SchemeEvaluator2 implements ScriptEngine
 {
     private static Logger _log =
             Logger.getLogger( SchemeEvaluator2.class.getName() );
+
+    /**
+     * The symbol being bound to an object reference of the interpreter itself.
+     */
+    public final static Symbol ANCHOR_SYMBOL =
+            Symbol.createObject( "%%interpreter%%" );
 
     /**
      * Symbol receives an error id when an error occurred.
@@ -48,7 +55,7 @@ class SchemeEvaluator2 implements ScriptEngine
     /**
      * This interpreter's top level environment.
      */
-    private final Environment _tle;
+    private final Environment _interaction;
 
     private final SchemeInterpreter2 _factory;
 
@@ -61,8 +68,26 @@ class SchemeEvaluator2 implements ScriptEngine
             SchemeInterpreter2 interpreter,
             Environment tle )
     {
-        _factory = interpreter;
-        _tle = tle;
+        _factory =
+                interpreter;
+        _interaction =
+                tle;
+        _interaction.set(
+                ANCHOR_SYMBOL,
+                new SchemeObject( this ) );
+    }
+
+    /**
+     * Loads the scheme source file in the port into the passed environment.  The
+     * port is closed before the file's contents is evaluated.
+     *
+     * @param filename The name of the file to load.
+     * @throws RuntimeX In case of errors.
+     */
+    public void load( String filename )
+            throws RuntimeX
+    {
+        _factory.load( filename, _interaction );
     }
 
     static private FirstClassObject saveEval( FirstClassObject x, Environment e ) throws RuntimeX
@@ -163,7 +188,7 @@ class SchemeEvaluator2 implements ScriptEngine
         try
         {
             return evalImpl(
-                    _tle,
+                    _interaction,
                     new SchemeReader( reader),
                     _context.getWriter() );
         }

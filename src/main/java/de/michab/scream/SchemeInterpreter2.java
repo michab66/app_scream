@@ -7,6 +7,8 @@
  */
 package de.michab.scream;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -24,6 +26,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
 import org.smack.util.resource.ResourceManager.Resource;
+
+import de.michab.scream.FirstClassObject.Unwind;
+import de.michab.scream.frontend.SchemeParser;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -381,6 +386,81 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
             throw new InternalError( e );
         }
     }
+    static private FirstClassObject saveEval( FirstClassObject x, Environment e ) throws RuntimeX
+    {
+        if ( x == Cons.NIL )
+            return Cons.NIL;
+
+        try
+        {
+            return x.evaluate( e );
+        }
+        catch ( Unwind u )
+        {
+            return u.result();
+        }
+    }
+
+    // Merge with SchemeEvaluator.
+//    public static FirstClassObject evalImpl(
+//            Environment environment,
+//            SchemeReader sreader,
+//            Writer sink )
+//                    throws ScreamException
+//    {
+//        Thread currentThread = Thread.currentThread();
+//
+//        // Before starting the evaluation we add symbols for error handling to
+//        // the TLE.
+//        environment.set( ERROR_ID, Cons.NIL );
+//        environment.set( ERROR_OBJ, Cons.NIL );
+//
+//        FirstClassObject result = null;
+//
+//        // This is the read-eval-print loop.
+//        while ( ! currentThread .isInterrupted() )
+//        {
+//            //                try
+//            //                {
+//            FirstClassObject expression =
+//                    sreader.getExpression();
+//
+//            if ( expression == Port.EOF )
+//                break;
+//
+//            // Evaluate the expression...
+//            result =
+//                    saveEval( expression, environment );
+//            //                    // ...and print the result.
+//            //                    sink.write( FirstClassObject.stringize( result ) );
+//            //                }
+//            //                catch ( RuntimeX e )
+//            //                {
+//            //                    environment.assign( ERROR_ID, SchemeInteger.createObject( e.getId() ) );
+//            //                    environment.assign( ERROR_OBJ, new SchemeObject( e ) );
+//            //
+//            //                    // Print the name of the operation that reported the problem.
+//            //                    Symbol operationName = e.getOperationName();
+//            //                    if ( operationName == null )
+//            //                        operationName = Symbol.createObject( "top-level" );
+//            //                    sink.write( operationName.toString() );
+//            //                    sink.write( " : " );
+//            //                    // Write the actual error message.
+//            //                    sink.write( e.getMessage() );
+//            //                }
+//            //                catch ( Error e )
+//            //                {
+//            //                    sink.write( e.getMessage() + " " + e );
+//            //                }
+//            //                finally
+//            //                {
+//            //                    sink.write( '\n' );
+//            //                    sink.flush();
+//            //                }
+//        }
+//
+//        return result;
+//    }
 
     /**
      * This method loads the specified extensions from Scheme source files. These
@@ -479,23 +559,34 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    //    public void load( String filename )
-    //            throws RuntimeX
-    //    {
-    //        try
-    //        {
-    //            Reader reader =
-    //                    new FileReader( filename );
-    //
-    //            _parser.push( reader );
-    //        }
-    //        catch ( IOException e )
-    //        {
-    //            throw new RuntimeX( "IO_ERROR",
-    //                    new Object[]{ e.getMessage() } );
-    //        }
-    //    }
-    //
+    public FirstClassObject load( String filename, Environment environment )
+            throws RuntimeX
+    {
+        try ( var reader  = new FileReader( filename ) )
+        {
+            SchemeParser parser =
+                    new SchemeParser( reader );
+
+            FirstClassObject result = Cons.NIL;
+
+            while (true)
+            {
+                var expression =
+                        parser.getExpression();
+                if ( expression == Port.EOF )
+                    break;
+                result =
+                        saveEval( expression, environment );
+            }
+
+            return result;
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeX( "IO_ERROR",
+                    new Object[]{ e.getMessage() } );
+        }
+    }
 
     /**
      * Checks whether the passed parameter is passed on the command line.
