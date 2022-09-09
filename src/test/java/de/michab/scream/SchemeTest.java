@@ -68,10 +68,10 @@ public class SchemeTest
         try ( var fw = new FileWriter( tf ) )
         {
             fw.write(
-                    """
-(define one 1)
-(define two 2)
-                    """);
+                """
+                (define one 1)
+                (define two 2)
+                """);
         }
 
         SchemeInterpreter2 si = new SchemeInterpreter2();
@@ -85,4 +85,50 @@ public class SchemeTest
         assertEquals( "1", one.toString() );
         assertEquals( "2", two.toString() );
     }
+
+    /**
+     * Redefine an operation using (define ...) in an engine and
+     * ensure that this does not propagate to a second engine.
+     */
+    @Test
+    public void partitionTest() throws Exception
+    {
+        SchemeInterpreter2 si = new SchemeInterpreter2();
+        var se1 = si.getScriptEngine();
+        var se2 = si.getScriptEngine();
+
+        var result = se1.eval( "(+ 1 1)" );
+        assertEquals( "2", result.toString() );
+        result = se1.eval(
+                """
+                (define (+ a b)
+                (- a b))
+                """ );
+        result = se1.eval( "(+ 1 1)" );
+        assertEquals( "0", result.toString() );
+
+        result = se2.eval( "(+ 1 1)" );
+        assertEquals( "2", result.toString() );
+    }
+
+    @Test
+    public void partitionTest2() throws Exception
+    {
+        SchemeInterpreter2 si = new SchemeInterpreter2();
+        var se1 = si.getScriptEngine();
+        var se2 = si.getScriptEngine();
+
+        var result = se1.eval( "(+ 1 1)" );
+        assertEquals( "2", result.toString() );
+        result = se1.eval(
+                """
+                (set! + (lambda (a b) 313))
+                """ );
+        result = se1.eval( "(+ 1 1)" );
+        assertEquals( "313", result.toString() );
+
+        result = se2.eval( "(+ 1 1)" );
+        assertEquals( "2", result.toString() );
+    }
+
 }
