@@ -1,15 +1,12 @@
-/* $Id: SchemeEvaluator.java 197 2009-08-03 21:30:27Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2000 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.Writer;
 import java.util.logging.Logger;
 
 import javax.script.Bindings;
@@ -18,7 +15,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-import de.michab.scream.FirstClassObject.Unwind;
 import de.michab.scream.binding.SchemeObject;
 
 /**
@@ -39,18 +35,6 @@ public class SchemeEvaluator2 implements ScriptEngine
      */
     public final static Symbol ANCHOR_SYMBOL =
             Symbol.createObject( "%%interpreter%%" );
-
-    /**
-     * Symbol receives an error id when an error occurred.
-     */
-    private final static Symbol ERROR_ID =
-            Symbol.createObject( "%error-id" );
-
-    /**
-     * Symbol receives the actual exception when an error occurred.
-     */
-    private final static Symbol ERROR_OBJ =
-            Symbol.createObject( "%error-object" );
 
     /**
      * This interpreter's top level environment.
@@ -90,81 +74,6 @@ public class SchemeEvaluator2 implements ScriptEngine
         _factory.load( filename, _interaction );
     }
 
-    static private FirstClassObject saveEval( FirstClassObject x, Environment e ) throws RuntimeX
-    {
-        if ( x == Cons.NIL )
-            return Cons.NIL;
-
-        try
-        {
-            return x.evaluate( e );
-        }
-        catch ( Unwind u )
-        {
-            return u.result();
-        }
-    }
-
-    private static FirstClassObject evalImpl(
-            Environment environment,
-            SchemeReader sreader,
-            Writer sink )
-                    throws ScreamException
-    {
-        Thread currentThread = Thread.currentThread();
-
-        // Before starting the evaluation we add symbols for error handling to
-        // the TLE.
-        environment.set( ERROR_ID, Cons.NIL );
-        environment.set( ERROR_OBJ, Cons.NIL );
-
-        FirstClassObject result = null;
-
-        // This is the read-eval-print loop.
-        while ( ! currentThread .isInterrupted() )
-        {
-            //                try
-            //                {
-            FirstClassObject expression =
-                    sreader.getExpression();
-
-            if ( expression == Port.EOF )
-                break;
-
-            // Evaluate the expression...
-            result =
-                    saveEval( expression, environment );
-            //                    // ...and print the result.
-            //                    sink.write( FirstClassObject.stringize( result ) );
-            //                }
-            //                catch ( RuntimeX e )
-            //                {
-            //                    environment.assign( ERROR_ID, SchemeInteger.createObject( e.getId() ) );
-            //                    environment.assign( ERROR_OBJ, new SchemeObject( e ) );
-            //
-            //                    // Print the name of the operation that reported the problem.
-            //                    Symbol operationName = e.getOperationName();
-            //                    if ( operationName == null )
-            //                        operationName = Symbol.createObject( "top-level" );
-            //                    sink.write( operationName.toString() );
-            //                    sink.write( " : " );
-            //                    // Write the actual error message.
-            //                    sink.write( e.getMessage() );
-            //                }
-            //                catch ( Error e )
-            //                {
-            //                    sink.write( e.getMessage() + " " + e );
-            //                }
-            //                finally
-            //                {
-            //                    sink.write( '\n' );
-            //                    sink.flush();
-            //                }
-        }
-
-        return result;
-    }
-
     @Override
     public Object eval(String script, ScriptContext context) throws ScriptException {
         // TODO Auto-generated method stub
@@ -187,7 +96,7 @@ public class SchemeEvaluator2 implements ScriptEngine
     {
         try
         {
-            return evalImpl(
+            return SchemeInterpreter2.evalImpl(
                     _interaction,
                     new SchemeReader( reader),
                     _context.getWriter() );

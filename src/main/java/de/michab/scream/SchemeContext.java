@@ -1,3 +1,8 @@
+/*
+ * Scream @ https://github.com/michab/dev_smack
+ *
+ * Copyright © 2022 Michael G. Binz
+ */
 package de.michab.scream;
 
 import java.io.InputStreamReader;

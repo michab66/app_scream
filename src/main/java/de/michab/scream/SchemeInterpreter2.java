@@ -1,9 +1,7 @@
-/* $Id: SchemeInterpreter.java 788 2015-01-10 23:07:11Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2022 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -15,6 +13,8 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,6 +22,8 @@ import java.util.logging.Logger;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
+import org.smack.util.ServiceManager;
+import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.FirstClassObject.Unwind;
@@ -206,32 +208,8 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
      */
     public SchemeInterpreter2()
     {
-        org.smack.util.ServiceManager.getApplicationService(
-                org.smack.util.resource.ResourceManager.class )
-        .injectResources( SchemeInterpreter2.class );
-
-        //        // Now do the per instance initialization of this environment.
-        //        _inPort = new Port( "standard-input", in );
-        //        _outPort = new Port( "standard-output", out );
-        //
-        //        _localTle.set( ANCHOR_SYMBOL, new SchemeObject( this ) );
-        //
-        //        processExtensions(
-        //                _localTle,
-        //                schemeInstanceExtensions,
-        //                schemeExtensionPosition );
-        //
-        //        // Init the parser...
-        //        _parser = new SchemeReader( in );
-        //
-        //        // Init the evaluator...
-        //        _evaluator = new SchemeEvaluator(
-        //                _localTle,
-        //                _parser,
-        //                out );
-        //
-        //        // Start up.
-        //        new Thread( _evaluator ).start();
+        ServiceManager.getApplicationService( ResourceManager.class )
+            .injectResources( SchemeInterpreter2.class );
     }
 
     /**
@@ -279,11 +257,6 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     {
         var result =
                 new Environment();
-        //        _errorWriter =
-        //                initWriter;
-        //        _errorPort =
-        //                new Port( "standard-error", _errorWriter );
-        //        _topLevelEnvironment.set( INIT_ERR_STREAM, _errorPort );
 
         for ( var crtClassName : integrateClasses )
         {
@@ -615,8 +588,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
 
     @Override
     public String getEngineName() {
-        // TODO Auto-generated method stub
-        return null;
+        return "Scream";
     }
 
     @Override
@@ -627,20 +599,21 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
 
     @Override
     public List<String> getExtensions() {
-        // TODO Auto-generated method stub
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
     public List<String> getMimeTypes() {
-        // TODO Auto-generated method stub
-        return null;
+        return Collections.emptyList();
     }
+
+    private static final List<String> _names =
+            Collections.unmodifiableList(
+                        Arrays.asList( "scheme", "scream" ) );
 
     @Override
     public List<String> getNames() {
-        // TODO Auto-generated method stub
-        return null;
+        return _names;
     }
 
     @Override
