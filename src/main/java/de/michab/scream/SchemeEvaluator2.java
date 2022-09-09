@@ -105,7 +105,7 @@ public class SchemeEvaluator2 implements ScriptEngine
         }
     }
 
-    static FirstClassObject evalImpl(
+    private static FirstClassObject evalImpl(
             Environment environment,
             SchemeReader sreader,
             Writer sink )

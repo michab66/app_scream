@@ -15,10 +15,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -83,19 +80,22 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     private final static Environment _topLevelEnvironment = createTle();
 
     /**
-     * A reference to the per interpreter top level environment.  Parent of this
-     * is always _topLevelEnvironment.
-     *
-     * @see de.michab.scream.SchemeInterpreter2#_topLevelEnvironment
-     * @see de.michab.scream.SchemeInterpreter2#getTopLevelEnvironment
-     */
-    //private final Environment _localTle;
-
-    /**
      * The symbol being bound to an object reference of the interpreter itself.
      */
     public final static Symbol ANCHOR_SYMBOL =
             Symbol.createObject( "%%interpreter%%" );
+
+    /**
+     * Symbol receives an error id when an error occurred.
+     */
+    private final static Symbol ERROR_ID =
+            Symbol.createObject( "%error-id" );
+
+    /**
+     * Symbol receives the actual exception when an error occurred.
+     */
+    private final static Symbol ERROR_OBJ =
+            Symbol.createObject( "%error-object" );
 
     /**
      * Symbol is bound to an error stream.  Available in static initialization.
@@ -269,40 +269,6 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     }
 
     /**
-     * Selects all the keys starting with the passed <code>prefix</code> from the
-     * passed hashtable.  Implements parts of the <code>complete()</code>
-     * functionality.
-     *
-     * @param prefix The prefix string used for filtering.
-     * @param collector The <code>Hashtable</code> containing the strings for
-     *         filtering as <code>key</code>s.  The <code>value</code>s are not
-     *         taken into account.
-     * @return A sorted array holding the filtered strings.
-     */
-    private String[] filterSymbols( String prefix, Set<String> collector )
-    {
-        java.util.Vector<String> setOfGood =
-                new java.util.Vector<String>( collector.size() );
-
-        Iterator<String> e = collector.iterator();
-
-        while ( e.hasNext() )
-        {
-            String currentKey = e.next();
-            if ( currentKey.startsWith( prefix ) && ! currentKey.equals( prefix ) )
-                setOfGood.add( currentKey );
-        }
-
-        String[] result = new String[ setOfGood.size() ];
-        result = setOfGood.toArray( result );
-
-        // Finally sort the returned array.
-        Arrays.sort( result );
-
-        return result;
-    }
-
-    /**
      * Loads all classes defined in the kernel.integrateClasses property and
      * invokes the following method signature on the class:<br>
      *  <code>public static Environment extendTopLevelEnvironment( Environment tle )</code><br>
@@ -379,7 +345,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     {
         try
         {
-            return SchemeEvaluator2.evalImpl( env, sreader, writer );
+            return evalImpl( env, sreader, writer );
         }
         catch ( ScreamException e )
         {
@@ -402,65 +368,65 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     }
 
     // Merge with SchemeEvaluator.
-//    public static FirstClassObject evalImpl(
-//            Environment environment,
-//            SchemeReader sreader,
-//            Writer sink )
-//                    throws ScreamException
-//    {
-//        Thread currentThread = Thread.currentThread();
-//
-//        // Before starting the evaluation we add symbols for error handling to
-//        // the TLE.
-//        environment.set( ERROR_ID, Cons.NIL );
-//        environment.set( ERROR_OBJ, Cons.NIL );
-//
-//        FirstClassObject result = null;
-//
-//        // This is the read-eval-print loop.
-//        while ( ! currentThread .isInterrupted() )
-//        {
-//            //                try
-//            //                {
-//            FirstClassObject expression =
-//                    sreader.getExpression();
-//
-//            if ( expression == Port.EOF )
-//                break;
-//
-//            // Evaluate the expression...
-//            result =
-//                    saveEval( expression, environment );
-//            //                    // ...and print the result.
-//            //                    sink.write( FirstClassObject.stringize( result ) );
-//            //                }
-//            //                catch ( RuntimeX e )
-//            //                {
-//            //                    environment.assign( ERROR_ID, SchemeInteger.createObject( e.getId() ) );
-//            //                    environment.assign( ERROR_OBJ, new SchemeObject( e ) );
-//            //
-//            //                    // Print the name of the operation that reported the problem.
-//            //                    Symbol operationName = e.getOperationName();
-//            //                    if ( operationName == null )
-//            //                        operationName = Symbol.createObject( "top-level" );
-//            //                    sink.write( operationName.toString() );
-//            //                    sink.write( " : " );
-//            //                    // Write the actual error message.
-//            //                    sink.write( e.getMessage() );
-//            //                }
-//            //                catch ( Error e )
-//            //                {
-//            //                    sink.write( e.getMessage() + " " + e );
-//            //                }
-//            //                finally
-//            //                {
-//            //                    sink.write( '\n' );
-//            //                    sink.flush();
-//            //                }
-//        }
-//
-//        return result;
-//    }
+    public static FirstClassObject evalImpl(
+            Environment environment,
+            SchemeReader sreader,
+            Writer sink )
+                    throws ScreamException
+    {
+        Thread currentThread = Thread.currentThread();
+
+        // Before starting the evaluation we add symbols for error handling to
+        // the TLE.
+        environment.set( ERROR_ID, Cons.NIL );
+        environment.set( ERROR_OBJ, Cons.NIL );
+
+        FirstClassObject result = null;
+
+        // This is the read-eval-print loop.
+        while ( ! currentThread .isInterrupted() )
+        {
+            //                try
+            //                {
+            FirstClassObject expression =
+                    sreader.getExpression();
+
+            if ( expression == Port.EOF )
+                break;
+
+            // Evaluate the expression...
+            result =
+                    saveEval( expression, environment );
+            //                    // ...and print the result.
+            //                    sink.write( FirstClassObject.stringize( result ) );
+            //                }
+            //                catch ( RuntimeX e )
+            //                {
+            //                    environment.assign( ERROR_ID, SchemeInteger.createObject( e.getId() ) );
+            //                    environment.assign( ERROR_OBJ, new SchemeObject( e ) );
+            //
+            //                    // Print the name of the operation that reported the problem.
+            //                    Symbol operationName = e.getOperationName();
+            //                    if ( operationName == null )
+            //                        operationName = Symbol.createObject( "top-level" );
+            //                    sink.write( operationName.toString() );
+            //                    sink.write( " : " );
+            //                    // Write the actual error message.
+            //                    sink.write( e.getMessage() );
+            //                }
+            //                catch ( Error e )
+            //                {
+            //                    sink.write( e.getMessage() + " " + e );
+            //                }
+            //                finally
+            //                {
+            //                    sink.write( '\n' );
+            //                    sink.flush();
+            //                }
+        }
+
+        return result;
+    }
 
     /**
      * This method loads the specified extensions from Scheme source files. These
@@ -511,48 +477,6 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     }
 
     /**
-     * Initialize the class.  This is automatically done when creating new
-     * interpreter instances.  This method is of use if a special writer should
-     * be used for error reporting while reading the runtime system definitions.
-     * @see SchemeInterpreter2#createSchemeInterpreter
-     */
-    private static void initialise( PrintWriter initWriter, boolean test )
-    {
-        //        // Guard against repeated initialization.
-        //        if ( _initialised )
-        //            return;
-        //
-        //        _initialised = true;
-        //
-        //        _topLevelEnvironment =
-        //                new Environment();
-        //        _errorWriter =
-        //                initWriter;
-        //        _errorPort =
-        //                new Port( "standard-error", _errorWriter );
-        //        _topLevelEnvironment.set( INIT_ERR_STREAM, _errorPort );
-        //
-        //        // Initialize java runtime system.
-        //        integrateClasses( _topLevelEnvironment );
-        //
-        //        // Load extensions defined in scheme source files.
-        //        processExtensions(
-        //                _topLevelEnvironment,
-        //                schemeExtensions,
-        //                schemeExtensionPosition,
-        //                initWriter );
-        //
-        //        if ( test )
-        //            processExtensions(
-        //                    _topLevelEnvironment.extend( Symbol.createObject( "test-environment" ) ),
-        //                    regression,
-        //                    schemeTestPosition,
-        //                    initWriter );
-        //
-        //        initWriter.flush();
-    }
-
-    /**
      * Loads the scheme source file in the port into the passed environment.  The
      * port is closed before the file's contents is evaluated.
      *
@@ -586,31 +510,6 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
             throw new RuntimeX( "IO_ERROR",
                     new Object[]{ e.getMessage() } );
         }
-    }
-
-    /**
-     * Checks whether the passed parameter is passed on the command line.
-     *
-     * @param parameter The name of the parameter to check.  Note that only the
-     *                  name of the parameter has to be passed.  If looking for
-     *                  parameter '-arg', then only 'arg' has to be passed.  The
-     *                  operation allows two different parameter notations: The
-     *                  parameter 'arg' is found as either '/arg' or '-arg'.
-     * @param commandLine The command line to check.
-     * @return
-     */
-    private static boolean parameterExists(
-            String parameter,
-            String[] commandLine )
-    {
-        String regex = "[-/]" + parameter;
-        for ( String arg : commandLine )
-        {
-            if ( arg.matches( regex ) )
-                return true;
-        }
-
-        return false;
     }
 
     /**
@@ -783,8 +682,9 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     @Override
     public ScriptEngine getScriptEngine()
     {
-        var tle = _topLevelEnvironment.extend(
-                Symbol.createObject( "interaction" ) );
+        // Create the interaction environment.
+        var tle = new Environment(
+                _topLevelEnvironment );
 
         // Do the per-instance init.
         processExtensions(
