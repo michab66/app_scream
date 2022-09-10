@@ -1,9 +1,7 @@
-/* $Id: JavaClassAdapter.java 209 2009-11-24 09:14:44Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / JavaBinding
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2002 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream.binding;
 
@@ -16,6 +14,8 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.logging.Logger;
+
+import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
 
@@ -174,23 +174,24 @@ public class JavaClassAdapter
     // to get all methods.  getMethods() below returns all public methods
     // including the inherited ones, while getDeclaredMethods() returns *all*
     // existing methods on the class but excludes the inherited ones.
-    Method[] ma = clazz.getMethods();
-
-    for ( int i = 0 ; i < ma.length ; i++ )
+    for ( Method c : clazz.getMethods() )
     {
+      if ( c.isSynthetic() )
+          continue;
+
       // For methods the method name also has to be part of the mangled name.
       String mangled =
-        ma[i].getName() +
+        c.getName() +
         "/" +
-        mangleArguments( ma[i].getParameterTypes() );
+        mangleArguments( c.getParameterTypes() );
 
       Method previous = methods.get( mangled );
       // If we have a method with a similar signature...
       if ( previous != null )
         // ...we have to decide which one to use and set this.
-        methods.put( mangled, selectMethod( previous, ma[ i ] ) );
+        methods.put( mangled, selectMethod( previous, c ) );
       else
-        methods.put( mangled, ma[i] );
+        methods.put( mangled, c );
     }
 
     // Now the hashtable contains the cleaned up set of Scream callable
@@ -286,7 +287,8 @@ public class JavaClassAdapter
    * @throws RuntimeX If the instantiation failed.
    * @deprecated Use instantiateInterface() w/o typo.
    */
-  public Object instanciateInterface()
+  @Deprecated
+public Object instanciateInterface()
     throws RuntimeX
   {
       return instantiateInterface();
@@ -415,7 +417,8 @@ public class JavaClassAdapter
    *
    * @return A string representation of this object.
    */
-  public String toString()
+  @Override
+public String toString()
   {
     return _clazz.toString();
   }
@@ -598,7 +601,7 @@ public class JavaClassAdapter
    */
   private static boolean selectArgumentList( Class<?>[] l, Class<?>[] r )
   {
-    assert ( l.length == r.length );
+    JavaUtil.Assert( l.length == r.length );
 
     for ( int i = 0 ; i < l.length ; i++ )
     {
