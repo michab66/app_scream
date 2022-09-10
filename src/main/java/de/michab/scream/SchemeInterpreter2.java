@@ -5,14 +5,14 @@
  */
 package de.michab.scream;
 
-import java.io.FileReader;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.Writer;
-import java.nio.charset.StandardCharsets;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,6 @@ import de.michab.scream.frontend.SchemeParser;
  * method.  An instance shuts down if an EOF is read from its reader or if the
  * <code>dispose()</code> method is called.
  *
- * @version $Rev: 788 $
  * @author Michael G. Binz
  */
 public class SchemeInterpreter2 implements ScriptEngineFactory
@@ -309,22 +308,6 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
         return result;
     }
 
-    // TODO make better
-    private static FirstClassObject evalNoX(
-            Environment env,
-            SchemeReader sreader,
-            Writer writer
-            )
-    {
-        try
-        {
-            return evalImpl( env, sreader, writer );
-        }
-        catch ( ScreamException e )
-        {
-            throw new InternalError( e );
-        }
-    }
     static private FirstClassObject saveEval( FirstClassObject x, Environment e ) throws RuntimeX
     {
         if ( x == Cons.NIL )
@@ -426,25 +409,20 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
             log.info( "Processing: " + crtFileName );
 
             // Try to get a stream on the file...
-            InputStream is =
-                    SchemeInterpreter2.class.getResourceAsStream( crtFileName );
-            // ...and check if we had success.
-            if ( is == null )
+            var url = SchemeInterpreter2.class.getResource( crtFileName );
+            if ( url != null )
             {
-                log.log(
-                        Level.WARNING,
-                        "File for processing not found: ''{0}''",
-                        crtFileName );
-            }
-            else
-            {
-                SchemeReader sreader = new SchemeReader();
-
-                // We have a stream...
-                Reader isr = new InputStreamReader( is, StandardCharsets.UTF_8 );
-                // ...and load its contents.
-                sreader.push( isr );
-                evalNoX( env, sreader, _errorWriter );
+                try
+                {
+                    load( url, env );
+                }
+                catch ( RuntimeX e )
+                {
+                    log.log(
+                            Level.WARNING,
+                            "File for processing not found: ''{0}''",
+                            crtFileName );
+                }
             }
         }
     }
@@ -456,10 +434,43 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    public FirstClassObject load( String filename, Environment environment )
+    public static FirstClassObject load( String filename, Environment environment )
             throws RuntimeX
     {
-        try ( var reader  = new FileReader( filename ) )
+        try
+        {
+            var file = new File( filename );
+            if ( ! file.exists() )
+                throw new FileNotFoundException( filename );
+
+            return load(
+                    file.toURI().toURL(),
+                    environment );
+        }
+        catch ( MalformedURLException e )
+        {
+            throw new RuntimeX( "INTERNAL_ERROR",
+                    e.getMessage() );
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeX(
+                    "IO_ERROR",
+                    e.getMessage() );
+        }
+    }
+
+    /**
+     * Loads the scheme source file in the port into the passed environment.  The
+     * port is closed before the file's contents is evaluated.
+     *
+     * @param filename The name of the file to load.
+     * @throws RuntimeX In case of errors.
+     */
+    public static FirstClassObject load( URL filename, Environment environment )
+            throws RuntimeX
+    {
+        try ( var reader  = new InputStreamReader( filename.openStream() ) )
         {
             SchemeParser parser =
                     new SchemeParser( reader );

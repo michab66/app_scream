@@ -2,11 +2,13 @@ package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
+import java.util.UUID;
 
 import javax.script.ScriptException;
 
@@ -84,6 +86,24 @@ public class SchemeTest
 
         assertEquals( "1", one.toString() );
         assertEquals( "2", two.toString() );
+    }
+
+    @Test
+    public void loadNonExistingTest() throws Exception
+    {
+        SchemeInterpreter2 si = new SchemeInterpreter2();
+        var se = si.getScriptEngine();
+
+        var nonExistingName = UUID.randomUUID().toString();
+        try
+        {
+            se.eval( String.format( "(load \"%s\")", nonExistingName ) );
+            fail();
+        }
+        catch ( Exception e )
+        {
+            assertTrue( e.getMessage().contains( nonExistingName ) );
+        }
     }
 
     /**
