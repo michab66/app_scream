@@ -1,12 +1,8 @@
-; $Id: basic.s 8 2008-09-14 14:23:20Z binzm $
+; Scream @ https://github.com/michab/dev_smack
 ;
-; Scream / Common extensions
-;
-; Released under Gnu Public License
-; Copyright (c) 1998-2000 Michael G. Binz
+; Copyright © 1998-2022 Michael G. Binz
 
 
-;(load "boolean.s")
 
 ;;
 ;; Define a symbol holding the current jdk-version.

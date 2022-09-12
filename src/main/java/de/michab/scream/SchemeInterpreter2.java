@@ -5,7 +5,6 @@
  */
 package de.michab.scream;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -414,6 +413,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
                         Level.WARNING,
                         "File for processing not found: ''{0}''",
                         crtFileName );
+                throw new InternalError( e );
             }
         }
     }
@@ -445,7 +445,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
             stack.push( current );
         }
 
-        try ( var is = new FileInputStream( filename ) )
+        try ( var is = current.getStream() )
         {
             return load(
                     is,
@@ -473,7 +473,6 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
         {
             var stack = loadStack.get();
 
-
             if ( stack.isEmpty() )
                 ;
             else if ( current.isAbsolute() )
@@ -500,8 +499,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
         }
         finally
         {
-            var done = loadStack.get().pop();
-            System.out.println( done );
+            loadStack.get().pop();
         }
     }
 
@@ -586,7 +584,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     //    }
 
     /**
-     * (eval <expression>)
+     * (load <expression>)
      *
      * Currently the environment arguments are not supported.
      */
@@ -601,8 +599,11 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
         {
             checkArguments( formalArglist, args );
 
+
             // Do it.
-            return load( args[0].toString(), parent );
+            return load(
+                    ((SchemeString)args[0]).getValue(),
+                    parent );
         }
     };
 
