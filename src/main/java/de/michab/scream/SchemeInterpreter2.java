@@ -5,29 +5,30 @@
  */
 package de.michab.scream;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
+import org.smack.util.JavaUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.FirstClassObject.Unwind;
 import de.michab.scream.frontend.SchemeParser;
+import de.michab.scream.util.LoadContext;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -62,23 +63,14 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     private final static Logger log =
             Logger.getLogger( SchemeInterpreter2.class.getName() );
 
+    private final static ThreadLocal<Stack<LoadContext>> loadStack =
+            ThreadLocal.withInitial( Stack<LoadContext>::new );
+
     /**
      * @see de.michab.scream.SchemeInterpreter2#getErrorPort
      * @see de.michab.scream.SchemeInterpreter2#_errorPort
      */
     private final static PrintWriter _errorWriter = new PrintWriter( System.err );
-
-    /**
-     * A reference to the top level environment.  This is a single common
-     * instance holding all the core scheme definitions.  This instance is shared
-     * between all interpreter instances and represents the root in the
-     * environment hierarchy.<br>
-     * Assignment of values to symbols bound in this environment will take place
-     * for all SchemeInterpreter instances.
-     *
-     * @see de.michab.scream.SchemeInterpreter2#_localTle
-     */
-    private final static Environment _topLevelEnvironment = createTle();
 
     /**
      * The symbol being bound to an object reference of the interpreter itself.
@@ -105,11 +97,9 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
             Symbol.createObject( "%%errOut%%" );
 
     /**
-     * This is the relative path to our extensions package.  This is needed
-     * for the method Class.getResourceAsStream() which is used for addressing
-     * resources and which uses path addressing relative to it package.
+     * This is the relative path to our extensions package.
      */
-    private final static String schemeExtensionPosition = "extensions/";
+    private final static String EXTENSION_POSITION = "extensions/";
     private final static String schemeTestPosition = "test/";
 
     /**
@@ -300,10 +290,9 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
         }
 
         // Load extensions defined in scheme source files.
-        processExtensions(
+        addExtensions(
                 result,
-                schemeExtensions,
-                schemeExtensionPosition );
+                schemeExtensions );
 
         return result;
     }
@@ -394,10 +383,9 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
      * @param propertyName The properties file to use.
      * @param err The error stream to be used in case of problems.
      */
-    private static void processExtensions(
+    private static void addExtensions(
             Environment env,
-            String[] fileNames,
-            String packageName )
+            String[] fileNames )
     {
         // Init the parser...
         for ( var c : fileNames )
@@ -405,24 +393,27 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
             // The getResourceAsStream in the next line addresses resources relative
             // to the classes package.  So here we create a name like
             // extensions/foo.s.
-            String crtFileName = packageName + c;
-            log.info( "Processing: " + crtFileName );
+            String crtFileName = EXTENSION_POSITION + c;
 
             // Try to get a stream on the file...
             var url = SchemeInterpreter2.class.getResource( crtFileName );
-            if ( url != null )
+
+            JavaUtil.Assert(
+                    url != null,
+                    "File for processing not found: '%s'",
+                    crtFileName );
+
+            try
             {
-                try
-                {
-                    load( url, env );
-                }
-                catch ( RuntimeX e )
-                {
-                    log.log(
-                            Level.WARNING,
-                            "File for processing not found: ''{0}''",
-                            crtFileName );
-                }
+                load( url, env );
+            }
+            catch ( RuntimeX e )
+            {
+                log.log(
+                        Level.WARNING,
+                        "File for processing not found: ''{0}''",
+                        crtFileName );
+                throw new InternalError( e );
             }
         }
     }
@@ -437,20 +428,28 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     public static FirstClassObject load( String filename, Environment environment )
             throws RuntimeX
     {
-        try
+        var current = new LoadContext( filename );
         {
-            var file = new File( filename );
-            if ( ! file.exists() )
-                throw new FileNotFoundException( filename );
+            var stack = loadStack.get();
 
-            return load(
-                    file.toURI().toURL(),
-                    environment );
+
+            if ( stack.isEmpty() )
+                ;
+            else if ( current.isAbsolute() )
+                ;
+            else if ( ! stack.peek().hasParent() )
+                ;
+            else
+                current = current.relate( stack.peek() );
+
+            stack.push( current );
         }
-        catch ( MalformedURLException e )
+
+        try ( var is = current.getStream() )
         {
-            throw new RuntimeX( "INTERNAL_ERROR",
-                    e.getMessage() );
+            return load(
+                    is,
+                    environment );
         }
         catch ( IOException e )
         {
@@ -470,7 +469,51 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     public static FirstClassObject load( URL filename, Environment environment )
             throws RuntimeX
     {
-        try ( var reader  = new InputStreamReader( filename.openStream() ) )
+        var current = new LoadContext( filename );
+        {
+            var stack = loadStack.get();
+
+            if ( stack.isEmpty() )
+                ;
+            else if ( current.isAbsolute() )
+                ;
+            else if ( ! stack.peek().hasParent() )
+                ;
+            else
+                current = current.relate( stack.peek() );
+
+            stack.push( current );
+        }
+
+        try ( var is = current.getStream() )
+        {
+            return load(
+                    is,
+                    environment );
+        }
+        catch ( IOException e )
+        {
+            throw new RuntimeX(
+                    "IO_ERROR",
+                    e.getMessage() );
+        }
+        finally
+        {
+            loadStack.get().pop();
+        }
+    }
+
+    /**
+     * Loads the scheme source file in the port into the passed environment.  The
+     * port is closed before the file's contents is evaluated.
+     *
+     * @param filename The name of the file to load.
+     * @throws RuntimeX In case of errors.
+     */
+    private static FirstClassObject load( InputStream is, Environment environment )
+            throws RuntimeX
+    {
+        try ( var reader  = new InputStreamReader( is ) )
         {
             SchemeParser parser =
                     new SchemeParser( reader );
@@ -541,6 +584,30 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     //    }
 
     /**
+     * (load <expression>)
+     *
+     * Currently the environment arguments are not supported.
+     */
+    static private Procedure loadProcedure = new Procedure( "load" )
+    {
+        private Class<?>[] formalArglist =
+                new Class[]{ SchemeString.class };
+
+        @Override
+        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
+                throws RuntimeX
+        {
+            checkArguments( formalArglist, args );
+
+
+            // Do it.
+            return load(
+                    ((SchemeString)args[0]).getValue(),
+                    parent );
+        }
+    };
+
+    /**
      * (eval <expression>)
      *
      * Currently the environment arguments are not supported.
@@ -592,6 +659,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     public static Environment extendTopLevelEnvironment( Environment tle )
     {
         tle.setPrimitive( evalProcedure );
+        tle.setPrimitive( loadProcedure );
         tle.setPrimitive( tleProcedure );
 
         return tle;
@@ -670,14 +738,25 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
         var tle = new Environment(
                 _topLevelEnvironment );
 
-        // Do the per-instance init.
-        processExtensions(
+        addExtensions(
                 tle,
-                schemeInstanceExtensions,
-                schemeExtensionPosition );
+                schemeInstanceExtensions );
 
         return new SchemeEvaluator2(
                 this,
                 tle );
     }
+
+    /**
+     * A reference to the top level environment.  This is a single common
+     * instance holding all the core scheme definitions.  This instance is shared
+     * between all interpreter instances and represents the root in the
+     * environment hierarchy.
+     *
+     * Assignment of values to symbols bound in this environment will take place
+     * for all SchemeInterpreter instances.
+     *
+     * @see de.michab.scream.SchemeInterpreter2#_localTle
+     */
+    private final static Environment _topLevelEnvironment = createTle();
 }
