@@ -6,6 +6,7 @@
 ; Copyright (c) 1998-2000 Michael G. Binz
 
 
+;(load "boolean.s")
 
 ;;
 ;; Define a symbol holding the current jdk-version.
