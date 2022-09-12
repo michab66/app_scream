@@ -92,9 +92,13 @@ public class LoadContext
 
     public LoadContext relate( LoadContext prev )
     {
+        var f = isAbsolute() ?
+                getFile() :
+                new File( prev._file.getParentFile(), _file.getName() );
+
         return new LoadContext(
-                _prefix,
-                new File( prev._file.getParentFile(), _file.getName() ),
+                prev._prefix,
+                f,
                 _isFile );
     }
 
