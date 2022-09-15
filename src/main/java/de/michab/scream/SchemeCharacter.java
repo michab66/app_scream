@@ -7,6 +7,8 @@
  */
 package de.michab.scream;
 
+import org.smack.util.collections.WeakMapWithProducer;
+
 import de.michab.scream.util.WeakValueMap;
 
 /**
@@ -27,6 +29,8 @@ extends FirstClassObject
      */
     private static WeakValueMap<Character, SchemeCharacter> _flyweigths =
             new WeakValueMap<Character, SchemeCharacter>();
+    private static WeakMapWithProducer<Character, SchemeCharacter> _flyweigths2 =
+            new WeakMapWithProducer<Character, SchemeCharacter>( c -> new SchemeCharacter( c ) );
 
     /**
      * This is the actual character we encapsulate.  Note that a character in Java
@@ -37,17 +41,17 @@ extends FirstClassObject
     /**
      * The newline character.
      */
-    public static final SchemeCharacter NEWLINE = saveCreateObject( '\n' );
+    public static final SchemeCharacter NEWLINE = _flyweigths2.get( '\n' );
 
     /**
      * The tab character.
      */
-    public static final SchemeCharacter TAB = saveCreateObject( '\t' );
+    public static final SchemeCharacter TAB = _flyweigths2.get( '\t' );
 
     /**
      * The space character.
      */
-    public final static SchemeCharacter SPACE = saveCreateObject( ' ' );
+    public final static SchemeCharacter SPACE = _flyweigths2.get( ' ' );
 
     /**
      * Constructor.
@@ -70,7 +74,8 @@ extends FirstClassObject
      */
     static public SchemeCharacter createObject( int value )
     {
-        return saveCreateObject( (char)value );
+        return _flyweigths2.get( (char)value );
+//        return saveCreateObject( (char)value );
     }
 
     /**

@@ -497,27 +497,18 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     }
 
     /**
-     * Is responsible for triggering the startup phase based on command line and
-     * property configuration.  Implements the decision strategy for system
-     * bootstrap.  And is on the other hand the place where all fun starts...
+     * Entry point.
      */
-    //    public static void main( String[] argv )
-    //    {
-    //        org.smack.util.ServiceManager.getApplicationService(
-    //                org.smack.util.resource.ResourceManager.class )
-    //        .injectResources( SchemeInterpreter2.class );
-    //
-    //        // Give the init thread a name for debug purposes.
-    //        Thread.currentThread().setName( "screamMain" );
-    //
-    //        // Check if "-test" is specified on the command line and perform regression
-    //        // test if yes.
-    //        initialise(
-    //                new PrintWriter( System.err ),
-    //                parameterExists( "test", argv ) );
-    //
-    //        startStandardIoMode();
-    //    }
+    public static void main( String[] argv ) throws Exception
+    {
+        Thread.currentThread().setName( "screamMain" );
+
+        var interpreter = new SchemeInterpreter2();
+
+        var engine = interpreter.getScriptEngine();
+
+        engine.eval( new InputStreamReader( System.in ) );
+    }
 
     /**
      * Starts Scream in standard IO mode, that is, only the standard IO streams
