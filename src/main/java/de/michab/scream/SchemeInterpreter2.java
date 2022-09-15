@@ -409,9 +409,8 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
             catch ( RuntimeX e )
             {
                 log.log(
-                        Level.WARNING,
-                        "File for processing not found: ''{0}''",
-                        crtFileName );
+                        Level.SEVERE,
+                        e.getMessage() );
                 throw new InternalError( e );
             }
         }
