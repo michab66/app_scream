@@ -71,7 +71,7 @@ public class SchemeEvaluator2 implements ScriptEngine
     public void load( String filename )
             throws RuntimeX
     {
-        _factory.load( filename, _interaction );
+        SchemeInterpreter2.load( filename, _interaction );
     }
 
     @Override

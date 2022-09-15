@@ -6,7 +6,6 @@
 package de.michab.scream;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -428,35 +427,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     public static FirstClassObject load( String filename, Environment environment )
             throws RuntimeX
     {
-        var current = new LoadContext( filename );
-        {
-            var stack = loadStack.get();
-
-
-            if ( stack.isEmpty() )
-                ;
-            else if ( current.isAbsolute() )
-                ;
-            else if ( ! stack.peek().hasParent() )
-                ;
-            else
-                current = current.relate( stack.peek() );
-
-            stack.push( current );
-        }
-
-        try ( var is = current.getStream() )
-        {
-            return load(
-                    is,
-                    environment );
-        }
-        catch ( IOException e )
-        {
-            throw new RuntimeX(
-                    "IO_ERROR",
-                    e.getMessage() );
-        }
+        return load( new LoadContext( filename ), environment );
     }
 
     /**
@@ -469,38 +440,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     public static FirstClassObject load( URL filename, Environment environment )
             throws RuntimeX
     {
-        var current = new LoadContext( filename );
-        {
-            var stack = loadStack.get();
-
-            if ( stack.isEmpty() )
-                ;
-            else if ( current.isAbsolute() )
-                ;
-            else if ( ! stack.peek().hasParent() )
-                ;
-            else
-                current = current.relate( stack.peek() );
-
-            stack.push( current );
-        }
-
-        try ( var is = current.getStream() )
-        {
-            return load(
-                    is,
-                    environment );
-        }
-        catch ( IOException e )
-        {
-            throw new RuntimeX(
-                    "IO_ERROR",
-                    e.getMessage() );
-        }
-        finally
-        {
-            loadStack.get().pop();
-        }
+        return load( new LoadContext( filename ), environment );
     }
 
     /**
@@ -510,10 +450,23 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    private static FirstClassObject load( InputStream is, Environment environment )
+    private static FirstClassObject load( LoadContext current, Environment environment )
             throws RuntimeX
     {
-        try ( var reader  = new InputStreamReader( is ) )
+        var stack = loadStack.get();
+
+        if ( stack.isEmpty() )
+            ;
+        else if ( current.isAbsolute() )
+            ;
+        else if ( ! stack.peek().hasParent() )
+            ;
+        else
+            current = current.relate( stack.peek() );
+
+        stack.push( current );
+
+        try ( var reader  = new InputStreamReader( current.getStream() ) )
         {
             SchemeParser parser =
                     new SchemeParser( reader );
@@ -536,6 +489,10 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
         {
             throw new RuntimeX( "IO_ERROR",
                     new Object[]{ e.getMessage() } );
+        }
+        finally
+        {
+            stack.pop();
         }
     }
 
