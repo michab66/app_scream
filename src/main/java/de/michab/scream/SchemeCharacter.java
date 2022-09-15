@@ -1,21 +1,17 @@
-/* $Id: SchemeCharacter.java 789 2015-01-10 23:13:22Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2002 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream;
 
 import org.smack.util.collections.WeakMapWithProducer;
 
-import de.michab.scream.util.WeakValueMap;
-
 /**
  * Represents the Scheme character type.
  */
 public class SchemeCharacter
-extends FirstClassObject
+    extends FirstClassObject
 {
     /**
      * The name of the type as used by error reporting.
@@ -27,9 +23,7 @@ extends FirstClassObject
     /**
      * The character cache.
      */
-    private static WeakValueMap<Character, SchemeCharacter> _flyweigths =
-            new WeakValueMap<Character, SchemeCharacter>();
-    private static WeakMapWithProducer<Character, SchemeCharacter> _flyweigths2 =
+    private static WeakMapWithProducer<Character, SchemeCharacter> _flyweigths =
             new WeakMapWithProducer<Character, SchemeCharacter>( c -> new SchemeCharacter( c ) );
 
     /**
@@ -41,17 +35,17 @@ extends FirstClassObject
     /**
      * The newline character.
      */
-    public static final SchemeCharacter NEWLINE = _flyweigths2.get( '\n' );
+    public static final SchemeCharacter NEWLINE = _flyweigths.get( '\n' );
 
     /**
      * The tab character.
      */
-    public static final SchemeCharacter TAB = _flyweigths2.get( '\t' );
+    public static final SchemeCharacter TAB = _flyweigths.get( '\t' );
 
     /**
      * The space character.
      */
-    public final static SchemeCharacter SPACE = _flyweigths2.get( ' ' );
+    public final static SchemeCharacter SPACE = _flyweigths.get( ' ' );
 
     /**
      * Constructor.
@@ -74,31 +68,7 @@ extends FirstClassObject
      */
     static public SchemeCharacter createObject( int value )
     {
-        return _flyweigths2.get( (char)value );
-//        return saveCreateObject( (char)value );
-    }
-
-    /**
-     * The private character factory.  The difference to the public
-     * <code>createObject()</code> method is the type of the operation's
-     * argument.
-     *
-     * @param value The character value for the new instance.
-     * @return A new <code>SchemeCharacter</code> instance.
-     */
-    static private SchemeCharacter saveCreateObject( char value )
-    {
-        Character k = Character.valueOf( value );
-
-        SchemeCharacter result = _flyweigths.get( k );
-
-        if ( result == null )
-        {
-            result = new SchemeCharacter( value );
-            _flyweigths.put( k, result );
-        }
-
-        return result;
+        return _flyweigths.get( (char)value );
     }
 
     /**
