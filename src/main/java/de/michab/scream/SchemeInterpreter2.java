@@ -417,8 +417,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     }
 
     /**
-     * Loads the scheme source file in the port into the passed environment.  The
-     * port is closed before the file's contents is evaluated.
+     * Loads a Scheme source file into the passed environment.
      *
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
@@ -430,10 +429,9 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     }
 
     /**
-     * Loads the scheme source file in the port into the passed environment.  The
-     * port is closed before the file's contents is evaluated.
+     * Loads a Scheme source file into the passed environment.
      *
-     * @param filename The name of the file to load.
+     * @param filename The URL of the file to load.
      * @throws RuntimeX In case of errors.
      */
     public static FirstClassObject load( URL filename, Environment environment )
