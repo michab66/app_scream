@@ -7,7 +7,7 @@
  */
 package de.michab.scream;
 
-import de.michab.scream.util.WeakValueMap;
+import org.smack.util.collections.WeakMapWithProducer;
 
 
 /**
@@ -28,15 +28,15 @@ public final class Symbol
   /**
    * This symbol's name.
    */
-  private String _name;
+  private final String _name;
 
 
 
   /**
    *
    */
-  private static final WeakValueMap<String, Symbol> _flyweightMap =
-      new WeakValueMap<String, Symbol>();
+  private static WeakMapWithProducer<String, Symbol> _flyweightMap =
+          new WeakMapWithProducer<>( c -> new Symbol( c ) );
 
 
 
@@ -48,15 +48,7 @@ public final class Symbol
    */
   public static synchronized Symbol createObject( String name )
   {
-    Symbol result = _flyweightMap.get( name );
-
-    if ( null == result )
-    {
-      result = new Symbol( name );
-      _flyweightMap.put( name, result );
-    }
-
-    return result;
+    return _flyweightMap.get( name );
   }
 
 
