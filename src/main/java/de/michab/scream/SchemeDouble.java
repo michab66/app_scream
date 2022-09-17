@@ -7,7 +7,7 @@
  */
 package de.michab.scream;
 
-import de.michab.scream.util.WeakValueMap;
+import org.smack.util.collections.WeakMapWithProducer;
 
 
 
@@ -38,31 +38,18 @@ de.michab.scream.Number
     /**
      *
      */
-    private static WeakValueMap<Double, SchemeDouble> _flyweights =
-            new WeakValueMap<Double, SchemeDouble>();
+    private static WeakMapWithProducer<Double, SchemeDouble> _flyweights =
+            new WeakMapWithProducer<>( c -> new SchemeDouble( c ) );
 
 
 
     /**
      * A factory for scheme doubles.  Used for limiting generation for well
      * known instances as for 1.0, 2.0, ... of this type.
-     * Note that this factory is also responsible for type optimization, i.e.
-     * if an object for 2.0 is created via this factory it may be possible that
-     * an integer object is returned.
      */
     static public Number createObject( double v )
     {
-        Double k = Double.valueOf( v );
-
-        SchemeDouble result = _flyweights.get( k );
-
-        if ( result == null )
-        {
-            result = new SchemeDouble( v );
-            _flyweights.put( k, result );
-        }
-
-        return result;
+        return _flyweights.get( v );
     }
 
 
