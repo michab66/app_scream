@@ -23,4 +23,21 @@ public class UrschleimTest
 
         assertEquals( "313", r.get().toString() );
     }
+
+    @Test
+    public void typeSymbolTest() throws Exception
+    {
+        var symbol = Symbol.createObject( "car" );
+        var env = new Environment();
+        env.set( symbol, SchemeInteger.createObject( 313 ) );
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+
+        Continuations.trampoline(
+                symbol.evaluate( env,
+                        Continuations.endCall( s -> r.set( s ) ) ));
+
+        assertEquals( "313", r.get().toString() );
+    }
 }

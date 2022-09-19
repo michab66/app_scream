@@ -150,7 +150,8 @@ public abstract class FirstClassObject
      * the target object is not null.  If in doubt call FCO.evaluate( FCO, FCO ).
      *
      * @param e The environment used to evaluate the object.
-     * @return The result of the evaluation.
+     * @param c The continuation that receives the evaluation result
+     * @return The thunk.
      * @throws RuntimeX In case the evaluation failed.
      */
     protected Thunk evaluate( Environment e , Continuations.Cont<FirstClassObject> c )
@@ -161,8 +162,6 @@ public abstract class FirstClassObject
 
         return () -> c.apply( this );
     }
-
-
 
     /**
      * The implementation of the Scheme <code>eqv?</code> procedure.  This static

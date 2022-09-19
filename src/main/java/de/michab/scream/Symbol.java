@@ -9,6 +9,9 @@ package de.michab.scream;
 
 import org.smack.util.collections.WeakMapWithProducer;
 
+import urschleim.Continuations;
+import urschleim.Continuations.Thunk;
+
 
 /**
  * Represents the Scheme symbol type.
@@ -66,8 +69,6 @@ public final class Symbol
     setConstant( true );
   }
 
-
-
   /**
    * Evaluates this symbol, i.e. looks up the symbol in the passed environment
    * and returns its value.
@@ -78,13 +79,22 @@ public final class Symbol
    * @see FirstClassObject#evaluate
    */
   @Override
-public FirstClassObject evaluate( Environment e )
+  public FirstClassObject evaluate( Environment e )
     throws RuntimeX
   {
     return e.get( this );
   }
+  @Override
+  protected Thunk evaluate( Environment e , Continuations.Cont<FirstClassObject> c )
+          throws RuntimeX
+  {
+      if ( Thread.interrupted() )
+          throw new RuntimeX( "INTERRUPTED" );
 
+      var result = evaluate( e );
 
+      return () -> c.apply( result );
+  }
 
   /**
    * Tests equivalence to another object.
@@ -94,7 +104,7 @@ public FirstClassObject evaluate( Environment e )
    * @see FirstClassObject#eq
    */
   @Override
-public boolean eq( FirstClassObject other )
+  public boolean eq( FirstClassObject other )
   {
     return equals( other );
   }
