@@ -5,7 +5,7 @@
  */
 package de.michab.scream;
 
-
+import java.util.HashSet;
 
 /**
  * Represents a list cell.  A list cell consists of two references called car
@@ -479,6 +479,9 @@ public class Cons
     @Override
     public String toString()
     {
+        if ( isCircular() )
+            return "#circular#";
+
         if ( _cdr instanceof Cons || _cdr == NIL )
         {
             // Stringise the cdr.  This will lead to something like "(n0 n1 ...)".
@@ -531,6 +534,33 @@ public class Cons
         {
             // Not all cdrs in the list were conses so we are not proper.
             return false;
+        }
+    }
+
+    public boolean isCircular()
+    {
+        Cons c = this;
+
+        HashSet<Cons> collector = new HashSet<Cons>();
+
+        while (true)
+        {
+            if ( collector.contains( c ) )
+                return true;
+
+            collector.add( c );
+
+            try
+            {
+                c = (Cons)c.getCdr();
+            }
+            catch ( ClassCastException e )
+            {
+                return false;
+            }
+
+            if ( Cons.NIL == c )
+                return false;
         }
     }
 
