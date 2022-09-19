@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import urschleim.Continuations;
 import urschleim.Holder;
 
-public class Urschleim
+public class UrschleimTest
 {
     @Test
     public void typeIntegerTest() throws Exception
@@ -21,6 +21,6 @@ public class Urschleim
                 i.evaluate( null,
                         Continuations.endCall( s -> r.set( s ) ) ));
 
-        assertEquals( "13", r.get().toString() );
+        assertEquals( "313", r.get().toString() );
     }
 }
