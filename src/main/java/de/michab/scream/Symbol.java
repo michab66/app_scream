@@ -7,8 +7,7 @@ package de.michab.scream;
 
 import org.smack.util.collections.WeakMapWithProducer;
 
-import urschleim.Continuations;
-import urschleim.Continuations.Thunk;
+import urschleim.Continuation;
 
 
 /**
@@ -75,15 +74,14 @@ extends FirstClassObject
         return e.get( this );
     }
     @Override
-    protected Thunk evaluate( Environment e , Continuations.Cont<FirstClassObject> c )
+    protected Continuation.Thunk evaluate( Environment e , Continuation.Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( Thread.interrupted() )
             throw new RuntimeX( "INTERRUPTED" );
 
-        var result = evaluate( e );
-
-        return () -> c.apply( result );
+        return () -> c.accept(
+                evaluate(e) );
     }
 
     /**

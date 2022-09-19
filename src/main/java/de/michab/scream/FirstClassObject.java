@@ -7,8 +7,7 @@
  */
 package de.michab.scream;
 
-import urschleim.Continuations;
-import urschleim.Continuations.Thunk;
+import urschleim.Continuation;
 
 /**
  * <p>The base class for all Scheme first-class objects.  A first class object is
@@ -154,13 +153,13 @@ public abstract class FirstClassObject
      * @return The thunk.
      * @throws RuntimeX In case the evaluation failed.
      */
-    protected Thunk evaluate( Environment e , Continuations.Cont<FirstClassObject> c )
+    protected Continuation.Thunk evaluate( Environment e , Continuation.Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( Thread.interrupted() )
             throw new RuntimeX( "INTERRUPTED" );
 
-        return () -> c.apply( this );
+        return () -> c.accept( this );
     }
 
     /**
