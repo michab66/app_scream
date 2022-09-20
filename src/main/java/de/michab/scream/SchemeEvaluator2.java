@@ -61,6 +61,11 @@ public class SchemeEvaluator2 implements ScriptEngine
                 new SchemeObject( this ) );
     }
 
+    public Environment getInteraction()
+    {
+        return _interaction;
+    }
+
     /**
      * Loads the scheme source file in the port into the passed environment.  The
      * port is closed before the file's contents is evaluated.

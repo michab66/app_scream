@@ -7,6 +7,8 @@
  */
 package de.michab.scream;
 
+import urschleim.Continuation;
+
 /**
  * <p>The base class for all Scheme first-class objects.  A first class object is
  * an object that can be bound to a symbol.</p>
@@ -141,8 +143,24 @@ public abstract class FirstClassObject
 
         return this;
     }
+    /**
+     * Evaluate this scheme object and return the result.  This default version
+     * just evaluates to itself.  This must only be called if it is ensured that
+     * the target object is not null.  If in doubt call FCO.evaluate( FCO, FCO ).
+     *
+     * @param e The environment used to evaluate the object.
+     * @param c The continuation that receives the evaluation result
+     * @return The thunk.
+     * @throws RuntimeX In case the evaluation failed.
+     */
+    protected Continuation.Thunk evaluate( Environment e , Continuation.Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        if ( Thread.interrupted() )
+            throw new RuntimeX( "INTERRUPTED" );
 
-
+        return () -> c.accept( this );
+    }
 
     /**
      * The implementation of the Scheme <code>eqv?</code> procedure.  This static
