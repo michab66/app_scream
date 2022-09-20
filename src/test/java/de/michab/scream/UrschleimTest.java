@@ -6,11 +6,13 @@
 package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.frontend.SchemeParser;
 import urschleim.Continuation;
 import urschleim.Holder;
 
@@ -83,5 +85,40 @@ public class UrschleimTest
         assertEquals(
                 ScreamException.Code.SYMBOL_NOT_DEFINED,
                 error.get().getCode() );
+    }
+
+    @Test
+    public void operationTest() throws Exception
+    {
+        FirstClassObject add313 =
+                new SchemeParser( "(+ 300 13)" ).getExpression();
+        assertInstanceOf( Cons.class, add313 );
+
+        SchemeInterpreter2 si = new SchemeInterpreter2();
+        var se = (SchemeEvaluator2)si.getScriptEngine();
+
+        var env = se.getInteraction();
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<RuntimeX> error =
+                new Holder<RuntimeX>( null );
+        Continuation c =
+                new Continuation( s -> error.set( s ) );
+
+        c.trampoline(
+                add313.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ));
+
+        assertNotNull(
+                r.get() );
+        assertInstanceOf(
+                SchemeInteger.class,
+                r.get() );
+        assertEquals(
+                313,
+                ((SchemeInteger)r.get()).asLong() );
+        assertNull(
+                error.get() );
     }
 }

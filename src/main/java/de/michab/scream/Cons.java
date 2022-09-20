@@ -7,6 +7,9 @@ package de.michab.scream;
 
 import java.util.HashSet;
 
+import urschleim.Continuation.Cont;
+import urschleim.Continuation.Thunk;
+
 /**
  * Represents a list cell.  A list cell consists of two references called car
  * and cdr.  Car is a reference to the value of the current node of the list
@@ -443,6 +446,13 @@ public class Cons
             // ...and re-throw.
             throw rx;
         }
+    }
+    @Override
+    protected Thunk evaluate( Environment e, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        return () -> c.accept(
+                evaluate(e) );
     }
 
     /**
