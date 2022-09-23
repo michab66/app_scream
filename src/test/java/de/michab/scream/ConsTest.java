@@ -8,6 +8,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.frontend.SchemeParser;
+
 public class ConsTest
 {
     @Test
@@ -82,6 +84,38 @@ public class ConsTest
         Cons tail2 = (Cons)c1.listTail( c1.length() -1 );
         tail2.setCdr( c1 );
         assertTrue( c1.isCircular() );
+    }
+
+    @Test
+    public void proper() throws Exception
+    {
+        var p = (Cons)
+                new SchemeParser( "(1 2 3)" ).getExpression();
+        assertTrue( p.isProperList() );
+    }
+    @Test
+    public void properNot() throws Exception
+    {
+        var p = (Cons)
+                new SchemeParser( "(1 2 3 . 4)" ).getExpression();
+        assertFalse( p.isProperList() );
+    }
+
+    @Test
+    public void properCircular() throws Exception
+    {
+        Cons c1 = Cons.create(
+                SchemeInteger.createObject(0),
+                SchemeInteger.createObject(1),
+                SchemeInteger.createObject(2),
+                SchemeInteger.createObject(3),
+                SchemeInteger.createObject(4)
+        );
+
+        Cons tail2 = (Cons)c1.listTail( c1.length() -1 );
+        tail2.setCdr( c1 );
+        assertTrue( c1.isCircular() );
+        assertFalse( c1.isProperList() );
     }
 
     @Test

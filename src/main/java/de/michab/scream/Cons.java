@@ -532,6 +532,9 @@ public class Cons
      */
     public boolean isProperList()
     {
+        if (isCircular())
+            return false;
+
         try
         {
             Cons current = this;
