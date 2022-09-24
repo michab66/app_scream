@@ -25,8 +25,6 @@ public class FrontendX
    */
   private String _filename = "anonymous-file";
 
-
-
   /**
    * Creates a frontend exception.
    *
@@ -39,7 +37,17 @@ public class FrontendX
     super( key );
   }
 
-
+  /**
+   * Creates a frontend exception.
+   *
+   * @param key  The message key.  See
+   *             {@link de.michab.scream.ScreamException ScreamException}
+   *             for further explanation of message key resolution.
+   */
+  public FrontendX( Code key )
+  {
+    super( key );
+  }
 
   /**
    * Creates a frontend exception.  The <code>line</code>, <code>column</code>
@@ -76,8 +84,6 @@ public class FrontendX
     super( key, new Object[]{ "" + line, "" + column } );
   }
 
-
-
   /**
    * Creates a frontend exception.  The passed argument list is used in
    * exception resolution and message generation.
@@ -91,8 +97,10 @@ public class FrontendX
   {
     super( key, args );
   }
-
-
+  public FrontendX( Code key, Object ... args )
+  {
+    super( key, args );
+  }
 
   /**
    * Set the filename for this exception.

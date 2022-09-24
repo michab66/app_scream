@@ -17,6 +17,7 @@ enum Tk {
     Double,
     Array,
     List,
+    // TODO check if used in scanner. Seems not.
     End,
     String,
     Quote,

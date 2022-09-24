@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Port;
+import de.michab.scream.ScreamException;
 import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
 
@@ -30,8 +31,27 @@ public class SchemeParserTest
         }
         catch( FrontendX e )
         {
-            // Unexpected end of input.
-            assertEquals( 37, e.getId() );
+            assertEquals(
+                    ScreamException.Code.PARSE_UNEXPECTED_EOF,
+                    e.getCode() );
+        }
+    }
+
+    @Test
+    public void unbalanced()
+    {
+        try
+        {
+            // Missing closing brace.
+            SchemeParser sp = new SchemeParser( ")" );
+            var x = sp.getExpression();
+            fail();
+        }
+        catch( FrontendX e )
+        {
+            assertEquals(
+                    ScreamException.Code.PARSE_UNEXPECTED,
+                    e.getCode() );
         }
     }
 

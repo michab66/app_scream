@@ -39,7 +39,7 @@ import org.smack.util.StringUtil;
 public class ScreamException
     extends java.lang.Exception
 {
-    enum Code
+    public enum Code
     {
         INTERNAL_ERROR,
         NOT_IMPLEMENTED,
@@ -277,7 +277,7 @@ public class ScreamException
      * @exception IllegalArgumentException In case the passed message was either
      *            <code>null</code> or the empty string.
      */
-    public ScreamException( String msg, Object[] args )
+    public ScreamException( String msg, Object ... args )
     {
         super( msg );
 
