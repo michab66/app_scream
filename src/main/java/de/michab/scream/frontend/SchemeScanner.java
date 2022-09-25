@@ -10,7 +10,7 @@ package de.michab.scream.frontend;
 import java.io.IOException;
 import java.io.Reader;
 
-import de.michab.scream.frontend.SchemeFlexScanner;
+import de.michab.scream.frontend.Token.Tk;
 
 
 

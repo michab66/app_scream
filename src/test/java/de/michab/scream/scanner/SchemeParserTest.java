@@ -1,17 +1,18 @@
-/* $Id: SchemeParser.java 172 2009-03-19 21:21:48Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Frontend
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2009 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream.scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.Cons;
 import de.michab.scream.Port;
 import de.michab.scream.ScreamException;
 import de.michab.scream.frontend.FrontendX;
@@ -19,6 +20,45 @@ import de.michab.scream.frontend.SchemeParser;
 
 public class SchemeParserTest
 {
+    @Test
+    public void parseListEmpty() throws ScreamException
+    {
+        var o = new SchemeParser( "()" ).getExpression();
+        assertEquals( Cons.NIL, o );
+    }
+
+    @Test
+    public void parseListProper1() throws ScreamException
+    {
+        var o = new SchemeParser( "(a . (b . (c . (d . (e . ())))))" ).getExpression();
+        Cons cons = (Cons)o;
+
+        assertEquals( 5, cons.length() );
+        assertTrue( cons.isProperList() );
+    }
+
+    @Test
+    public void parseListProper2() throws ScreamException
+    {
+        var o = new SchemeParser( "(3 1 3)" ).getExpression();
+        Cons cons = (Cons)o;
+
+        assertEquals( 3, cons.length() );
+        assertEquals( 3L, cons.listRef(0).convertToJava() );
+        assertEquals( 1L, cons.listRef(1).convertToJava() );
+        assertEquals( 3L, cons.listRef(2).convertToJava() );
+        assertTrue( cons.isProperList() );
+    }
+
+    @Test
+    public void parseListNotProper() throws ScreamException
+    {
+        var o = new SchemeParser( "(3 1 . 3)" ).getExpression();
+        Cons cons = (Cons)o;
+
+        assertFalse( cons.isProperList() );
+    }
+
     @Test
     public void unexpectedEndOfInput()
     {

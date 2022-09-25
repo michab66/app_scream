@@ -9,7 +9,7 @@ package de.michab.scream.frontend;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.util.logging.Logger;
+import java.util.ArrayList;
 
 import de.michab.scream.Cons;
 import de.michab.scream.FirstClassObject;
@@ -22,8 +22,7 @@ import de.michab.scream.SchemeString;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Vector;
-
-
+import de.michab.scream.frontend.Token.Tk;
 
 /**
  * An LL(1) parser for scheme.  Parses the non-terminal <datum> described in
@@ -35,25 +34,17 @@ import de.michab.scream.Vector;
 public class SchemeParser
 {
     /**
-     * The logger for this class.
-     */
-    private final static Logger _log =
-            Logger.getLogger( SchemeParser.class.getName() );
-
-
-
-    /**
      * A flyweight quote symbol.
      */
     private final static FirstClassObject QUOTE_SYMBOL
-    = Symbol.createObject( "quote" );
+        = Symbol.createObject( "quote" );
 
 
     /**
      * A flyweight quasiquote symbol.
      */
     private final static FirstClassObject QUASIQUOTE_SYMBOL
-    = Symbol.createObject( "quasiquote" );
+        = Symbol.createObject( "quasiquote" );
 
 
 
@@ -61,7 +52,7 @@ public class SchemeParser
      * A flyweight unquote symbol.
      */
     public final static FirstClassObject UNQUOTE_SYMBOL
-    = Symbol.createObject( "unquote" );
+        = Symbol.createObject( "unquote" );
 
 
 
@@ -69,7 +60,7 @@ public class SchemeParser
      * A flyweight unquote-splicing symbol.
      */
     public final static FirstClassObject UNQUOTE_SPLICING_SYMBOL
-    = Symbol.createObject( "unquote-splicing" );
+        = Symbol.createObject( "unquote-splicing" );
 
     /**
      * This parser's scanner.
@@ -130,8 +121,6 @@ public class SchemeParser
         return result;
     }
 
-
-
     /**
      * Get the lookahead token.  The next call to getNextToken() will just
      * return the same token.  Repeated calls of this method also result always
@@ -153,10 +142,8 @@ public class SchemeParser
         return _peeked;
     }
 
-
-
     /**
-     * Parses a scheme array.
+     * Parses a Scheme array.
      *
      * @return An array structure.
      * @throws FrontendX In case of an error.
@@ -164,24 +151,20 @@ public class SchemeParser
     private FirstClassObject parseArray()
             throws FrontendX
     {
-        java.util.Vector<FirstClassObject> collector =
-                new java.util.Vector<FirstClassObject>();
+        ArrayList<FirstClassObject> collector =
+                new ArrayList<>();
 
         // As long as we find no array end...
         while ( Tk.End != peekNextToken().getType() )
             // ...just add the expressions to our local vector.
-            collector.addElement( parseDatum() );
+            collector.add( parseDatum() );
 
-        // Array end found.  Consume the token...
+        // Consume the End token.
         getNextToken();
-        // ...create an array of the read elements...
-        FirstClassObject[] array = new FirstClassObject[ collector.size() ];
-        // ...copy our collected values.
-        for ( int i = array.length -1 ; i >= 0 ; i-- )
-            array[i] = collector.elementAt( i );
 
-        // Finally create a scream vector and return that one.
-        return new Vector( array, false );
+        FirstClassObject[] array = new FirstClassObject[ collector.size() ];
+
+        return new Vector( collector.toArray( array ), false );
     }
 
     /**
@@ -284,11 +267,12 @@ public class SchemeParser
 
         case Eof:
             throw new FrontendX( Code.PARSE_UNEXPECTED_EOF );
-        }
 
-        throw new FrontendX(
-                Code.PARSE_UNEXPECTED,
-                token.toString() );
+        default:
+            throw new FrontendX(
+                    Code.PARSE_UNEXPECTED,
+                    token.toString() );
+        }
     }
 
     /**

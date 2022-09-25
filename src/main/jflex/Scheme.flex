@@ -1,11 +1,11 @@
-/* $Id: Scheme.flex 8 2008-09-14 14:23:20Z binzm $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream: frontend
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2022 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream.frontend;
+
+import de.michab.scream.frontend.Token.Tk;
 
 %%
 
