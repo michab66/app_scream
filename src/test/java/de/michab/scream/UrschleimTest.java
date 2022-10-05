@@ -49,13 +49,13 @@ public class UrschleimTest
         Holder<FirstClassObject> r =
                 new Holder<FirstClassObject>( Cons.NIL );
 
-        Holder<RuntimeX> error =
-                new Holder<RuntimeX>( null );
-        Continuation c = new Continuation( s -> error.set( s ) );
+        Holder<ScreamException> error =
+                new Holder<>( null );
 
-        c.trampoline(
+        Continuation.trampoline(
                 symbol.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ));
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ));
 
         assertEquals( "313", r.get().toString() );
         assertNull( error.get() );
@@ -69,14 +69,13 @@ public class UrschleimTest
 
         Holder<FirstClassObject> r =
                 new Holder<FirstClassObject>( Cons.NIL );
-        Holder<RuntimeX> error =
-                new Holder<RuntimeX>( null );
-        Continuation c =
-                new Continuation( s -> error.set( s ) );
+        Holder<ScreamException> error =
+                new Holder<>( null );
 
-        c.trampoline(
+        Continuation.trampoline(
                 symbol.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ));
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set(s));
 
         assertNull(
                 r.get() );
@@ -101,14 +100,13 @@ public class UrschleimTest
 
         Holder<FirstClassObject> r =
                 new Holder<FirstClassObject>( Cons.NIL );
-        Holder<RuntimeX> error =
-                new Holder<RuntimeX>( null );
-        Continuation c =
-                new Continuation( s -> error.set( s ) );
+        Holder<ScreamException> error =
+                new Holder<>( null );
 
-        c.trampoline(
+        Continuation.trampoline(
                 add313.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ));
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
 
         assertNotNull(
                 r.get() );

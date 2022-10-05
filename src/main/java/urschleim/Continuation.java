@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import java.util.logging.Logger;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.ScreamException;
 
 public class Continuation
 {
@@ -44,6 +45,20 @@ public class Continuation
         catch ( RuntimeX e )
         {
             _errorHandler.accept( e );
+        }
+    }
+
+    public static void trampoline( Thunk t, Consumer<ScreamException> err )
+    {
+        try
+        {
+            while (t != null) {
+                t = t.run();
+            }
+        }
+        catch ( RuntimeX e )
+        {
+            err.accept( e );
         }
     }
 

@@ -451,6 +451,7 @@ public class Cons
     protected Thunk evaluate( Environment e, Cont<FirstClassObject> c )
             throws RuntimeX
     {
+
         return () -> c.accept(
                 evaluate(e) );
     }
