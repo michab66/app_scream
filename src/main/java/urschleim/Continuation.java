@@ -8,6 +8,9 @@ package urschleim;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 
+import de.michab.scream.Cons;
+import de.michab.scream.Environment;
+import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException;
 
@@ -69,4 +72,30 @@ public class Continuation
         };
     }
 
+    public static Thunk _if(
+            boolean expr,
+            Cont<Boolean> trueBranch,
+            Cont<Boolean> falseBranch)
+    {
+        return (expr)
+                ? () -> trueBranch.accept(true)
+                : () -> falseBranch.accept(false);
+    }
+
+    private static Thunk listEval( Environment e, int i, FirstClassObject[] l, Cont<FirstClassObject[]> c )
+    {
+        if ( i == l.length )
+            return () -> c.accept( l );
+
+        return () -> {
+            if ( l[i]  != Cons.NIL )
+                l[i] = FirstClassObject.evaluate( l[i], e );
+            return listEval( e, i+1, l, c );
+        };
+    }
+
+    public static Thunk listEval( Environment e, FirstClassObject[] l, Cont<FirstClassObject[]> c )
+    {
+        return () -> listEval( e, 0, l, c );
+    }
 }

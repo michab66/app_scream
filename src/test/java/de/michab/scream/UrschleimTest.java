@@ -119,4 +119,63 @@ public class UrschleimTest
         assertNull(
                 error.get() );
     }
+
+
+
+    @Test
+    public void listEvalTest() throws Exception
+    {
+        var i1 = SchemeInteger.createObject( 1 );
+        var i2 = SchemeInteger.createObject( 2 );
+        var i3 = SchemeInteger.createObject( 3 );
+        var i4 = SchemeInteger.createObject( 4 );
+
+        Environment env = new Environment();
+        env.set(
+                Symbol.createObject( "one" ),
+                i1 );
+        env.set(
+                Symbol.createObject( "two" ),
+                i2 );
+        env.set(
+                Symbol.createObject( "three" ),
+                i3 );
+        env.set(
+                Symbol.createObject( "four" ),
+                i4 );
+
+        FirstClassObject list1234c =
+                new SchemeParser( "(one two three four)" ).getExpression();
+        assertInstanceOf( Cons.class, list1234c );
+        var array1234 = ((Cons)list1234c).asArray();
+
+        Holder<FirstClassObject[]> r =
+                new Holder<>( null );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                Continuation.listEval(
+                        env,
+                        array1234,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        assertNotNull(
+                r.get() );
+        assertEquals(
+                i1,
+                r.get()[0] );
+        assertEquals(
+                i2,
+                r.get()[1] );
+        assertEquals(
+                i3,
+                r.get()[2] );
+        assertEquals(
+                i4,
+                r.get()[3] );
+        assertNull(
+                error.get() );
+    }
 }
