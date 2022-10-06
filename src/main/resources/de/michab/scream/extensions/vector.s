@@ -37,7 +37,7 @@
 ;;
 (define (vector-length v)
   (if (vector? v)
-    ((object v) (getSize))
+    ((object v) (size))
     (error "TYPE_ERROR" %type-vector (%typename v))))
 
 
@@ -47,7 +47,7 @@
 ;;
 (define (vector-ref v idx )
   (if (vector? v)
-    ((object v) (getElement idx))
+    ((object v) (get idx))
     (error "TYPE_ERROR" %type-vector (%typename v) 1)))
 
 
@@ -57,7 +57,7 @@
 ;;
 (define (vector-set! v idx obj)
   (if (vector? v)
-    ((object v) (setElement idx obj))
+    ((object v) (set idx obj))
     (error "TYPE_ERROR" %type-vector (%typename v) 1)))
 
 
