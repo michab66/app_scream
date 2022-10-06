@@ -125,24 +125,19 @@ public class UrschleimTest
     @Test
     public void listEvalTest() throws Exception
     {
-        var i1 = SchemeInteger.createObject( 1 );
-        var i2 = SchemeInteger.createObject( 2 );
-        var i3 = SchemeInteger.createObject( 3 );
-        var i4 = SchemeInteger.createObject( 4 );
-
         Environment env = new Environment();
         env.set(
-                Symbol.createObject( "one" ),
-                i1 );
+                TestUtil.s1,
+                TestUtil.i1 );
         env.set(
-                Symbol.createObject( "two" ),
-                i2 );
+                TestUtil.s2,
+                TestUtil.i2 );
         env.set(
-                Symbol.createObject( "three" ),
-                i3 );
+                TestUtil.s3,
+                TestUtil.i3 );
         env.set(
-                Symbol.createObject( "four" ),
-                i4 );
+                TestUtil.s4,
+                TestUtil.i4 );
 
         FirstClassObject list1234c =
                 new SchemeParser( "(one two three four)" ).getExpression();
@@ -164,16 +159,16 @@ public class UrschleimTest
         assertNotNull(
                 r.get() );
         assertEquals(
-                i1,
+                TestUtil.i1,
                 r.get()[0] );
         assertEquals(
-                i2,
+                TestUtil.i2,
                 r.get()[1] );
         assertEquals(
-                i3,
+                TestUtil.i3,
                 r.get()[2] );
         assertEquals(
-                i4,
+                TestUtil.i4,
                 r.get()[3] );
         assertNull(
                 error.get() );
