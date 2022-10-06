@@ -304,7 +304,7 @@ public FirstClassObject activate( Environment context, FirstClassObject[] args )
 
       return result;
     }
-    catch ( ConversionFailedX e )
+    catch ( RuntimeX e )
     {
       return null;
     }
@@ -339,7 +339,7 @@ public FirstClassObject activate( Environment context, FirstClassObject[] args )
       Class<?> formal,
       FirstClassObject actual )
     throws
-      ConversionFailedX
+      RuntimeX
   {
     try
     {
@@ -434,18 +434,18 @@ public FirstClassObject activate( Environment context, FirstClassObject[] args )
       Class<?> formal,
       de.michab.scream.Vector actual )
     throws
-      ConversionFailedX
+      RuntimeX
   {
-    int len = (int)actual.getSize();
+    var len = actual.size();
     Class<?> componentType = formal.getComponentType();
 
     // Create the result array.
-    Object result = Array.newInstance( componentType, len );
+    Object result = Array.newInstance( componentType, (int)len );
 
     for ( int i = 0 ; i < len ; i++ )
       Array.set( result, i, convertScream2Java(
         componentType,
-        actual.getElement( i ) ) );
+        actual.get( i ) ) );
 
     return result;
   }

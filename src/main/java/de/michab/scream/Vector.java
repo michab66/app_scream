@@ -100,23 +100,17 @@ public class Vector
      * @param so The value to set.
      * @throws RuntimeX in case the array index is out of bounds.
      */
-    public void set( int idx, FirstClassObject so )
+    public void set( long idx, FirstClassObject so )
             throws RuntimeX
     {
         try
         {
-            _theArray[ idx ] = so;
+            _theArray[ (int)idx ] = so;
         }
         catch ( ArrayIndexOutOfBoundsException e )
         {
             throw new RuntimeX( "INDEX_OUT_OF_BOUNDS", new Object[]{ "" + idx } );
         }
-    }
-    @Deprecated
-    public void setElement( int idx, FirstClassObject so )
-            throws RuntimeX
-    {
-        set( idx, so );
     }
 
     /**
@@ -125,22 +119,17 @@ public class Vector
      * @param idx The index of the slot to access.
      * @return The slot's value.
      */
-    public FirstClassObject get( int idx )
+    public FirstClassObject get( long idx )
         throws RuntimeX
     {
         try
         {
-            return _theArray[ idx ];
+            return _theArray[ (int)idx ];
         }
         catch ( IndexOutOfBoundsException e )
         {
             throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, "" + idx );
         }
-    }
-    @Deprecated
-    public FirstClassObject getElement( int idx )
-    {
-        return _theArray[ idx ];
     }
 
     /**
@@ -151,11 +140,6 @@ public class Vector
     public long size()
     {
         return _theArray.length;
-    }
-    @Deprecated
-    public long getSize()
-    {
-        return size();
     }
 
     /**
