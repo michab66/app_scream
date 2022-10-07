@@ -2,8 +2,11 @@ package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
+
+import de.michab.scream.ScreamException.Code;
 
 public class VectorTest
 {
@@ -20,6 +23,28 @@ public class VectorTest
         v.fill( TestUtil.s1 );
         for ( int i = 0 ; i < size ; i++ )
             assertEquals( TestUtil.s1, v.get( i ) );
+    }
+
+    @Test
+    public void indexErr() throws Exception
+    {
+        var size = 5;
+        Vector v = new Vector( size );
+
+        try {
+            v.get( size );
+            fail();
+        }
+        catch ( ScreamException e ) {
+            assertEquals( Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
+        }
+        try {
+            v.set( size, Cons.NIL );
+            fail();
+        }
+        catch ( ScreamException e ) {
+            assertEquals( Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
+        }
     }
 
     @Test

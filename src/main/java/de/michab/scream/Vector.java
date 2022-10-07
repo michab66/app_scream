@@ -101,7 +101,7 @@ public class Vector
      * @throws RuntimeX in case the array index is out of bounds.
      */
     public void set( long idx, FirstClassObject so )
-            throws RuntimeX
+        throws RuntimeX
     {
         try
         {
@@ -109,7 +109,7 @@ public class Vector
         }
         catch ( ArrayIndexOutOfBoundsException e )
         {
-            throw new RuntimeX( "INDEX_OUT_OF_BOUNDS", new Object[]{ "" + idx } );
+            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, "" + idx );
         }
     }
 
