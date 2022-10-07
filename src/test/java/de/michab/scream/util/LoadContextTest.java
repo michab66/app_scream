@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.File;
 import java.net.URL;
 
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,8 @@ public class LoadContextTest
                 u.toExternalForm(),
                 lc.toString() );
         assertEquals(
-                "/com/elharo/io/StreamCopier.class",
-                lc.getFile().getPath() );
+                new File( "/com/elharo/io/StreamCopier.class" ),
+                lc.getFile() );
     }
     @Test
     public void urlFile() throws Exception
@@ -50,8 +51,8 @@ public class LoadContextTest
                 "file:" + u,
                 lc.toString() );
         assertEquals(
-                u,
-                lc.getFile().getPath() );
+                new File( u ),
+                lc.getFile() );
     }
 
     @Test
@@ -69,14 +70,18 @@ public class LoadContextTest
 
         LoadContext lcc = lcb.relate( lca );
         var file = lcc.getFile();
-        assertEquals( "/de/michab/scream/extensions/b.s", file.getPath() );
+        assertEquals(
+                new File( "/de/michab/scream/extensions/b.s" ),
+                file );
 
         LoadContext lcd = new LoadContext( "/tmp/313.so" );
         assertTrue( lcd.isAbsolute() );
 
         LoadContext lcf = lcd.relate( lcc );
         file = lcf.getFile();
-        assertEquals( "/tmp/313.so", file.getPath() );
+        assertEquals(
+                new File("/tmp/313.so"),
+                file );
     }
 
     @Test
@@ -94,7 +99,9 @@ public class LoadContextTest
         LoadContext lcc = lcb.relate( lca );
         var file = lcc.getFile();
         assertTrue( lca.isAbsolute() );
-        assertEquals( "/de/michab/scream/extensions/b.s", file.getPath() );
+        assertEquals(
+                new File( "/de/michab/scream/extensions/b.s" ),
+                file );
     }
 
     @Test
@@ -112,7 +119,9 @@ public class LoadContextTest
 
         LoadContext lcbr = lcb.relate( lca );
         var file = lcbr.getFile();
-        assertEquals( "/com/elharo/io/B.class", file.getPath() );
+        assertEquals(
+                new File( "/com/elharo/io/B.class" ),
+                file );
         assertEquals(
                 "jar:http://www.oreilly.com/javaio.jar!/com/elharo/io/B.class",
                 lcbr.toString() );
