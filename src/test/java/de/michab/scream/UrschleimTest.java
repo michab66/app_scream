@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -172,5 +173,38 @@ public class UrschleimTest
                 r.get()[3] );
         assertNull(
                 error.get() );
+    }
+
+    @Test
+    void _begin() throws Exception
+    {
+        SchemeInterpreter2 si = new SchemeInterpreter2();
+        SchemeEvaluator2 se = (SchemeEvaluator2)si.getScriptEngine();
+
+        Environment env =
+                se.getInteraction();
+
+        Cons cons = (Cons)new SchemeParser(
+            """
+                ((define one 1)
+                 (define two 2)
+                 313)
+            """ ).getExpression();
+
+        Holder<FirstClassObject> r =
+                new Holder<>( null );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                Continuation._begin(
+                        env,
+                        cons,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        assertTrue( TestUtil.i313.equal( r.get() ) );
+        assertTrue( TestUtil.i1.equal( env.get( TestUtil.s1 ) ) );
+        assertTrue( TestUtil.i2.equal( env.get( TestUtil.s2 ) ) );
     }
 }

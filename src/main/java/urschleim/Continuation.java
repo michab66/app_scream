@@ -72,6 +72,43 @@ public class Continuation
         };
     }
 
+    public static Thunk _eval(
+            Environment e,
+            FirstClassObject o,
+            Cont<FirstClassObject> c )
+    {
+        return () ->
+            c.accept(
+                    FirstClassObject.evaluate( o, e ) );
+    }
+
+    private static Thunk _begin(
+            Environment e,
+            Cons body,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c )
+    {
+        if ( body == Cons.NIL )
+            return () -> c.accept( previousResult );
+
+        Cont<FirstClassObject> next =
+                (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
+
+        return () -> _eval( e, body.getCar(), next );
+    }
+
+    public static Thunk _begin(
+            Environment e,
+            Cons body,
+            Cont<FirstClassObject> c )
+    {
+        return _begin(
+                e,
+                body,
+                Cons.NIL,
+                c );
+    }
+
     public static Thunk _if(
             boolean expr,
             Cont<Boolean> trueBranch,
