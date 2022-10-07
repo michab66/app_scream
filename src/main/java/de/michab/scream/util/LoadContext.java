@@ -76,15 +76,16 @@ public class LoadContext
         _isFile = isFile;
     }
 
-    public File getFile()
+    File getFile()
     {
         return _file;
     }
 
     public boolean isAbsolute()
     {
-        return _file.isAbsolute();
+        return _file.getPath().startsWith( File.separator );
     }
+
     public boolean hasParent()
     {
         return _file.getParent() != null;
@@ -110,9 +111,17 @@ public class LoadContext
         return new URL( toString() ).openStream();
     }
 
+    private URL toUrl()
+    {
+        var asString =
+                _prefix + _file;
+        return nonThrowingUrl(
+                asString.replace( '\\', '/' ) );
+    }
+
     @Override
     public String toString()
     {
-        return _prefix + _file;
+        return toUrl().toExternalForm();
     }
 }
