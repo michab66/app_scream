@@ -779,8 +779,10 @@ extends Syntax
      * @see java.lang.Object#clone
      */
     @Override
-    public Object clone()
+    public SchemeObject copy()
     {
+        if ( true )
+            throw new InternalError( getClass().getSimpleName() );
         try
         {
             // Get the clone method...

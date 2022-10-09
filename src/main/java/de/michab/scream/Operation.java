@@ -123,7 +123,7 @@ public abstract class Operation
     setConstant( formalArguments, true );
     setConstant( body, true );
     // Replace the argument list by a clone that gets modified later-on.
-    formalArguments = (FirstClassObject)clone( formalArguments );
+    formalArguments = copy( formalArguments );
 
     commonInit( DEFAULT_NAME );
 

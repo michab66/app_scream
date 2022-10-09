@@ -204,11 +204,8 @@ public class Vector
         return result.append( ')' ).toString();
     }
 
-    /**
-     * @see FirstClassObject#clone
-     */
     @Override
-    public Object clone()
+    public Vector copy()
     {
         return new Vector( _theArray );
     }

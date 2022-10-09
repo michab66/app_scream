@@ -415,7 +415,7 @@ public String toString()
    * @see FirstClassObject#clone
    */
   @Override
-  public Object clone()
+  public SchemeString copy()
   {
     return new SchemeString( getValue(), false );
   }

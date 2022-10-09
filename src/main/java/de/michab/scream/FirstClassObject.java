@@ -291,29 +291,30 @@ public abstract class FirstClassObject
      *         of the object whether this is a real clone or identical to the
      *         object passed in.
      */
-    public static Object clone( FirstClassObject fco )
+    public static FirstClassObject copy( FirstClassObject fco )
     {
         if ( fco == Cons.NIL )
             return Cons.NIL;
         else
-            return fco.clone();
+            return fco.copy();
     }
 
     /**
-     * Clone this scheme object.  The default implementation just returns itself.
-     * Note that it depends on the type of the object whether the returned object
-     * is a real clone or the identity of the object.
+     * Copy this scheme object.  The default implementation returns identity which
+     * can be used if the object cannot be modified.  Otherwise this need to be
+     * overridden.
      *
-     * @return A clone for the object.
+     * @return A copy of the object.
      */
-    @Override
-    public Object clone()
+    public FirstClassObject copy()
     {
-        // TODO: here we have a problem.  We want to be able to throw an RuntimeX
-        // exception from the clone() method but aren't allowed to due to clone()'s
-        // signature in java.lang.Object.  So boy: Never ever in the future use
-        // one of java.lang.Object's methods for Application purposes!
         return this;
+    }
+    @Override
+    @Deprecated
+    public final Object clone()
+    {
+        throw new InternalError();
     }
 
     /**

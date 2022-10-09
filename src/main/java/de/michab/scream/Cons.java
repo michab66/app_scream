@@ -519,10 +519,11 @@ public class Cons
      * @see FirstClassObject#clone()
      */
     @Override
-    public Object clone()
+    public Cons copy()
     {
-        return new Cons( (FirstClassObject)clone( _car ),
-                (FirstClassObject)clone( _cdr ) );
+        return new Cons(
+                copy( _car ),
+                copy( _cdr ) );
     }
 
     /**

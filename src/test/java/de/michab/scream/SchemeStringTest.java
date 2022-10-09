@@ -153,9 +153,8 @@ public class SchemeStringTest
     @Test
     public void cloneTest() throws Exception
     {
-
         var thirteen = new SchemeString( "313" );
-        SchemeString clone = (SchemeString)thirteen.clone();
+        SchemeString clone = thirteen.copy();
 
         assertTrue( thirteen.isConstant() );
         assertFalse( clone.isConstant() );
