@@ -427,7 +427,7 @@ public String toString()
    * @return An object representing this object in the Java type system.
    */
   @Override
-public Object convertToJava()
+public Object toJava()
   {
     return _value.toString();
   }

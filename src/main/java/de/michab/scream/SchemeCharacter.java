@@ -116,7 +116,7 @@ public class SchemeCharacter
      * @return References to <code>java.lang.Character</code> instances.
      */
     @Override
-    public Object convertToJava()
+    public Object toJava()
     {
         return Character.valueOf( _character );
     }

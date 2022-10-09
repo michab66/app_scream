@@ -113,7 +113,7 @@ extends FirstClassObject
      * @return This symbol as a string.
      */
     @Override
-    public Object convertToJava()
+    public Object toJava()
     {
         return toString();
     }

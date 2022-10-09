@@ -14,7 +14,7 @@ public class SchemeCharacterTest
     {
         SchemeCharacter c = SchemeCharacter.createObject( '!' );
         assertNotNull( c );
-        var j = c.convertToJava();
+        var j = c.toJava();
         assertNotNull( j );
         assertInstanceOf( Character.class, j );
 

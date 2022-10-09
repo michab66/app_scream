@@ -32,7 +32,7 @@ public class SchemeIntegerTest
         var d = mk( 0 );
         assertNotNull( d );
         assertInstanceOf( SchemeInteger.class, d );
-        var j = d.convertToJava();
+        var j = d.toJava();
         assertNotNull( j );
         assertInstanceOf( Long.class, j );
 

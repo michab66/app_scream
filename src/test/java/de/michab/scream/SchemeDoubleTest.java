@@ -18,7 +18,7 @@ public class SchemeDoubleTest
         var d = SchemeDouble.createObject( 0.0 );
         assertNotNull( d );
         assertInstanceOf( SchemeDouble.class, d );
-        var j = d.convertToJava();
+        var j = d.toJava();
         assertNotNull( j );
         assertInstanceOf( Double.class, j );
 
@@ -26,6 +26,7 @@ public class SchemeDoubleTest
 
         assertTrue( d == d2 );
     }
+
     @Test
     public void basic2() throws Exception
     {

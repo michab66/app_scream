@@ -218,12 +218,12 @@ public class Vector
      * recursively converted entries.
      */
     @Override
-    public Object convertToJava()
+    public Object toJava()
     {
         Object[] result = new Object[ _theArray.length ];
 
         for ( int i = 0 ; i < result.length ; i++ )
-            result[i] = _theArray[i].convertToJava();
+            result[i] = _theArray[i].toJava();
 
         return result;
     }

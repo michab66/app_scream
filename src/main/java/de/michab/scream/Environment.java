@@ -291,7 +291,7 @@ public final class Environment
      * (non-Javadoc)
      */
     @Override
-    public Object convertToJava()
+    public Object toJava()
     {
         return _symbolMap;
     }

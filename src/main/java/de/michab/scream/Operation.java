@@ -483,7 +483,7 @@ public abstract class Operation
    * @return Always <code>null</code>.
    */
   @Override
-public Object convertToJava()
+public Object toJava()
   {
     // TODO: no conversion possible.  Could convert to action or Method (that
     // second possibility would be pretty cool but also extremely complex.)

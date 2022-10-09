@@ -229,7 +229,7 @@ de.michab.scream.Number
      * <code>java.lang.Double</code>.
      */
     @Override
-    public Object convertToJava()
+    public Object toJava()
     {
         return Double.valueOf( _value );
     }

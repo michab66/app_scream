@@ -569,7 +569,7 @@ public String toString()
    * @return The corresponding Java type for this object.
    */
   @Override
-  public Object convertToJava()
+  public Object toJava()
   {
     if ( isInputPort() )
       return _inPort;

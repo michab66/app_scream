@@ -324,11 +324,7 @@ public abstract class FirstClassObject
      *
      * @return The corresponding object from the Java type system.
      */
-    public abstract Object convertToJava();
-    public Object toJava()
-    {
-        return convertToJava();
-    }
+    public abstract Object toJava();
 
     /**
      * Get the symbolic typename.  Handles NIL references.

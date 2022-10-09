@@ -44,9 +44,9 @@ public class SchemeParserTest
         Cons cons = (Cons)o;
 
         assertEquals( 3, cons.length() );
-        assertEquals( 3L, cons.listRef(0).convertToJava() );
-        assertEquals( 1L, cons.listRef(1).convertToJava() );
-        assertEquals( 3L, cons.listRef(2).convertToJava() );
+        assertEquals( 3L, cons.listRef(0).toJava() );
+        assertEquals( 1L, cons.listRef(1).toJava() );
+        assertEquals( 3L, cons.listRef(2).toJava() );
         assertTrue( cons.isProperList() );
     }
 

@@ -38,7 +38,7 @@ public class SchemeStringTest
             assertEquals( ScreamException.Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
         }
 
-        var j = s.convertToJava();
+        var j = s.toJava();
         assertNotNull( j );
         assertInstanceOf( String.class, j );
         String js = (String)j;
@@ -67,7 +67,7 @@ public class SchemeStringTest
                     s.getCharAt( i ) );
         }
 
-        var j = s.convertToJava();
+        var j = s.toJava();
         assertNotNull( j );
         assertInstanceOf( String.class, j );
         String js = (String)j;
@@ -87,7 +87,7 @@ public class SchemeStringTest
             var S = "313";
             var s = new SchemeString( S );
             assertEquals( S.length(), s.length() );
-            assertEquals( S, s.convertToJava() );
+            assertEquals( S, s.toJava() );
             assertTrue( s.isConstant() );
 
             try
@@ -104,12 +104,12 @@ public class SchemeStringTest
             var S = "313";
             var s = new SchemeString( S, false );
             assertEquals( S.length(), s.length() );
-            assertEquals( S, s.convertToJava() );
+            assertEquals( S, s.toJava() );
             assertFalse( s.isConstant() );
             s.setCharAt( 0, 'x' );
-            assertEquals( "x13", s.convertToJava() );
+            assertEquals( "x13", s.toJava() );
             s.fill( '#' );
-            assertEquals( "###", s.convertToJava() );
+            assertEquals( "###", s.toJava() );
         }
     }
 

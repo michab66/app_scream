@@ -27,86 +27,88 @@ package de.michab.scream;
  * @author Michael Binz
  */
 public class SchemeBoolean
-  extends FirstClassObject
+extends FirstClassObject
 {
-  /**
-   * The name of the type as used by error reporting.
-   *
-   * @see FirstClassObject#getTypename()
-   */
-  public static final String TYPE_NAME = "boolean";
+    /**
+     * The name of the type as used by error reporting.
+     *
+     * @see FirstClassObject#getTypename()
+     */
+    public static final String TYPE_NAME = "boolean";
 
 
 
-  /**
-   * The single true value.
-   */
-  public static final SchemeBoolean T = new SchemeBoolean();
+    /**
+     * The single true value.
+     */
+    public static final SchemeBoolean T = new SchemeBoolean();
 
 
 
-  /**
-   * The single false value.
-   */
-  public static final SchemeBoolean F = new SchemeBoolean();
+    /**
+     * The single false value.
+     */
+    public static final SchemeBoolean F = new SchemeBoolean();
 
 
 
-  /**
-   * A factory for scheme booleans.
-   */
-  static public SchemeBoolean createObject( boolean v )
-  {
-    return v ? T : F;
-  }
+    /**
+     * A factory for scheme booleans.
+     */
+    static public SchemeBoolean createObject( boolean v )
+    {
+        return v ? T : F;
+    }
 
 
 
-  /**
-   * Constructor is private.  Access only allowed via the static members T/F.
-   */
-  private SchemeBoolean()
-  {
-    setConstant( true );
-  }
+    /**
+     * Constructor is private.  Access only allowed via the static members T/F.
+     */
+    private SchemeBoolean()
+    {
+        setConstant( true );
+    }
 
 
 
-  /**
-   * Access the boolean's value as a primitive java type.
-   *
-   * @return The primitive value.
-   * @see SchemeBoolean#convertToJava() for the wrapped value.
-   */
-  public boolean getValue()
-  {
-    return this == T;
-  }
+    /**
+     * Access the boolean's value as a primitive java type.
+     *
+     * @return The primitive value.
+     * @see SchemeBoolean#convertToJava() for the wrapped value.
+     */
+    public boolean getValue()
+    {
+        return this == T;
+    }
 
 
 
-  /**
-   * Returns a string representation of this object.
-   *
-   * @return A string representation of this object.
-   */
-  public String toString()
-  {
-    return this == T ? "#T" : "#F";
-  }
+    /**
+     * Returns a string representation of this object.
+     *
+     * @return A string representation of this object.
+     */
+    @Override
+    public String toString()
+    {
+        return this == T ? "#T" : "#F";
+    }
 
 
 
-  /**
-   * Convert this instance into the native Java type system.  Booleans are
-   * represented by <code>Boolean.TRUE</code> and <code>Boolean.FALSE</code>.
-   *
-   * @return <code>Boolean.TRUE</code> or <code>Boolean.FALSE</code> depending
-   *         on the object's value.
-   * @see SchemeBoolean#getValue() for access to the primitive value.
-   */
-  public Object convertToJava()
-  {
-    return this == T ? Boolean.TRUE : Boolean.FALSE;
-  }
+    /**
+     * Convert this instance into the native Java type system.  Booleans are
+     * represented by <code>Boolean.TRUE</code> and <code>Boolean.FALSE</code>.
+     *
+     * @return <code>Boolean.TRUE</code> or <code>Boolean.FALSE</code> depending
+     *         on the object's value.
+     * @see SchemeBoolean#getValue() for access to the primitive value.
+     */
+    @Override
+    public Object toJava()
+    {
+        return this == T ? Boolean.TRUE : Boolean.FALSE;
+    }
 }

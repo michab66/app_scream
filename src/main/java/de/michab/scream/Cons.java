@@ -635,14 +635,14 @@ public class Cons
      *         <code>FirstClassObject[]</code>.
      */
     @Override
-    public Object convertToJava()
+    public Object toJava()
     {
         FirstClassObject[] unconverted = asArray();
 
         Object[] result = new Object[ unconverted.length ];
 
         for ( int i = 0 ; i < result.length ; i++ )
-            result[i] = unconverted[i].convertToJava();
+            result[i] = unconverted[i].toJava();
 
         return result;
     }
