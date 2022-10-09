@@ -7,7 +7,18 @@
  */
 package de.michab.scream;
 
-import de.michab.scream.pops.*;
+import de.michab.scream.ScreamException.Code;
+import de.michab.scream.pops.Assignment;
+import de.michab.scream.pops.Cond;
+import de.michab.scream.pops.If;
+import de.michab.scream.pops.Let;
+import de.michab.scream.pops.LetAsterisk;
+import de.michab.scream.pops.Letrec;
+import de.michab.scream.pops.Loop;
+import de.michab.scream.pops.Quote;
+import de.michab.scream.pops.Sequence;
+import de.michab.scream.pops.ShortcutAnd;
+import de.michab.scream.pops.ShortcutOr;
 
 
 
@@ -117,7 +128,8 @@ public class Syntax
    * @throws RuntimeX In case an error occured.
    * @throws InternalError In case this method is not overridden.
    */
-  protected FirstClassObject activate( Environment parent,
+  @Override
+protected FirstClassObject activate( Environment parent,
                                        FirstClassObject[] arguments )
     throws RuntimeX
   {
@@ -138,7 +150,8 @@ public class Syntax
    * @return A string representation for this syntax.
    * @see FirstClassObject#toString
    */
-  public String toString()
+  @Override
+public String toString()
   {
     return "<Syntax " + getName() + ">";
   }
@@ -197,6 +210,7 @@ public class Syntax
    */
   static private Syntax quoteSyntax = new Syntax( "quote" )
   {
+    @Override
     public FirstClassObject compile( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -217,6 +231,7 @@ public class Syntax
    */
   static private Syntax lambdaSyntax = new Syntax( "lambda" )
   {
+    @Override
     public FirstClassObject activate( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -244,6 +259,7 @@ public class Syntax
    */
   static private Syntax ifSyntax = new Syntax( "if" )
   {
+    @Override
     public FirstClassObject compile( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -283,6 +299,7 @@ public class Syntax
    */
   static private Syntax condSyntax = new Syntax( "cond" )
   {
+    @Override
     public FirstClassObject compile( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -306,8 +323,8 @@ public class Syntax
         }
         catch ( ClassCastException e )
         {
-          throw new RuntimeX( "BAD_CLAUSE",
-                              new Object[]{ stringize( args[i] ) } );
+          throw new RuntimeX( Code.BAD_CLAUSE,
+                              stringize( args[i] ) );
         }
       } while ( false );
 
@@ -338,6 +355,7 @@ public class Syntax
    */
   static private Syntax caseSyntax = new Syntax( "case" )
   {
+    @Override
     public FirstClassObject activate( Environment parent,
                                       FirstClassObject[] args )
       throws RuntimeX
@@ -351,22 +369,22 @@ public class Syntax
       for ( int j = 1 ; j < args.length ; j++ )
       {
         if ( !( args[j] instanceof Cons ) )
-          throw new RuntimeX( "BAD_CLAUSE",
-                              new Object[]{ stringize( args[j] ) } );
+          throw new RuntimeX( Code.BAD_CLAUSE,
+                              stringize( args[j] ) );
 
         FirstClassObject[] clause = ((Cons)args[j]).asArray();
 
         if ( clause.length < 2 )
-          throw new RuntimeX( "BAD_CLAUSE",
-                              new Object[]{ stringize( args[j] ) } );
+            throw new RuntimeX( Code.BAD_CLAUSE,
+                    stringize( args[j] ) );
 
         // If this is the last clause and there is an 'else' clause...
         if ( j == args.length-1 && eqv( clause[0], ELSE ) )
           // ...make sure, that we are eqv to the key.
           clause[0] = new Cons( key, Cons.NIL );
         else if ( !( clause[0] instanceof Cons ) )
-          throw new RuntimeX( "BAD_CLAUSE",
-                              new Object[]{ stringize( args[j] ) } );
+            throw new RuntimeX( Code.BAD_CLAUSE,
+                    stringize( args[j] ) );
 
         FirstClassObject[] clauseData = ((Cons)clause[0]).asArray();
 
@@ -395,6 +413,7 @@ public class Syntax
    */
   static private Syntax andSyntax = new Syntax( "and" )
   {
+    @Override
     public FirstClassObject compile( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -423,6 +442,7 @@ public class Syntax
    */
   static private Syntax orSyntax = new Syntax( "or" )
   {
+    @Override
     public FirstClassObject compile( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -451,6 +471,7 @@ public class Syntax
       super( name );
     }
 
+    @Override
     public FirstClassObject compile( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -495,9 +516,9 @@ public class Syntax
         catch ( ClassCastException e )
         {
           throw new RuntimeX(
-              "BAD_BINDING",
-              new Object[]{ stringize( getName() ),
-                            stringize( exceptionInfo ) } );
+              Code.BAD_BINDING,
+              stringize( getName() ),
+              stringize( exceptionInfo ) );
         }
       }
       else
@@ -541,6 +562,7 @@ public class Syntax
    */
   static private Syntax letSyntax = new LetSyntax( "let" )
   {
+    @Override
     FirstClassObject createPop( Symbol[] variables,
                                 FirstClassObject[] inits,
                                 FirstClassObject[] body )
@@ -558,6 +580,7 @@ public class Syntax
    */
   static private Syntax letAsteriskSyntax = new LetSyntax( "let*" )
   {
+    @Override
     FirstClassObject createPop( Symbol[] variables,
                                 FirstClassObject[] inits,
                                 FirstClassObject[] body )
@@ -574,6 +597,7 @@ public class Syntax
    */
   static private Syntax letrecSyntax = new LetSyntax( "letrec" )
   {
+    @Override
     FirstClassObject createPop( Symbol[] variables,
                                 FirstClassObject[] inits,
                                 FirstClassObject[] body )
@@ -589,6 +613,7 @@ public class Syntax
    */
   static private Syntax beginSyntax = new Syntax( "begin" )
   {
+    @Override
     public FirstClassObject compile( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -656,6 +681,7 @@ public class Syntax
 
 
 
+    @Override
     public FirstClassObject compile( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -712,12 +738,10 @@ public class Syntax
       }
       catch ( ClassCastException e )
       {
-        throw new RuntimeX( "BAD_BINDING" );
+        throw new RuntimeX( Code.BAD_BINDING );
       }
     }
   };
-
-
 
   /**
    * (define <variable> <expression>) syntax; r5rs 16
@@ -726,6 +750,7 @@ public class Syntax
    */
   static private Syntax defineSyntax = new Syntax( "define" )
   {
+    @Override
     public FirstClassObject activate( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -735,8 +760,8 @@ public class Syntax
       if ( args[0] instanceof Symbol )
       {
         if ( args.length > 2 )
-          throw new RuntimeX( "TOO_MANY_SUBEXPRESSIONS",
-                              new Object[]{ "define" } );
+          throw new RuntimeX( Code.TOO_MANY_SUBEXPRESSIONS,
+                              "define" );
         // Get the value.
         FirstClassObject value = evaluate( args[1], parent );
         // At last bind it.
@@ -746,7 +771,7 @@ public class Syntax
       {
         FirstClassObject symbol = ((Cons)args[0]).getCar();
         if ( ! (symbol instanceof Symbol) )
-          throw new RuntimeX( "DEFINE_ERROR" );
+          throw new RuntimeX( Code.DEFINE_ERROR );
 
         Procedure procToBind = new Procedure( parent,
                                               ((Cons)args[0]).getCdr(),
@@ -755,7 +780,7 @@ public class Syntax
         parent.set( (Symbol)symbol, procToBind );
       }
       else
-        throw new RuntimeX( "SYNTAX_ERROR" );
+        throw new RuntimeX( Code.SYNTAX_ERROR );
 
       // This is unspecified.
       return Cons.NIL;
@@ -778,6 +803,7 @@ public class Syntax
     /**
      *
      */
+    @Override
     public FirstClassObject compile( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -796,6 +822,7 @@ public class Syntax
    */
   static private Syntax timeSyntax = new Syntax( "%time" )
   {
+    @Override
     public FirstClassObject activate( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -827,6 +854,7 @@ public class Syntax
    */
   static private Syntax syntaxSyntax = new Syntax( "%syntax" )
   {
+    @Override
     public FirstClassObject activate( Environment parent, FirstClassObject[] args )
       throws RuntimeX
     {
@@ -837,7 +865,7 @@ public class Syntax
       {
         FirstClassObject symbol = ((Cons)args[0]).getCar();
         if ( ! (symbol instanceof Symbol) )
-          throw new RuntimeX( "DEFINE_ERROR" );
+          throw new RuntimeX( Code.DEFINE_ERROR );
 
         Syntax procToBind = new Syntax( parent,
                                               ((Cons)args[0]).getCdr(),
@@ -846,14 +874,12 @@ public class Syntax
         parent.set( (Symbol)symbol, procToBind );
       }
       else
-        throw new RuntimeX( "SYNTAX_ERROR" );
+        throw new RuntimeX( Code.SYNTAX_ERROR );
 
       // This is unspecified.
       return Cons.NIL;
     }
   };
-
-
 
   /**
    * Base operations setup.

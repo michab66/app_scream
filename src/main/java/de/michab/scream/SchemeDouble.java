@@ -9,6 +9,8 @@ package de.michab.scream;
 
 import org.smack.util.collections.WeakMapWithProducer;
 
+import de.michab.scream.ScreamException.Code;
+
 
 
 
@@ -143,7 +145,7 @@ de.michab.scream.Number
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+            throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
         }
     }
 
@@ -168,7 +170,7 @@ de.michab.scream.Number
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+            throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
         }
     }
 
@@ -193,7 +195,7 @@ de.michab.scream.Number
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+            throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
         }
     }
 
@@ -218,7 +220,7 @@ de.michab.scream.Number
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+            throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
         }
     }
 

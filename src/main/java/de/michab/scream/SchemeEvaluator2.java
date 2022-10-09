@@ -27,6 +27,7 @@ import de.michab.scream.binding.SchemeObject;
  */
 public class SchemeEvaluator2 implements ScriptEngine
 {
+    @SuppressWarnings("unused")
     private static Logger _log =
             Logger.getLogger( SchemeEvaluator2.class.getName() );
 

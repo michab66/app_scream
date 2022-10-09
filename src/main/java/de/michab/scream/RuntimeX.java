@@ -23,7 +23,9 @@ extends ScreamException
      *
      * @param msg The access key into the error message resource bundle.
      * @param args The arguments to be formatted into the error message.
+     * @deprecated
      */
+    @Deprecated
     public RuntimeX( String msg, Object ... args )
     {
         super( msg, args );
@@ -33,7 +35,9 @@ extends ScreamException
      * Create an error message with parameters.
      *
      * @param msg The access key into the error message resource bundle.
+     * @deprecated
      */
+    @Deprecated
     public RuntimeX( String msg )
     {
         super( msg );

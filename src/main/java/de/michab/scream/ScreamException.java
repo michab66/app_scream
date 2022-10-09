@@ -1,10 +1,9 @@
-/* $Id: ScreamException.java 788 2015-01-10 23:07:11Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2009 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
+
 package de.michab.scream;
 
 import java.text.MessageFormat;
@@ -259,13 +258,10 @@ public class ScreamException
      * @param msg The message that will be used as a key into Scream's error
      *        message resource bundle.
      */
+    @Deprecated
     public ScreamException( String msg )
     {
-        this( msg, null );
-    }
-    public ScreamException( Code c )
-    {
-        this( c.toString() );
+        this( msg, new Object[0] );
     }
 
     /**
@@ -277,6 +273,7 @@ public class ScreamException
      * @exception IllegalArgumentException In case the passed message was either
      *            <code>null</code> or the empty string.
      */
+    @Deprecated
     public ScreamException( String msg, Object ... args )
     {
         super( msg );
@@ -289,6 +286,11 @@ public class ScreamException
                 getCode( msg );
         _errorArguments =
                 args;
+    }
+
+    public ScreamException( Code c )
+    {
+        this( c.toString() );
     }
 
     public ScreamException( Code c, Object ... arguments )

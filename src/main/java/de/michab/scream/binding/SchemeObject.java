@@ -28,6 +28,7 @@ import de.michab.scream.SchemeCharacter;
 import de.michab.scream.SchemeDouble;
 import de.michab.scream.SchemeInteger;
 import de.michab.scream.SchemeString;
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
 import de.michab.scream.Vector;
@@ -187,13 +188,13 @@ extends Syntax
             }
 
             // No constructor fit the argument list.
-            throw new RuntimeX( "METHOD_NOT_FOUND" +
-                    new Object[]{ className + "<init>",
-                            Cons.create( ctorArgs ) } );
+            throw new RuntimeX( Code.METHOD_NOT_FOUND,
+                    className + "<init>",
+                            Cons.create( ctorArgs ) );
         }
         catch ( ClassNotFoundException e )
         {
-            throw new RuntimeX( "CLASS_NOT_FOUND", new Object[]{ className } );
+            throw new RuntimeX( Code.CLASS_NOT_FOUND, className );
         }
         // We have to catch an error here, since this is thrown if we try to create
         // classes where the case of the class name differs from the actual upper
@@ -202,7 +203,7 @@ extends Syntax
         // de/michab/scream/JavaClassAdapter)"
         catch ( NoClassDefFoundError e )
         {
-            throw new RuntimeX( "CLASS_NOT_FOUND", new Object[]{ className } );
+            throw new RuntimeX( Code.CLASS_NOT_FOUND, className );
         }
         catch ( InvocationTargetException e )
         {
@@ -220,17 +221,16 @@ extends Syntax
             else
                 what = "";
 
-            throw new RuntimeX( "CREATION_FAILED",
-                    new Object[]{ what + " " + className } );
+            throw new RuntimeX( Code.CREATION_FAILED,
+                    what + " " + className );
         }
         catch ( IllegalAccessException e )
         {
-            throw new RuntimeX( "ILLEGAL_ACCESS",
-                    new Object[]{ className + "<init>" } );
+            throw new RuntimeX(
+                    Code.ILLEGAL_ACCESS,
+                    className + "<init>"  );
         }
     }
-
-
 
     /**
      * Return the Java object that corresponds to the Scheme object.
@@ -241,8 +241,6 @@ extends Syntax
     {
         return _theInstance;
     }
-
-
 
     /**
      * @param context The environment used for necessary evaluations.
@@ -272,10 +270,8 @@ extends Syntax
                     // TODO Is that NIL save??
                     evaluate( args[1], context ) );
 
-        throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ SchemeObject.class } );
+        throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
     }
-
-
 
     /**
      * Matches the actual parameter list of the invocation with the passed
@@ -494,14 +490,12 @@ extends Syntax
         catch ( Exception ee )
         {
             resultException =
-                    new RuntimeX( "INVOCATION_EXCEPTION",
-                            new Object[]{ context, t } );
+                    new RuntimeX( Code.INVOCATION_EXCEPTION,
+                            context, t );
         }
 
         return resultException;
     }
-
-
 
     /**
      * Converts a Java object back into Scream's type system.
@@ -617,7 +611,7 @@ extends Syntax
                         // object.  Since the VM in this case simply throws a NPE we have
                         // to check for this condition manually.
                         if ( _isClass && ! Modifier.isStatic( methods[i].getModifiers() ) )
-                            throw new RuntimeX( "CANT_ACCESS_INSTANCE" );
+                            throw new RuntimeX( Code.CANT_ACCESS_INSTANCE );
 
                         // Do the actual call.
                         return convertJava2Scream(
@@ -626,8 +620,8 @@ extends Syntax
                 }
             }
 
-            throw new RuntimeX( "METHOD_NOT_FOUND",
-                    new Object[]{ Cons.create( list ) } );
+            throw new RuntimeX( Code.METHOD_NOT_FOUND,
+                    Cons.create( list ) );
         }
         catch ( InvocationTargetException e )
         {
@@ -640,16 +634,14 @@ extends Syntax
             // instance method on a java.lang.Class object.  In that case the illegal
             // argument is the first argument to invoke, that is on the one hand non
             // null, but on the other hand simply the wrong reference.
-            throw new RuntimeX( "ILLEGAL_ARGUMENT",
-                    new Object[]{ methodName } );
+            throw new RuntimeX( Code.ILLEGAL_ARGUMENT,
+                    methodName );
         }
         catch ( IllegalAccessException e )
         {
-            throw new RuntimeX( "ILLEGAL_ACCESS", new Object[]{ methodName } );
+            throw new RuntimeX( Code.ILLEGAL_ACCESS, methodName );
         }
     }
-
-
 
     /**
      * Get/Read an attribute from the passed object.
@@ -674,7 +666,7 @@ extends Syntax
         }
         catch ( IllegalAccessException e )
         {
-            throw new RuntimeX( "ILLEGAL_ACCESS", new Object[]{ attribute } );
+            throw new RuntimeX( Code.ILLEGAL_ACCESS, attribute );
         }
     }
 
@@ -720,15 +712,9 @@ extends Syntax
         }
         catch ( IllegalAccessException e )
         {
-            throw new RuntimeX( "ILLEGAL_ACCESS", new Object[]{ attribute } );
-        }
-        catch ( ConversionFailedX e )
-        {
-            throw new RuntimeX( e.getMessage() );
+            throw new RuntimeX( Code.ILLEGAL_ACCESS, attribute );
         }
     }
-
-
 
     /**
      * Test for equality based on the embedded instance.  If we have no instance
@@ -840,7 +826,7 @@ extends Syntax
                 return createObject( args[0].toString(), null );
             }
             else
-                throw new RuntimeX( "SYNTAX_ERROR" );
+                throw new RuntimeX( Code.SYNTAX_ERROR );
         }
     };
 

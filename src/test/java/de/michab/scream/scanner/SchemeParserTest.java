@@ -82,8 +82,7 @@ public class SchemeParserTest
         try
         {
             // Missing closing brace.
-            SchemeParser sp = new SchemeParser( "(+ 300 13" );
-            var x = sp.getExpression();
+            new SchemeParser( "(+ 300 13" ).getExpression();
             fail();
         }
         catch( FrontendX e )
@@ -100,8 +99,7 @@ public class SchemeParserTest
         try
         {
             // Missing closing brace.
-            SchemeParser sp = new SchemeParser( ")" );
-            var x = sp.getExpression();
+            new SchemeParser( ")" ).getExpression();
             fail();
         }
         catch( FrontendX e )

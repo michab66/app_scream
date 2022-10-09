@@ -129,7 +129,6 @@ public class SchemeStringTest
 
         var thirteen = new SchemeString( "313" );
         var fourteen = new SchemeString( "314" );
-        var zero = SchemeDouble.createObject( 0.0 );
 
         assertEquals( -1, thirteen.compareTo( fourteen ) );
         assertEquals( 0, fourteen.compareTo( fourteen ) );

@@ -8,6 +8,8 @@ package de.michab.scream;
 
 import java.util.Arrays;
 
+import de.michab.scream.ScreamException.Code;
+
 /**
  * Represents the scheme integer data type.
  */
@@ -118,7 +120,7 @@ public class SchemeInteger
         // other than scream.Number this has to fail...
         Operation.checkArgument( 1, Number.class, other );
         // ...or we found an internal error.
-        throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
     }
 
     /**
@@ -137,7 +139,7 @@ public class SchemeInteger
         // other than scream.Number this has to fail...
         Operation.checkArgument( 1, Number.class, other );
         // ...or we found an internal error.
-        throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
     }
 
     /**
@@ -156,7 +158,7 @@ public class SchemeInteger
         // other than scream.Number this has to fail...
         Operation.checkArgument( 1, Number.class, other );
         // ...or we found an internal error.
-        throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
     }
 
     /**
@@ -175,7 +177,7 @@ public class SchemeInteger
         // other than scream.Number this has to fail...
         Operation.checkArgument( 1, Number.class, other );
         // ...or we found an internal error.
-        throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
+        throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
     }
 
     /**
