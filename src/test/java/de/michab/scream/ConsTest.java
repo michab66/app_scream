@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
 
 public class ConsTest
@@ -53,7 +54,7 @@ public class ConsTest
                 SchemeInteger.createObject(2),
                 SchemeInteger.createObject(3),
                 SchemeInteger.createObject(4)
-        );
+                );
 
         Cons tail2 = (Cons)c1.listTail( 2 );
         assertNotNull( tail2 );
@@ -79,7 +80,7 @@ public class ConsTest
                 SchemeInteger.createObject(2),
                 SchemeInteger.createObject(3),
                 SchemeInteger.createObject(4)
-        );
+                );
 
         Cons tail2 = (Cons)c1.listTail( c1.length() -1 );
         tail2.setCdr( c1 );
@@ -110,7 +111,7 @@ public class ConsTest
                 SchemeInteger.createObject(2),
                 SchemeInteger.createObject(3),
                 SchemeInteger.createObject(4)
-        );
+                );
 
         Cons tail2 = (Cons)c1.listTail( c1.length() -1 );
         tail2.setCdr( c1 );
@@ -127,7 +128,7 @@ public class ConsTest
                 SchemeInteger.createObject(2),
                 SchemeInteger.createObject(3),
                 SchemeInteger.createObject(4)
-        );
+                );
 
         var r2 = c1.listRef( 2 );
         assertNotNull( r2 );
@@ -153,17 +154,59 @@ public class ConsTest
                 SchemeInteger.createObject(2),
                 SchemeInteger.createObject(3),
                 SchemeInteger.createObject(4)
-        );
+                );
         Cons c2 = Cons.create(
                 SchemeInteger.createObject(0),
                 SchemeInteger.createObject(1),
                 SchemeInteger.createObject(2),
                 SchemeInteger.createObject(3),
                 SchemeInteger.createObject(4)
-        );
+                );
 
         assertTrue( c1.equal( c2 ) );
         assertFalse( c1.eqv( c2 ) );
         assertFalse( c1.eq( c2 ) );
     }
+
+    @Test
+    public void eval() throws Exception
+    {
+        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        var env = se.getInteraction();
+        Cons cons = (Cons)new SchemeParser( "(+ 1 2)" ).getExpression();
+        assertTrue( TestUtil.i3.equal( cons.evaluate( env ) ) );
+    }
+    @Test
+    public void evalErr() throws Exception
+    {
+        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        var env = se.getInteraction();
+        Cons cons = (Cons)new SchemeParser( "(0 1 2)" ).getExpression();
+        try
+        {
+            cons.evaluate( env );
+            fail();
+        }
+        catch ( ScreamException e )
+        {
+            assertEquals( Code.CALLED_NON_PROCEDURAL, e.getCode() );
+        }
+    }
+    @Test
+    public void evalErrNil() throws Exception
+    {
+        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        var env = se.getInteraction();
+        Cons cons = (Cons)new SchemeParser( "(() 1 2)" ).getExpression();
+        try
+        {
+            cons.evaluate( env );
+            fail();
+        }
+        catch ( ScreamException e )
+        {
+            assertEquals( Code.CALLED_NON_PROCEDURAL, e.getCode() );
+        }
+    }
+
 }

@@ -7,6 +7,7 @@ package de.michab.scream;
 
 import java.util.HashSet;
 
+import de.michab.scream.ScreamException.Code;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
 
@@ -422,7 +423,7 @@ public class Cons
             throws RuntimeX
     {
         if ( ! isProperList() )
-            throw new RuntimeX( "EXPECTED_PROPER_LIST" );
+            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
 
         FirstClassObject op = evaluate( _car, e );
 
@@ -436,8 +437,8 @@ public class Cons
         }
         catch ( ClassCastException x )
         {
-            throw new RuntimeX( "CALLED_NON_PROCEDURAL",
-                    new Object[]{ stringize( op ) } );
+            throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
+                    stringize( op ) );
         }
         catch ( RuntimeX rx )
         {
