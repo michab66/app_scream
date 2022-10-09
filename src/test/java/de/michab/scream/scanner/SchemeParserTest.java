@@ -15,11 +15,28 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.Cons;
 import de.michab.scream.Port;
 import de.michab.scream.ScreamException;
+import de.michab.scream.Vector;
 import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
 
 public class SchemeParserTest
 {
+    @Test
+    public void parseArrayEmpty() throws ScreamException
+    {
+        var o = new SchemeParser( "#()" ).getExpression();
+        Vector a = (Vector)o;
+        assertEquals( 0, a.size() );
+    }
+
+    @Test
+    public void parseArray() throws ScreamException
+    {
+        var o = new SchemeParser( "#(1 2 3)" ).getExpression();
+        Vector a = (Vector)o;
+        assertEquals( 3, a.size() );
+    }
+
     @Test
     public void parseListEmpty() throws ScreamException
     {
