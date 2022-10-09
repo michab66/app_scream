@@ -9,18 +9,25 @@ import org.junit.jupiter.api.Test;
 
 public class SchemeCharacterTest
 {
+    private final Character bang = '!';
+
     @Test
-    public void basic() throws Exception
+    public void toJava() throws Exception
     {
-        SchemeCharacter c = SchemeCharacter.createObject( '!' );
+        SchemeCharacter c = SchemeCharacter.createObject( bang );
         assertNotNull( c );
         var j = c.toJava();
         assertNotNull( j );
         assertInstanceOf( Character.class, j );
+        assertEquals( bang, j );
+    }
 
-        var c2 = SchemeCharacter.createObject( ((Character)j).charValue() );
-
-        assertTrue( c == c2 );
+    @Test
+    public void identity() throws Exception
+    {
+        SchemeCharacter c = SchemeCharacter.createObject( bang );
+        assertNotNull( c );
+        assertTrue( c ==  SchemeCharacter.createObject( bang ) );
     }
 
     @Test

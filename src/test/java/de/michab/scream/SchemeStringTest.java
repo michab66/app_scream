@@ -12,6 +12,17 @@ import org.junit.jupiter.api.Test;
 public class SchemeStringTest
 {
     @Test
+    public void toJava()
+    {
+        String micbinz =
+                "micbinz";
+        var s =
+                new SchemeString( micbinz );
+        var o = s.toJava();
+        assertInstanceOf( String.class, o );
+        assertEquals( micbinz, o );
+    }
+    @Test
     public void constructorLength() throws Exception
     {
         final var L = 5;
