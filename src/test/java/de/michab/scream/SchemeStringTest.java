@@ -12,16 +12,15 @@ import org.junit.jupiter.api.Test;
 public class SchemeStringTest
 {
     @Test
-    public void toJava()
+    public void toJava() throws Exception
     {
-        String micbinz =
-                "micbinz";
-        var s =
-                new SchemeString( micbinz );
-        var o = s.toJava();
-        assertInstanceOf( String.class, o );
-        assertEquals( micbinz, o );
+        TestUtil.toJava_(
+                SchemeString.class,
+                String.class,
+                "micbinz",
+                SchemeString::new );
     }
+
     @Test
     public void constructorLength() throws Exception
     {

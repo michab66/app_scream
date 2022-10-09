@@ -47,7 +47,7 @@ de.michab.scream.Number
      * A factory for scheme doubles.  Used for limiting generation for well
      * known instances as for 1.0, 2.0, ... of this type.
      */
-    static public Number createObject( double v )
+    static public SchemeDouble createObject( double v )
     {
         return _flyweights.get( v );
     }

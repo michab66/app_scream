@@ -68,7 +68,20 @@ public class SchemeCharacter
      */
     static public SchemeCharacter createObject( int value )
     {
-        return _flyweigths.get( (char)value );
+        return createObject( (char)value );
+    }
+
+    /**
+     * The public character factory.  The type is integer to be callable from
+     * Scream itself since there is no automatic conversion from integer to
+     * character.
+     *
+     * @param value The integer value for the requested character.
+     * @return A new <code>SchemeCharacter</code> instance.
+     */
+    static public SchemeCharacter createObject( char value )
+    {
+        return _flyweigths.get( value );
     }
 
     /**

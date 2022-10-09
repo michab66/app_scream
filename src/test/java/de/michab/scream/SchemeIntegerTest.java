@@ -27,6 +27,16 @@ public class SchemeIntegerTest
     }
 
     @Test
+    public void toJava() throws Exception
+    {
+        TestUtil.toJava_(
+                SchemeInteger.class,
+                Long.class,
+                0L,
+                SchemeInteger::createObject );
+    }
+
+    @Test
     public void basic() throws Exception
     {
         var d = mk( 0 );

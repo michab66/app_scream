@@ -1,7 +1,6 @@
 package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,12 +13,11 @@ public class SchemeCharacterTest
     @Test
     public void toJava() throws Exception
     {
-        SchemeCharacter c = SchemeCharacter.createObject( bang );
-        assertNotNull( c );
-        var j = c.toJava();
-        assertNotNull( j );
-        assertInstanceOf( Character.class, j );
-        assertEquals( bang, j );
+        TestUtil.toJava_(
+                SchemeCharacter.class,
+                Character.class,
+                bang,
+                SchemeCharacter::createObject );
     }
 
     @Test

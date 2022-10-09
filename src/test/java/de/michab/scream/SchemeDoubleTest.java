@@ -12,6 +12,18 @@ import de.michab.scream.ScreamException.Code;
 
 public class SchemeDoubleTest
 {
+    private Double ZERO = 0.0d;
+
+    @Test
+    public void toJava() throws Exception
+    {
+        TestUtil.toJava_(
+                SchemeDouble.class,
+                Double.class,
+                ZERO,
+                SchemeDouble::createObject );
+    }
+
     @Test
     public void basic() throws Exception
     {

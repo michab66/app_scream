@@ -1,5 +1,11 @@
 package de.michab.scream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.function.Function;
+
 public class TestUtil
 {
     public final static SchemeInteger i1 = SchemeInteger.createObject( 1 );
@@ -14,4 +20,15 @@ public class TestUtil
     public final static Symbol s4 = Symbol.createObject( "four" );
     public final static Symbol s313 = Symbol.createObject( "threethirteen" );
 
+    static <S extends FirstClassObject,J>
+    void toJava_( Class<S> sc, Class<J> jc, J testObject, Function<J, S> factory)
+    {
+        S so = factory.apply( testObject );
+        assertNotNull( so );
+        assertInstanceOf( sc, so );
+        var j = so.toJava();
+        assertNotNull( j );
+        assertInstanceOf( jc, j );
+        assertEquals( testObject, j );
+    }
 }
