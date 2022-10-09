@@ -448,10 +448,9 @@ public class Cons
         }
     }
     @Override
-    protected Thunk evaluate( Environment e, Cont<FirstClassObject> c )
+    public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
             throws RuntimeX
     {
-
         return () -> c.accept(
                 evaluate(e) );
     }

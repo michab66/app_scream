@@ -1,21 +1,18 @@
-/* $Id: SchemeInteger.java 190 2009-07-01 20:53:40Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2009 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
+
 package de.michab.scream;
 
 import java.util.Arrays;
-
-
 
 /**
  * Represents the scheme integer data type.
  */
 public class SchemeInteger
-extends Number
+    extends Number
 {
     /**
      * The name of the type as used by error reporting.
@@ -24,23 +21,14 @@ extends Number
      */
     public static final String TYPE_NAME = "integer";
 
-
-
-    /*
-     * A cache for SchemeIntegers.  Cache size is configurable.
-     */
     private final static long CACHE_MIN = -100;
     private final static long CACHE_MAX =  100;
     private static SchemeInteger[] _cache;
-
-
 
     /**
      * This integer's value.
      */
     private final long _value;
-
-
 
     /**
      * A factory for scheme integers.  Used for limiting generation for well
@@ -48,23 +36,16 @@ extends Number
      */
     static public SchemeInteger createObject( long v )
     {
-        // Check if the value is in the cached interval.
         if ( v >= CACHE_MIN && v <= CACHE_MAX )
         {
-            // Yeah.  Map to the cache index...
             int cacheIdx = (int)(v - CACHE_MIN);
-            // ...and ensure the value is cached.
             if ( null == _cache[ cacheIdx ] )
                 _cache[ cacheIdx ] = new SchemeInteger( v );
-            // At last return the cached value.
             return _cache[ cacheIdx ];
         }
         else
-            // Is not in the cache interval.
             return new SchemeInteger( v );
     }
-
-
 
     /**
      *
@@ -75,8 +56,6 @@ extends Number
 
         _value = v;
     }
-
-
 
     /**
      * @see FirstClassObject#eqv
@@ -96,8 +75,6 @@ extends Number
         return false;
     }
 
-
-
     /**
      * @see Object#toString
      */
@@ -106,8 +83,6 @@ extends Number
     {
         return "" + _value;
     }
-
-
 
     /**
      * @see Number#asLong
@@ -118,8 +93,6 @@ extends Number
         return _value;
     }
 
-
-
     /**
      * @see Number#asDouble
      */
@@ -128,8 +101,6 @@ extends Number
     {
         return _value;
     }
-
-
 
     /**
      * @see Number#add
@@ -150,8 +121,6 @@ extends Number
         throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
     }
 
-
-
     /**
      * @see Number#subtract
      */
@@ -170,8 +139,6 @@ extends Number
         // ...or we found an internal error.
         throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
     }
-
-
 
     /**
      * @see Number#multiply
@@ -192,8 +159,6 @@ extends Number
         throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
     }
 
-
-
     /**
      * @see Number#divide
      */
@@ -213,8 +178,6 @@ extends Number
         throw new RuntimeX( "INTERNAL_ERROR", new Object[]{ getClass() } );
     }
 
-
-
     /**
      * Returns a <code>java.lang.Long</code> instance corresponding to this
      * <code>integer</code.
@@ -225,6 +188,26 @@ extends Number
     public Object convertToJava()
     {
         return Long.valueOf( _value );
+    }
+
+    @Override
+    public boolean equals( Object other )
+    {
+        try {
+            SchemeInteger o = (SchemeInteger)other;
+
+            return _value == o._value;
+        }
+        catch ( Exception e )
+        {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Long.valueOf( _value ).hashCode();
     }
 
     /*

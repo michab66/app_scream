@@ -59,7 +59,7 @@ extends FirstClassObject
     }
 
     /**
-     * Evaluates this symbol, i.e. looks up the symbol in the passed environment
+     * Looks up the symbol in the passed environment
      * and returns its value.
      *
      * @param e The environment to use for evaluation of this symbol.
@@ -74,14 +74,11 @@ extends FirstClassObject
         return e.get( this );
     }
     @Override
-    protected Continuation.Thunk evaluate( Environment e , Continuation.Cont<FirstClassObject> c )
+    public Continuation.Thunk evaluate( Environment e , Continuation.Cont<FirstClassObject> c )
             throws RuntimeX
     {
-        if ( Thread.interrupted() )
-            throw new RuntimeX( "INTERRUPTED" );
-
         return () -> c.accept(
-                evaluate(e) );
+                e.get( this ) );
     }
 
     /**

@@ -1,12 +1,12 @@
-/* $Id: FirstClassObject.java 180 2009-06-06 15:50:36Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2000 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
+
 package de.michab.scream;
 
+import de.michab.scream.ScreamException.Code;
 import urschleim.Continuation;
 
 /**
@@ -120,8 +120,6 @@ public abstract class FirstClassObject
         throw new Unwind( fco, env );
     }
 
-
-
     /**
      * Evaluate this scheme object and return the result.  This default version
      * just evaluates to itself.  This must only be called if it is ensured that
@@ -139,10 +137,11 @@ public abstract class FirstClassObject
         // flag of the current thread, so the thread will be able to do additional
         // work after handling the error message.
         if ( Thread.interrupted() )
-            throw new RuntimeX( "INTERRUPTED" );
+            throw new RuntimeX( Code.INTERRUPTED );
 
         return this;
     }
+
     /**
      * Evaluate this scheme object and return the result.  This default version
      * just evaluates to itself.  This must only be called if it is ensured that
@@ -153,11 +152,13 @@ public abstract class FirstClassObject
      * @return The thunk.
      * @throws RuntimeX In case the evaluation failed.
      */
-    protected Continuation.Thunk evaluate( Environment e , Continuation.Cont<FirstClassObject> c )
+    public Continuation.Thunk evaluate(
+        Environment e,
+        Continuation.Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( Thread.interrupted() )
-            throw new RuntimeX( "INTERRUPTED" );
+            throw new RuntimeX( Code.INTERRUPTED );
 
         return () -> c.accept( this );
     }
@@ -181,8 +182,6 @@ public abstract class FirstClassObject
             return left.eqv( right );
     }
 
-
-
     /**
      * The implementation of the Scheme <code>eqv?</code> procedure.  The default
      * implementation delegates the operation to the <code>eq()</code> method.
@@ -194,8 +193,6 @@ public abstract class FirstClassObject
     {
         return eq( other );
     }
-
-
 
     /**
      * The implementation of the scheme <code>eq?</code> procedure.  Handles NIL
@@ -216,8 +213,6 @@ public abstract class FirstClassObject
             return left.eq( right );
     }
 
-
-
     /**
      * The implementation of the scheme eq? procedure.  The default compares the
      * references.
@@ -229,8 +224,6 @@ public abstract class FirstClassObject
     {
         return this == other;
     }
-
-
 
     /**
      * The implementation of the scheme equal? procedure.  Handles a NIL left
@@ -251,8 +244,6 @@ public abstract class FirstClassObject
             return left.equal( right );
     }
 
-
-
     /**
      * The implementation of the scheme equal? procedure.  The default is to
      * delegate the comparison to the eqv() method.
@@ -264,8 +255,6 @@ public abstract class FirstClassObject
     {
         return eqv( other );
     }
-
-
 
     /**
      * Create a string from the passed object suitable for the read() operation.
@@ -284,8 +273,6 @@ public abstract class FirstClassObject
             return object.toString();
     }
 
-
-
     /**
      * Create a string from this object suitable for the read() operation.
      *
@@ -293,8 +280,6 @@ public abstract class FirstClassObject
      */
     @Override
     public abstract String toString();
-
-
 
     /**
      * Clone this scheme object.  The default implementation just returns itself.
@@ -314,8 +299,6 @@ public abstract class FirstClassObject
             return fco.clone();
     }
 
-
-
     /**
      * Clone this scheme object.  The default implementation just returns itself.
      * Note that it depends on the type of the object whether the returned object
@@ -333,8 +316,6 @@ public abstract class FirstClassObject
         return this;
     }
 
-
-
     /**
      * Convert this <code>FirstClassObject</code> into its corresponding raw
      * Java representation.  If the object represents a
@@ -344,8 +325,10 @@ public abstract class FirstClassObject
      * @return The corresponding object from the Java type system.
      */
     public abstract Object convertToJava();
-
-
+    public Object toJava()
+    {
+        return convertToJava();
+    }
 
     /**
      * Get the symbolic typename.  Handles NIL references.
@@ -361,8 +344,6 @@ public abstract class FirstClassObject
         else
             return o.getTypename();
     }
-
-
 
     /**
      * Return the typename of this <code>FirstClassObject</code> instance.  This
@@ -399,8 +380,6 @@ public abstract class FirstClassObject
         return result;
     }
 
-
-
     /**
      * Mark a <code>FirstClassObject</code> as constant.  Note that it is not
      * possible to switch from constant to variable, only the state change from
@@ -417,8 +396,6 @@ public abstract class FirstClassObject
         if ( Cons.NIL != fco )
             fco.setConstant( what );
     }
-
-
 
     /**
      * Can be used to mark a <code>FirstClassObject</code> as constant.  Note
@@ -439,11 +416,9 @@ public abstract class FirstClassObject
         _isConstant = what;
     }
 
-
-
     /**
      * Returns whether an <code>FirstClassObject</code> is a constant. Constant
-     * objects are the self-evaluating primitves and can be created by the
+     * objects are the self-evaluating primitives and can be created by the
      * <code>quote</code> syntax.
      *
      * @param fco The <code>FirstClassObject</code> to test.
@@ -451,11 +426,8 @@ public abstract class FirstClassObject
      */
     static boolean isConstant( FirstClassObject fco )
     {
-        // I like my C history...
         return fco == Cons.NIL || fco.isConstant();
     }
-
-
 
     /**
      * Returns whether an <code>FirstClassObject</code> is a constant. Constant
@@ -468,8 +440,6 @@ public abstract class FirstClassObject
     {
         return _isConstant;
     }
-
-
 
     /**
      * Compile this <code>FirstClassObject</code>.  This default implementation
@@ -485,8 +455,6 @@ public abstract class FirstClassObject
     {
         return this;
     }
-
-
 
     /**
      * Compile the passed first class object.  This default implementation just
