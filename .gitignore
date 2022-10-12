@@ -2,4 +2,7 @@
 /target/
 /web/
 /dist/
+.settings/
+.project
+.classpath
 

@@ -131,14 +131,7 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
   {INTEGER} {
     try
     {
-      String longs = yytext();
-      // Check if the matched text starts with an explicit plus sign ('+').
-      // This cannot be handled by the Long.parseLong() call below, so the plus
-      // has to be removed before.
-      if ( longs.startsWith( "+" ) )
-        longs = longs.substring( 1 );
-
-      return new Token( Long.parseLong( longs ) );
+      return new Token( Long.parseLong( yytext() ) );
     }
     catch ( NumberFormatException e )
     {
