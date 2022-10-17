@@ -8,6 +8,7 @@ package de.michab.scream;
 import java.util.HashSet;
 
 import de.michab.scream.ScreamException.Code;
+import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
 
@@ -448,12 +449,39 @@ public class Cons
             throw rx;
         }
     }
+
+    private Thunk _activate(
+            Environment e,
+            FirstClassObject  op,
+            Cons args,
+            Cont<FirstClassObject> c )
+        throws RuntimeX
+    {
+        try
+        {
+            return ((Operation)op)._activate( e, args, c );
+        }
+        catch ( NullPointerException | ClassCastException x )
+        {
+            throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
+                    stringize( op ) ).setCause( x );
+        }
+    }
+
     @Override
     public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
             throws RuntimeX
     {
-        return () -> c.accept(
-                evaluate(e) );
+        if ( ! isProperList() )
+            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+
+        Cons arguments = (Cons)getCdr();
+
+        return Continuation._eval(
+                e,
+                getCar(),
+                (s)->_activate( e, s, arguments, c )
+                );
     }
 
     /**
@@ -627,6 +655,13 @@ public class Cons
         }
 
         return argArray;
+    }
+    public static FirstClassObject[] asArray( Cons c )
+    {
+        if ( c == Cons.NIL )
+            return new FirstClassObject[0];
+
+        return c.asArray();
     }
 
     /**

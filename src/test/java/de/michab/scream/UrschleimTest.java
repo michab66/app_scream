@@ -10,6 +10,10 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +23,8 @@ import urschleim.Holder;
 
 public class UrschleimTest
 {
+    private static Logger LOG = Logger.getLogger( UrschleimTest.class.getName() );
+
     @Test
     public void typeIntegerTest() throws Exception
     {
@@ -87,15 +93,22 @@ public class UrschleimTest
                 error.get().getCode() );
     }
 
+//    @Disabled
     @Test
     public void operationTest() throws Exception
     {
-        FirstClassObject add313 =
-                new SchemeParser( "(+ 300 13)" ).getExpression();
-        assertInstanceOf( Cons.class, add313 );
+        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
 
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se = (SchemeEvaluator2)si.getScriptEngine();
+        var result = se.eval(
+                """
+                (%syntax (xquote value) value)
+                (xquote micbinz)
+                """ );
+        assertEquals( result, Symbol.createObject( "micbinz" ) );
+
+        FirstClassObject opCall =
+                new SchemeParser( "(xquote not-defined-yet)" ).getExpression();
+        assertInstanceOf( Cons.class, opCall );
 
         var env = se.getInteraction();
 
@@ -105,23 +118,25 @@ public class UrschleimTest
                 new Holder<>( null );
 
         Continuation.trampoline(
-                add313.evaluate( env,
+                opCall.evaluate( env,
                         Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
+
+        if ( error.get() != null )
+        {
+            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
+            fail();
+        }
 
         assertNotNull(
                 r.get() );
         assertInstanceOf(
-                SchemeInteger.class,
+                Symbol.class,
                 r.get() );
         assertEquals(
-                313,
-                ((SchemeInteger)r.get()).asLong() );
-        assertNull(
-                error.get() );
+                Symbol.createObject( "not-defined-yet" ),
+                r.get() );
     }
-
-
 
     @Test
     public void listEvalTest() throws Exception

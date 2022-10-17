@@ -11,6 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.michab.scream.ScreamException.Code;
+import urschleim.Continuation;
+import urschleim.Continuation.Cont;
+import urschleim.Continuation.Thunk;
 
 /**
  * Represents an abstract operation.  Is the base class for macros (syntaxes in
@@ -218,14 +221,52 @@ extends FirstClassObject
     public FirstClassObject activate( Environment e, Cons argumentList )
             throws RuntimeX
     {
-        FirstClassObject[] arrayArgumentList;
+        return activate( e, Cons.asArray( argumentList ) );
+    }
 
-        if ( argumentList != Cons.NIL )
-            arrayArgumentList = argumentList.asArray();
-        else
-            arrayArgumentList = _emptyArgArray;
+    private Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
+        throws RuntimeX
+    {
+        if ( argNames != Cons.NIL && argValues == Cons.NIL)
+            // Cannot happen since we check in _activate.
+            throw new InternalError( "NotEnough" );
+        if ( argNames == Cons.NIL && argValues == Cons.NIL )
+            return c.accept( e );
+        if ( argNames == Cons.NIL && _rest != Cons.NIL )
+        {
+            e.set( (Symbol)_rest, argValues );
+            return c.accept( e );
+        }
+        if ( argNames == Cons.NIL && _rest == Cons.NIL )
+        {
+            // Cannot happen since we check in _activate.
+            throw new InternalError( "TooMany" );
+        }
 
-        return activate( e, arrayArgumentList );
+        Symbol name =
+                (Symbol)argNames.getCar();
+        FirstClassObject value =
+                argValues.getCar();
+        e.set( name, value );
+
+        return () -> _bind( e, (Cons)argNames.getCdr(), (Cons)argValues.getCdr(), c );
+    }
+
+    public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
+        throws RuntimeX
+    {
+        checkArgumentCount( args );
+
+        final var ex = e.extend( getName() );
+
+        if ( _rest != Cons.NIL )
+            ex.set( (Symbol)_rest, Cons.NIL );
+
+        return () -> _bind(
+                ex,
+                _formalArguments,
+                args,
+                (s)->Continuation._begin( s, _body, c ) );
     }
 
     /**
@@ -350,6 +391,29 @@ extends FirstClassObject
                     "" + expected,
                     "" + received.length
                     );
+    }
+    /**
+     * Checks if the length of the actual argument list is the length we expect.
+     *
+     * @param expected The expected number of arguments.
+     * @param received The array of arguments received.
+     * @throws RuntimeX If the number of arguments was wrong.
+     */
+    private void checkArgumentCount( Cons received )
+                    throws RuntimeX
+    {
+        var formalCount = _formalArguments.length();
+        var receivedCount = received.length();
+        var hasRest = _rest != Cons.NIL;
+
+        if ( formalCount == receivedCount )
+            return;
+        else if ( formalCount < receivedCount && hasRest )
+            return;
+
+        throw new RuntimeX( Code.WRONG_NUMBER_OF_ARGUMENTS,
+                "" + formalCount,
+                "" + receivedCount );
     }
 
     /**

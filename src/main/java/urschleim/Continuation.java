@@ -72,6 +72,14 @@ public class Continuation
         };
     }
 
+    public static Thunk _activate(
+            Environment e,
+            FirstClassObject operation,
+            Cons arguments,
+            Cont<FirstClassObject> c)
+    {
+        return null;
+    }
     public static Thunk _eval(
             Environment e,
             FirstClassObject o,

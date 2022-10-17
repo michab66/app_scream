@@ -1,5 +1,7 @@
 package urschleim;
 
+import java.util.Objects;
+
 public class Holder<T>
 {
     private T value;
@@ -17,5 +19,11 @@ public class Holder<T>
     public T get()
     {
         return value;
+    }
+
+    @Override
+    public String toString()
+    {
+        return Objects.toString( value );
     }
 }

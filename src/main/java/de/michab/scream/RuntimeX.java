@@ -64,6 +64,12 @@ extends ScreamException
         super( msg );
     }
 
+    public RuntimeX setCause( Throwable cause )
+    {
+        super.initCause( cause );
+        return this;
+    }
+
     /**
      * (%error-catch expression)
      */
