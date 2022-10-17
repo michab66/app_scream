@@ -145,8 +145,7 @@ public class Cons
             throws RuntimeX
     {
         if ( isConstant() )
-            throw new RuntimeX( "CANT_MODIFY_CONSTANT",
-                    new Object[]{ toString() } );
+            throw new RuntimeX( Code.CANT_MODIFY_CONSTANT, toString() );
 
         _car = car;
     }
@@ -172,8 +171,7 @@ public class Cons
             throws RuntimeX
     {
         if ( isConstant() )
-            throw new RuntimeX( "CANT_MODIFY_CONSTANT",
-                    new Object[]{ toString() } );
+            throw new RuntimeX( Code.CANT_MODIFY_CONSTANT, toString() );
 
         _cdr = cdr;
     }
@@ -190,7 +188,7 @@ public class Cons
             throws RuntimeX
     {
         if ( ! isProperList() )
-            throw new RuntimeX( "EXPECTED_PROPER_LIST" );
+            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
 
         // Copy the list (but not the contents).
         Cons thisCopy = Cons.create( asArray() );
@@ -216,7 +214,7 @@ public class Cons
             throws RuntimeX
     {
         if ( ! isProperList() )
-            throw new RuntimeX( "EXPECTED_PROPER_LIST" );
+            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
 
         FirstClassObject[] result = asArray();
 
@@ -243,8 +241,7 @@ public class Cons
             throws RuntimeX
     {
         if ( k >= length() || k < 0 )
-            throw new RuntimeX( "INDEX_OUT_OF_BOUNDS",
-                    new Object[]{ "" + k } );
+            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, k );
 
         FirstClassObject result = this;
 
@@ -273,7 +270,7 @@ public class Cons
         }
         catch ( ClassCastException e )
         {
-            throw new RuntimeX( "CAR_FAILED", new Object[]{ result } );
+            throw new RuntimeX( Code.CAR_FAILED, result );
         }
     }
 
@@ -363,7 +360,7 @@ public class Cons
             FirstClassObject subList = listRef( i );
 
             if ( ! (subList instanceof Cons) )
-                throw new RuntimeX( "INVALID_ASSOC_LIST", new Object[]{ this } );
+                throw new RuntimeX( Code.INVALID_ASSOC_LIST, this );
 
             FirstClassObject subListsCar = ((Cons)subList)._car;
 
