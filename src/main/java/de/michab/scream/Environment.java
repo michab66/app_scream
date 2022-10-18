@@ -8,13 +8,17 @@ package de.michab.scream;
 import java.util.HashMap;
 import java.util.Map;
 
+import de.michab.scream.ScreamException.Code;
+
 /**
  * An Environment is an associative array indexed by Symbols.  Each environment
  * holds a set of symbol-value relations called bindings.  Environments can be
- * extended with sub environments.<br>
+ * extended with sub environments.
+ *
  * Symbol resolution checks first in the environment for the symbol and after
  * that recursively on the parent environments up to the top-level-environment
- * or TLE which is without a parent.<br>
+ * or TLE which is without a parent.
+ *
  * Environments can be named, i.e. on extension time a symbol naming the new
  * environment can be given.  If no name is given, e.g. by calling the version
  * of <code>extend()</code> without parameters then the name of the parent
@@ -50,8 +54,8 @@ public final class Environment
     /**
      * The hash table to which we delegate our map responsibilities.
      */
-    private final HashMap< Symbol, FirstClassObject > _symbolMap =
-            new HashMap< Symbol, FirstClassObject >();
+    private final HashMap<Symbol, FirstClassObject> _symbolMap =
+            new HashMap<>();
 
     /**
      * Create an empty environment without a parent.  Useful as a starting
@@ -213,7 +217,7 @@ public final class Environment
         else if ( _parent != null )
             _parent.assign( symbol, value  );
         else
-            throw new RuntimeX( "SYMBOL_NOT_ASSIGNABLE", new Object[]{ symbol } );
+            throw new RuntimeX( Code.SYMBOL_NOT_ASSIGNABLE, symbol );
     }
 
     /**
@@ -231,7 +235,7 @@ public final class Environment
         else if ( _parent != null )
             return _parent.get( symbol );
         else
-            throw new RuntimeX( "SYMBOL_NOT_DEFINED", new Object[]{ symbol } );
+            throw new RuntimeX( Code.SYMBOL_NOT_DEFINED, symbol );
     }
 
     /**
@@ -287,18 +291,12 @@ public final class Environment
         return tle;
     }
 
-    /*
-     * (non-Javadoc)
-     */
     @Override
     public Object toJava()
     {
         return _symbolMap;
     }
 
-    /*
-     * (non-Javadoc)
-     */
     @Override
     public String toString()
     {

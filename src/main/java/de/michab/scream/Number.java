@@ -7,7 +7,7 @@
  */
 package de.michab.scream;
 
-
+import de.michab.scream.ScreamException.Code;
 
 /**
  * The base class for Scream's numeric types.
@@ -206,8 +206,7 @@ public abstract class Number
           result = dargs[i] >= dargs[i+1];
           break;
         default:
-          throw new RuntimeX( "INTERNAL_ERROR",
-                              new Object[]{ Number.class } );
+          throw new RuntimeX( Code.INTERNAL_ERROR, Number.class );
       }
 
       // Shortcut evaluation.
@@ -240,6 +239,7 @@ public abstract class Number
    */
   static private Procedure addProc = new Procedure( "+" )
   {
+    @Override
     public FirstClassObject apply( FirstClassObject[] args )
       throws RuntimeX
     {
@@ -259,6 +259,7 @@ public abstract class Number
    */
   static private Procedure subtractProc = new Procedure( "-" )
   {
+    @Override
     public FirstClassObject apply( FirstClassObject[] args )
       throws RuntimeX
     {
@@ -287,6 +288,7 @@ public abstract class Number
   static private Procedure multiplyProc = new Procedure( "*" )
   {
     // TODO NIL handling is bad.
+    @Override
     public FirstClassObject apply( FirstClassObject[] args )
       throws RuntimeX
     {
@@ -326,6 +328,7 @@ public abstract class Number
    */
   static private Procedure divideProc = new Procedure( "/" )
   {
+    @Override
     public FirstClassObject apply( FirstClassObject[] args )
       throws RuntimeX
     {
@@ -340,7 +343,7 @@ public abstract class Number
           result = SchemeInteger.createObject( 1 );
         else if ( 1 == args.length )
           // ...return the inverse.
-          result = SchemeDouble.createObject( 1.0 ).divide( (Number)args[0] );
+          result = SchemeDouble.createObject( 1.0 ).divide( args[0] );
         else
         {
           result = (Number)args[ 0 ];
@@ -357,7 +360,7 @@ public abstract class Number
       }
       catch ( ArithmeticException e )
       {
-        throw new RuntimeX( "DIVISION_BY_ZERO" );
+        throw new RuntimeX( Code.DIVISION_BY_ZERO );
       }
 
       return result;

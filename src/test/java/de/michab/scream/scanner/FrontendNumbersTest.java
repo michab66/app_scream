@@ -36,7 +36,6 @@ public class FrontendNumbersTest
 //      validate( "#x10", 16 );  // Hex in scheme7
 //      validate( "10#x", 16 );  // error
 
-        SchemeInteger sin = TestUtil.readSingleExpression( "23", SchemeInteger.class );
         validate( "0", 0 );
 
         validate( "-1", -1 );
