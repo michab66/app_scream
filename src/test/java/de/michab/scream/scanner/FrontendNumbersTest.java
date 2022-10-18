@@ -6,14 +6,13 @@
 package de.michab.scream.scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.SchemeInteger;
 import de.michab.scream.ScreamException;
+import de.michab.scream.TestUtil;
 import de.michab.scream.frontend.FrontendX;
-import de.michab.scream.frontend.SchemeParser;
 
 public class FrontendNumbersTest
 {
@@ -22,18 +21,22 @@ public class FrontendNumbersTest
             long expected )
                     throws FrontendX
     {
-        var fco =
-                new SchemeParser( scheme ).getExpression();
-        assertInstanceOf( SchemeInteger.class, fco );
-        SchemeInteger n = (SchemeInteger)fco;
-
-        assertEquals( expected, n.asLong() );
+        SchemeInteger n = TestUtil.readSingleExpression(
+                scheme,
+                SchemeInteger.class );
+        assertEquals(
+                expected,
+                n.asLong() );
     }
 
     @Test
     public void parseIntegers() throws ScreamException
     {
-        validate( "1", 1 );
+        // TODO failure cases
+//      validate( "#x10", 16 );  // Hex in scheme7
+//      validate( "10#x", 16 );  // error
+
+        SchemeInteger sin = TestUtil.readSingleExpression( "23", SchemeInteger.class );
         validate( "0", 0 );
 
         validate( "-1", -1 );

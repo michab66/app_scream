@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.function.Function;
 
+import de.michab.scream.frontend.FrontendX;
+import de.michab.scream.frontend.SchemeParser;
+
 public class TestUtil
 {
     public final static SchemeInteger i1 = SchemeInteger.createObject( 1 );
@@ -30,5 +33,20 @@ public class TestUtil
         assertNotNull( j );
         assertInstanceOf( jc, j );
         assertEquals( testObject, j );
+    }
+
+    static public <S extends FirstClassObject> S readSingleExpression(
+            String scheme, Class<S> cl )
+                    throws FrontendX
+    {
+        var parser =
+                new SchemeParser( scheme );
+        var fco =
+                parser.getExpression();
+        assertEquals(
+                Port.EOF,
+                parser.getExpression() );
+        assertInstanceOf( cl, fco );
+        return cl.cast( fco );
     }
 }
