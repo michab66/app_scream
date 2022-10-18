@@ -143,4 +143,16 @@ public class Continuation
     {
         return () -> listEval( e, 0, l, c );
     }
+
+    public static Thunk listEval( Environment e, Cons l, Cont<Cons> c )
+    {
+        Cont<FirstClassObject[]> next =
+                s -> c.accept( Cons.create( s ) );
+
+        return () -> listEval(
+                e,
+                0,
+                Cons.asArray( l ),
+                next );
+    }
 }

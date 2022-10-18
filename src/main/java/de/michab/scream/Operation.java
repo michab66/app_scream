@@ -224,7 +224,7 @@ extends FirstClassObject
         return activate( e, Cons.asArray( argumentList ) );
     }
 
-    private Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
+    protected Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
         throws RuntimeX
     {
         if ( argNames != Cons.NIL && argValues == Cons.NIL)
@@ -399,7 +399,7 @@ extends FirstClassObject
      * @param received The array of arguments received.
      * @throws RuntimeX If the number of arguments was wrong.
      */
-    private void checkArgumentCount( Cons received )
+    protected void checkArgumentCount( Cons received )
                     throws RuntimeX
     {
         var formalCount = _formalArguments.length();

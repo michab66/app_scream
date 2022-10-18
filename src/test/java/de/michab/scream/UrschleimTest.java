@@ -93,7 +93,6 @@ public class UrschleimTest
                 error.get().getCode() );
     }
 
-//    @Disabled
     @Test
     public void operationTest() throws Exception
     {
@@ -135,6 +134,50 @@ public class UrschleimTest
                 r.get() );
         assertEquals(
                 Symbol.createObject( "not-defined-yet" ),
+                r.get() );
+    }
+
+    @Test
+    public void procedureTest() throws Exception
+    {
+        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+
+        var result = se.eval(
+                """
+                (define (add2 value) (+ value 2))
+                (add2 311)
+                """ );
+        assertEquals( result, TestUtil.i313 );
+
+        FirstClassObject opCall =
+                new SchemeParser( "(add2 311)" ).getExpression();
+        assertInstanceOf( Cons.class, opCall );
+
+        var env = se.getInteraction();
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                opCall.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+        {
+            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
+            fail();
+        }
+
+        assertNotNull(
+                r.get() );
+        assertInstanceOf(
+                SchemeInteger.class,
+                r.get() );
+        assertEquals(
+                TestUtil.i313,
                 r.get() );
     }
 
