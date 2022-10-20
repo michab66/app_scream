@@ -7,7 +7,14 @@
  */
 package de.michab.scream.pops;
 
-import de.michab.scream.*;
+import de.michab.scream.Environment;
+import de.michab.scream.FirstClassObject;
+import de.michab.scream.RuntimeX;
+import de.michab.scream.SchemeBoolean;
+import de.michab.scream.Syntax;
+import urschleim.Continuation;
+import urschleim.Continuation.Cont;
+import urschleim.Continuation.Thunk;
 
 
 
@@ -16,66 +23,78 @@ import de.michab.scream.*;
  * result of an compile operation.  Experimental state.
  */
 public class If
-  extends Syntax
+extends Syntax
 {
-  /**
-   * The if's condition.
-   */
-  private final FirstClassObject _condition;
+    /**
+     * The if's condition.
+     */
+    private final FirstClassObject _condition;
 
 
-  /**
-   * The expression to evaluate if condition evaluates to true.
-   */
-  private final FirstClassObject _onTrue;
-
-
-
-  /**
-   * The expression to evaluate if condition evaluates to false (the 'else'
-   * branch).
-   */
-  private final FirstClassObject _onFalse;
+    /**
+     * The expression to evaluate if condition evaluates to true.
+     */
+    private final FirstClassObject _onTrue;
 
 
 
-  /**
-   * Create an 'if' primitive operation with both conditions.
-   *
-   * @param condition The condition expression.
-   * @param onTrue The expression to evaluate in case the condition evaluates
-   *               to a result different from <code>#F</code>.
-   * @param onFalse The expression to evaluate in case the condition evaluates
-   *               to <code>#F</code>.
-   */
-  public If( FirstClassObject condition,
-             FirstClassObject onTrue,
-             FirstClassObject onFalse )
-  {
-    super( "popIf" );
-
-    _condition = condition;
-    _onTrue = onTrue;
-    _onFalse = onFalse;
-  }
+    /**
+     * The expression to evaluate if condition evaluates to false (the 'else'
+     * branch).
+     */
+    private final FirstClassObject _onFalse;
 
 
 
-  /**
-   * Executes the compiled syntax.
-   *
-   * @param p The execution environment.
-   * @return The result of the syntax execution.
-   * @throws RuntimeX In case of an execution error.
-   */
-  public FirstClassObject evaluate( Environment p )
-    throws RuntimeX
-  {
-    FirstClassObject cond = evaluate( _condition, p );
+    /**
+     * Create an 'if' primitive operation with both conditions.
+     *
+     * @param condition The condition expression.
+     * @param onTrue The expression to evaluate in case the condition evaluates
+     *               to a result different from <code>#F</code>.
+     * @param onFalse The expression to evaluate in case the condition evaluates
+     *               to <code>#F</code>.
+     */
+    public If( FirstClassObject condition,
+            FirstClassObject onTrue,
+            FirstClassObject onFalse )
+    {
+        super( "popIf" );
 
-    if ( cond == SchemeBoolean.F )
-      return evaluateTrailingContext( _onFalse, p );
-    else
-      return evaluateTrailingContext( _onTrue, p );
-  }
+        _condition = condition;
+        _onTrue = onTrue;
+        _onFalse = onFalse;
+    }
+
+
+
+    /**
+     * Executes the compiled syntax.
+     *
+     * @param p The execution environment.
+     * @return The result of the syntax execution.
+     * @throws RuntimeX In case of an execution error.
+     */
+    @Override
+    public FirstClassObject evaluate( Environment p )
+            throws RuntimeX
+    {
+        FirstClassObject cond = evaluate( _condition, p );
+
+        if ( cond == SchemeBoolean.F )
+            return evaluateTrailingContext( _onFalse, p );
+        else
+            return evaluateTrailingContext( _onTrue, p );
+    }
+
+    @Override
+    public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        return Continuation._if(
+                e,
+                _condition,
+                _onTrue,
+                _onFalse, c );
+    }
 }

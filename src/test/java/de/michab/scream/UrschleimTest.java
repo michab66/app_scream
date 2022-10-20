@@ -182,6 +182,49 @@ public class UrschleimTest
     }
 
     @Test
+    public void syntaxTest() throws Exception
+    {
+        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+
+        var result = se.eval(
+                """
+                (if #t 313 0)
+                """ );
+        assertEquals( result, TestUtil.i313 );
+
+        FirstClassObject opCall =
+                new SchemeParser( "(if #t 313 0)" ).getExpression();
+        assertInstanceOf( Cons.class, opCall );
+
+        var env = se.getInteraction();
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                opCall.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+        {
+            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
+            fail();
+        }
+
+        assertNotNull(
+                r.get() );
+        assertInstanceOf(
+                SchemeInteger.class,
+                r.get() );
+        assertEquals(
+                TestUtil.i313,
+                r.get() );
+    }
+
+    @Test
     public void listEvalTest() throws Exception
     {
         Environment env = new Environment();

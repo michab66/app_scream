@@ -12,6 +12,7 @@ import de.michab.scream.Cons;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException;
 
 public class Continuation
@@ -118,13 +119,18 @@ public class Continuation
     }
 
     public static Thunk _if(
-            boolean expr,
-            Cont<Boolean> trueBranch,
-            Cont<Boolean> falseBranch)
+            Environment e,
+            FirstClassObject condition,
+            FirstClassObject trueBranch,
+            FirstClassObject falseBranch,
+            Cont<FirstClassObject> c)
     {
-        return (expr)
-                ? () -> trueBranch.accept(true)
-                : () -> falseBranch.accept(false);
+        Cont<FirstClassObject> next = s -> _eval(
+                e,
+                s == SchemeBoolean.F ? falseBranch : trueBranch,
+                c );
+
+        return _eval( e, condition, next );
     }
 
     private static Thunk listEval( Environment e, int i, FirstClassObject[] l, Cont<FirstClassObject[]> c )

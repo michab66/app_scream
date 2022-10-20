@@ -18,6 +18,8 @@ import de.michab.scream.pops.Quote;
 import de.michab.scream.pops.Sequence;
 import de.michab.scream.pops.ShortcutAnd;
 import de.michab.scream.pops.ShortcutOr;
+import urschleim.Continuation.Cont;
+import urschleim.Continuation.Thunk;
 
 /**
  * Followed the scheme spec in naming this class.  An alternate name would be
@@ -128,6 +130,20 @@ public class Syntax
             return evaluate( compile( parent, arguments ), parent );
 
         return super.activate( parent, arguments );
+    }
+
+    @Override
+    public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        if ( _body == Cons.NIL )
+        {
+            var toEval = compile( e, args );
+
+            return toEval.evaluate( e, c );
+        }
+
+        return super._activate( e, args, c );
     }
 
     /**
@@ -742,7 +758,7 @@ public class Syntax
     /**
      * (set! <variable> <expression>) syntax; r5rs 16
      */
-    static private Syntax setBangSyntax = new Syntax( "set!" )
+    static private Syntax setSyntax = new Syntax( "set!" )
     {
         private Class<?>[] formalArglist =
                 new Class[]{ Symbol.class,
@@ -846,7 +862,7 @@ public class Syntax
         tle.setPrimitive( beginSyntax );
         tle.setPrimitive( doSyntax );
         tle.setPrimitive( defineSyntax );
-        tle.setPrimitive( setBangSyntax );
+        tle.setPrimitive( setSyntax );
         tle.setPrimitive( syntaxSyntax );
 
         tle.setPrimitive( timeSyntax );
