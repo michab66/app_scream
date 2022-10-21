@@ -42,6 +42,7 @@ public class ConsTest
         assertEquals( Cons.NIL, c1.getCdr() );
         assertTrue( c1.isProperList() );
         assertEquals( 1, c1.length() );
+        assertEquals( 1, c1.length2() );
         assertFalse( c1.isCircular() );
     }
 
@@ -72,38 +73,35 @@ public class ConsTest
     }
 
     @Test
-    public void circular() throws Exception
-    {
-        Cons c1 = Cons.create(
-                SchemeInteger.createObject(0),
-                SchemeInteger.createObject(1),
-                SchemeInteger.createObject(2),
-                SchemeInteger.createObject(3),
-                SchemeInteger.createObject(4)
-                );
-
-        Cons tail2 = (Cons)c1.listTail( c1.length() -1 );
-        tail2.setCdr( c1 );
-        assertTrue( c1.isCircular() );
-    }
-
-    @Test
     public void proper() throws Exception
     {
         var p = (Cons)
                 new SchemeParser( "(1 2 3)" ).getExpression();
         assertTrue( p.isProperList() );
+        assertFalse( p.isCircular() );
+        assertEquals( 3, p.length() );
     }
+
     @Test
     public void properNot() throws Exception
     {
         var p = (Cons)
                 new SchemeParser( "(1 2 3 . 4)" ).getExpression();
         assertFalse( p.isProperList() );
+        assertFalse( p.isCircular() );
+        assertEquals( 3, p.length() );
+        try
+        {
+            p.length2();
+            fail();
+        }
+        catch ( RuntimeX e) {
+            assertEquals( Code.EXPECTED_PROPER_LIST, e.getCode() );
+        }
     }
 
     @Test
-    public void properCircular() throws Exception
+    public void circular() throws Exception
     {
         Cons c1 = Cons.create(
                 SchemeInteger.createObject(0),

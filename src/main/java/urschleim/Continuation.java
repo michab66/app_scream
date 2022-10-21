@@ -150,6 +150,15 @@ public class Continuation
         return () -> listEval( e, 0, l, c );
     }
 
+    /**
+     * Evaluates the elements in the passed list.
+     *
+     * @param e The environment used for evaluation.
+     * @param l The list to be evaluated.
+     * @param c The continuation receiving a newly allocated list holding
+     * the evaluated elements.
+     * @return The thunk.
+     */
     public static Thunk listEval( Environment e, Cons l, Cont<Cons> c )
     {
         Cont<FirstClassObject[]> next =

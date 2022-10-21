@@ -213,9 +213,10 @@ public class Vector
     /**
      * Converts the vector to an array of <code>java.lang.Object</code>s holding
      * recursively converted entries.
+     * @throws RuntimeX
      */
     @Override
-    public Object toJava()
+    public Object toJava() throws RuntimeX
     {
         Object[] result = new Object[ _theArray.length ];
 

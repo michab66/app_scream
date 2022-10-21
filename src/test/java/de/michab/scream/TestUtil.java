@@ -24,7 +24,7 @@ public class TestUtil
     public final static Symbol s313 = Symbol.createObject( "threethirteen" );
 
     static <S extends FirstClassObject,J>
-    void toJava_( Class<S> sc, Class<J> jc, J testObject, Function<J, S> factory)
+    void toJava_( Class<S> sc, Class<J> jc, J testObject, Function<J, S> factory) throws RuntimeX
     {
         S so = factory.apply( testObject );
         assertNotNull( so );

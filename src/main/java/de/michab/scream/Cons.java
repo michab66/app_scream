@@ -3,6 +3,7 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
+
 package de.michab.scream;
 
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import de.michab.scream.ScreamException.Code;
 import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
+import urschleim.Holder;
 
 /**
  * Represents a list cell.  A list cell consists of two references called car
@@ -39,22 +41,18 @@ public class Cons
 
     /**
      * A reference to this node's value.
-     *
-     * @label car
-     * */
+     */
     private FirstClassObject _car;
 
     /**
      * A reference to the next node in this list.
-     *
-     * @label cdr
-     * */
+     */
     private FirstClassObject _cdr;
 
     enum Comparison { Eq, Eqv, Equal };
 
     /**
-     * Construct a <code>Cons</code> cell from a given car and cdr element.
+     * Construct a {@code Cons} cell from a given car and cdr element.
      *
      * @param car The value for the new cons cell.
      * @param cdr The next cons cell.
@@ -68,13 +66,13 @@ public class Cons
     /**
      * Creates a newly allocated list from a Java array.  This is not available
      * to the public because we can't handle empty arrays within this
-     * constructor.  So to create a <code>Cons</code> from an array the static
-     * <code>create()</code> method has to be used.
+     * constructor.  So to create a {@code Cons} from an array the static
+     * {@code create()} method has to be used.
      *
      * @param a The array to transform.  In case the array is empty an
      *          IllegalArgumentException is thrown.
      * @param start The start index of the array to transform.
-     * @throws IllegalArgumentException In case parameter <code>a</code> is an
+     * @throws IllegalArgumentException In case parameter {@code a} is an
      *         empty array.
      * @see de.michab.scream.Cons#create(FirstClassObject[])
      */
@@ -253,7 +251,7 @@ public class Cons
 
     /**
      * Returns the kth element of the list.  This is the same as
-     * <code>listTail(x).getCar()</code>.  List indices are zero based.
+     * {@code listTail(x).getCar()}.  List indices are zero based.
      *
      * @param k The index of the element to return.  The index is zero based.
      * @return The kth element.
@@ -407,10 +405,10 @@ public class Cons
     }
 
     /**
-     * Evaluate the <code>Cons</code>.  The normal Scheme list evaluation takes
+     * Evaluate the {@code Cons}.  The normal Scheme list evaluation takes
      * place:  After evaluating the first list entry, the resulting
-     * <code>Operation</code> gets invoked.  If the first list entry does not
-     * evaluate to an <code>Operation</code> this results in an error.
+     * {@code Operation} gets invoked.  If the first list entry does not
+     * evaluate to an {@code Operation] this results in an error.
      *
      * @param e The evaluation environment.
      * @throws RuntimeX In case an error occurs.
@@ -487,7 +485,7 @@ public class Cons
      * eqv? is used.
      *
      * @param other The object to compare with.
-     * @return <code>true</code> if the passed object is equal to this cons.
+     * @return {@code true} if the passed object is equal to this cons.
      */
     @Override
     public boolean equal( FirstClassObject other )
@@ -552,94 +550,104 @@ public class Cons
     }
 
     /**
-     * Check if this is a proper list.  The last cdr element in a proper list
-     * has to be NIL.
-     *
-     * @return <code>true</code> if this is a proper list.
+     * @param lengthOut The list length.  Valid in all cases.
+     * @return An array of booleans, index 0 denotes circularity, index 1 is
+     * true element if the list is proper.
      */
-    public boolean isProperList()
+    private boolean[] consAttributes( Holder<Long> lengthOut )
     {
-        if (isCircular())
-            return false;
+        HashSet<Cons> collector = new HashSet<Cons>();
+
+        long length = 0;
 
         try
         {
-            Cons current = this;
-            // Cdr along the list until we reach NIL.
-            while ( current != NIL )
-                current = (Cons)current._cdr;
-            return true;
+            for ( Cons c = this ; c != Cons.NIL ; c = (Cons)c._cdr )
+            {
+                length++;
+                if ( collector.contains( c ) )
+                {
+                    lengthOut.set( length );
+                    return new boolean[]{ true, false };
+                }
+
+                collector.add( c );
+            }
         }
-        catch ( ClassCastException e )
+        catch ( ClassCastException ignore )
         {
-            // Not all cdrs in the list were conses so we are not proper.
-            return false;
+            lengthOut.set( length );
+            return new boolean[]{ false, false };
         }
+
+        lengthOut.set( length );
+        return new boolean[]{ false, true };
     }
 
+    /**
+     * Check if this is a proper list.
+     *
+     * @return {@code true} if this is a proper list.
+     */
+    public boolean isProperList()
+    {
+        return consAttributes( new Holder<Long>( null ) )[1];
+    }
+
+    /**
+     * @return {@code true} if the passed list is circular.
+     */
     public boolean isCircular()
     {
-        Cons c = this;
-
-        HashSet<Cons> collector = new HashSet<Cons>();
-
-        while (true)
-        {
-            if ( collector.contains( c ) )
-                return true;
-
-            collector.add( c );
-
-            try
-            {
-                c = (Cons)c.getCdr();
-            }
-            catch ( ClassCastException e )
-            {
-                return false;
-            }
-
-            if ( Cons.NIL == c )
-                return false;
-        }
+        return consAttributes( new Holder<Long>( null ) )[0];
     }
 
     /**
      * Return the length of the list represented by this Cons object.
      * Handles improper lists.
      *
-     * TODO should be save against circular lists.
-     *
-     * @return The length of the list.
+     * @return The length of this list.
+     * @throws RuntimeX If the list is circular.
      */
-    public long length()
+    public long length() throws RuntimeX
     {
-        long result = 0;
+        Holder<Long> lengthOut = new Holder<Long>( null );
 
-        try
-        {
-            for ( Cons current = this ;
-                    current != NIL ;
-                    current = (Cons)current._cdr )
-                result++;
-        }
-        catch ( ClassCastException e )
-        {
-            // Must be an improper list. We ignore this and return the number of
-            // elements counted so far.
-            ;
-        }
+        var pc = consAttributes( lengthOut );
 
-        return result;
+        // Circular.
+        if ( pc[0] )
+            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+
+        return lengthOut.get();
     }
 
     /**
-     * Returns this <code>Cons</code> as an array.  If the list is improper all
-     * list elements but the terminating cdr are in the returned array.
+     * The length operation as required by the Scheme standard.
+     * Accepts no improper lists.
+     * @return The length of this list.
+     * @throws RuntimeX If the list is not proper.
+     */
+    public long length2() throws RuntimeX
+    {
+        Holder<Long> lengthOut = new Holder<Long>( null );
+
+        var pc = consAttributes( lengthOut );
+
+        // Not proper.
+        if ( ! pc[1] )
+            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+
+        return lengthOut.get();
+    }
+
+    /**
+     * Returns this {@code Cons} as an array.
      *
      * @return A java array containing the list's elements.
+     * @throws RuntimeX
      */
-    public FirstClassObject[] asArray()
+    public FirstClassObject[] asArray() throws RuntimeX
     {
         Cons c = this;
 
@@ -653,7 +661,7 @@ public class Cons
 
         return argArray;
     }
-    public static FirstClassObject[] asArray( Cons c )
+    public static FirstClassObject[] asArray( Cons c ) throws RuntimeX
     {
         if ( c == Cons.NIL )
             return new FirstClassObject[0];
@@ -662,14 +670,15 @@ public class Cons
     }
 
     /**
-     * Converts the <code>Cons</code> to a Java <code>Object[]</code>.  All
-     * referenced objects get recursively converted.
+     * Converts the {@code Cons} to a Java {@code Object[]}.  All referenced
+     * objects get recursively converted.
      *
      * @return The equivalent to a list in the Java type system.  This is a
-     *         <code>FirstClassObject[]</code>.
+     *         {@code FirstClassObject[]}.
+     * @throws RuntimeX
      */
     @Override
-    public Object toJava()
+    public Object toJava() throws RuntimeX
     {
         FirstClassObject[] unconverted = asArray();
 
@@ -682,7 +691,7 @@ public class Cons
     }
 
     /**
-     * Set the constantness of this <code>Cons</code>.  The new value is
+     * Set the constantness of this {@code Cons}.  The new value is
      * propagated to the referenced car and cdr nodes.  Note that it is not
      * possible to switch the constantness from constant to changeable.
      *
@@ -696,23 +705,20 @@ public class Cons
         setConstant( _cdr, what );
     }
 
-    /**
-     * Memoriam Frank Schreiber.
-     */
     @Override
     public FirstClassObject compile( Environment e )
             throws RuntimeX
     {
         try
         {
-            // Evaluate the car position.  If this results in something that is no
-            // Syntax we bail out with CCX.
+            // Evaluate the car position.  If this results in something that is
+            // no Syntax we bail out with CCX.
             Syntax op = (Syntax)evaluate( _car, e );
             FirstClassObject cop = op.compile( e, (Cons)_cdr );
 
-            // If the compilation returned identity that ment that compilation has
-            // not been implemented by this syntax.  So we return the unmodified
-            // list.
+            // If the compilation returned identity that ment that compilation
+            // has not been implemented by this syntax.  So we return the
+            // unmodified list.
             return op == cop ? this : cop;
         }
         catch ( Exception x )

@@ -324,8 +324,9 @@ public abstract class FirstClassObject
      * <code>java.lang.Double</code>.
      *
      * @return The corresponding object from the Java type system.
+     * @throws RuntimeX
      */
-    public abstract Object toJava();
+    public abstract Object toJava() throws RuntimeX;
 
     /**
      * Get the symbolic typename.  Handles NIL references.

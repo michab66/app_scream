@@ -639,8 +639,9 @@ public class Syntax
         /**
          * Checks if the passed argument is a <code>Cons</code>, is not NIL and is
          * a proper list.  Transforms the list into an array and returns that.
+         * @throws RuntimeX
          */
-        private FirstClassObject[] isNonNilAndProper( FirstClassObject fco )
+        private FirstClassObject[] isNonNilAndProper( FirstClassObject fco ) throws RuntimeX
         {
             if ( Cons.NIL == fco )
                 throw new ClassCastException();
