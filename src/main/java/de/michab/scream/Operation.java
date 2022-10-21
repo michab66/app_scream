@@ -23,7 +23,7 @@ import urschleim.Continuation.Thunk;
  * @author Michael Binz
  */
 public abstract class Operation
-extends FirstClassObject
+    extends FirstClassObject
 {
     /**
      * The logger for this class.
@@ -205,7 +205,14 @@ extends FirstClassObject
         setConstant( false );
     }
 
-
+    /**
+     * @return {@code true} if this is a variadic operation. (Accepts a
+     * variable number of arguments.)
+     */
+    public boolean isVariadic()
+    {
+        return _rest != Cons.NIL;
+    }
 
     /**
      * Execute the operation in a given environment and based on the passed

@@ -81,6 +81,15 @@ public class Continuation
     {
         return null;
     }
+
+    /**
+     * Evaluate an object.
+     *
+     * @param e The environment for evaluation.
+     * @param o The object to evaluate.
+     * @param c The continuation receiving the result.
+     * @return The thunk.
+     */
     public static Thunk _eval(
             Environment e,
             FirstClassObject o,
@@ -91,6 +100,14 @@ public class Continuation
                     FirstClassObject.evaluate( o, e ) );
     }
 
+    /**
+     * Evaluate a list of expressions and return the value of the final element.
+     * @param e The environment for evaluation.
+     * @param body A list of expressions.
+     * @param previousResult The result of the previous expression.
+     * @param c The continuation receiving the result.
+     * @return The thunk.
+     */
     private static Thunk _begin(
             Environment e,
             Cons body,
@@ -106,6 +123,14 @@ public class Continuation
         return () -> _eval( e, body.getCar(), next );
     }
 
+    /**
+     * Evaluate a list of expressions and return the value of the final element.
+     * @param e The environment for evaluation.
+     * @param body A list of expressions.
+     * @param previousResult The result of the previous expression.
+     * @param c The continuation receiving the result.
+     * @return The thunk.
+     */
     public static Thunk _begin(
             Environment e,
             Cons body,
@@ -133,7 +158,11 @@ public class Continuation
         return _eval( e, condition, next );
     }
 
-    private static Thunk listEval( Environment e, int i, FirstClassObject[] l, Cont<FirstClassObject[]> c )
+    private static Thunk listEval(
+            Environment e,
+            int i,
+            FirstClassObject[] l,
+            Cont<FirstClassObject[]> c )
     {
         if ( i == l.length )
             return () -> c.accept( l );
@@ -145,7 +174,10 @@ public class Continuation
         };
     }
 
-    public static Thunk listEval( Environment e, FirstClassObject[] l, Cont<FirstClassObject[]> c )
+    public static Thunk listEval(
+            Environment e,
+            FirstClassObject[] l,
+            Cont<FirstClassObject[]> c )
     {
         return () -> listEval( e, 0, l, c );
     }
