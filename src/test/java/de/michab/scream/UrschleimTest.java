@@ -182,7 +182,7 @@ public class UrschleimTest
     }
 
     @Test
-    public void syntaxTest() throws Exception
+    public void syntaxIfTest() throws Exception
     {
         SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
 
@@ -222,6 +222,50 @@ public class UrschleimTest
         assertEquals(
                 TestUtil.i313,
                 r.get() );
+    }
+
+    @Test
+    public void syntaxAssignmentTest() throws Exception
+    {
+        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+
+        var result = se.eval(
+                """
+                (define x 0)
+                (set! x 313)
+                x
+                """ );
+        assertEquals( result, TestUtil.i313 );
+
+        var env = se.getInteraction();
+        env.set( TestUtil.s313, TestUtil.i1  );
+
+        FirstClassObject opCall =
+                new SchemeParser( "(set! threethirteen 313)" ).getExpression();
+        assertInstanceOf( Cons.class, opCall );
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                opCall.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+        {
+            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
+            fail();
+        }
+
+        assertEquals(
+                Cons.NIL,
+                r.get() );
+        assertEquals(
+                TestUtil.i313,
+                env.get( TestUtil.s313 ) );
     }
 
     @Test

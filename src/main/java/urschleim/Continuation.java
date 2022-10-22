@@ -14,6 +14,7 @@ import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException;
+import de.michab.scream.Symbol;
 
 public class Continuation
 {
@@ -80,6 +81,29 @@ public class Continuation
             Cont<FirstClassObject> c)
     {
         return null;
+    }
+
+    /**
+     * Assing a value.
+     *
+     * @param e The environment for evaluation.
+     * @param o The symbol to set.
+     * @param o The object to evaluate.
+     * @param c A continuation receiving NIL.
+     * @return The thunk.
+     */
+    public static Thunk _assign(
+            Environment e,
+            Symbol s,
+            FirstClassObject o,
+            Cont<FirstClassObject> c )
+    {
+        Cont<FirstClassObject> next = v -> {
+            e.set( s, v );
+            return c.accept( Cons.NIL );
+        };
+
+        return _eval( e, o, next );
     }
 
     /**
