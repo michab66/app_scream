@@ -1,19 +1,21 @@
-/* $Id: Cond.java 1 2008-09-19 16:30:02Z binzm $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2000 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream.pops;
 
-import de.michab.scream.*;
-
-
+import de.michab.scream.Cons;
+import de.michab.scream.Environment;
+import de.michab.scream.FirstClassObject;
+import de.michab.scream.RuntimeX;
+import de.michab.scream.SchemeBoolean;
+import de.michab.scream.Syntax;
 
 /**
  * The implementation of the primitive <code>cond</code> operation.  This is
- * the result of a compile operation.<br>
+ * the result of a compile operation.
+ *
  * This primitive is centered around an expression map that looks like <code>
  * <br>
  * +-------------+--------+-----+<br>
@@ -31,49 +33,46 @@ import de.michab.scream.*;
  * result of the last one is returned.
  */
 public class Cond
-  extends Syntax
+    extends Syntax
 {
-  /**
-   * The clause map.
-   */
-  private final FirstClassObject[][] _clauseMap;
+    /**
+     * The clause map.
+     */
+    private final FirstClassObject[][] _clauseMap;
 
-
-
-  /**
-   * Creates the primitive based on the expression map.
-   *
-   * @param clauses The expression map.
-   */
-  public Cond( FirstClassObject[][] clauses )
-  {
-    super( "popCond" );
-    _clauseMap = clauses;
-  }
-
-
-
-  /**
-   * Executes the compiled sytax.
-   *
-   * @param p The execution environment.
-   * @return The result of the syntax execution.
-   * @throws RuntimeX In case of an execution error.
-   */
-  public FirstClassObject evaluate( Environment p )
-    throws RuntimeX
-  {
-    for ( int i = 0 ; i < _clauseMap.length ; i++ )
+    /**
+     * Creates the primitive based on the expression map.
+     *
+     * @param clauses The expression map.
+     */
+    public Cond( FirstClassObject[][] clauses )
     {
-      FirstClassObject cond = evaluate( _clauseMap[i][0], p );
-      if ( cond != SchemeBoolean.F )
-      {
-        return ( _clauseMap[i].length > 1 ) ?
-          interpretTailSequence( _clauseMap[i], 1, p ) :
-          cond;
-      }
+        super( "popCond" );
+        _clauseMap = clauses;
     }
 
-    return Cons.NIL;
-  }
+    /**
+     * Executes the compiled syntax.
+     *
+     * @param p The execution environment.
+     * @return The result of the syntax execution.
+     * @throws RuntimeX In case of an execution error.
+     */
+    @Override
+    public FirstClassObject evaluate( Environment p )
+            throws RuntimeX
+    {
+        for ( int i = 0 ; i < _clauseMap.length ; i++ )
+        {
+            FirstClassObject cond = evaluate( _clauseMap[i][0], p );
+            if ( cond != SchemeBoolean.F )
+            {
+                return ( _clauseMap[i].length > 1 ) ?
+                        interpretTailSequence( _clauseMap[i], 1, p ) :
+                            cond;
+            }
+        }
+
+        return Cons.NIL;
+    }
 }
