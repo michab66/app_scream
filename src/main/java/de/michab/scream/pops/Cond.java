@@ -5,12 +5,17 @@
  */
 package de.michab.scream.pops;
 
+import java.util.ArrayList;
+
 import de.michab.scream.Cons;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.Syntax;
+import de.michab.scream.util.BiFunctionX;
+import urschleim.Continuation.Cont;
+import urschleim.Continuation.Thunk;
 
 /**
  * The implementation of the primitive <code>cond</code> operation.  This is
@@ -35,6 +40,8 @@ import de.michab.scream.Syntax;
 public class Cond
     extends Syntax
 {
+    private final BiFunctionX<Environment, Cont<FirstClassObject>, Thunk> thunk;
+
     /**
      * The clause map.
      */
@@ -49,6 +56,16 @@ public class Cond
     {
         super( "popCond" );
         _clauseMap = clauses;
+
+        ArrayList<Cons> clausesList = new ArrayList<>( clauses.length );
+
+        for ( var clause : clauses )
+            clausesList.add( Cons.create( clause ) );
+
+        Cons clauseCons =
+                Cons.create( clausesList.toArray( new FirstClassObject[clauses.length] ) );
+
+        thunk = null;
     }
 
     /**

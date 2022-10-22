@@ -297,7 +297,7 @@ public class Syntax
             // Check if all the clauses are actually lists.  The do-while loop is
             // used to keep 'i' in a local scope.  'i' in turn is needed in the try
             // and catch scope to create a meaningful error message.
-            do
+
             {
                 int i = 0;
                 try
@@ -314,7 +314,7 @@ public class Syntax
                     throw new RuntimeX( Code.BAD_CLAUSE,
                             stringize( args[i] ) );
                 }
-            } while ( false );
+            }
 
             // Everything is fine so far.  Convert the lists into arrays that can be
             // handled much more efficiently.
