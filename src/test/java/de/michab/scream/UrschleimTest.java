@@ -225,6 +225,49 @@ public class UrschleimTest
     }
 
     @Test
+    public void syntaxQuoteTest() throws Exception
+    {
+        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+
+        var result = se.eval(
+                """
+                'lumumba
+                """ );
+        assertEquals( result, Symbol.createObject( "lumumba" ) );
+
+        FirstClassObject opCall =
+                new SchemeParser( "'lumumba" ).getExpression();
+        assertInstanceOf( Cons.class, opCall );
+
+        var env = se.getInteraction();
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                opCall.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+        {
+            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
+            fail();
+        }
+
+        assertNotNull(
+                r.get() );
+        assertInstanceOf(
+                Symbol.class,
+                r.get() );
+        assertEquals(
+                "lumumba",
+                r.get().toString() );
+    }
+
+    @Test
     public void syntaxAssignmentTest() throws Exception
     {
         SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();

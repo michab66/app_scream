@@ -6,14 +6,13 @@
 
 package de.michab.scream.pops;
 
-import java.util.function.BiFunction;
-
 import de.michab.scream.Cons;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
+import de.michab.scream.util.BiFunctionX;
 import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
@@ -34,7 +33,7 @@ public class Assignment
      */
     private final FirstClassObject _value;
 
-    private final BiFunction<Environment, Cont<FirstClassObject>, Thunk> thunk;
+    private final BiFunctionX<Environment, Cont<FirstClassObject>, Thunk> thunk;
 
     /**
      * Create an 'Assignment' primitive operation from the passed expression
