@@ -14,6 +14,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.Syntax;
 import de.michab.scream.util.BiFunctionX;
+import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
 
@@ -46,6 +47,7 @@ public class Cond
      * The clause map.
      */
     private final FirstClassObject[][] _clauseMap;
+    private final Cons _clauseCons;
 
     /**
      * Creates the primitive based on the expression map.
@@ -62,7 +64,7 @@ public class Cond
         for ( var clause : clauses )
             clausesList.add( Cons.create( clause ) );
 
-        Cons clauseCons =
+        _clauseCons =
                 Cons.create( clausesList.toArray( new FirstClassObject[clauses.length] ) );
 
         thunk = null;
@@ -91,5 +93,11 @@ public class Cond
         }
 
         return Cons.NIL;
+    }
+    @Override
+    public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        return Continuation._cond( e, _clauseCons, c );
     }
 }

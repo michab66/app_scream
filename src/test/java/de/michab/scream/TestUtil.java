@@ -11,17 +11,17 @@ import de.michab.scream.frontend.SchemeParser;
 
 public class TestUtil
 {
-    public final static SchemeInteger i1 = SchemeInteger.createObject( 1 );
-    public final static SchemeInteger i2 = SchemeInteger.createObject( 2 );
-    public final static SchemeInteger i3 = SchemeInteger.createObject( 3 );
-    public final static SchemeInteger i4 = SchemeInteger.createObject( 4 );
-    public final static SchemeInteger i313 = SchemeInteger.createObject( 313 );
+    public final static SchemeInteger i1 = i( 1 );
+    public final static SchemeInteger i2 = i( 2 );
+    public final static SchemeInteger i3 = i( 3 );
+    public final static SchemeInteger i4 = i( 4 );
+    public final static SchemeInteger i313 = i( 313 );
 
-    public final static Symbol s1 = Symbol.createObject( "one" );
-    public final static Symbol s2 = Symbol.createObject( "two" );
-    public final static Symbol s3 = Symbol.createObject( "three" );
-    public final static Symbol s4 = Symbol.createObject( "four" );
-    public final static Symbol s313 = Symbol.createObject( "threethirteen" );
+    public final static Symbol s1 = s( "one" );
+    public final static Symbol s2 = s( "two" );
+    public final static Symbol s3 = s( "three" );
+    public final static Symbol s4 = s( "four" );
+    public final static Symbol s313 = s( "threethirteen" );
 
     static <S extends FirstClassObject,J>
     void toJava_( Class<S> sc, Class<J> jc, J testObject, Function<J, S> factory) throws RuntimeX
@@ -48,5 +48,15 @@ public class TestUtil
                 parser.getExpression() );
         assertInstanceOf( cl, fco );
         return cl.cast( fco );
+    }
+
+    public static Symbol s( String name )
+    {
+        return Symbol.createObject( name );
+    }
+
+    public static SchemeInteger i( long v )
+    {
+        return SchemeInteger.createObject( v );
     }
 }

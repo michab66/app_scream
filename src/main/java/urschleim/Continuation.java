@@ -182,6 +182,53 @@ public class Continuation
         return _eval( e, condition, next );
     }
 
+    public static Thunk _clause(
+            Environment e,
+            Cons clause,
+            Cont<FirstClassObject> trueBranch,
+            Thunk falseBranch)
+    {
+        Cont<FirstClassObject> next = s -> {
+            if (  s == SchemeBoolean.F )
+                return falseBranch;
+
+            Cons afterTest = (Cons)clause.getCdr();
+
+            // rsr7: If the selected <clause> contains only the <test> and no
+            // <expression>s, then the value of the <test> is returned as
+            // the result.
+            if ( Cons.NIL == afterTest )
+                return trueBranch.accept( s );
+
+            return _begin( e, (Cons)clause.getCdr(), trueBranch );
+        };
+
+        return _eval(
+                e,
+                clause.getCar(),
+                next );
+    }
+
+    public static Thunk _cond(
+            Environment e,
+            Cons clauses,
+            Cont<FirstClassObject> c) throws RuntimeX
+    {
+        if ( Cons.NIL == clauses )
+            return c.accept( Cons.NIL );
+
+        Thunk next = () -> _cond(
+                e,
+                (Cons)clauses.getCdr(),
+                c );
+
+        return _clause(
+                e,
+                (Cons)clauses.getCar(),
+                c,
+                next );
+    }
+
     private static Thunk listEval(
             Environment e,
             int i,
