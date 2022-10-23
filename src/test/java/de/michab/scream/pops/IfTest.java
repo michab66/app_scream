@@ -1,20 +1,21 @@
+/*
+ * Scream @ https://github.com/michab/dev_smack
+ *
+ * Copyright © 1998-2022 Michael G. Binz
+ */
+
 package de.michab.scream.pops;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.SchemeEvaluator2;
 import de.michab.scream.SchemeInterpreter2;
 import de.michab.scream.TestUtil;
-import de.michab.scream.UrschleimTest;
 
-public class IfTest
+public class IfTest extends TestUtil
 {
-    private static Logger LOG = Logger.getLogger( UrschleimTest.class.getName() );
-
     @Test
     public void ifTest() throws Exception
     {
@@ -25,5 +26,15 @@ public class IfTest
                 (if #t 313 0)
                 """ );
         assertEquals( result, TestUtil.i313 );
+    }
+
+    @Test
+    public void _ifTest() throws Exception
+    {
+        _contTest(
+                """
+                (if #t 313 0)
+                """,
+                i313 );
     }
 }

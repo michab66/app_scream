@@ -21,7 +21,7 @@ import de.michab.scream.frontend.SchemeParser;
 import urschleim.Continuation;
 import urschleim.Holder;
 
-public class UrschleimTest
+public class UrschleimTest extends TestUtil
 {
     private static Logger LOG = Logger.getLogger( UrschleimTest.class.getName() );
 
@@ -182,89 +182,11 @@ public class UrschleimTest
     }
 
     @Test
-    public void syntaxIfTest() throws Exception
-    {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
-
-        var result = se.eval(
-                """
-                (if #t 313 0)
-                """ );
-        assertEquals( result, TestUtil.i313 );
-
-        FirstClassObject opCall =
-                new SchemeParser( "(if #t 313 0)" ).getExpression();
-        assertInstanceOf( Cons.class, opCall );
-
-        var env = se.getInteraction();
-
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-        {
-            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
-            fail();
-        }
-
-        assertNotNull(
-                r.get() );
-        assertInstanceOf(
-                SchemeInteger.class,
-                r.get() );
-        assertEquals(
-                TestUtil.i313,
-                r.get() );
-    }
-
-    @Test
     public void syntaxQuoteTest() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
-
-        var result = se.eval(
-                """
-                'lumumba
-                """ );
-        assertEquals( result, Symbol.createObject( "lumumba" ) );
-
-        FirstClassObject opCall =
-                new SchemeParser( "'lumumba" ).getExpression();
-        assertInstanceOf( Cons.class, opCall );
-
-        var env = se.getInteraction();
-
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-        {
-            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
-            fail();
-        }
-
-        assertNotNull(
-                r.get() );
-        assertInstanceOf(
-                Symbol.class,
-                r.get() );
-        assertEquals(
-                "lumumba",
-                r.get().toString() );
+        _contTest(
+                "'lumumba'",
+                s("lumumba") );
     }
 
     @Test

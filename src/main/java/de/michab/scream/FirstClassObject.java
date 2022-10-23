@@ -378,6 +378,22 @@ public abstract class FirstClassObject
         return result;
     }
 
+    public static String getTypename( Class<?> c )
+    {
+        String result = null;
+
+        try
+        {
+            result = (String)c.getField( "TYPE_NAME" ).get( null );
+        }
+        catch ( Throwable t )
+        {
+            result = c.getName();
+        }
+
+        return result;
+    }
+
     /**
      * Mark a <code>FirstClassObject</code> as constant.  Note that it is not
      * possible to switch from constant to variable, only the state change from
@@ -472,5 +488,22 @@ public abstract class FirstClassObject
         if ( fco != Cons.NIL )
             result = fco.compile( env );
         return result;
+    }
+
+    public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
+    {
+        if ( v == Cons.NIL )
+            return (T)v;
+
+        try
+        {
+            return c.cast(v);
+        }
+        catch (ClassCastException e) {
+            throw new RuntimeX(
+                    Code.TYPE_ERROR,
+                    FirstClassObject.getTypename( c ),
+                    FirstClassObject.getTypename( v ) );
+        }
     }
 }
