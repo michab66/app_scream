@@ -27,11 +27,11 @@ public class SymbolTest extends ScreamBaseTest
     {
         SchemeEvaluator2 se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 '=>
                 """ );
-        assertEquals( result, s("=>") );
+        assertEquals( s("=>"), result );
     }
 
 }

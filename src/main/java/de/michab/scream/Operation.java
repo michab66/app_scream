@@ -214,6 +214,14 @@ public abstract class Operation
         return _rest != Cons.NIL;
     }
 
+    public long argumentCount()
+            throws RuntimeX
+    {
+        return _formalArguments == null ?
+                0 :
+                _formalArguments.length();
+    }
+
     /**
      * Execute the operation in a given environment and based on the passed
      * parameters.  This default implementation just forwards the call to
@@ -365,9 +373,10 @@ public abstract class Operation
      *
      * @param name The symbolic name for the operation.
      */
-    public void setName( Symbol name )
+    public Operation setName( Symbol name )
     {
         _name = name;
+        return this;
     }
 
     /**
@@ -389,7 +398,8 @@ public abstract class Operation
      * @param received The array of arguments received.
      * @throws RuntimeX If the number of arguments was wrong.
      */
-    static protected void checkArgumentCount( int expected,
+    static protected void checkArgumentCount(
+            int expected,
             FirstClassObject[] received )
                     throws RuntimeX
     {
@@ -399,6 +409,7 @@ public abstract class Operation
                     "" + received.length
                     );
     }
+
     /**
      * Checks if the length of the actual argument list is the length we expect.
      *

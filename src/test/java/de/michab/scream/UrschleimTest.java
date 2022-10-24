@@ -96,9 +96,9 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     public void operationTest() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (%syntax (xquote value) value)
                 (xquote micbinz)
@@ -140,14 +140,14 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     public void procedureTest() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (define (add2 value) (+ value 2))
                 (add2 311)
                 """ );
-        assertEquals( result, ScreamBaseTest.i313 );
+        assertEquals( i313, result );
 
         FirstClassObject opCall =
                 new SchemeParser( "(add2 311)" ).getExpression();
@@ -192,9 +192,9 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     public void syntaxAssignmentTest() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (define x 0)
                 (set! x 313)
@@ -203,7 +203,7 @@ public class UrschleimTest extends ScreamBaseTest
         assertEquals( result, ScreamBaseTest.i313 );
 
         var env = se.getInteraction();
-        env.set( ScreamBaseTest.s313, ScreamBaseTest.i1  );
+        env.set( s313, i1  );
 
         FirstClassObject opCall =
                 new SchemeParser( "(set! threethirteen 313)" ).getExpression();
@@ -313,8 +313,8 @@ public class UrschleimTest extends ScreamBaseTest
                         Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
-        assertTrue( ScreamBaseTest.i313.equal( r.get() ) );
-        assertTrue( ScreamBaseTest.i1.equal( env.get( ScreamBaseTest.s1 ) ) );
-        assertTrue( ScreamBaseTest.i2.equal( env.get( ScreamBaseTest.s2 ) ) );
+        assertTrue( i313.equal( r.get() ) );
+        assertTrue( i1.equal( env.get( s1 ) ) );
+        assertTrue( i2.equal( env.get( s2 ) ) );
     }
 }

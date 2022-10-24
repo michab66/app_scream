@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
 
-public class VectorTest
+public class VectorTest extends ScreamBaseTest
 {
     @Test
     public void basic() throws Exception
@@ -58,14 +58,14 @@ public class VectorTest
     {
         var a = new FirstClassObject[]
         {
-            ScreamBaseTest.i1,
-            ScreamBaseTest.i2
+            i1,
+            i2
         };
 
         var vCopy = new Vector( a );
         assertEquals( a.length, vCopy.size() );
-        vCopy.set( 0, ScreamBaseTest.s313 );
-        assertEquals( ScreamBaseTest.s313, vCopy.get( 0 ) );
+        vCopy.set( 0, s313 );
+        assertEquals( s313, vCopy.get( 0 ) );
     }
 
     @Test
@@ -79,51 +79,48 @@ public class VectorTest
 
         var vCopy = new Vector( a, false );
         assertEquals( a.length, vCopy.size() );
-        vCopy.set( 0, ScreamBaseTest.s313 );
-        assertEquals( ScreamBaseTest.s313, vCopy.get( 0 ) );
-        assertEquals( ScreamBaseTest.s313, a[0] );
+        vCopy.set( 0, s313 );
+        assertEquals( s313, vCopy.get( 0 ) );
+        assertEquals( s313, a[0] );
     }
 
     @Test
     public void vector_length_Test() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se = si.getScriptEngine();
+        var se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (define v #(1 2 3))
                 (vector-length v)
                 """ );
-        assertEquals( result, ScreamBaseTest.i3 );
+        assertEquals( i3, result );
     }
 
     @Test
     public void vector_ref_Test() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se = si.getScriptEngine();
+        var se = scriptEngine();
 
-        var result = (FirstClassObject)se.eval(
+        var result = (FirstClassObject)se.evalFco(
                 """
                 (define v #(1 2 3))
                 (vector-ref v 0)
                 """ );
-        assertTrue( ScreamBaseTest.i1.equal( result ) );
+        assertTrue( i1.equal( result ) );
     }
 
     @Test
     public void vector_set_Test() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se = si.getScriptEngine();
+        var se = scriptEngine();
 
-        var result = (FirstClassObject)se.eval(
+        var result = (FirstClassObject)se.evalFco(
                 """
                 (define v #(1 2 3))
                 (vector-set! v 0 313)
                 (vector-ref v 0)
                 """ );
-        assertTrue( ScreamBaseTest.i313.equal( result ) );
+        assertTrue( i313.equal( result ) );
     }
 }

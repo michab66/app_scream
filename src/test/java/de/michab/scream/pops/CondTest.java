@@ -32,7 +32,7 @@ public class CondTest extends ScreamBaseTest
     {
         SchemeEvaluator2 se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (cond ((> 3 2) 'greater)
                       ((< 3 2) 'less))
@@ -48,7 +48,7 @@ public class CondTest extends ScreamBaseTest
     {
         SchemeEvaluator2 se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (cond ((> 3 3) 'greater)
                       ((< 3 3) 'less)
@@ -65,7 +65,7 @@ public class CondTest extends ScreamBaseTest
     {
         SchemeEvaluator2 se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (cond ((> 3 3) 'greater)
                       ((< 3 3) 'less))
@@ -82,7 +82,7 @@ public class CondTest extends ScreamBaseTest
     {
         SchemeEvaluator2 se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (cond ((assv 'b '((a 1) (b 2))) => cadr)
                       (else #f))
@@ -100,7 +100,7 @@ public class CondTest extends ScreamBaseTest
     {
         SchemeEvaluator2 se = scriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (cond ((> 2 3) 'greater)
                       ((+ 2 3)))

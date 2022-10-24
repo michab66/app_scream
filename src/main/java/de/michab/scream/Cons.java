@@ -628,7 +628,7 @@ public class Cons
      * @return The length of this list.
      * @throws RuntimeX If the list is not proper.
      */
-    public long length2() throws RuntimeX
+    public long properLength() throws RuntimeX
     {
         Holder<Long> lengthOut = new Holder<Long>( null );
 

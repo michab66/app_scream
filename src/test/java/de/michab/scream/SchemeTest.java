@@ -43,9 +43,9 @@ public class SchemeTest extends ScreamBaseTest
     {
         var se = scriptEngine();
 
-        var result = se.eval( "(+ 3 310)" );
+        var result = se.evalFco( "(+ 3 310)" );
 
-        assertEquals( "313", result.toString() );
+        assertEquals( i313, result );
     }
 
     @Test
@@ -53,9 +53,9 @@ public class SchemeTest extends ScreamBaseTest
     {
         var se = scriptEngine();
 
-        var result = se.eval( "(- 320 7)" );
+        var result = se.evalFco( "(- 320 7)" );
 
-        assertEquals( "313", result.toString() );
+        assertEquals( i313, result );
     }
 
     @Test
@@ -73,16 +73,15 @@ public class SchemeTest extends ScreamBaseTest
                 """);
         }
 
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se = si.getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
 
-        se.eval( String.format( "(load \"%s\")", tf.toString() ) );
+        se.evalFco( String.format( "(load \"%s\")", tf.toString() ) );
 
-        var one = se.eval( "one" );
-        var two = se.eval( "two" );
+        var one = se.evalFco( "one" );
+        var two = se.evalFco( "two" );
 
-        assertEquals( "1", one.toString() );
-        assertEquals( "2", two.toString() );
+        assertEquals( i1, one );
+        assertEquals( i2, two );
     }
 
     @Test
@@ -110,40 +109,40 @@ public class SchemeTest extends ScreamBaseTest
     public void partitionTest() throws Exception
     {
         SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se1 = si.getScriptEngine();
-        var se2 = si.getScriptEngine();
+        SchemeEvaluator2 se1 = (SchemeEvaluator2)si.getScriptEngine();
+        SchemeEvaluator2 se2 = (SchemeEvaluator2)si.getScriptEngine();
 
-        var result = se1.eval( "(+ 1 1)" );
-        assertEquals( "2", result.toString() );
-        result = se1.eval(
+        var result = se1.evalFco( "(+ 1 1)" );
+        assertEquals( i2, result );
+        result = se1.evalFco(
                 """
                 (define (+ a b)
                 (- a b))
                 """ );
-        result = se1.eval( "(+ 1 1)" );
-        assertEquals( "0", result.toString() );
+        result = se1.evalFco( "(+ 1 1)" );
+        assertEquals( i(0), result );
 
-        result = se2.eval( "(+ 1 1)" );
-        assertEquals( "2", result.toString() );
+        result = se2.evalFco( "(+ 1 1)" );
+        assertEquals( i2, result );
     }
 
     @Test
     public void partitionTest2() throws Exception
     {
         SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se1 = si.getScriptEngine();
-        var se2 = si.getScriptEngine();
+        SchemeEvaluator2 se1 = (SchemeEvaluator2)si.getScriptEngine();
+        SchemeEvaluator2 se2 = (SchemeEvaluator2)si.getScriptEngine();
 
-        var result = se1.eval( "(+ 1 1)" );
-        assertEquals( "2", result.toString() );
-        result = se1.eval(
+        var result = se1.evalFco( "(+ 1 1)" );
+        assertEquals( i2, result );
+        result = se1.evalFco(
                 """
                 (set! + (lambda (a b) 313))
                 """ );
-        result = se1.eval( "(+ 1 1)" );
-        assertEquals( "313", result.toString() );
+        result = se1.evalFco( "(+ 1 1)" );
+        assertEquals( i313, result );
 
-        result = se2.eval( "(+ 1 1)" );
-        assertEquals( "2", result.toString() );
+        result = se2.evalFco( "(+ 1 1)" );
+        assertEquals( i2, result );
     }
 }

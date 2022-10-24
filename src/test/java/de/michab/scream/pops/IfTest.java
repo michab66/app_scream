@@ -21,7 +21,7 @@ public class IfTest extends ScreamBaseTest
     {
         SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
 
-        var result = se.eval(
+        var result = se.evalFco(
                 """
                 (if #t 313 0)
                 """ );

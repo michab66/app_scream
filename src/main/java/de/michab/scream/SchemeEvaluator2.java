@@ -22,7 +22,6 @@ import de.michab.scream.binding.SchemeObject;
  * scheme expressions from a SchemeReader and writes the results of the
  * evaluation to its sink.
  *
- * @version $Rev: 197 $
  * @author Michael Binz
  */
 public class SchemeEvaluator2 implements ScriptEngine
@@ -97,8 +96,27 @@ public class SchemeEvaluator2 implements ScriptEngine
         return eval( new StringReader( script ) );
     }
 
+    public Object evalFco(String script) throws ScriptException {
+        return evalFco( new StringReader( script ) );
+    }
+
     @Override
     public Object eval(Reader reader) throws ScriptException
+    {
+        var result = evalFco( reader );
+        if ( result == Cons.NIL )
+            return null;
+
+        try {
+            return result.toJava();
+        }
+        catch ( ScreamException e )
+        {
+            throw new ScriptException( e );
+        }
+    }
+
+    public FirstClassObject evalFco(Reader reader) throws ScriptException
     {
         try
         {

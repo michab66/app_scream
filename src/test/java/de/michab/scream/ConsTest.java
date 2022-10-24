@@ -42,7 +42,7 @@ public class ConsTest extends ScreamBaseTest
         assertEquals( Cons.NIL, c1.getCdr() );
         assertTrue( c1.isProperList() );
         assertEquals( 1, c1.length() );
-        assertEquals( 1, c1.length2() );
+        assertEquals( 1, c1.properLength() );
         assertFalse( c1.isCircular() );
     }
 
@@ -92,7 +92,7 @@ public class ConsTest extends ScreamBaseTest
         assertEquals( 3, p.length() );
         try
         {
-            p.length2();
+            p.properLength();
             fail();
         }
         catch ( RuntimeX e) {
@@ -169,15 +169,16 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void eval() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
         var env = se.getInteraction();
         Cons cons = (Cons)new SchemeParser( "(+ 1 2)" ).getExpression();
         assertTrue( ScreamBaseTest.i3.equal( cons.evaluate( env ) ) );
     }
+
     @Test
     public void evalErr() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
         var env = se.getInteraction();
         Cons cons = (Cons)new SchemeParser( "(0 1 2)" ).getExpression();
         try
@@ -190,10 +191,11 @@ public class ConsTest extends ScreamBaseTest
             assertEquals( Code.CALLED_NON_PROCEDURAL, e.getCode() );
         }
     }
+
     @Test
     public void evalErrNil() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
         var env = se.getInteraction();
         Cons cons = (Cons)new SchemeParser( "(() 1 2)" ).getExpression();
         try
@@ -206,5 +208,4 @@ public class ConsTest extends ScreamBaseTest
             assertEquals( Code.CALLED_NON_PROCEDURAL, e.getCode() );
         }
     }
-
 }
