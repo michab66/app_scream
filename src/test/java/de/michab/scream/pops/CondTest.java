@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
-import de.michab.scream.SchemeEvaluator2;
+import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamBaseTest;
 
 /**
@@ -30,7 +30,7 @@ public class CondTest extends ScreamBaseTest
     @Test
     public void condTest1() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """
@@ -46,7 +46,7 @@ public class CondTest extends ScreamBaseTest
     @Test
     public void condTest2() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """
@@ -63,7 +63,7 @@ public class CondTest extends ScreamBaseTest
     @Test
     public void condTest3() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """
@@ -80,7 +80,7 @@ public class CondTest extends ScreamBaseTest
     @Test
     public void condTest4() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """
@@ -98,7 +98,7 @@ public class CondTest extends ScreamBaseTest
     @Test
     public void condTest() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """

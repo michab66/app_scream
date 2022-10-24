@@ -25,7 +25,7 @@ public class SymbolTest extends ScreamBaseTest
     @Test
     public void arrowSymbolTest() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """

@@ -73,7 +73,7 @@ public class SchemeTest extends ScreamBaseTest
                 """);
         }
 
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         se.evalFco( String.format( "(load \"%s\")", tf.toString() ) );
 
@@ -108,9 +108,9 @@ public class SchemeTest extends ScreamBaseTest
     @Test
     public void partitionTest() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        SchemeEvaluator2 se1 = (SchemeEvaluator2)si.getScriptEngine();
-        SchemeEvaluator2 se2 = (SchemeEvaluator2)si.getScriptEngine();
+        Scream si = new Scream();
+        ScreamEvaluator se1 = (ScreamEvaluator)si.getScriptEngine();
+        ScreamEvaluator se2 = (ScreamEvaluator)si.getScriptEngine();
 
         var result = se1.evalFco( "(+ 1 1)" );
         assertEquals( i2, result );
@@ -129,9 +129,9 @@ public class SchemeTest extends ScreamBaseTest
     @Test
     public void partitionTest2() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        SchemeEvaluator2 se1 = (SchemeEvaluator2)si.getScriptEngine();
-        SchemeEvaluator2 se2 = (SchemeEvaluator2)si.getScriptEngine();
+        Scream si = new Scream();
+        ScreamEvaluator se1 = (ScreamEvaluator)si.getScriptEngine();
+        ScreamEvaluator se2 = (ScreamEvaluator)si.getScriptEngine();
 
         var result = se1.evalFco( "(+ 1 1)" );
         assertEquals( i2, result );

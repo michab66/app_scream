@@ -169,7 +169,7 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void eval() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
         var env = se.getInteraction();
         Cons cons = (Cons)new SchemeParser( "(+ 1 2)" ).getExpression();
         assertTrue( ScreamBaseTest.i3.equal( cons.evaluate( env ) ) );
@@ -178,7 +178,7 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void evalErr() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
         var env = se.getInteraction();
         Cons cons = (Cons)new SchemeParser( "(0 1 2)" ).getExpression();
         try
@@ -195,7 +195,7 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void evalErrNil() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
         var env = se.getInteraction();
         Cons cons = (Cons)new SchemeParser( "(() 1 2)" ).getExpression();
         try

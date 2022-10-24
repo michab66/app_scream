@@ -71,7 +71,7 @@ public class ScreamBaseTest
     {
         JavaUtil.Assert( expected != null || expectedError != null );
 
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        ScreamEvaluator se = (ScreamEvaluator)new Scream().getScriptEngine();
 
         FirstClassObject opCall =
                 new SchemeParser( expression ).getExpression();
@@ -131,9 +131,9 @@ public class ScreamBaseTest
     /**
      * @return A newly created script engine.
      */
-    protected SchemeEvaluator2 scriptEngine()
+    protected ScreamEvaluator scriptEngine()
     {
-        return (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        return (ScreamEvaluator)new Scream().getScriptEngine();
     }
 
     public static Symbol s( String name )

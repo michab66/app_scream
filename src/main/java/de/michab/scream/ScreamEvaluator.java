@@ -24,11 +24,11 @@ import de.michab.scream.binding.SchemeObject;
  *
  * @author Michael Binz
  */
-public class SchemeEvaluator2 implements ScriptEngine
+public class ScreamEvaluator implements ScriptEngine
 {
     @SuppressWarnings("unused")
     private static Logger _log =
-            Logger.getLogger( SchemeEvaluator2.class.getName() );
+            Logger.getLogger( ScreamEvaluator.class.getName() );
 
     /**
      * The symbol being bound to an object reference of the interpreter itself.
@@ -41,15 +41,15 @@ public class SchemeEvaluator2 implements ScriptEngine
      */
     private final Environment _interaction;
 
-    private final SchemeInterpreter2 _factory;
+    private final Scream _factory;
 
     /**
      * Create a SchemeEvaluator.
      *
      * @param tle An environment used for evaluating the incoming expressions.
      */
-    SchemeEvaluator2(
-            SchemeInterpreter2 interpreter,
+    ScreamEvaluator(
+            Scream interpreter,
             Environment tle )
     {
         _factory =
@@ -76,7 +76,7 @@ public class SchemeEvaluator2 implements ScriptEngine
     public void load( String filename )
             throws RuntimeX
     {
-        SchemeInterpreter2.load( filename, _interaction );
+        Scream.load( filename, _interaction );
     }
 
     @Override
@@ -120,7 +120,7 @@ public class SchemeEvaluator2 implements ScriptEngine
     {
         try
         {
-            return SchemeInterpreter2.evalImpl(
+            return Scream.evalImpl(
                     _interaction,
                     new SchemeReader( reader),
                     _context.getWriter() );

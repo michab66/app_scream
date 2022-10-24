@@ -43,7 +43,7 @@ import de.michab.scream.util.LoadContext;
  *
  * @author Michael G. Binz
  */
-public class SchemeInterpreter2 implements ScriptEngineFactory
+public class Scream implements ScriptEngineFactory
 {
     /**
      * Reads the resources.  Terminates the application if any problem occurs.
@@ -53,21 +53,21 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     {
         org.smack.util.ServiceManager.getApplicationService(
                 org.smack.util.resource.ResourceManager.class )
-        .injectResources( SchemeInterpreter2.class );
+        .injectResources( Scream.class );
     }
 
     /**
      * The logger for this class.
      */
     private final static Logger log =
-            Logger.getLogger( SchemeInterpreter2.class.getName() );
+            Logger.getLogger( Scream.class.getName() );
 
     private final static ThreadLocal<Stack<LoadContext>> loadStack =
             ThreadLocal.withInitial( Stack<LoadContext>::new );
 
     /**
-     * @see de.michab.scream.SchemeInterpreter2#getErrorPort
-     * @see de.michab.scream.SchemeInterpreter2#_errorPort
+     * @see de.michab.scream.Scream#getErrorPort
+     * @see de.michab.scream.Scream#_errorPort
      */
     private final static PrintWriter _errorWriter = new PrintWriter( System.err );
 
@@ -115,7 +115,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
      *
      * Sample: <code>kernel.schemeExtensions = math.s common.s patch.s</code>
      *
-     * @see de.michab.scream.SchemeInterpreter2#kernelSchemeInstanceExtensionsP
+     * @see de.michab.scream.Scream#kernelSchemeInstanceExtensionsP
      */
     @Resource
     private static String[] schemeExtensions;
@@ -194,10 +194,10 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
      * @param in The reader to use.
      * @param out The writer to use by this interpreter.
      */
-    public SchemeInterpreter2()
+    public Scream()
     {
         ServiceManager.getApplicationService( ResourceManager.class )
-            .injectResources( SchemeInterpreter2.class );
+            .injectResources( Scream.class );
     }
 
     /**
@@ -227,7 +227,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
      * class.
      *
      * @return This interpreter's standard error port.
-     * @see de.michab.scream.SchemeInterpreter2#initialise
+     * @see de.michab.scream.Scream#initialise
      */
     static public Port getErrorPort()
     {
@@ -395,7 +395,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
             String crtFileName = EXTENSION_POSITION + c;
 
             // Try to get a stream on the file...
-            var url = SchemeInterpreter2.class.getResource( crtFileName );
+            var url = Scream.class.getResource( crtFileName );
 
             JavaUtil.Assert(
                     url != null,
@@ -500,7 +500,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
     {
         Thread.currentThread().setName( "screamMain" );
 
-        var interpreter = new SchemeInterpreter2();
+        var interpreter = new Scream();
 
         var engine = interpreter.getScriptEngine();
 
@@ -687,7 +687,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
                 tle,
                 schemeInstanceExtensions );
 
-        return new SchemeEvaluator2(
+        return new ScreamEvaluator(
                 this,
                 tle );
     }
@@ -701,7 +701,7 @@ public class SchemeInterpreter2 implements ScriptEngineFactory
      * Assignment of values to symbols bound in this environment will take place
      * for all SchemeInterpreter instances.
      *
-     * @see de.michab.scream.SchemeInterpreter2#_localTle
+     * @see de.michab.scream.Scream#_localTle
      */
     private final static Environment _topLevelEnvironment = createTle();
 }

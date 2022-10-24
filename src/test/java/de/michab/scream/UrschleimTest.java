@@ -96,7 +96,7 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     public void operationTest() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """
@@ -140,7 +140,7 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     public void procedureTest() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """
@@ -192,7 +192,7 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     public void syntaxAssignmentTest() throws Exception
     {
-        SchemeEvaluator2 se = scriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """
@@ -288,8 +288,8 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     void _begin() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        SchemeEvaluator2 se = (SchemeEvaluator2)si.getScriptEngine();
+        Scream si = new Scream();
+        ScreamEvaluator se = (ScreamEvaluator)si.getScriptEngine();
 
         Environment env =
                 se.getInteraction();

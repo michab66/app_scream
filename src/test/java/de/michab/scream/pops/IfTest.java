@@ -10,8 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.SchemeEvaluator2;
-import de.michab.scream.SchemeInterpreter2;
+import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamBaseTest;
 
 public class IfTest extends ScreamBaseTest
@@ -19,13 +18,13 @@ public class IfTest extends ScreamBaseTest
     @Test
     public void ifTest() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        ScreamEvaluator se = scriptEngine();
 
         var result = se.evalFco(
                 """
                 (if #t 313 0)
                 """ );
-        assertEquals( result, ScreamBaseTest.i313 );
+        assertEquals( result, i313 );
     }
 
     @Test
