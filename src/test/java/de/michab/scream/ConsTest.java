@@ -47,29 +47,52 @@ public class ConsTest extends ScreamBaseTest
     }
 
     @Test
-    public void tail() throws Exception
+    public void consCreate() throws Exception
     {
+        // Tests the create call.
         Cons c1 = Cons.create(
                 i(0),
                 i(1),
                 i(2),
                 i(3),
-                i(4)
-                );
+                i(4) );
+
+        assertNotNull( c1 );
+        assertEquals( 5, c1.length() );
+        assertTrue( c1.isProperList() );
+        assertFalse( c1.isCircular() );
+
+        int count = 0;
+        while ( c1 != Cons.NIL )
+        {
+            assertEquals( i(count), c1.getCar() );
+            count++;
+            c1 = (Cons)c1.getCdr();
+        }
+    }
+
+    @Test
+    public void tail() throws Exception
+    {
+        Cons c1 = readSingleExpression(
+                "(0 1 2 3 4)",
+                Cons.class );
 
         Cons tail2 = (Cons)c1.listTail( 2 );
         assertNotNull( tail2 );
         assertEquals( i(2), tail2.getCar() );
+        assertEquals( 3, tail2.length() );
+    }
 
-        try
-        {
-            c1.listTail( c1.length() );
-            fail();
-        }
-        catch ( RuntimeX e )
-        {
-            assertEquals( ScreamException.Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
-        }
+    @Test
+    public void tailEmpty() throws Exception
+    {
+        Cons c1 = readSingleExpression(
+                "(0 1 2 3 4)",
+                Cons.class );
+
+        Cons tail1 = (Cons)c1.listTail( c1.length() );
+        assertEquals( Cons.NIL, tail1 );
     }
 
     @Test
@@ -77,16 +100,12 @@ public class ConsTest extends ScreamBaseTest
     {
         var p = (Cons)
                 new SchemeParser( "(1 2 3)" ).getExpression();
-        assertTrue( p.isProperList() );
-        assertFalse( p.isCircular() );
-        assertEquals( 3, p.length() );
     }
 
     @Test
     public void properNot() throws Exception
     {
-        var p = (Cons)
-                new SchemeParser( "(1 2 3 . 4)" ).getExpression();
+        var p = readSingleExpression( "(1 2 3 . 4)", Cons.class );
         assertFalse( p.isProperList() );
         assertFalse( p.isCircular() );
         assertEquals( 3, p.length() );
@@ -103,13 +122,9 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void circular() throws Exception
     {
-        Cons c1 = Cons.create(
-                i(0),
-                i(1),
-                i(2),
-                i(3),
-                i(4)
-                );
+        Cons c1 = readSingleExpression(
+                "(0 1 2 3 4)",
+                Cons.class );
 
         Cons tail2 = (Cons)c1.listTail( c1.length() -1 );
         tail2.setCdr( c1 );
@@ -120,13 +135,9 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void ref() throws Exception
     {
-        Cons c1 = Cons.create(
-                i(0),
-                i(1),
-                i(2),
-                i(3),
-                i(4)
-                );
+        Cons c1 = readSingleExpression(
+                "(0 1 2 3 4)",
+                Cons.class );
 
         var r2 = c1.listRef( 2 );
         assertNotNull( r2 );
@@ -146,20 +157,12 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void equality() throws Exception
     {
-        Cons c1 = Cons.create(
-                i(0),
-                i(1),
-                i(2),
-                i(3),
-                i(4)
-                );
-        Cons c2 = Cons.create(
-                i(0),
-                i(1),
-                i(2),
-                i(3),
-                i(4)
-                );
+        Cons c1 = readSingleExpression(
+                "(0 1 2 3 4)",
+                Cons.class );
+        Cons c2 = readSingleExpression(
+                "(0 1 2 3 4)",
+                Cons.class );
 
         assertTrue( c1.equal( c2 ) );
         assertFalse( c1.eqv( c2 ) );

@@ -153,12 +153,18 @@
 
 
 ;;
-;; (reverse list) library procedure; r5rs 27
+;; (reverse list) library procedure; r7rs 42
 ;;
 (define (reverse list)
-  (if (list? list)
-    ((object list) (reverse))
-    (error "EXPECTED_PROPER_LIST")))
+  (cond
+    ((equal? list ()) 
+      ())
+    ((list? list)
+      ((object list) (reverse)))
+    (else
+      (error "EXPECTED_PROPER_LIST"))
+  )
+)
 
 
 

@@ -228,7 +228,7 @@ public class Cons
     }
 
     /**
-     * Returns the sublist of list obtained by omitting the first k elements.  It
+     * Returns the sublist of list obtained by omitting the first k elements. It
      * is an error if list has fewer than k elements.
      *
      * @param k The index of the first element of the sublist to return.
@@ -238,7 +238,7 @@ public class Cons
     public FirstClassObject listTail( long k )
             throws RuntimeX
     {
-        if ( k >= length() || k < 0 )
+        if ( k > length() || k < 0 )
             throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, k );
 
         FirstClassObject result = this;
@@ -261,6 +261,9 @@ public class Cons
             throws RuntimeX
     {
         FirstClassObject result = listTail( k );
+
+        if ( result == Cons.NIL )
+            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, k );
 
         try
         {
