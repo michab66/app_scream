@@ -21,6 +21,289 @@ import de.michab.scream.ScreamException.Code;
 public class Rsr7_6_4_PairsLists extends ScreamBaseTest
 {
     /**
+     * p41
+     */
+    @Test
+    public void schemeListNotation_1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (equal?
+              '(a b c d e)
+              '(a . (b . (c . (d . (e . ())))))
+            )
+            """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p41
+     */
+    @Test
+    public void schemeListNotation_2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (equal?
+              '(a b c . d)
+              '(a . (b . (c . d)))
+            )
+            """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p41
+     */
+    @Test
+    public void schemePair_1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (pair? '(a . b))
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p41
+     */
+    @Test
+    public void schemePair_2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (pair? '(a b c))
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p41
+     */
+    @Test
+    public void schemePair_3() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (pair? '())
+                """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p41
+     */
+    @Test
+    public void schemePair_4() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (pair? '#(a b))
+                """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p41
+     */
+    @Disabled( "make-list not implemented." )
+    @Test
+    public void schemeCons_1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (equal?
+                        '(a)
+                        (cons 'a '())
+                )
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p41
+     */
+    @Disabled( "make-list not implemented." )
+    @Test
+    public void schemeCons_2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (equal?
+                        '((a) b c d)
+                        (cons '(a) '(b c d))
+                )
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p41
+     */
+    @Disabled( "make-list not implemented." )
+    @Test
+    public void schemeCons_3() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (equal?
+                        '("a" b c)
+                        (cons "a" '(b c))
+                )
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p41
+     */
+    @Disabled( "make-list not implemented." )
+    @Test
+    public void schemeCons_4() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (equal?
+                        '(a . 3)
+                        (cons 'a 3)
+                )
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p41
+     */
+    @Disabled( "make-list not implemented." )
+    @Test
+    public void schemeCons_5() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (equal?
+                        '((a b) . c)
+                        (cons '(a b) 'c)
+                )
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p42
+     */
+    @Test
+    public void schemeNull_x1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (null? '(a b c))
+                """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p42
+     */
+    @Test
+    public void schemeNull_x2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (null? '())
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p42
+     */
+    @Test
+    public void schemeListQ_1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (list? '(a b c))
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p42
+     */
+    @Test
+    public void schemeListQ_2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (list? '())
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p42
+     */
+    @Test
+    public void schemeListQ_3() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (list? '(a . c))
+                """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p42
+     */
+    @Test
+    public void schemeListQ_4() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (let ((x (list 'a)))
+                  (set-cdr! x x)
+                  (list? x))
+                """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p42
+     */
+    @Disabled( "make-list not implemented." )
+    @Test
+    public void schemeMake_List_1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (equal?
+                        '(3 3)
+                        (make-list 2 3)
+                )
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p42
+     */
+    @Disabled( "make-list not implemented." )
+    @Test
+    public void schemeMake_List_x1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (equal?
+                        '(() ())
+                        (make-list 2)
+                )
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
      * p42
      */
     @Test
