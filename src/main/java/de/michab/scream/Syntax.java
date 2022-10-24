@@ -14,7 +14,6 @@ import de.michab.scream.pops.Let;
 import de.michab.scream.pops.LetAsterisk;
 import de.michab.scream.pops.Letrec;
 import de.michab.scream.pops.Loop;
-import de.michab.scream.pops.Quote;
 import de.michab.scream.pops.ShortcutAnd;
 import de.michab.scream.pops.ShortcutOr;
 import urschleim.Continuation;
@@ -203,19 +202,43 @@ public class Syntax
      *
      * (quote <datum>) syntax; r5rs 8
      */
-    static private Syntax quoteSyntax = new Syntax( "quote" )
+    static private Operation quoteSyntax = new Operation( Symbol.createObject( "quote" ) )
     {
         @Override
         public FirstClassObject compile( Environment parent, FirstClassObject[] args )
                 throws RuntimeX
         {
+            throw new InternalError();
+        }
+
+        @Override
+        public FirstClassObject activate( Environment e, Cons argumentList )
+                throws RuntimeX
+        {
+            Holder<FirstClassObject> r =
+                    new Holder<FirstClassObject>( null );
+            Holder<ScreamException> error =
+                    new Holder<>( null );
+
+            Continuation.trampoline( _activate(
+                    e,
+                    argumentList,
+                    Continuation.endCall( r::set ) ),
+                    error::set );
+
+            if ( error.get() != null )
+                throw (RuntimeX)error.get();
+
+           return r.get();
+        }
+
+        @Override
+        public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
+                throws RuntimeX
+        {
             checkArgumentCount( 1, args );
-
-            FirstClassObject result = args[0];
-
-            setConstant( result, true );
-
-            return new Quote( result );
+            // setConstant?
+            return c.accept( args.getCar() );
         }
     };
 

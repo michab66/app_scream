@@ -415,6 +415,15 @@ public class Operation
                     "" + received.length
                     );
     }
+    static protected void checkArgumentCount(
+            int expected,
+            Cons received )
+                    throws RuntimeX
+    {
+        checkArgumentCount(
+                expected,
+                Cons.asArray( received ) );
+    }
 
     /**
      * Checks if the length of the actual argument list is the length we expect.
