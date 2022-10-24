@@ -17,7 +17,7 @@ import de.michab.scream.ScreamEvaluator;
 public class BeginTest extends ScreamBaseTest
 {
     @Test
-    public void beginTest() throws Exception
+    public void beginTest_1() throws Exception
     {
         ScreamEvaluator se = scriptEngine();
 
@@ -31,6 +31,18 @@ public class BeginTest extends ScreamBaseTest
                 )
                 """ );
         assertEquals( "(1 2 3)", result.toString() );
+    }
+
+    @Test
+    public void beginTest_2() throws Exception
+    {
+        ScreamEvaluator se = scriptEngine();
+
+        var result = se.evalFco(
+                """
+                (begin)
+                """ );
+        assertEquals( Cons.NIL, result );
     }
 
     @Test

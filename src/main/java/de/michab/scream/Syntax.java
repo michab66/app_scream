@@ -15,12 +15,12 @@ import de.michab.scream.pops.LetAsterisk;
 import de.michab.scream.pops.Letrec;
 import de.michab.scream.pops.Loop;
 import de.michab.scream.pops.Quote;
-import de.michab.scream.pops.Sequence;
 import de.michab.scream.pops.ShortcutAnd;
 import de.michab.scream.pops.ShortcutOr;
 import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
+import urschleim.Holder;
 
 /**
  * Followed the scheme spec in naming this class.  An alternate name would be
@@ -114,7 +114,7 @@ public class Syntax
      * @param parent The parent environment.
      * @param arguments The argument list.
      * @return The result of the activation.
-     * @throws RuntimeX In case an error occured.
+     * @throws RuntimeX In case an error occurred.
      * @throws InternalError In case this method is not overridden.
      */
     @Override
@@ -584,24 +584,41 @@ public class Syntax
     /**
      * (begin exp1 exp2 ...) library syntax; r5rs 12
      */
-    static private Syntax beginSyntax = new Syntax( "begin" )
+    static private Operation beginSyntax = new Operation( Symbol.createObject(  "begin" ) )
     {
         @Override
         public FirstClassObject compile( Environment parent, FirstClassObject[] args )
                 throws RuntimeX
         {
-            checkMinimumArgumentCount( 1, args );
+            throw new InternalError();
+        }
 
-            for ( int i = args.length-1 ; i >= 0 ; i-- )
-                args[i] = compile( args[i], parent );
+        @Override
+        public FirstClassObject activate( Environment e, Cons argumentList )
+                throws RuntimeX
+        {
+            Holder<FirstClassObject> r =
+                    new Holder<FirstClassObject>( null );
+            Holder<ScreamException> error =
+                    new Holder<>( null );
 
-            return new Sequence( args );
+            Continuation.trampoline( _activate(
+                    e,
+                    argumentList,
+                    Continuation.endCall( r::set ) ),
+                    error::set );
+
+            if ( error.get() != null )
+                throw (RuntimeX)error.get();
+
+           return r.get();
         }
 
         @Override
         public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
+
             return Continuation._begin( e, args, c );
         }
     };
