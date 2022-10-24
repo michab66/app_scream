@@ -11,13 +11,13 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
 
-public class ConsTest
+public class ConsTest extends TestUtil
 {
     @Test
     public void basic() throws Exception
     {
-        var one = SchemeInteger.createObject(1);
-        var two = SchemeInteger.createObject(2);
+        var one = i1;
+        var two = i2;
 
         Cons c1 = new Cons(
                 one,

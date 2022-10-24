@@ -128,6 +128,14 @@ public class TestUtil
         _contTest( expression, null, expected );
     }
 
+    /**
+     * @return A newly created script engine.
+     */
+    protected SchemeEvaluator2 scriptEngine()
+    {
+        return (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+    }
+
     public static Symbol s( String name )
     {
         return Symbol.createObject( name );

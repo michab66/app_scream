@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
 import de.michab.scream.SchemeEvaluator2;
-import de.michab.scream.SchemeInterpreter2;
 import de.michab.scream.TestUtil;
 
 /**
@@ -31,7 +30,7 @@ public class CondTest extends TestUtil
     @Test
     public void condTest1() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
 
         var result = se.eval(
                 """
@@ -47,7 +46,7 @@ public class CondTest extends TestUtil
     @Test
     public void condTest2() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
 
         var result = se.eval(
                 """
@@ -64,7 +63,7 @@ public class CondTest extends TestUtil
     @Test
     public void condTest3() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
 
         var result = se.eval(
                 """
@@ -81,7 +80,7 @@ public class CondTest extends TestUtil
     @Test
     public void condTest4() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
 
         var result = se.eval(
                 """
@@ -99,7 +98,7 @@ public class CondTest extends TestUtil
     @Test
     public void condTest() throws Exception
     {
-        SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
+        SchemeEvaluator2 se = scriptEngine();
 
         var result = se.eval(
                 """

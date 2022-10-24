@@ -6,15 +6,12 @@
 
 package de.michab.scream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import org.junit.jupiter.api.Test;
 
-public class SymbolTest
+public class SymbolTest extends TestUtil
 {
-    Symbol xx( String s )
-    {
-        return null;
-    }
-
     @Test
     public void toJava() throws Exception
     {
@@ -24,4 +21,17 @@ public class SymbolTest
                 "micbinz",
                 Symbol::createObject );
     }
+
+    @Test
+    public void arrowSymbolTest() throws Exception
+    {
+        SchemeEvaluator2 se = scriptEngine();
+
+        var result = se.eval(
+                """
+                '=>
+                """ );
+        assertEquals( result, s("=>") );
+    }
+
 }
