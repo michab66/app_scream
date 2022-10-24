@@ -12,9 +12,9 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.SchemeEvaluator2;
 import de.michab.scream.SchemeInterpreter2;
-import de.michab.scream.TestUtil;
+import de.michab.scream.ScreamBaseTest;
 
-public class IfTest extends TestUtil
+public class IfTest extends ScreamBaseTest
 {
     @Test
     public void ifTest() throws Exception
@@ -25,7 +25,7 @@ public class IfTest extends TestUtil
                 """
                 (if #t 313 0)
                 """ );
-        assertEquals( result, TestUtil.i313 );
+        assertEquals( result, ScreamBaseTest.i313 );
     }
 
     @Test

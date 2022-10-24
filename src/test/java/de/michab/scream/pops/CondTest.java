@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
 import de.michab.scream.SchemeEvaluator2;
-import de.michab.scream.TestUtil;
+import de.michab.scream.ScreamBaseTest;
 
 /**
  * r7, 4.2.1 Conditionals, cond
  */
-public class CondTest extends TestUtil
+public class CondTest extends ScreamBaseTest
 {
     private static Logger LOG = Logger.getLogger( CondTest.class.getName() );
 

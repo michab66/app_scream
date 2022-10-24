@@ -14,7 +14,7 @@ public class SchemeStringTest
     @Test
     public void toJava() throws Exception
     {
-        TestUtil.toJava_(
+        ScreamBaseTest.toJava_(
                 SchemeString.class,
                 String.class,
                 "micbinz",

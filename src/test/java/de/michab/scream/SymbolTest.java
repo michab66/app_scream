@@ -10,12 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-public class SymbolTest extends TestUtil
+public class SymbolTest extends ScreamBaseTest
 {
     @Test
     public void toJava() throws Exception
     {
-        TestUtil.toJava_(
+        ScreamBaseTest.toJava_(
                 Symbol.class,
                 String.class,
                 "micbinz",

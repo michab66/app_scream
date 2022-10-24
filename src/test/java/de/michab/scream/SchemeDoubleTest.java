@@ -17,7 +17,7 @@ public class SchemeDoubleTest
     @Test
     public void toJava() throws Exception
     {
-        TestUtil.toJava_(
+        ScreamBaseTest.toJava_(
                 SchemeDouble.class,
                 Double.class,
                 ZERO,

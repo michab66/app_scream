@@ -13,7 +13,7 @@ public class SchemeCharacterTest
     @Test
     public void toJava() throws Exception
     {
-        TestUtil.toJava_(
+        ScreamBaseTest.toJava_(
                 SchemeCharacter.class,
                 Character.class,
                 bang,

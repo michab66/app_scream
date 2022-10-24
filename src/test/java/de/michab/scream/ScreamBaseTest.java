@@ -22,7 +22,7 @@ import de.michab.scream.frontend.SchemeParser;
 import urschleim.Continuation;
 import urschleim.Holder;
 
-public class TestUtil
+public class ScreamBaseTest
 {
     public final static SchemeInteger i1 = i( 1 );
     public final static SchemeInteger i2 = i( 2 );

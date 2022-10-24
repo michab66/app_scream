@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
 
-public class SchemeIntegerTest extends TestUtil
+public class SchemeIntegerTest extends ScreamBaseTest
 {
     private boolean equal( FirstClassObject a, FirstClassObject b )
     {
@@ -30,7 +30,7 @@ public class SchemeIntegerTest extends TestUtil
     @Test
     public void toJava() throws Exception
     {
-        TestUtil.toJava_(
+        ScreamBaseTest.toJava_(
                 SchemeInteger.class,
                 Long.class,
                 0L,
@@ -72,7 +72,7 @@ public class SchemeIntegerTest extends TestUtil
             assertNotEquals( i1, i2 );
         }
         {
-            var i2 = TestUtil.s313;
+            var i2 = ScreamBaseTest.s313;
             assertNotEquals( i1, i2 );
             assertNotEquals( i2, i1 );
         }
@@ -157,8 +157,8 @@ public class SchemeIntegerTest extends TestUtil
     @Test
     public void multiply() throws Exception
     {
-        var two = TestUtil.i2;
-        var three = TestUtil.i3;
+        var two = ScreamBaseTest.i2;
+        var three = ScreamBaseTest.i3;
 
         var v = three.multiply( two );
         assertTrue( equal( i(6), v ) );
@@ -171,7 +171,7 @@ public class SchemeIntegerTest extends TestUtil
     {
         var fourtynine = i( 21 );
         var seven = i( 7 );
-        var div = TestUtil.i3;
+        var div = ScreamBaseTest.i3;
 
         var v = fourtynine.divide( seven );
         assertTrue( equal( div, v ) );

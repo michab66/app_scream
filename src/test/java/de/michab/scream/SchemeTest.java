@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
 
-public class SchemeTest extends TestUtil
+public class SchemeTest extends ScreamBaseTest
 {
     @Test
     public void errorTest() throws Exception

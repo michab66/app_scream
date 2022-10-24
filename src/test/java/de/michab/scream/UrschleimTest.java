@@ -21,7 +21,7 @@ import de.michab.scream.frontend.SchemeParser;
 import urschleim.Continuation;
 import urschleim.Holder;
 
-public class UrschleimTest extends TestUtil
+public class UrschleimTest extends ScreamBaseTest
 {
     private static Logger LOG = Logger.getLogger( UrschleimTest.class.getName() );
 
@@ -147,7 +147,7 @@ public class UrschleimTest extends TestUtil
                 (define (add2 value) (+ value 2))
                 (add2 311)
                 """ );
-        assertEquals( result, TestUtil.i313 );
+        assertEquals( result, ScreamBaseTest.i313 );
 
         FirstClassObject opCall =
                 new SchemeParser( "(add2 311)" ).getExpression();
@@ -177,7 +177,7 @@ public class UrschleimTest extends TestUtil
                 SchemeInteger.class,
                 r.get() );
         assertEquals(
-                TestUtil.i313,
+                ScreamBaseTest.i313,
                 r.get() );
     }
 
@@ -200,10 +200,10 @@ public class UrschleimTest extends TestUtil
                 (set! x 313)
                 x
                 """ );
-        assertEquals( result, TestUtil.i313 );
+        assertEquals( result, ScreamBaseTest.i313 );
 
         var env = se.getInteraction();
-        env.set( TestUtil.s313, TestUtil.i1  );
+        env.set( ScreamBaseTest.s313, ScreamBaseTest.i1  );
 
         FirstClassObject opCall =
                 new SchemeParser( "(set! threethirteen 313)" ).getExpression();
@@ -229,8 +229,8 @@ public class UrschleimTest extends TestUtil
                 Cons.NIL,
                 r.get() );
         assertEquals(
-                TestUtil.i313,
-                env.get( TestUtil.s313 ) );
+                ScreamBaseTest.i313,
+                env.get( ScreamBaseTest.s313 ) );
     }
 
     @Test
@@ -238,17 +238,17 @@ public class UrschleimTest extends TestUtil
     {
         Environment env = new Environment();
         env.set(
-                TestUtil.s1,
-                TestUtil.i1 );
+                ScreamBaseTest.s1,
+                ScreamBaseTest.i1 );
         env.set(
-                TestUtil.s2,
-                TestUtil.i2 );
+                ScreamBaseTest.s2,
+                ScreamBaseTest.i2 );
         env.set(
-                TestUtil.s3,
-                TestUtil.i3 );
+                ScreamBaseTest.s3,
+                ScreamBaseTest.i3 );
         env.set(
-                TestUtil.s4,
-                TestUtil.i4 );
+                ScreamBaseTest.s4,
+                ScreamBaseTest.i4 );
 
         FirstClassObject list1234c =
                 new SchemeParser( "(one two three four)" ).getExpression();
@@ -270,16 +270,16 @@ public class UrschleimTest extends TestUtil
         assertNotNull(
                 r.get() );
         assertEquals(
-                TestUtil.i1,
+                ScreamBaseTest.i1,
                 r.get()[0] );
         assertEquals(
-                TestUtil.i2,
+                ScreamBaseTest.i2,
                 r.get()[1] );
         assertEquals(
-                TestUtil.i3,
+                ScreamBaseTest.i3,
                 r.get()[2] );
         assertEquals(
-                TestUtil.i4,
+                ScreamBaseTest.i4,
                 r.get()[3] );
         assertNull(
                 error.get() );
@@ -313,8 +313,8 @@ public class UrschleimTest extends TestUtil
                         Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
-        assertTrue( TestUtil.i313.equal( r.get() ) );
-        assertTrue( TestUtil.i1.equal( env.get( TestUtil.s1 ) ) );
-        assertTrue( TestUtil.i2.equal( env.get( TestUtil.s2 ) ) );
+        assertTrue( ScreamBaseTest.i313.equal( r.get() ) );
+        assertTrue( ScreamBaseTest.i1.equal( env.get( ScreamBaseTest.s1 ) ) );
+        assertTrue( ScreamBaseTest.i2.equal( env.get( ScreamBaseTest.s2 ) ) );
     }
 }

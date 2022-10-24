@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
 
-public class ConsTest extends TestUtil
+public class ConsTest extends ScreamBaseTest
 {
     @Test
     public void basic() throws Exception
@@ -172,7 +172,7 @@ public class ConsTest extends TestUtil
         SchemeEvaluator2 se = (SchemeEvaluator2)new SchemeInterpreter2().getScriptEngine();
         var env = se.getInteraction();
         Cons cons = (Cons)new SchemeParser( "(+ 1 2)" ).getExpression();
-        assertTrue( TestUtil.i3.equal( cons.evaluate( env ) ) );
+        assertTrue( ScreamBaseTest.i3.equal( cons.evaluate( env ) ) );
     }
     @Test
     public void evalErr() throws Exception

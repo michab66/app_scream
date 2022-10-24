@@ -26,9 +26,9 @@ public class VectorTest
         for ( int i = 0 ; i < size ; i++ )
             assertEquals( Cons.NIL, v.get( i ) );
 
-        v.fill( TestUtil.s1 );
+        v.fill( ScreamBaseTest.s1 );
         for ( int i = 0 ; i < size ; i++ )
-            assertEquals( TestUtil.s1, v.get( i ) );
+            assertEquals( ScreamBaseTest.s1, v.get( i ) );
     }
 
     @Test
@@ -58,14 +58,14 @@ public class VectorTest
     {
         var a = new FirstClassObject[]
         {
-            TestUtil.i1,
-            TestUtil.i2
+            ScreamBaseTest.i1,
+            ScreamBaseTest.i2
         };
 
         var vCopy = new Vector( a );
         assertEquals( a.length, vCopy.size() );
-        vCopy.set( 0, TestUtil.s313 );
-        assertEquals( TestUtil.s313, vCopy.get( 0 ) );
+        vCopy.set( 0, ScreamBaseTest.s313 );
+        assertEquals( ScreamBaseTest.s313, vCopy.get( 0 ) );
     }
 
     @Test
@@ -73,15 +73,15 @@ public class VectorTest
     {
         var a = new FirstClassObject[]
         {
-            TestUtil.i1,
-            TestUtil.i2
+            ScreamBaseTest.i1,
+            ScreamBaseTest.i2
         };
 
         var vCopy = new Vector( a, false );
         assertEquals( a.length, vCopy.size() );
-        vCopy.set( 0, TestUtil.s313 );
-        assertEquals( TestUtil.s313, vCopy.get( 0 ) );
-        assertEquals( TestUtil.s313, a[0] );
+        vCopy.set( 0, ScreamBaseTest.s313 );
+        assertEquals( ScreamBaseTest.s313, vCopy.get( 0 ) );
+        assertEquals( ScreamBaseTest.s313, a[0] );
     }
 
     @Test
@@ -95,7 +95,7 @@ public class VectorTest
                 (define v #(1 2 3))
                 (vector-length v)
                 """ );
-        assertEquals( result, TestUtil.i3 );
+        assertEquals( result, ScreamBaseTest.i3 );
     }
 
     @Test
@@ -109,7 +109,7 @@ public class VectorTest
                 (define v #(1 2 3))
                 (vector-ref v 0)
                 """ );
-        assertTrue( TestUtil.i1.equal( result ) );
+        assertTrue( ScreamBaseTest.i1.equal( result ) );
     }
 
     @Test
@@ -124,6 +124,6 @@ public class VectorTest
                 (vector-set! v 0 313)
                 (vector-ref v 0)
                 """ );
-        assertTrue( TestUtil.i313.equal( result ) );
+        assertTrue( ScreamBaseTest.i313.equal( result ) );
     }
 }

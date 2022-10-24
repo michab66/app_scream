@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.SchemeInteger;
 import de.michab.scream.ScreamException;
-import de.michab.scream.TestUtil;
+import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.frontend.FrontendX;
 
 public class FrontendNumbersTest
@@ -22,7 +22,7 @@ public class FrontendNumbersTest
             long expected )
                     throws FrontendX
     {
-        SchemeInteger n = TestUtil.readSingleExpression(
+        SchemeInteger n = ScreamBaseTest.readSingleExpression(
                 scheme,
                 SchemeInteger.class );
         assertEquals(

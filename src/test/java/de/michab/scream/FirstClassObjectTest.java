@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
 
-public class FirstClassObjectTest extends TestUtil
+public class FirstClassObjectTest extends ScreamBaseTest
 {
     @Test
     public void asInteger() throws Exception
