@@ -17,13 +17,8 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
 
-public class SchemeIntegerTest
+public class SchemeIntegerTest extends TestUtil
 {
-    private SchemeInteger mk( long i )
-    {
-        return SchemeInteger.createObject( i );
-    }
-
     private boolean equal( FirstClassObject a, FirstClassObject b )
     {
         var r1 = FirstClassObject.equal( a, b );
@@ -45,14 +40,14 @@ public class SchemeIntegerTest
     @Test
     public void basic() throws Exception
     {
-        var d = mk( 0 );
+        var d = i( 0 );
         assertNotNull( d );
         assertInstanceOf( SchemeInteger.class, d );
         var j = d.toJava();
         assertNotNull( j );
         assertInstanceOf( Long.class, j );
 
-        var d2 = mk( d.asLong() );
+        var d2 = i( d.asLong() );
 
         assertTrue( d == d2 );
     }
@@ -60,15 +55,15 @@ public class SchemeIntegerTest
     @Test
     public void equalsTest() throws Exception
     {
-        final var i1 = mk( 313 );
+        final var i1 = i( 313 );
 
         {
-            var i2 = mk( 313 );
+            var i2 = i( 313 );
             assertEquals( i1, i2 );
             assertEquals( i2, i1 );
         }
         {
-            var i2 = mk( -313 );
+            var i2 = i( -313 );
             assertNotEquals( i1, i2 );
             assertNotEquals( i2, i1 );
         }
@@ -87,14 +82,14 @@ public class SchemeIntegerTest
     public void equalTest() throws Exception
     {
         {
-            var i1 = mk( 8 );
-            var i2 = mk( 8 );
+            var i1 = i( 8 );
+            var i2 = i( 8 );
 
             assertTrue( equal( i1, i2 ) );
         }
         {
-            var i1 = mk( 313 );
-            var i2 = mk( 313 );
+            var i1 = i( 313 );
+            var i2 = i( 313 );
 
             assertTrue( equal( i1, i2 ) );
         }
@@ -136,9 +131,9 @@ public class SchemeIntegerTest
     @Test
     public void add() throws Exception
     {
-        var one = mk( 1 );
-        var two = mk( 2 );
-        var three = mk( 3 );
+        var one = i( 1 );
+        var two = i( 2 );
+        var three = i( 3 );
 
         var sum = one.add( two );
         assertTrue( equal( three, sum ) );
@@ -149,9 +144,9 @@ public class SchemeIntegerTest
     @Test
     public void subtract() throws Exception
     {
-        var one = mk( 1 );
-        var two = mk( 2 );
-        var three = mk( 3 );
+        var one = i( 1 );
+        var two = i( 2 );
+        var three = i( 3 );
 
         var v = three.subtract( two );
         assertTrue( equal( one, v ) );
@@ -166,7 +161,7 @@ public class SchemeIntegerTest
         var three = TestUtil.i3;
 
         var v = three.multiply( two );
-        assertTrue( equal( mk(6), v ) );
+        assertTrue( equal( i(6), v ) );
 
         typeFailureTest( two::multiply );
     }
@@ -174,8 +169,8 @@ public class SchemeIntegerTest
     @Test
     public void divide() throws Exception
     {
-        var fourtynine = mk( 21 );
-        var seven = mk( 7 );
+        var fourtynine = i( 21 );
+        var seven = i( 7 );
         var div = TestUtil.i3;
 
         var v = fourtynine.divide( seven );

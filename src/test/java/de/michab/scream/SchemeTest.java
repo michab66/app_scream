@@ -16,13 +16,12 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
 
-public class SchemeTest
+public class SchemeTest extends TestUtil
 {
     @Test
     public void errorTest() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se = si.getScriptEngine();
+        var se = scriptEngine();
 
         try
         {
@@ -42,8 +41,7 @@ public class SchemeTest
     @Test
     public void addTest() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se = si.getScriptEngine();
+        var se = scriptEngine();
 
         var result = se.eval( "(+ 3 310)" );
 
@@ -53,8 +51,7 @@ public class SchemeTest
     @Test
     public void subtractTest() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se = si.getScriptEngine();
+        var se = scriptEngine();
 
         var result = se.eval( "(- 320 7)" );
 
@@ -91,8 +88,7 @@ public class SchemeTest
     @Test
     public void loadNonExistingTest() throws Exception
     {
-        SchemeInterpreter2 si = new SchemeInterpreter2();
-        var se = si.getScriptEngine();
+        var se = scriptEngine();
 
         var nonExistingName = UUID.randomUUID().toString();
         try
@@ -150,5 +146,4 @@ public class SchemeTest
         result = se2.eval( "(+ 1 1)" );
         assertEquals( "2", result.toString() );
     }
-
 }

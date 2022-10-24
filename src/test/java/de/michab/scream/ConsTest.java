@@ -32,7 +32,7 @@ public class ConsTest extends TestUtil
     @Test
     public void basic2() throws Exception
     {
-        var one = SchemeInteger.createObject(1);
+        var one = i1;
 
         Cons c1 = new Cons(
                 one,
@@ -50,16 +50,16 @@ public class ConsTest extends TestUtil
     public void tail() throws Exception
     {
         Cons c1 = Cons.create(
-                SchemeInteger.createObject(0),
-                SchemeInteger.createObject(1),
-                SchemeInteger.createObject(2),
-                SchemeInteger.createObject(3),
-                SchemeInteger.createObject(4)
+                i(0),
+                i(1),
+                i(2),
+                i(3),
+                i(4)
                 );
 
         Cons tail2 = (Cons)c1.listTail( 2 );
         assertNotNull( tail2 );
-        assertEquals( SchemeInteger.createObject(2), tail2.getCar() );
+        assertEquals( i(2), tail2.getCar() );
 
         try
         {
@@ -104,11 +104,11 @@ public class ConsTest extends TestUtil
     public void circular() throws Exception
     {
         Cons c1 = Cons.create(
-                SchemeInteger.createObject(0),
-                SchemeInteger.createObject(1),
-                SchemeInteger.createObject(2),
-                SchemeInteger.createObject(3),
-                SchemeInteger.createObject(4)
+                i(0),
+                i(1),
+                i(2),
+                i(3),
+                i(4)
                 );
 
         Cons tail2 = (Cons)c1.listTail( c1.length() -1 );
@@ -121,16 +121,16 @@ public class ConsTest extends TestUtil
     public void ref() throws Exception
     {
         Cons c1 = Cons.create(
-                SchemeInteger.createObject(0),
-                SchemeInteger.createObject(1),
-                SchemeInteger.createObject(2),
-                SchemeInteger.createObject(3),
-                SchemeInteger.createObject(4)
+                i(0),
+                i(1),
+                i(2),
+                i(3),
+                i(4)
                 );
 
         var r2 = c1.listRef( 2 );
         assertNotNull( r2 );
-        assertEquals( SchemeInteger.createObject(2), r2 );
+        assertEquals( i(2), r2 );
 
         try
         {
@@ -147,18 +147,18 @@ public class ConsTest extends TestUtil
     public void equality() throws Exception
     {
         Cons c1 = Cons.create(
-                SchemeInteger.createObject(0),
-                SchemeInteger.createObject(1),
-                SchemeInteger.createObject(2),
-                SchemeInteger.createObject(3),
-                SchemeInteger.createObject(4)
+                i(0),
+                i(1),
+                i(2),
+                i(3),
+                i(4)
                 );
         Cons c2 = Cons.create(
-                SchemeInteger.createObject(0),
-                SchemeInteger.createObject(1),
-                SchemeInteger.createObject(2),
-                SchemeInteger.createObject(3),
-                SchemeInteger.createObject(4)
+                i(0),
+                i(1),
+                i(2),
+                i(3),
+                i(4)
                 );
 
         assertTrue( c1.equal( c2 ) );
