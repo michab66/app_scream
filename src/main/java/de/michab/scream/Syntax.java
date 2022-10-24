@@ -18,6 +18,7 @@ import de.michab.scream.pops.Quote;
 import de.michab.scream.pops.Sequence;
 import de.michab.scream.pops.ShortcutAnd;
 import de.michab.scream.pops.ShortcutOr;
+import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
 
@@ -595,6 +596,13 @@ public class Syntax
                 args[i] = compile( args[i], parent );
 
             return new Sequence( args );
+        }
+
+        @Override
+        public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
+                throws RuntimeX
+        {
+            return Continuation._begin( e, args, c );
         }
     };
 

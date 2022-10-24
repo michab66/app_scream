@@ -19,12 +19,18 @@ import urschleim.Continuation.Thunk;
  * Represents an abstract operation.  Is the base class for macros (syntaxes in
  * Scheme parlance) and procedures.
  *
- * @version $Rev: 210 $
  * @author Michael Binz
  */
-public abstract class Operation
+public class Operation
     extends FirstClassObject
 {
+    /**
+     * The name of the type as used by error reporting.
+     *
+     * @see FirstClassObject#getTypename()
+     */
+    public static final String TYPE_NAME = Operation.class.getSimpleName();
+
     /**
      * The logger for this class.
      */
@@ -522,8 +528,6 @@ public abstract class Operation
     @Override
     public Object toJava()
     {
-        // TODO: no conversion possible.  Could convert to action or Method (that
-        // second possibility would be pretty cool but also extremely complex.)
         return null;
     }
 
@@ -562,5 +566,17 @@ public abstract class Operation
             throws RuntimeX
     {
         return this;
+    }
+
+    /**
+     * @return A string representation of this object.
+     */
+    @Override
+    public String toString()
+    {
+        return  String.format(
+                "<%s %s>",
+                getTypename(),
+                getName() );
     }
 }

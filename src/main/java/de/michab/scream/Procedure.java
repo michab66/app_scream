@@ -179,16 +179,4 @@ public class Procedure
     {
         return super.activate( _closure, evaluatedArgs );
     }
-
-    /**
-     * Create a string representation of this Procedure.  Procedures can not be
-     * read in.
-     *
-     * @return A string representation of this object.
-     */
-    @Override
-    public String toString()
-    {
-        return "<Procedure " + getName() + ">";
-    }
 }

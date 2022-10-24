@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.function.Function;
@@ -63,7 +64,7 @@ public class ScreamBaseTest
         return cl.cast( fco );
     }
 
-    private void _contTest(
+    private FirstClassObject _contTestImpl(
             String expression,
             FirstClassObject expected,
             Code expectedError
@@ -95,7 +96,7 @@ public class ScreamBaseTest
             assertNotNull( error.get() );
             assertEquals( expectedError, error.get().getCode() );
             assertNull( r.get() );
-            return;
+            return Cons.NIL;
         }
 
         if ( error.get() != null )
@@ -103,13 +104,7 @@ public class ScreamBaseTest
             fail( error.get().getMessage() );
         }
 
-        assertNotNull(
-                r.get() );
-        assertInstanceOf(
-                expected.getClass(), r.get() );
-        assertEquals(
-                expected,
-                r.get() );
+        return r.get();
     }
 
     protected void _contTest(
@@ -117,7 +112,32 @@ public class ScreamBaseTest
             FirstClassObject expected )
                     throws RuntimeX
     {
-        _contTest( expression, expected, null );
+        var fco = _contTestImpl( expression, expected, null );
+
+        assertNotNull(
+                fco );
+        assertInstanceOf(
+                expected.getClass(), fco );
+        assertEquals(
+                expected,
+                fco );
+    }
+
+    protected void _contTest(
+            String expression,
+            FirstClassObject expected,
+            Function<FirstClassObject, Boolean> eq
+            )
+                    throws RuntimeX
+    {
+        var fco = _contTestImpl( expression, expected, null );
+
+        assertNotNull(
+                fco );
+        assertInstanceOf(
+                expected.getClass(), fco );
+        assertTrue(
+                eq.apply( fco ) );
     }
 
     protected void _contTest(
@@ -125,7 +145,7 @@ public class ScreamBaseTest
             Code expected )
                     throws RuntimeX
     {
-        _contTest( expression, null, expected );
+        _contTestImpl( expression, null, expected );
     }
 
     /**
