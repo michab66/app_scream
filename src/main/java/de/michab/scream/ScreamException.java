@@ -3,7 +3,6 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-
 package de.michab.scream;
 
 import java.text.MessageFormat;
@@ -14,29 +13,29 @@ import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 
 /**
- * <p>The base class for all scream specific exceptions.  The message that this
+ * The base class for all scream specific exceptions.  The message that this
  * exception receives at instantiation time is used as a key into Scream's
  * ErrorMessages resource bundle.  Note that a suffix specifying the number of
  * parameters for the exception will be added to the key at resolution time.
  * For example if a runtime exception is created with the key "ERROR" and two
  * arguments are provided then resolution of key "ERROR_2" is tried in the
- * resource bundle.</p>
+ * resource bundle.
  *
- * <p>The entries in the resource bundle have to follow the format <code>
- * ERROR_KEY<_NUM_OF_ARGS> = <error-number> : <ERROR_MESSAGE></code><br>
+ * <p>The entries in the resource bundle have to follow the format
+ * {@code ERROR_KEY<_NUM_OF_ARGS> = <error-number> : <ERROR_MESSAGE>}.
  * In case the passed message is not found in the resource bundle, the original
- * message is printed with a question mark prepended.</p>
+ * message is printed with a question mark prepended.
  *
  * <p>One of the design goals of this exception is to be lightweight in the
  * sense that instantiation does not imply high overhead.  Accesses to the
  * resource bundle occur only if either the message itself or the numeric
- * message id are requested from a RuntimeX instance.</p>
+ * message id are requested from a {@code RuntimeX} instance.
  *
  * @author Michael Binz
  */
 @SuppressWarnings("serial")
 public class ScreamException
-    extends java.lang.Exception
+extends Exception
 {
     public enum Code
     {
@@ -95,13 +94,13 @@ public class ScreamException
     }
 
     private static final Map<String,Code> nameToCode = JavaUtil.make(
-                    () -> {
-                        var result = new HashMap<String, Code>();
+            () -> {
+                var result = new HashMap<String, Code>();
 
-                        for ( var c : Code.values() )
-                            result.put( c.toString(), c );
-                        return result;
-                    });
+                for ( var c : Code.values() )
+                    result.put( c.toString(), c );
+                return result;
+            });
 
     private static Code getCode( String name )
     {
@@ -218,8 +217,8 @@ public class ScreamException
      */
     private void initialise()
     {
-        // Get the original message.  Note that this can neither be null nor the
-        // empty string.  See invariant in constructor.
+        // Get the original message.  Note that this can neither be null nor
+        // the empty string.  See invariant in constructor.
         String message = super.getMessage();
         // Append the number of arguments to the message key.
         if ( _errorArguments != null  && _errorArguments.length > 0 )
@@ -256,7 +255,7 @@ public class ScreamException
      * Creates a scream exception.
      *
      * @param msg The message that will be used as a key into Scream's error
-     *        message resource bundle.
+     * message resource bundle.
      */
     @Deprecated
     public ScreamException( String msg )
@@ -268,10 +267,10 @@ public class ScreamException
      * Creates a scream exception.
      *
      * @param msg The message that will be used as a key into Scream's error
-     *        message resource bundle.
+     * message resource bundle.
      * @param args The arguments to be formatted into the message.
-     * @exception IllegalArgumentException In case the passed message was either
-     *            <code>null</code> or the empty string.
+     * @exception IllegalArgumentException In case the passed message was
+     * either @{code null} or the empty string.
      */
     @Deprecated
     public ScreamException( String msg, Object ... args )
