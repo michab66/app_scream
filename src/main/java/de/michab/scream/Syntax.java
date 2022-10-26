@@ -202,7 +202,7 @@ public class Syntax
      *
      * (quote <datum>) syntax; r5rs 8
      */
-    static private Operation quoteSyntax = new Operation( Symbol.createObject( "quote" ) )
+    static private Operation quoteSyntax = new Operation( "quote" )
     {
         @Override
         public FirstClassObject compile( Environment parent, FirstClassObject[] args )
@@ -607,7 +607,7 @@ public class Syntax
     /**
      * (begin exp1 exp2 ...) library syntax; r5rs 12
      */
-    static private Operation beginSyntax = new Operation( Symbol.createObject(  "begin" ) )
+    static private Operation beginSyntax = new Operation( "begin" )
     {
         @Override
         public FirstClassObject compile( Environment parent, FirstClassObject[] args )

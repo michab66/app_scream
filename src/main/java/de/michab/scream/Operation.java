@@ -7,8 +7,6 @@
 package de.michab.scream;
 
 import java.util.HashSet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import de.michab.scream.ScreamException.Code;
 import urschleim.Continuation;
@@ -30,12 +28,6 @@ public class Operation
      * @see FirstClassObject#getTypename()
      */
     public static final String TYPE_NAME = Operation.class.getSimpleName();
-
-    /**
-     * The logger for this class.
-     */
-    private final static Logger log =
-            Logger.getLogger( Operation.class.getName() );
 
     /**
      * The array representation of an empty argument list.
@@ -81,6 +73,10 @@ public class Operation
     {
         commonInit( name );
     }
+    protected Operation( String name )
+    {
+        this( Symbol.createObject( name ) );
+    }
 
     /**
      * Default constructor.  Creates an operation with a default name. Note that
@@ -91,18 +87,19 @@ public class Operation
      */
     protected Operation()
     {
-        commonInit( DEFAULT_NAME );
+        this( DEFAULT_NAME );
     }
 
     /**
-     * Used for scheme defined <code>Operation</code> objects.
+     * Used for scheme defined @{code Operation} objects.
      *
      * @param formalArguments The operation's formal arguments as specified in
      *        the source code.
      * @param body The operation's body.
      * @throws RuntimeX In case the definition is syntactically wrong.
      */
-    protected Operation( FirstClassObject formalArguments,
+    protected Operation( FirstClassObject
+            formalArguments,
             Cons body,
             Environment compileEnv )
                     throws RuntimeX
@@ -197,16 +194,11 @@ public class Operation
         }
     }
 
-
-
     /**
      * Common initialization code.  Used from the constructors.
      */
     private void commonInit( Symbol name )
     {
-        if ( log.isLoggable( Level.FINE ) )
-            log.fine( "Creating operation: '" + name + "'." );
-
         _name = name;
         setConstant( false );
     }
