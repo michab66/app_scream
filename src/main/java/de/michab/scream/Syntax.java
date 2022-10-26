@@ -205,10 +205,16 @@ public class Syntax
     static private Operation quoteSyntax = new Operation( "quote" )
     {
         @Override
-        public FirstClassObject compile( Environment parent, FirstClassObject[] args )
+        public FirstClassObject compile( Environment parent, Cons args )
                 throws RuntimeX
         {
-            throw new InternalError();
+            checkArgumentCount( 1, args );
+
+            var quoted = args.getCar();
+
+            Lambda.L result = (e,c) -> c.accept( quoted );
+
+            return new Lambda( result, getName().toString() );
         }
 
         @Override
