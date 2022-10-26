@@ -716,7 +716,7 @@ public class Cons
         {
             // Evaluate the car position.  If this results in something that is
             // no Syntax we bail out with CCX.
-            Syntax op = (Syntax)evaluate( _car, e );
+            Operation op = (Operation)evaluate( _car, e );
             FirstClassObject cop = op.compile( e, (Cons)_cdr );
 
             // If the compilation returned identity that ment that compilation

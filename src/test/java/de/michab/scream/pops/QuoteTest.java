@@ -13,6 +13,9 @@ import javax.script.ScriptException;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.Cons;
+import de.michab.scream.FirstClassObject;
+import de.michab.scream.Lambda;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
@@ -20,6 +23,22 @@ import de.michab.scream.ScreamException.Code;
 
 public class QuoteTest extends ScreamBaseTest
 {
+    @Test
+    public void quoteTest_0() throws Exception
+    {
+        ScreamEvaluator se = scriptEngine();
+
+        var e = se.getInteraction();
+
+        var x =readSingleExpression( "(quote a)", Cons.class );
+
+        Lambda l = FirstClassObject.as( Lambda.class, x.compile( e ) );
+
+        var result =
+        FirstClassObject.evaluate( l, null );
+        assertEquals( s("a"), result );
+    }
+
     @Test
     public void quoteTest_1() throws Exception
     {
