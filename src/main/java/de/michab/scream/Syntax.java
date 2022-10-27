@@ -9,6 +9,7 @@ package de.michab.scream;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Assignment;
 import de.michab.scream.pops.Cond;
+import de.michab.scream.pops.If;
 import de.michab.scream.pops.Let;
 import de.michab.scream.pops.LetAsterisk;
 import de.michab.scream.pops.Letrec;
@@ -278,7 +279,7 @@ public class Syntax
      * yields a false value and no <alternate> is specified, then the result of
      * the expression is unspecified.
      */
-    static private Syntax ifSyntax = new Syntax( "if" )
+    static private Syntax ifSyntax2 = new Syntax( "if" )
     {
         private FirstClassObject compImpl( Environment env, Cons cond, Cons positive )
                 throws RuntimeX
@@ -344,6 +345,54 @@ public class Syntax
             }
 
             throw new InternalError();
+        }
+    };
+    /**
+     * <code>
+     * (if <test> <consequent> <alternate>)<br>
+     * (if <test> <consequent>)<br>
+     * </code><br>
+     * Syntax: <Test>, <consequent>, and <alternate> may be arbitrary
+     * expressions.<br>
+     * Semantics: An if expression is evaluated as follows:  First, <test> is
+     * evaluated. If it yields a true value (see section 6.3.1), then
+     * <consequent> is evaluated and its value(s) is(are) returned. Otherwise
+     * <alternate> is evaluated and its value(s) is(are) returned. If <test>
+     * yields a false value and no <alternate> is specified, then the result of
+     * the expression is unspecified.
+     */
+    static private Syntax ifSyntax = new Syntax( "if" )
+    {
+        @Override
+        public FirstClassObject compile( Environment parent, FirstClassObject[] args )
+                throws RuntimeX
+        {
+            checkMinimumArgumentCount( 2, args );
+            checkMaximumArgumentCount( 3, args );
+
+            // Compile referenced nodes.
+            for ( int i = 0 ; i < args.length ; i++ )
+                args[i] = compile( args[i], parent );
+
+            FirstClassObject condition = args[0];
+            FirstClassObject onTrue = args[1];
+            // Handle optional 'else' branch.
+            FirstClassObject onFalse = args.length == 3 ? args[2] : Cons.NIL;
+
+            // Optimisation of constant sub expressions.  If this is sth like
+            // (if #t ...) no 'if' node is needed at all.
+            //      if ( isConstant( condition ) )
+            //      {
+            //        System.err.println( "removed 'if'" );
+            //
+            //        if ( condition != SchemeBoolean.F )
+            //          return onTrue;
+            //        else
+            //          return onFalse;
+            //      }
+
+            // Now create the compiled node.
+            return new If( condition, onTrue, onFalse );
         }
     };
 
