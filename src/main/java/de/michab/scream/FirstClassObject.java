@@ -310,12 +310,6 @@ public abstract class FirstClassObject
     {
         return this;
     }
-    @Override
-    @Deprecated
-    public final Object clone()
-    {
-        throw new InternalError();
-    }
 
     /**
      * Convert this <code>FirstClassObject</code> into its corresponding raw

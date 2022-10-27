@@ -107,8 +107,8 @@ public class Operation
         // Set the body and the argument list to constant.  This is not absolutely
         // necessary if everything is done right.  But of we do something wrong
         // this results in early detection.
-        setConstant( formalArguments, true );
-        setConstant( body, true );
+//        setConstant( formalArguments, true );
+//        setConstant( body, true );
         // Replace the argument list by a clone that gets modified later-on.
         formalArguments = copy( formalArguments );
 
@@ -407,6 +407,7 @@ public class Operation
                     "" + received.length
                     );
     }
+
     static protected void checkArgumentCount(
             int expected,
             Cons received )
@@ -415,6 +416,30 @@ public class Operation
         checkArgumentCount(
                 expected,
                 Cons.asArray( received ) );
+    }
+    static protected long checkArgumentCount(
+            int min,
+            int max,
+            Cons received )
+                    throws RuntimeX
+    {
+        long argumentCount =
+                Cons.length( received );
+
+        if ( argumentCount < min )
+        {
+            throw new RuntimeX( Code.NOT_ENOUGH_ARGUMENTS,
+                    min,
+                    argumentCount );
+        }
+        if ( argumentCount > max )
+        {
+            throw new RuntimeX( Code.TOO_MANY_ARGUMENTS,
+                    max,
+                    argumentCount );
+        }
+
+        return argumentCount;
     }
 
     /**

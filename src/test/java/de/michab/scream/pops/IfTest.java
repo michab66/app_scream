@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.ScreamEvaluator;
 
 public class IfTest extends ScreamBaseTest
 {
@@ -24,7 +24,7 @@ public class IfTest extends ScreamBaseTest
                 """
                 (if #t 313 0)
                 """ );
-        assertEquals( result, i313 );
+        assertEquals( i313, result );
     }
 
     @Test

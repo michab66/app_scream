@@ -301,6 +301,8 @@ public class Scream implements ScriptEngineFactory
         if ( x == Cons.NIL )
             return Cons.NIL;
 
+        x = x.compile( e );
+
         try
         {
             return x.evaluate( e );

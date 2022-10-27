@@ -624,6 +624,12 @@ public class Cons
 
         return lengthOut.get();
     }
+    public static long length( Cons c ) throws RuntimeX
+    {
+        if ( c == Cons.NIL )
+            return 0;
+        return c.length();
+    }
 
     /**
      * The length operation as required by the Scheme standard.
