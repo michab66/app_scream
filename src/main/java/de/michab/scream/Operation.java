@@ -8,6 +8,7 @@ package de.michab.scream;
 
 import java.util.HashSet;
 
+import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import urschleim.Continuation;
 import urschleim.Continuation.Cont;
@@ -266,7 +267,7 @@ public class Operation
     }
 
     public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
-        throws RuntimeX
+            throws RuntimeX
     {
         checkArgumentCount( args );
 
@@ -555,6 +556,32 @@ public class Operation
     public Object toJava()
     {
         return null;
+    }
+
+    private Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        final var ex = e.extend( getName() );
+
+        if ( _rest != Cons.NIL )
+            ex.set( (Symbol)_rest, Cons.NIL );
+
+        return () -> _bind(
+                ex,
+                _formalArguments,
+                args,
+                (s)->Continuation._begin( s, _body, c ) );
+    }
+
+    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    {
+        checkArgumentCount( args );
+
+        L l = (e,c) -> _execute( e, args, c );
+
+        return new Lambda(
+                l,
+                this.toString() );
     }
 
     /**

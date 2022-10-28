@@ -466,8 +466,7 @@ public class Cons
         }
     }
 
-    @Override
-    public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
+    public Thunk nevaluate( Environment e, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( ! isProperList() )
@@ -481,29 +480,36 @@ public class Cons
                 (s)->_activate( e, s, arguments, c )
                 );
     }
-//    @Override
-//    protected Lambda _compile( Environment env )
-//    {
-//        if ( ! isProperList() )
-//            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
-//
-//        FirstClassObject fco = getCar();
-//
-//        if ( fco == Cons.NIL )
-//        {
-//            throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-//                    stringize( op ) ).setCause( x );
-//        }
-//        try
-//        {
-//            Operation op = (Operation)fco;
-//
-//            return
-//        }
-//
-//        return null;
-//        (e,c)->
-//    }
+    private static Lambda _compile(
+            Environment e,
+            FirstClassObject  op,
+            Cons args )
+        throws RuntimeX
+    {
+        try
+        {
+            return ((Operation)op)._compile( e, args );
+        }
+        catch ( NullPointerException | ClassCastException x )
+        {
+            throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
+                    stringize( op ) ).setCause( x );
+        }
+    }
+
+    @Override
+    protected Lambda _compile( Environment env ) throws RuntimeX
+    {
+        if ( ! isProperList() )
+            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+
+        FirstClassObject fco = getCar().evaluate( env );
+
+        return _compile(
+                env,
+                fco,
+                FirstClassObject.as( Cons.class, getCdr() ) );
+    }
 
     /**
      * The implementation of the scheme equal? procedure.  This is the least
