@@ -481,6 +481,29 @@ public class Cons
                 (s)->_activate( e, s, arguments, c )
                 );
     }
+//    @Override
+//    protected Lambda _compile( Environment env )
+//    {
+//        if ( ! isProperList() )
+//            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+//
+//        FirstClassObject fco = getCar();
+//
+//        if ( fco == Cons.NIL )
+//        {
+//            throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
+//                    stringize( op ) ).setCause( x );
+//        }
+//        try
+//        {
+//            Operation op = (Operation)fco;
+//
+//            return
+//        }
+//
+//        return null;
+//        (e,c)->
+//    }
 
     /**
      * The implementation of the scheme equal? procedure.  This is the least

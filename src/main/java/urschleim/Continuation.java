@@ -74,13 +74,12 @@ public class Continuation
         };
     }
 
-    public static Thunk _activate(
+    public static Thunk _quote(
             Environment e,
-            FirstClassObject operation,
-            Cons arguments,
-            Cont<FirstClassObject> c)
+            FirstClassObject quote,
+            Cont<FirstClassObject> c) throws RuntimeX
     {
-        return null;
+        return c.accept( quote );
     }
 
     /**
@@ -123,6 +122,15 @@ public class Continuation
     {
         return c.accept(
                     FirstClassObject.evaluate( o, e ) );
+    }
+
+    public static Thunk _resolve(
+            Environment e,
+            Symbol o,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        return c.accept( e.get( o ) );
     }
 
     /**

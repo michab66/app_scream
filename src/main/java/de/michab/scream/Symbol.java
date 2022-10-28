@@ -73,12 +73,14 @@ extends FirstClassObject
     {
         return e.get( this );
     }
+
     @Override
-    public Continuation.Thunk evaluate( Environment e , Continuation.Cont<FirstClassObject> c )
-            throws RuntimeX
+    protected Lambda _compile( Environment env )
     {
-        return () -> c.accept(
-                e.get( this ) );
+        return new Lambda(
+                (e,c) ->
+                    Continuation._resolve( e, this, c ),
+                "resolve " + toString() );
     }
 
     /**

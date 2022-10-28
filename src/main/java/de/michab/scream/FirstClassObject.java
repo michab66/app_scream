@@ -157,10 +157,9 @@ public abstract class FirstClassObject
         Continuation.Cont<FirstClassObject> c )
             throws RuntimeX
     {
-        if ( Thread.interrupted() )
-            throw new RuntimeX( Code.INTERRUPTED );
-
-        return () -> c.accept( this );
+        if ( _compiled == null )
+            _compiled = _compile( e );
+        return  () -> _compiled.evaluate( e, c );
     }
 
     /**
@@ -483,6 +482,35 @@ public abstract class FirstClassObject
             result = fco.compile( env );
         return result;
     }
+
+
+    private static Lambda _NIL = new Lambda(
+            (e,c) -> Continuation._quote(
+                    e,
+                    Cons.NIL,
+                    c ),
+            "NIL" );
+
+    public static Lambda _compile( FirstClassObject fco, Environment env )
+            throws RuntimeX
+    {
+        if ( fco == Cons.NIL )
+            return _NIL;
+        return fco._compile( env );
+    }
+
+    protected Lambda _compile( Environment env )
+        throws RuntimeX
+    {
+        return new Lambda(
+                (e,c) -> Continuation._quote(
+                        e,
+                        this,
+                        c ),
+                this.toString() );
+    }
+
+    private Lambda _compiled;
 
     public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
     {
