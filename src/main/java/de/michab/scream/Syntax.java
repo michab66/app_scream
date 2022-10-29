@@ -265,10 +265,26 @@ public class Syntax
     };
 
     /**
-     * (lambda <formals> <body>) syntax; r5rs 9
+     * (lambda <formals> <body>) syntax; r7rs 4.1.4 p9
      */
-    static private Syntax lambdaSyntax = new Syntax( "lambda" )
+    static private Operation lambdaSyntax = new Operation( "lambda" )
     {
+        @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            checkArgumentCount( 2, Integer.MAX_VALUE, args );
+            var formals = args.listRef( 0 );
+            checkArgument( 0, formals, Symbol.class, Cons.class );
+            var body = args.listRef( 1 ).as(Cons.class);
+
+            Lambda.L result = (e,c) -> {
+                return  c.accept(
+                        new Procedure( e, formals, body ) );
+            };
+
+            return new Lambda( result, getName() );
+        }
+
         @Override
         public FirstClassObject activate( Environment parent, FirstClassObject[] args )
                 throws RuntimeX

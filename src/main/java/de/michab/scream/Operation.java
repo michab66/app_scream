@@ -528,6 +528,27 @@ public class Operation
             throw new ConversionFailedX( received, formal, position );
         }
     }
+    static final protected void checkArgument(
+            int position,
+            FirstClassObject received,
+            Class<?> ... alternatives
+            )
+                    throws RuntimeX
+    {
+        if ( received == Cons.NIL )
+            // TODO better error message for multiple alternatives.
+            throw new ConversionFailedX( received, alternatives[0], position );
+
+        var actual = received.getClass();
+
+        for ( var c : alternatives )
+        {
+            if ( c.isAssignableFrom( actual ) )
+                return;
+        }
+        // TODO better error message for multiple alternatives.
+        throw new ConversionFailedX( received, alternatives[0], position );
+    }
 
     /**
      * Checks if the received argument types are the expected ones.

@@ -516,16 +516,20 @@ public abstract class FirstClassObject
     {
         if ( v == Cons.NIL )
             return (T)v;
+        return v.as( c );
+    }
 
+    public <T extends FirstClassObject> T as( Class<T> c ) throws RuntimeX
+    {
         try
         {
-            return c.cast(v);
+            return c.cast(this);
         }
         catch (ClassCastException e) {
             throw new RuntimeX(
                     Code.TYPE_ERROR,
                     FirstClassObject.getTypename( c ),
-                    FirstClassObject.getTypename( v ) );
+                    FirstClassObject.getTypename( this ) );
         }
     }
 }

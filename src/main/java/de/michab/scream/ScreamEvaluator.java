@@ -96,7 +96,7 @@ public class ScreamEvaluator implements ScriptEngine
         return eval( new StringReader( script ) );
     }
 
-    public Object evalFco(String script) throws ScriptException {
+    public FirstClassObject evalFco(String script) throws ScriptException {
         return evalFco( new StringReader( script ) );
     }
 
