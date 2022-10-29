@@ -462,7 +462,7 @@ public class Cons
         catch ( NullPointerException | ClassCastException x )
         {
             throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-                    stringize( op ) ).setCause( x );
+                    stringize( op ) ).addCause( x );
         }
     }
 
@@ -493,7 +493,7 @@ public class Cons
         catch ( NullPointerException | ClassCastException x )
         {
             throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-                    stringize( op ) ).setCause( x );
+                    stringize( op ) ).addCause( x );
         }
     }
 

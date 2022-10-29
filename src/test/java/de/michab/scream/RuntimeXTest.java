@@ -1,10 +1,13 @@
 package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
+
+import de.michab.scream.ScreamException.Code;
 
 public class RuntimeXTest
 {
@@ -21,8 +24,37 @@ public class RuntimeXTest
                 se.getCode() );
     }
 
+    private void validateMessageAndType( RuntimeX x, Code c, int id )
+    {
+        var msg = x.getMessage();
+        assertNotNull( msg );
+        assertEquals(
+                c,
+                x.getCode() );
+        assertEquals(
+                id,
+                x.getId() );
+    }
+
     @Test
-    public void badBinding() throws Exception
+    public void _11_typeError_2() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mTypeError( Cons.class, SchemeDouble.class ),
+                Code.TYPE_ERROR,
+                11 );
+    }
+    @Test
+    public void _11_typeError_3() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mTypeError( Cons.class, SchemeDouble.class, 313 ),
+                Code.TYPE_ERROR,
+                11 );
+    }
+
+    @Test
+    public void _16_badBinding() throws Exception
     {
         var se = new RuntimeX( ScreamException.Code.BAD_BINDING.name(), "a1", "a2" );
 
@@ -50,6 +82,7 @@ public class RuntimeXTest
             assertTrue( e.getMessage().contains( "duck" ) );
         }
     }
+
 
 //    @Test
 //    public void unknownName() throws Exception

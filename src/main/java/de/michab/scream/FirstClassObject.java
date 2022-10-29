@@ -332,8 +332,8 @@ public abstract class FirstClassObject
     {
         if ( o == Cons.NIL )
             return "NIL";
-        else
-            return o.getTypename();
+
+        return o.getTypename();
     }
 
     /**
@@ -357,21 +357,9 @@ public abstract class FirstClassObject
      */
     public String getTypename()
     {
-        String result = null;
-
-        try
-        {
-            result = (String)getClass().getField( "TYPE_NAME" ).get( this );
-        }
-        catch ( Throwable t )
-        {
-            result = getClass().getName();
-        }
-
-        return result;
+        return typename( getClass() );
     }
-
-    public static String getTypename( Class<?> c )
+    public static String typename( Class<?> c )
     {
         String result = null;
 
@@ -526,10 +514,7 @@ public abstract class FirstClassObject
             return c.cast(this);
         }
         catch (ClassCastException e) {
-            throw new RuntimeX(
-                    Code.TYPE_ERROR,
-                    FirstClassObject.getTypename( c ),
-                    FirstClassObject.getTypename( this ) );
+            throw RuntimeX.mTypeError( c, getClass() ).addCause( e );
         }
     }
 }

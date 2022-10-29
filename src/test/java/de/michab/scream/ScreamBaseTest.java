@@ -150,9 +150,14 @@ public class ScreamBaseTest
 
     protected void assertEqualq( FirstClassObject expected, FirstClassObject actual )
     {
-        assertTrue(
-                FirstClassObject.equal( expected, actual ),
-                "Expected %s, got %s"  );
+        if ( FirstClassObject.equal( expected, actual ) )
+            return;
+
+        var msg = String.format(
+                "Expected '%s', got '%s'.",
+                FirstClassObject.stringize( expected ),
+                FirstClassObject.stringize( actual ) );
+        fail( msg );
     }
 
     /**

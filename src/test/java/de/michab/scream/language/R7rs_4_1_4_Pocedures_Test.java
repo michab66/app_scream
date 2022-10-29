@@ -120,17 +120,21 @@ public class R7rs_4_1_4_Pocedures_Test extends ScreamBaseTest
     /**
      * p13
      */
-    @Disabled( "to be fixed")
     @Test
-    public void lambda_5_1() throws Exception
+    public void lambda_x_1() throws Exception
     {
-        var expected = readSingleExpression( "(3 4 5 6)", Cons.class );
-        var result = scriptEngine().evalFco(
-            """
-            ((lambda x x) (3 4 5 6))))
-            """ );
-
-        assertEqualq( expected, result );
+        try
+        {
+            scriptEngine().evalFco(
+                """
+                ((lambda (x y z x) z)
+                3 4 5 6)
+                """ );
+        }
+        catch (ScriptException e) {
+            RuntimeX r = (RuntimeX)e.getCause();
+            assertEquals( Code.DUPLICATE_FORMAL, r.getCode() );
+        }
     }
 
     /**
