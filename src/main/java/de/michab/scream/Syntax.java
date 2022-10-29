@@ -397,55 +397,6 @@ public class Syntax
     };
 
     /**
-     * <code>
-     * (if <test> <consequent> <alternate>)<br>
-     * (if <test> <consequent>)<br>
-     * </code><br>
-     * Syntax: <Test>, <consequent>, and <alternate> may be arbitrary
-     * expressions.<br>
-     * Semantics: An if expression is evaluated as follows:  First, <test> is
-     * evaluated. If it yields a true value (see section 6.3.1), then
-     * <consequent> is evaluated and its value(s) is(are) returned. Otherwise
-     * <alternate> is evaluated and its value(s) is(are) returned. If <test>
-     * yields a false value and no <alternate> is specified, then the result of
-     * the expression is unspecified.
-     */
-    static private Operation ifSyntax_ = new Syntax( "if" )
-    {
-        @Override
-        public FirstClassObject compile( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkMinimumArgumentCount( 2, args );
-            checkMaximumArgumentCount( 3, args );
-
-            // Compile referenced nodes.
-            for ( int i = 0 ; i < args.length ; i++ )
-                args[i] = compile( args[i], parent );
-
-            FirstClassObject condition = args[0];
-            FirstClassObject onTrue = args[1];
-            // Handle optional 'else' branch.
-            FirstClassObject onFalse = args.length == 3 ? args[2] : Cons.NIL;
-
-            // Optimisation of constant sub expressions.  If this is sth like
-            // (if #t ...) no 'if' node is needed at all.
-            //      if ( isConstant( condition ) )
-            //      {
-            //        System.err.println( "removed 'if'" );
-            //
-            //        if ( condition != SchemeBoolean.F )
-            //          return onTrue;
-            //        else
-            //          return onFalse;
-            //      }
-
-            // Now create the compiled node.
-            return new If( condition, onTrue, onFalse );
-        }
-    };
-
-    /**
      * (cond <clause1> <clause2> ...)  syntax r7rs, 4.2.1, p14
      */
     static private Operation condSyntax = new Syntax( "cond" )
