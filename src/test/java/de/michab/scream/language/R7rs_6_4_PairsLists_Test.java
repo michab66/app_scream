@@ -18,7 +18,7 @@ import de.michab.scream.ScreamException.Code;
  *
  * @author MICBINZ
  */
-public class Rsr7_6_4_PairsLists_Test extends ScreamBaseTest
+public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
 {
     /**
      * p41

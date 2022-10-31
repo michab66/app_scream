@@ -24,6 +24,11 @@ public class Lambda extends FirstClassObject
         _l = l;
         _name = name;
     }
+    public Lambda( L l, Symbol name )
+    {
+        _l = l;
+        _name = name.toString();
+    }
     public Lambda( L l )
     {
         this( l, "anonymous" );

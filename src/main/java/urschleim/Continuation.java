@@ -74,13 +74,12 @@ public class Continuation
         };
     }
 
-    public static Thunk _activate(
+    public static Thunk _quote(
             Environment e,
-            FirstClassObject operation,
-            Cons arguments,
-            Cont<FirstClassObject> c)
+            FirstClassObject quote,
+            Cont<FirstClassObject> c) throws RuntimeX
     {
-        return null;
+        return c.accept( quote );
     }
 
     /**
@@ -97,6 +96,7 @@ public class Continuation
             Symbol s,
             FirstClassObject o,
             Cont<FirstClassObject> c )
+                    throws RuntimeX
     {
         Cont<FirstClassObject> next = v -> {
             e.set( s, v );
@@ -118,10 +118,19 @@ public class Continuation
             Environment e,
             FirstClassObject o,
             Cont<FirstClassObject> c )
+                    throws RuntimeX
     {
-        return () ->
-            c.accept(
+        return c.accept(
                     FirstClassObject.evaluate( o, e ) );
+    }
+
+    public static Thunk _resolve(
+            Environment e,
+            Symbol o,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        return c.accept( e.get( o ) );
     }
 
     /**
@@ -173,10 +182,35 @@ public class Continuation
             FirstClassObject trueBranch,
             FirstClassObject falseBranch,
             Cont<FirstClassObject> c)
+                    throws RuntimeX
     {
         Cont<FirstClassObject> next = s -> _eval(
                 e,
                 s == SchemeBoolean.F ? falseBranch : trueBranch,
+                c );
+
+        return _eval( e, condition, next );
+    }
+    /**
+     * r7rs - 4.1.5 -- no false branch.
+     * Unspecified result if no 'else' -> #F
+     *
+     * @param e
+     * @param condition
+     * @param trueBranch
+     * @param c
+     * @return
+     */
+    public static Thunk _if(
+            Environment e,
+            FirstClassObject condition,
+            FirstClassObject trueBranch,
+            Cont<FirstClassObject> c)
+                    throws RuntimeX
+    {
+        Cont<FirstClassObject> next = s -> _eval(
+                e,
+                s == SchemeBoolean.F ? SchemeBoolean.F : trueBranch,
                 c );
 
         return _eval( e, condition, next );
@@ -187,6 +221,7 @@ public class Continuation
             Cons clause,
             Cont<FirstClassObject> trueBranch,
             Thunk falseBranch)
+                    throws RuntimeX
     {
         Cont<FirstClassObject> next = s -> {
             if (  s == SchemeBoolean.F )

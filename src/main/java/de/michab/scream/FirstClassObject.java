@@ -157,10 +157,9 @@ public abstract class FirstClassObject
         Continuation.Cont<FirstClassObject> c )
             throws RuntimeX
     {
-        if ( Thread.interrupted() )
-            throw new RuntimeX( Code.INTERRUPTED );
-
-        return () -> c.accept( this );
+        if ( _compiled == null )
+            _compiled = _compile( e );
+        return  () -> _compiled.evaluate( e, c );
     }
 
     /**
@@ -310,12 +309,6 @@ public abstract class FirstClassObject
     {
         return this;
     }
-    @Override
-    @Deprecated
-    public final Object clone()
-    {
-        throw new InternalError();
-    }
 
     /**
      * Convert this <code>FirstClassObject</code> into its corresponding raw
@@ -339,8 +332,8 @@ public abstract class FirstClassObject
     {
         if ( o == Cons.NIL )
             return "NIL";
-        else
-            return o.getTypename();
+
+        return o.getTypename();
     }
 
     /**
@@ -364,21 +357,9 @@ public abstract class FirstClassObject
      */
     public String getTypename()
     {
-        String result = null;
-
-        try
-        {
-            result = (String)getClass().getField( "TYPE_NAME" ).get( this );
-        }
-        catch ( Throwable t )
-        {
-            result = getClass().getName();
-        }
-
-        return result;
+        return typename( getClass() );
     }
-
-    public static String getTypename( Class<?> c )
+    public static String typename( Class<?> c )
     {
         String result = null;
 
@@ -490,20 +471,50 @@ public abstract class FirstClassObject
         return result;
     }
 
+
+    private static Lambda _NIL = new Lambda(
+            (e,c) -> Continuation._quote(
+                    e,
+                    Cons.NIL,
+                    c ),
+            "NIL" );
+
+    public static Lambda _compile( FirstClassObject fco, Environment env )
+            throws RuntimeX
+    {
+        if ( fco == Cons.NIL )
+            return _NIL;
+        return fco._compile( env );
+    }
+
+    protected Lambda _compile( Environment env )
+        throws RuntimeX
+    {
+        return new Lambda(
+                (e,c) -> Continuation._quote(
+                        e,
+                        this,
+                        c ),
+                this.toString() );
+    }
+
+    private Lambda _compiled;
+
     public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
     {
         if ( v == Cons.NIL )
             return (T)v;
+        return v.as( c );
+    }
 
+    public <T extends FirstClassObject> T as( Class<T> c ) throws RuntimeX
+    {
         try
         {
-            return c.cast(v);
+            return c.cast(this);
         }
         catch (ClassCastException e) {
-            throw new RuntimeX(
-                    Code.TYPE_ERROR,
-                    FirstClassObject.getTypename( c ),
-                    FirstClassObject.getTypename( v ) );
+            throw RuntimeX.mTypeError( c, getClass() ).addCause( e );
         }
     }
 }

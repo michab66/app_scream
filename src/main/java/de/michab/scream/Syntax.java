@@ -6,6 +6,7 @@
 
 package de.michab.scream;
 
+import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Assignment;
 import de.michab.scream.pops.Cond;
@@ -205,6 +206,21 @@ public class Syntax
     static private Operation quoteSyntax = new Operation( "quote" )
     {
         @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            checkArgumentCount( 1, args );
+
+            var quoted = args.getCar();
+
+            return new Lambda(
+                    (e,c) -> Continuation._quote(
+                            e,
+                            quoted,
+                            c ),
+                    this.toString() );
+        }
+
+        @Override
         public FirstClassObject compile( Environment parent, Cons args )
                 throws RuntimeX
         {
@@ -249,10 +265,26 @@ public class Syntax
     };
 
     /**
-     * (lambda <formals> <body>) syntax; r5rs 9
+     * (lambda <formals> <body>) syntax; r7rs 4.1.4 p9
      */
-    static private Syntax lambdaSyntax = new Syntax( "lambda" )
+    static private Operation lambdaSyntax = new Syntax( "lambda" )
     {
+        @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            checkArgumentCount( 2, Integer.MAX_VALUE, args );
+            var formals = args.listRef( 0 );
+            checkArgument( 0, formals, Symbol.class, Cons.class );
+            var body = args.getCdr().as(Cons.class);
+
+            Lambda.L result = (e,c) -> {
+                return  c.accept(
+                        new Procedure( e, formals, body ) );
+            };
+
+            return new Lambda( result, getName() );
+        }
+
         @Override
         public FirstClassObject activate( Environment parent, FirstClassObject[] args )
                 throws RuntimeX
@@ -264,6 +296,8 @@ public class Syntax
     };
 
     /**
+     * r7rs 4.1.5
+     *
      * <code>
      * (if <test> <consequent> <alternate>)<br>
      * (if <test> <consequent>)<br>
@@ -271,14 +305,80 @@ public class Syntax
      * Syntax: <Test>, <consequent>, and <alternate> may be arbitrary
      * expressions.<br>
      * Semantics: An if expression is evaluated as follows:  First, <test> is
-     * evaluated. If it yields a true value (see section 6.3.1), then
+     * evaluated. If it yields a true value, then
      * <consequent> is evaluated and its value(s) is(are) returned. Otherwise
      * <alternate> is evaluated and its value(s) is(are) returned. If <test>
      * yields a false value and no <alternate> is specified, then the result of
      * the expression is unspecified.
      */
-    static private Syntax ifSyntax = new Syntax( "if" )
+    static private Operation ifSyntax = new Syntax( "if" )
     {
+        private Lambda compImpl( Environment env, Cons cond, Cons positive )
+                throws RuntimeX
+        {
+            var ccond = cond.getCar().compile( env );
+            cond.setCar( ccond );
+            var cpositive = positive.getCar().compile( env );
+            positive.setCar( cpositive );
+
+            Lambda.L result = (e,c) -> {
+                return Continuation._if(
+                        e,
+                        ccond,
+                        cpositive,
+                        c );
+            };
+
+            return new Lambda( result, getName() );
+        }
+        private Lambda compImpl( Environment env, Cons cond, Cons positive, Cons negative )
+                throws RuntimeX
+        {
+            var ccond = cond.getCar().compile( env );
+            cond.setCar( ccond );
+            var cpositive = positive.getCar().compile( env );
+            positive.setCar( cpositive );
+            var cnegative = negative.getCar().compile( env );
+            negative.setCar( cnegative );
+
+            Lambda.L result = (e,c) -> {
+                return Continuation._if(
+                        e,
+                        ccond,
+                        cpositive,
+                        cnegative,
+                        c );
+            };
+
+            return new Lambda( result, getName() );
+        }
+
+        @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            long argsLen =
+                    checkArgumentCount( 2, 3, args );
+
+            if ( argsLen == 2 )
+            {
+                return compImpl(
+                        env,
+                        args,
+                        FirstClassObject.as( Cons.class, args.listTail( 1 ) ) );
+            }
+            else if ( argsLen == 3 )
+            {
+                return compImpl(
+                        env,
+                        args,
+                        FirstClassObject.as( Cons.class, args.listTail( 1 ) ),
+                        FirstClassObject.as( Cons.class, args.listTail( 2 ) ) );
+            }
+
+            throw new InternalError();
+        }
+
+        // Legacy ..
         @Override
         public FirstClassObject compile( Environment parent, FirstClassObject[] args )
                 throws RuntimeX
@@ -313,10 +413,41 @@ public class Syntax
     };
 
     /**
-     * (cond <clause1> <clause2> ...)  syntax r5rs, 10
+     * (cond <clause1> <clause2> ...)  syntax r7rs, 4.2.1, p14
      */
-    static private Syntax condSyntax = new Syntax( "cond" )
+    static private Operation condSyntax = new Syntax( "cond" )
     {
+        @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            checkArgumentCount( 1, Integer.MAX_VALUE, args );
+
+            for ( Cons c = args ; c != Cons.NIL ; c = as( Cons.class, c.getCdr() ) )
+            {
+                var fco = c.getCar();
+                if ( ! (fco instanceof Cons) )
+                    throw new RuntimeX( Code.BAD_CLAUSE,
+                            stringize( fco ) );
+                Cons clause = as( Cons.class, fco);
+
+                // TODO unexpected ELSE message.
+                if ( eqv( ELSE, clause.getCar() ) )
+                {
+                    if ( Cons.NIL != c.getCdr() )
+                        throw new RuntimeX( Code.BAD_CLAUSE,
+                                stringize( fco ) );
+                    clause.setCar( SchemeBoolean.T );
+                }
+            }
+
+            L l = (e,c) -> Continuation._cond(
+                    e,
+                    args,
+                    c);
+
+            return new Lambda( l, getName() );
+        }
+
         @Override
         public FirstClassObject compile( Environment parent, FirstClassObject[] args )
                 throws RuntimeX
@@ -623,6 +754,17 @@ public class Syntax
         }
 
         @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            L l = (e,c) -> Continuation._begin(
+                    e,
+                    args,
+                    c);
+
+            return new Lambda( l, getName() );
+        }
+
+        @Override
         public FirstClassObject activate( Environment e, Cons argumentList )
                 throws RuntimeX
         {
@@ -811,14 +953,32 @@ public class Syntax
     };
 
     /**
-     * (set! <variable> <expression>) syntax; r5rs 16
+     * (set! <variable> <expression>) syntax; r7rs 14
      */
-    static private Syntax setSyntax = new Syntax( "set!" )
+    static private Operation setSyntax = new Syntax( "set!" )
     {
+        @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            checkArgumentCount( 2, args );
+
+            var symbol = FirstClassObject.as(
+                    Symbol.class,
+                    args.getCar() );
+            var value = args.listRef( 1 );
+
+            L l = (e,c) -> Continuation._assign(
+                    e,
+                    symbol,
+                    value,
+                    c);
+
+            return new Lambda( l, getName() );
+        }
+
         private Class<?>[] formalArglist =
                 new Class[]{ Symbol.class,
                         FirstClassObject.class };
-
         /**
          *
          */

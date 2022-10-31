@@ -462,12 +462,18 @@ public class Cons
         catch ( NullPointerException | ClassCastException x )
         {
             throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-                    stringize( op ) ).setCause( x );
+                    stringize( op ) ).addCause( x );
         }
     }
 
     @Override
     public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        // TODO Auto-generated method stub
+        return super.evaluate( e, c );
+    }
+    public Thunk n_evaluate( Environment e, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( ! isProperList() )
@@ -480,6 +486,49 @@ public class Cons
                 getCar(),
                 (s)->_activate( e, s, arguments, c )
                 );
+    }
+    private static Lambda _compile(
+            Environment e,
+            FirstClassObject  op,
+            Cons args )
+        throws RuntimeX
+    {
+        try
+        {
+            return ((Operation)op)._compile( e, args );
+        }
+        catch ( NullPointerException | ClassCastException x )
+        {
+            throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
+                    stringize( op ) ).addCause( x );
+        }
+    }
+
+    @Override
+    protected Lambda _compile( Environment env ) throws RuntimeX
+    {
+        if ( ! isProperList() )
+            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+
+        var car = getCar();
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                car.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+            throw (RuntimeX)error.get();
+
+        return _compile(
+                    env,
+                    r.get(),
+                    as( Cons.class, getCdr() ) );
     }
 
     /**
@@ -623,6 +672,12 @@ public class Cons
             throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
 
         return lengthOut.get();
+    }
+    public static long length( Cons c ) throws RuntimeX
+    {
+        if ( c == Cons.NIL )
+            return 0;
+        return c.length();
     }
 
     /**

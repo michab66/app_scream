@@ -64,7 +64,7 @@ extends ScreamException
         super( msg );
     }
 
-    public RuntimeX setCause( Throwable cause )
+    public RuntimeX addCause( Throwable cause )
     {
         super.initCause( cause );
         return this;
@@ -152,4 +152,40 @@ extends ScreamException
         tle.setPrimitive( errorCatchSyntax );
         return tle;
     }
+
+//    #
+//    # 0: Name of expected type
+//    # 1: Name of actual type
+//    # 2: Optional: Position of wrong parameter in a parameter list.
+//    #
+//    TYPE_ERROR_2 = \
+//    11 : Argument has wrong type.  Expected {0} but found {1}.
+//    TYPE_ERROR_3 = \
+//    11 : Argument {2} has wrong type.  Expected {0} but found {1}.
+
+    public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
+    RuntimeX mTypeError(
+            Class<T1> expected,
+            Class<T2> actual )
+                    throws RuntimeX
+    {
+        return new RuntimeX(
+                Code.TYPE_ERROR,
+                FirstClassObject.typename( expected ),
+                FirstClassObject.typename( actual ) );
+    }
+    public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
+    RuntimeX mTypeError(
+            Class<T1> expected,
+            Class<T2> actual,
+            int position )
+                    throws RuntimeX
+    {
+        return new RuntimeX(
+                Code.TYPE_ERROR,
+                FirstClassObject.typename( expected ),
+                FirstClassObject.typename( actual ),
+                position );
+    }
+
 }

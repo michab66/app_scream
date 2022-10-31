@@ -212,8 +212,7 @@ extends Exception
     }
 
     /**
-     * Has the sole purpose to initialize the _errorMessage and _errorId
-     * attributes.
+     * Initialize the _errorMessage and _errorId attributes.
      */
     private void initialise()
     {

@@ -148,6 +148,18 @@ public class ScreamBaseTest
         _contTestImpl( expression, null, expected );
     }
 
+    protected void assertEqualq( FirstClassObject expected, FirstClassObject actual )
+    {
+        if ( FirstClassObject.equal( expected, actual ) )
+            return;
+
+        var msg = String.format(
+                "Expected '%s', got '%s'.",
+                FirstClassObject.stringize( expected ),
+                FirstClassObject.stringize( actual ) );
+        fail( msg );
+    }
+
     /**
      * @return A newly created script engine.
      */
@@ -164,5 +176,9 @@ public class ScreamBaseTest
     public static SchemeInteger i( long v )
     {
         return SchemeInteger.createObject( v );
+    }
+    protected static Cons c( FirstClassObject ... fcos )
+    {
+        return Cons.create( fcos );
     }
 }
