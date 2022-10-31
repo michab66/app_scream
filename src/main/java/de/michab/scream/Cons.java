@@ -466,7 +466,14 @@ public class Cons
         }
     }
 
-    public Thunk nevaluate( Environment e, Cont<FirstClassObject> c )
+    @Override
+    public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        // TODO Auto-generated method stub
+        return super.evaluate( e, c );
+    }
+    public Thunk n_evaluate( Environment e, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( ! isProperList() )
@@ -503,12 +510,25 @@ public class Cons
         if ( ! isProperList() )
             throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
 
-        FirstClassObject fco = getCar().evaluate( env );
+        var car = getCar();
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                car.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+            throw (RuntimeX)error.get();
 
         return _compile(
-                env,
-                fco,
-                FirstClassObject.as( Cons.class, getCdr() ) );
+                    env,
+                    r.get(),
+                    as( Cons.class, getCdr() ) );
     }
 
     /**

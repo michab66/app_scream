@@ -267,7 +267,7 @@ public class Syntax
     /**
      * (lambda <formals> <body>) syntax; r7rs 4.1.4 p9
      */
-    static private Operation lambdaSyntax = new Operation( "lambda" )
+    static private Operation lambdaSyntax = new Syntax( "lambda" )
     {
         @Override
         protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
@@ -275,7 +275,7 @@ public class Syntax
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
             var formals = args.listRef( 0 );
             checkArgument( 0, formals, Symbol.class, Cons.class );
-            var body = args.listRef( 1 ).as(Cons.class);
+            var body = args.getCdr().as(Cons.class);
 
             Lambda.L result = (e,c) -> {
                 return  c.accept(
