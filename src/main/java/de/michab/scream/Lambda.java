@@ -64,7 +64,7 @@ public class Lambda extends FirstClassObject
     {
         return  String.format(
                 "<%s %s>",
-                getTypename(),
+                typename(),
                 _name );
     }
 

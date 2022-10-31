@@ -155,8 +155,8 @@ public class ScreamBaseTest
 
         var msg = String.format(
                 "Expected '%s', got '%s'.",
-                FirstClassObject.stringize( expected ),
-                FirstClassObject.stringize( actual ) );
+                FirstClassObject.toString( expected ),
+                FirstClassObject.toString( actual ) );
         fail( msg );
     }
 

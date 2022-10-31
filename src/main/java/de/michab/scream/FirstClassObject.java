@@ -10,13 +10,13 @@ import de.michab.scream.ScreamException.Code;
 import urschleim.Continuation;
 
 /**
- * <p>The base class for all Scheme first-class objects.  A first class object is
- * an object that can be bound to a symbol.</p>
+ * The base class for all Scheme first-class objects.  A first class object is
+ * an object that can be bound to a symbol.
  * <p>The static versions of the methods on this object provide additional
- * NIL handling over the non-static ones.</p>
+ * NIL handling over the non-static ones.
  * <p>Implementations of FirstClassObjects represent types in Scheme.  Each
  * implementation has to offer a string attribute named TYPE_NAME as a static
- * final member for full integration with type conversion messages.</p>
+ * final member for full integration with type conversion messages.
  */
 public abstract class FirstClassObject
 {
@@ -264,7 +264,7 @@ public abstract class FirstClassObject
      * @return The string representation of the object.
      * @see java.lang.Object#toString
      */
-    static public String stringize( FirstClassObject object )
+    static public String toString( FirstClassObject object )
     {
         if ( Cons.NIL == object )
             return "()";
@@ -326,14 +326,14 @@ public abstract class FirstClassObject
      *
      * @param o The object for which the typename gets computed.
      * @return The instances type name.
-     * @see FirstClassObject#getTypename()
+     * @see FirstClassObject#typename()
      */
     public static String getTypename( FirstClassObject o )
     {
         if ( o == Cons.NIL )
             return "NIL";
 
-        return o.getTypename();
+        return o.typename();
     }
 
     /**
@@ -355,7 +355,7 @@ public abstract class FirstClassObject
      *
      * @return The instances type name.
      */
-    public String getTypename()
+    public String typename()
     {
         return typename( getClass() );
     }
@@ -471,7 +471,6 @@ public abstract class FirstClassObject
         return result;
     }
 
-
     private static Lambda _NIL = new Lambda(
             (e,c) -> Continuation._quote(
                     e,
@@ -500,6 +499,7 @@ public abstract class FirstClassObject
 
     private Lambda _compiled;
 
+    @SuppressWarnings("unchecked")
     public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
     {
         if ( v == Cons.NIL )

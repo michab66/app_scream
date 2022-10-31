@@ -28,7 +28,7 @@ public class Vector
     /**
      * The name of the type as used by error reporting.
      *
-     * @see FirstClassObject#getTypename()
+     * @see FirstClassObject#typename()
      */
     public static final String TYPE_NAME = "vector";
 
@@ -193,7 +193,7 @@ public class Vector
         // Add one vector element after the other.
         for ( int i = 0 ; i < _theArray.length ; i++ )
         {
-            result.append( stringize( _theArray[i] ) );
+            result.append( toString( _theArray[i] ) );
             result.append( ' ' );
         }
 

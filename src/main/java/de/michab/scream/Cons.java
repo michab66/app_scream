@@ -30,7 +30,7 @@ public class Cons
     /**
      * The name of the type as used by error reporting.
      *
-     * @see FirstClassObject#getTypename()
+     * @see FirstClassObject#typename()
      */
     public static final String TYPE_NAME = "cons";
 
@@ -437,7 +437,7 @@ public class Cons
         catch ( ClassCastException x )
         {
             throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-                    stringize( op ) );
+                    toString( op ) );
         }
         catch ( RuntimeX rx )
         {
@@ -462,7 +462,7 @@ public class Cons
         catch ( NullPointerException | ClassCastException x )
         {
             throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-                    stringize( op ) ).addCause( x );
+                    toString( op ) ).addCause( x );
         }
     }
 
@@ -500,7 +500,7 @@ public class Cons
         catch ( NullPointerException | ClassCastException x )
         {
             throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-                    stringize( op ) ).addCause( x );
+                    toString( op ) ).addCause( x );
         }
     }
 
@@ -571,19 +571,19 @@ public class Cons
         if ( _cdr instanceof Cons || _cdr == NIL )
         {
             // Stringise the cdr.  This will lead to something like "(n0 n1 ...)".
-            String result = stringize( _cdr );
+            String result = toString( _cdr );
             // We have to insert our stringised car just after the leading brace to
             // get proper list notation.  So first remove the leading brace...
             result = result.substring( 1 );
             // ..and glue a new brace and the stringised car to the beginning of the
             // result string.
             return "(" +
-            stringize( _car ) +
+            toString( _car ) +
             ((! result.startsWith( ")" )) ? " " : "") +
             result;
         }
 
-        return "(" + stringize( _car ) + " . " + stringize( _cdr ) + ")";
+        return "(" + toString( _car ) + " . " + toString( _cdr ) + ")";
     }
 
     /**

@@ -56,7 +56,7 @@ public class Syntax
     /**
      * The name of the type as used by error reporting.
      *
-     * @see FirstClassObject#getTypename()
+     * @see FirstClassObject#typename()
      */
     public static final String TYPE_NAME = "syntax";
 
@@ -427,7 +427,7 @@ public class Syntax
                 var fco = c.getCar();
                 if ( ! (fco instanceof Cons) )
                     throw new RuntimeX( Code.BAD_CLAUSE,
-                            stringize( fco ) );
+                            toString( fco ) );
                 Cons clause = as( Cons.class, fco);
 
                 // TODO unexpected ELSE message.
@@ -435,7 +435,7 @@ public class Syntax
                 {
                     if ( Cons.NIL != c.getCdr() )
                         throw new RuntimeX( Code.BAD_CLAUSE,
-                                stringize( fco ) );
+                                toString( fco ) );
                     clause.setCar( SchemeBoolean.T );
                 }
             }
@@ -473,7 +473,7 @@ public class Syntax
                 catch ( ClassCastException e )
                 {
                     throw new RuntimeX( Code.BAD_CLAUSE,
-                            stringize( args[i] ) );
+                            toString( args[i] ) );
                 }
             }
 
@@ -517,13 +517,13 @@ public class Syntax
             {
                 if ( !( args[j] instanceof Cons ) )
                     throw new RuntimeX( Code.BAD_CLAUSE,
-                            stringize( args[j] ) );
+                            toString( args[j] ) );
 
                 FirstClassObject[] clause = ((Cons)args[j]).asArray();
 
                 if ( clause.length < 2 )
                     throw new RuntimeX( Code.BAD_CLAUSE,
-                            stringize( args[j] ) );
+                            toString( args[j] ) );
 
                 // If this is the last clause and there is an 'else' clause...
                 if ( j == args.length-1 && eqv( clause[0], ELSE ) )
@@ -531,7 +531,7 @@ public class Syntax
                     clause[0] = new Cons( key, Cons.NIL );
                 else if ( !( clause[0] instanceof Cons ) )
                     throw new RuntimeX( Code.BAD_CLAUSE,
-                            stringize( args[j] ) );
+                            toString( args[j] ) );
 
                 FirstClassObject[] clauseData = ((Cons)clause[0]).asArray();
 
@@ -658,8 +658,8 @@ public class Syntax
                 {
                     throw new RuntimeX(
                             Code.BAD_BINDING,
-                            stringize( getName() ),
-                            stringize( exceptionInfo ) );
+                            toString( getName() ),
+                            toString( exceptionInfo ) );
                 }
             }
             else

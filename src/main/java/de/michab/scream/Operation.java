@@ -26,7 +26,7 @@ public class Operation
     /**
      * The name of the type as used by error reporting.
      *
-     * @see FirstClassObject#getTypename()
+     * @see FirstClassObject#typename()
      */
     public static final String TYPE_NAME = Operation.class.getSimpleName();
 
@@ -650,7 +650,7 @@ public class Operation
     {
         return  String.format(
                 "<%s %s>",
-                getTypename(),
+                typename(),
                 getName() );
     }
 }

@@ -16,7 +16,7 @@ public class SchemeCharacter
     /**
      * The name of the type as used by error reporting.
      *
-     * @see FirstClassObject#getTypename()
+     * @see FirstClassObject#typename()
      */
     public static final String TYPE_NAME = "char";
 

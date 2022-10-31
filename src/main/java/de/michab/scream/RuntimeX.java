@@ -133,7 +133,7 @@ extends ScreamException
             if ( o instanceof SchemeString )
                 result = ((SchemeString)o).getValue();
             else
-                result = FirstClassObject.stringize( o );
+                result = FirstClassObject.toString( o );
 
             return result;
         }
