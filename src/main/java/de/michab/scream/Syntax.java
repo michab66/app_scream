@@ -500,7 +500,7 @@ public class Syntax
     /**
      * (case <key> <clause1> <clause2> ...) syntax; r5rs 10
      */
-    static private Syntax caseSyntax = new Syntax( "case" )
+    static private Operation caseSyntax = new Syntax( "case" )
     {
         @Override
         public FirstClassObject activate( Environment parent,
