@@ -58,5 +58,4 @@ public class ScutTest extends ScreamBaseTest
             assertEquals( i1.toString(), x.getArguments()[0] );
         }
     }
-
 }
