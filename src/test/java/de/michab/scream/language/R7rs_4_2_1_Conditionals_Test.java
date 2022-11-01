@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.Cons;
 import de.michab.scream.ScreamBaseTest;
 
 /**
@@ -57,4 +58,52 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             """ );
         assertEquals( i(2), result );
     }
+
+    /**
+     * p15
+     */
+    @Test
+    public void case_1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (case (* 2 3)
+             ((2 3 5 7) 'prime)
+             ((1 4 6 8 ) 'composite))
+            """ );
+        assertEquals( s("composite"), result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    public void case_2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (case (car '(c d))
+             ((a) 'a)
+             ((b) 'b))
+            """ );
+        assertEquals( Cons.NIL, result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    @Disabled("not implemented")
+    public void case_3() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (case (car '(c d))
+             ((a e i o u) 'vowel)
+             ((w y) 'semivowel)
+             (else => (lambda (x) x)))
+            """ );
+        assertEquals( s("c"), result );
+    }
+
 }

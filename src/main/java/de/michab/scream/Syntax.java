@@ -498,7 +498,7 @@ public class Syntax
     };
 
     /**
-     * (case <key> <clause1> <clause2> ...) syntax; r5rs 10
+     * (case <key> <clause1> <clause2> ...) syntax; r7rs 15
      */
     static private Operation caseSyntax = new Syntax( "case" )
     {
