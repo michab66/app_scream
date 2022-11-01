@@ -64,6 +64,20 @@ public class ScreamBaseTest
         return cl.cast( fco );
     }
 
+    static public FirstClassObject parse(
+            String scheme )
+                    throws FrontendX
+    {
+        var parser =
+                new SchemeParser( scheme );
+        var fco =
+                parser.getExpression();
+        assertEquals(
+                Port.EOF,
+                parser.getExpression() );
+        return fco;
+    }
+
     private FirstClassObject _contTestImpl(
             String expression,
             FirstClassObject expected,

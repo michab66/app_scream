@@ -264,6 +264,73 @@ public class Continuation
                 next );
     }
 
+
+    /**
+     *
+     * @param e
+     * @param key the evaluted key.
+     * @param clauses The remaining clauses.  May be nil.
+     * @param datums The datumlist of the current clause. nil if no clauses remain.
+     * @param body the expressions of the current clause.
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
+    private static Thunk _caseImpl(
+            Environment e,
+            FirstClassObject key,
+            Cons clauses,
+            Cont<FirstClassObject> c) throws RuntimeX
+    {
+        if ( Cons.NIL == clauses )
+            return c.accept( Cons.NIL );
+
+        var currentClause = FirstClassObject.as( Cons.class, clauses.getCar() );
+
+        if ( Symbol.createObject( "else" ).equals( currentClause.getCar() ))
+        {
+            return _begin(
+                    e,
+                    FirstClassObject.as( Cons.class, currentClause.getCdr() ),
+                    c );
+        }
+        var datums = FirstClassObject.as( Cons.class, currentClause.getCar() );
+        if ( datums.member( key ) != SchemeBoolean.F )
+        {
+            return _begin(
+                    e,
+                    FirstClassObject.as( Cons.class, currentClause.getCdr() ),
+                    c );
+        }
+
+        return _caseImpl(
+                e,
+                key,
+                (Cons)clauses.getCdr(),
+                c );
+    }
+
+    public static Thunk _case(
+            Environment e,
+            FirstClassObject key,
+            Cons clauses,
+            Cont<FirstClassObject> c) throws RuntimeX
+    {
+        if ( Cons.NIL == clauses )
+            return c.accept( Cons.NIL );
+
+        Cont<FirstClassObject> next = (fco) -> _caseImpl(
+                e,
+                fco,
+                clauses,
+                c );
+
+        return _eval(
+                e,
+                key,
+                next );
+    }
+
     private static Thunk listEval(
             Environment e,
             int i,

@@ -503,6 +503,45 @@ public class Syntax
     static private Operation caseSyntax = new Syntax( "case" )
     {
         @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            checkArgumentCount( 2, Integer.MAX_VALUE, args );
+
+            var key = args.getCar();
+            var clauses = as( Cons.class, args.getCdr() );
+
+            // Validate clauses
+            for ( var i = clauses ; i != Cons.NIL ; i = as( Cons.class, i.getCdr() ) )
+            {
+                var c = as( Cons.class, i.getCar() );
+                // datum exp1 ...
+                checkArgumentCount( 2, Integer.MAX_VALUE, c );
+
+                var datum = c.getCar();
+
+                if ( ELSE.equal( datum )  )
+                {
+                    // must be last clause.
+                    if ( Cons.NIL != c.getCdr() )
+                        throw new RuntimeX( Code.BAD_CLAUSE );
+                }
+                else
+                {
+                    // datum must be at least a one element list.
+                    checkArgumentCount( 1, Integer.MAX_VALUE, as( Cons.class, datum ) );
+                }
+            }
+
+            L l = (e,c) -> Continuation._case(
+                    e,
+                    key,
+                    clauses,
+                    c);
+
+            return new Lambda( l, getName() );
+        }
+
+        @Override
         public FirstClassObject activate( Environment parent,
                 FirstClassObject[] args )
                         throws RuntimeX

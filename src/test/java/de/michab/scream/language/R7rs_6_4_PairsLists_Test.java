@@ -8,6 +8,7 @@ import javax.script.ScriptException;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.Cons;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamBaseTest;
@@ -583,7 +584,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     }
 
     /**
-     * p42
+     * p43
      */
     @Test
     public void schemeList_Ref_1() throws Exception
@@ -598,7 +599,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     }
 
     /**
-     * p42
+     * p43
      */
     @Disabled
     @Test
@@ -611,6 +612,110 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
                 )
                 """ );
         assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memq_1() throws Exception
+    {
+        var result = scriptEngine().evalFco( """
+                (memq 'a '(a b c))
+                """ );
+        assertEqualq( parse( "(a b c)" ), result );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memq_2() throws Exception
+    {
+        var result = scriptEngine().evalFco( """
+                (memq 'b '(a b c))
+                """ );
+        assertEqualq( parse( "(b c)" ), result );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memq_3() throws Exception
+    {
+        var result = scriptEngine().evalFco( """
+                (memq 'a '(b c d))
+                """ );
+        assertEqualq( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memq_4() throws Exception
+    {
+        var result = scriptEngine().evalFco( """
+                (memq (list 'a) '(b (a) c))
+                """ );
+        assertEqualq( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void member_1() throws Exception
+    {
+        var result = scriptEngine().evalFco( """
+                (member (list 'a)
+                '(b (a) c))
+                """ );
+        assertEqualq( parse( "((a) c)" ), result );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    @Disabled("not implemented")
+    public void member_2() throws Exception
+    {
+        var result = scriptEngine().evalFco( """
+                (member "B"
+                 '("a", "b", "c")
+                 string-ci=?)
+                """ );
+        assertEqualq( readSingleExpression(
+                """
+                 ("b", "c")
+                """,
+                Cons.class ), result );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memq_5() throws Exception
+    {
+        var result = scriptEngine().evalFco( """
+                (memq 101 '(100 101 102))
+                """ );
+        assertEqualq( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memv_1() throws Exception
+    {
+        var result = scriptEngine().evalFco( """
+                (memv 101 '(100 101 102))
+                """ );
+        assertEqualq( parse( "(101 102)" ), result );
     }
 
 }
