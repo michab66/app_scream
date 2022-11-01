@@ -10,8 +10,6 @@ import java.util.HashSet;
 
 import de.michab.scream.ScreamException.Code;
 import urschleim.Continuation;
-import urschleim.Continuation.Cont;
-import urschleim.Continuation.Thunk;
 import urschleim.Holder;
 
 /**
@@ -19,7 +17,8 @@ import urschleim.Holder;
  * and cdr.  Car is a reference to the value of the current node of the list
  * while cdr is a reference to the next list cell.  Lists are made up of cons
  * cells where each car points to an object and the cdrs are pointing to the
- * cons in the list.<br>
+ * cons in the list.
+ * <p>
  * A list is called proper when the last cdr is NIL.
  *
  * @author Michael G. Binz
@@ -78,8 +77,6 @@ public class Cons
      */
     private Cons( FirstClassObject[] a, int start )
     {
-        // Catch the case that we can't solve here.  The code calling us is
-        // responsible for obeying the rules.
         if ( a.length == 0 )
             throw new IllegalArgumentException( "Can't create Cons for empty array" );
 
@@ -90,7 +87,6 @@ public class Cons
             _cdr = new Cons( a[i], _cdr );
         // Put the first one into our car.
         _car = a[ start ];
-        // Done.
     }
 
     /**
@@ -235,16 +231,16 @@ public class Cons
      * @return The sublist.
      * @throws RuntimeX In case k denotes no valid list element index.
      */
-    public FirstClassObject listTail( long k )
+    public Cons listTail( long k )
             throws RuntimeX
     {
         if ( k > length() || k < 0 )
             throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, k );
 
-        FirstClassObject result = this;
+        Cons result = this;
 
         for ( long i = 0 ; i < k ; i++ )
-            result = ((Cons)result)._cdr;
+            result = as( Cons.class, result._cdr );
 
         return result;
     }
@@ -260,19 +256,12 @@ public class Cons
     public FirstClassObject listRef( long k )
             throws RuntimeX
     {
-        FirstClassObject result = listTail( k );
+        var result = listTail( k );
 
         if ( result == Cons.NIL )
             throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, k );
 
-        try
-        {
-            return ((Cons)result)._car;
-        }
-        catch ( ClassCastException e )
-        {
-            throw new RuntimeX( Code.CAR_FAILED, result );
-        }
+        return result.getCar();
     }
 
     /**
@@ -292,7 +281,7 @@ public class Cons
 
         for ( long i = 0 ; i < thisLength ; i++ )
         {
-            Cons subList = (Cons)listTail( i );
+            Cons subList = listTail( i );
             FirstClassObject subListsCar = subList._car;
 
             if ( ( cmpFct == Comparison.Eq && eq( obj, subListsCar ) ) ||
@@ -305,7 +294,6 @@ public class Cons
     }
 
     /**
-     *
      * @param obj The object to find in the list.
      * @return The sublist starting with the passed element.
      * @throws RuntimeX In case an error occurs.
@@ -317,7 +305,6 @@ public class Cons
     }
 
     /**
-     *
      * @param obj The object to find in the list.
      * @return The sublist starting with the passed element.
      * @throws RuntimeX In case an error occurs.
@@ -329,7 +316,6 @@ public class Cons
     }
 
     /**
-     *
      * @param obj The object to find in the list.
      * @return The sublist starting with the passed element.
      * @throws RuntimeX In case an error occurs.
@@ -375,7 +361,6 @@ public class Cons
     }
 
     /**
-     *
      * @param obj The object to find in the association list.
      * @throws RuntimeX In case an error occurs.
      */
@@ -386,7 +371,6 @@ public class Cons
     }
 
     /**
-     *
      * @param obj The object to find in the association list.
      * @throws RuntimeX In case an error occurs.
      */
@@ -397,7 +381,6 @@ public class Cons
     }
 
     /**
-     *
      * @param obj The object to find in the association list.
      * @throws RuntimeX In case an error occurs.
      */
@@ -448,45 +431,6 @@ public class Cons
         }
     }
 
-    private Thunk _activate(
-            Environment e,
-            FirstClassObject  op,
-            Cons args,
-            Cont<FirstClassObject> c )
-        throws RuntimeX
-    {
-        try
-        {
-            return ((Operation)op)._activate( e, args, c );
-        }
-        catch ( NullPointerException | ClassCastException x )
-        {
-            throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-                    toString( op ) ).addCause( x );
-        }
-    }
-
-    @Override
-    public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
-            throws RuntimeX
-    {
-        // TODO Auto-generated method stub
-        return super.evaluate( e, c );
-    }
-    public Thunk n_evaluate( Environment e, Cont<FirstClassObject> c )
-            throws RuntimeX
-    {
-        if ( ! isProperList() )
-            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
-
-        Cons arguments = (Cons)getCdr();
-
-        return Continuation._eval(
-                e,
-                getCar(),
-                (s)->_activate( e, s, arguments, c )
-                );
-    }
     private static Lambda _compile(
             Environment e,
             FirstClassObject  op,
@@ -560,7 +504,6 @@ public class Cons
 
     /**
      * @return A string representation for this list.
-     * @see FirstClassObject#toString
      */
     @Override
     public String toString()
@@ -587,11 +530,7 @@ public class Cons
     }
 
     /**
-     * Clone this list.  Note that the list structure as well as the contained
-     * values are cloned.
-     *
-     * @return A clone of this list.
-     * @see FirstClassObject#clone()
+     * @return A recursive copy of this list.
      */
     @Override
     public Cons copy()
