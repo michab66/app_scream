@@ -188,4 +188,18 @@ extends ScreamException
                 position );
     }
 
+//    #
+//    # A list contained a duplicate element.  Used in case-syntax.
+//    #
+//    DUPLICATE_ELEMENT_1 = \
+//    46 : Duplicate element : {0}
+    public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
+    RuntimeX mDuplicateElement(
+            FirstClassObject duplicate )
+                    throws RuntimeX
+    {
+        return new RuntimeX(
+                Code.DUPLICATE_ELEMENT,
+                FirstClassObject.toString( duplicate ) );
+    }
 }

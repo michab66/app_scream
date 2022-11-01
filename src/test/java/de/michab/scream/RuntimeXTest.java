@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
 
-public class RuntimeXTest
+public class RuntimeXTest extends ScreamBaseTest
 {
     @Test
     public void internalError() throws Exception
@@ -24,7 +24,7 @@ public class RuntimeXTest
                 se.getCode() );
     }
 
-    private void validateMessageAndType( RuntimeX x, Code c, int id )
+    private RuntimeX validateMessageAndType( RuntimeX x, Code c, int id )
     {
         var msg = x.getMessage();
         assertNotNull( msg );
@@ -34,6 +34,7 @@ public class RuntimeXTest
         assertEquals(
                 id,
                 x.getId() );
+        return x;
     }
 
     @Test
@@ -67,6 +68,18 @@ public class RuntimeXTest
 
         assertTrue( se.getMessage().contains( "a1" ) );
         assertTrue( se.getMessage().contains( "a2" ) );
+    }
+
+    @Test
+    public void _46_duplicateElement_1() throws Exception
+    {
+        var x = validateMessageAndType(
+                RuntimeX.mDuplicateElement( s3 ),
+                Code.DUPLICATE_ELEMENT,
+                46 );
+        assertNotNull( x.getArguments() );
+        assertEquals( 1, x.getArguments().length );
+        assertEquals( s3.toString(), x.getArguments()[0] );
     }
 
     @Test

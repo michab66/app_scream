@@ -84,7 +84,8 @@ extends Exception
         PROXY_CANT_INSTANTIATE,
         TEST_FAILED,
         ONLY_IN_QUASIQUOTE_CONTEXT,
-        RADIX_NOT_SUPPORTED;
+        RADIX_NOT_SUPPORTED,
+        DUPLICATE_ELEMENT;
 
 
         public int id()
@@ -170,6 +171,11 @@ extends Exception
     public Symbol getOperationName()
     {
         return _operationName;
+    }
+
+    public Object[] getArguments()
+    {
+        return _errorArguments;
     }
 
     /**
