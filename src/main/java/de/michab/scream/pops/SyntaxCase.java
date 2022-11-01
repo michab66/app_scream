@@ -1,5 +1,7 @@
 package de.michab.scream.pops;
 
+import java.util.HashSet;
+
 import de.michab.scream.Cons;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
@@ -9,6 +11,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
+import de.michab.scream.util.Scut;
 import urschleim.Continuation;
 
 /**
@@ -31,6 +34,8 @@ public class SyntaxCase extends Syntax
         var key = args.getCar();
         var clauses = as( Cons.class, args.getCdr() );
 
+        var unifier = new HashSet<FirstClassObject>();
+
         // Validate clauses
         for ( var i = clauses ; i != Cons.NIL ; i = as( Cons.class, i.getCdr() ) )
         {
@@ -48,8 +53,17 @@ public class SyntaxCase extends Syntax
             }
             else
             {
+                Cons cdatum = as(
+                        Cons.class,
+                        datum );
                 // datum must be at least a one element list.
-                checkArgumentCount( 1, Integer.MAX_VALUE, as( Cons.class, datum ) );
+                checkArgumentCount(
+                        1,
+                        Integer.MAX_VALUE,
+                        cdatum );
+                Scut.checkUnique(
+                        unifier,
+                        cdatum );
             }
         }
 

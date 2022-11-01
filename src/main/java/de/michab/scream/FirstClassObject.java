@@ -157,9 +157,11 @@ public abstract class FirstClassObject
         Continuation.Cont<FirstClassObject> c )
             throws RuntimeX
     {
-        if ( _compiled == null )
-            _compiled = _compile( e );
-        return  () -> _compiled.evaluate( e, c );
+        return  () -> {
+            if ( _compiled == null )
+                _compiled = _compile( e );
+            return _compiled.evaluate( e, c );
+        };
     }
 
     /**

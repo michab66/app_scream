@@ -1,14 +1,15 @@
 package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.ScreamException.Code;
 import urschleim.Continuation;
 import urschleim.Holder;
 
@@ -88,7 +89,6 @@ public class SyntaxTest extends ScreamBaseTest
      * Cons error: Duplicate symbol.
      */
     @Test
-    @Disabled( "not implemented" )
     public void syntaxCaseError_1() throws Exception
     {
         var env = scriptEngine().getInteraction();
@@ -111,15 +111,10 @@ public class SyntaxTest extends ScreamBaseTest
                         Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
-        if ( error.get() != null )
-        {
-            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
-            fail();
-        }
-
-        assertEquals(
-                s("prime"),
-                r.get() );
+        assertNotNull( error.get() );
+        RuntimeX se = (RuntimeX)error.get();
+        assertEquals( Code.DUPLICATE_ELEMENT, se.getCode() );
+        assertEquals( i(7).toString(), se.getArguments()[0] );
     }
 
     @Test
