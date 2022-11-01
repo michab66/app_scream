@@ -742,7 +742,7 @@ public class Syntax
     };
 
     /**
-     * (begin exp1 exp2 ...) library syntax; r5rs 12
+     * (begin exp1 exp2 ...) library syntax; r7rs 17
      */
     static private Operation beginSyntax = new Operation( "begin" )
     {
