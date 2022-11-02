@@ -7,7 +7,6 @@
 package de.michab.scream;
 
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.util.Scut;
 import urschleim.Continuation;
 
 /**
@@ -501,23 +500,23 @@ public abstract class FirstClassObject
     }
 
     private Lambda _compiled;
-
-    @SuppressWarnings("unchecked")
-    public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
-    {
-        if ( v == Cons.NIL )
-            return (T)v;
-        return v.as( c );
-    }
-
-    public <T extends FirstClassObject> T as( Class<T> c ) throws RuntimeX
-    {
-        try
-        {
-            return c.cast(this);
-        }
-        catch (ClassCastException e) {
-            throw Scut.mTypeError( c, getClass() ).addCause( e );
-        }
-    }
+//
+//    @SuppressWarnings("unchecked")
+//    public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
+//    {
+//        if ( v == Cons.NIL )
+//            return (T)v;
+//        return v.as( c );
+//    }
+//
+//    public <T extends FirstClassObject> T as( Class<T> c ) throws RuntimeX
+//    {
+//        try
+//        {
+//            return c.cast(this);
+//        }
+//        catch (ClassCastException e) {
+//            throw Scut.mTypeError( c, getClass() ).addCause( e );
+//        }
+//    }
 }

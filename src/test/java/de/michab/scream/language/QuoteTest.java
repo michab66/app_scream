@@ -20,6 +20,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.util.Scut;
 
 public class QuoteTest extends ScreamBaseTest
 {
@@ -32,7 +33,7 @@ public class QuoteTest extends ScreamBaseTest
 
         var x =readSingleExpression( "(quote a)", Cons.class );
 
-        Lambda l = FirstClassObject.as( Lambda.class, x.compile( e ) );
+        Lambda l = Scut.as( Lambda.class, x.compile( e ) );
 
         var result =
         FirstClassObject.evaluate( l, null );

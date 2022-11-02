@@ -17,6 +17,7 @@ import de.michab.scream.pops.Letrec;
 import de.michab.scream.pops.Loop;
 import de.michab.scream.pops.ShortcutAnd;
 import de.michab.scream.pops.ShortcutOr;
+import de.michab.scream.util.Scut;
 import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
@@ -275,7 +276,7 @@ public class Syntax
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
             var formals = args.listRef( 0 );
             checkArgument( 0, formals, Symbol.class, Cons.class );
-            var body = args.getCdr().as(Cons.class);
+            var body = Scut.as( Cons.class,args.getCdr() );
 
             Lambda.L result = (e,c) -> {
                 return  c.accept(
@@ -364,15 +365,15 @@ public class Syntax
                 return compImpl(
                         env,
                         args,
-                        FirstClassObject.as( Cons.class, args.listTail( 1 ) ) );
+                        Scut.as( Cons.class, args.listTail( 1 ) ) );
             }
             else if ( argsLen == 3 )
             {
                 return compImpl(
                         env,
                         args,
-                        FirstClassObject.as( Cons.class, args.listTail( 1 ) ),
-                        FirstClassObject.as( Cons.class, args.listTail( 2 ) ) );
+                        Scut.as( Cons.class, args.listTail( 1 ) ),
+                        Scut.as( Cons.class, args.listTail( 2 ) ) );
             }
 
             throw new InternalError();
@@ -422,13 +423,13 @@ public class Syntax
         {
             checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
-            for ( Cons c = args ; c != Cons.NIL ; c = as( Cons.class, c.getCdr() ) )
+            for ( Cons c = args ; c != Cons.NIL ; c = Scut.as( Cons.class, c.getCdr() ) )
             {
                 var fco = c.getCar();
                 if ( ! (fco instanceof Cons) )
                     throw new RuntimeX( Code.BAD_CLAUSE,
                             toString( fco ) );
-                Cons clause = as( Cons.class, fco);
+                Cons clause = Scut.as( Cons.class, fco);
 
                 // TODO unexpected ELSE message.
                 if ( eqv( ELSE, clause.getCar() ) )
@@ -912,7 +913,7 @@ public class Syntax
         {
             checkArgumentCount( 2, args );
 
-            var symbol = FirstClassObject.as(
+            var symbol = Scut.as(
                     Symbol.class,
                     args.getCar() );
             var value = args.listRef( 1 );

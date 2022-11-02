@@ -14,6 +14,49 @@ import de.michab.scream.ScreamException.Code;
  */
 public class Scut
 {
+    /**
+     * Convert an object.  Calls the fail lambda if the conversion
+     * is not possible.
+     *
+     * @param <T> Conversion target type.
+     * @param c Conversion target class.
+     * @param v The object to convert.
+     * @param fail Called in case of failure.  This can return a T-object
+     * which is returned as the result of this operation.  May throw an
+     * exception.
+     * @return The converted object.
+     * @throws RuntimeX
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends FirstClassObject> T as(
+            Class<T> c,
+            FirstClassObject v,
+            FunctionX<FirstClassObject, T> fail ) throws RuntimeX
+    {
+        if ( v == Cons.NIL )
+            return (T)v;
+
+        try
+        {
+            return c.cast(v);
+        }
+        catch (ClassCastException e) {
+            return fail.apply( v );
+        }
+    }
+
+    public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
+    {
+        FunctionX<FirstClassObject, T> fail = (s) ->
+            { throw mTypeError( c, v.getClass() );  };
+
+        return as(
+                c,
+                v,
+                fail
+                );
+    }
+
     public static void checkUnique( Cons c ) throws RuntimeX
     {
         var unifier = new HashSet<FirstClassObject>();

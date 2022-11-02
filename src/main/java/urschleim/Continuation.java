@@ -15,6 +15,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException;
 import de.michab.scream.Symbol;
+import de.michab.scream.util.Scut;
 
 public class Continuation
 {
@@ -285,21 +286,21 @@ public class Continuation
         if ( Cons.NIL == clauses )
             return c.accept( Cons.NIL );
 
-        var currentClause = FirstClassObject.as( Cons.class, clauses.getCar() );
+        var currentClause = Scut.as( Cons.class, clauses.getCar() );
 
         if ( Symbol.createObject( "else" ).equals( currentClause.getCar() ))
         {
             return _begin(
                     e,
-                    FirstClassObject.as( Cons.class, currentClause.getCdr() ),
+                    Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
         }
-        var datums = FirstClassObject.as( Cons.class, currentClause.getCar() );
+        var datums = Scut.as( Cons.class, currentClause.getCar() );
         if ( datums.member( key ) != SchemeBoolean.F )
         {
             return _begin(
                     e,
-                    FirstClassObject.as( Cons.class, currentClause.getCdr() ),
+                    Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
         }
 

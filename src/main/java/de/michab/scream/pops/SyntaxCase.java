@@ -32,14 +32,14 @@ public class SyntaxCase extends Syntax
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
         var key = args.getCar();
-        var clauses = as( Cons.class, args.getCdr() );
+        var clauses = Scut.as( Cons.class, args.getCdr() );
 
         var unifier = new HashSet<FirstClassObject>();
 
         // Validate clauses
-        for ( var i = clauses ; i != Cons.NIL ; i = as( Cons.class, i.getCdr() ) )
+        for ( var i = clauses ; i != Cons.NIL ; i = Scut.as( Cons.class, i.getCdr() ) )
         {
-            var c = as( Cons.class, i.getCar() );
+            var c = Scut.as( Cons.class, i.getCar() );
             // datum exp1 ...
             checkArgumentCount( 2, Integer.MAX_VALUE, c );
 
@@ -53,7 +53,7 @@ public class SyntaxCase extends Syntax
             }
             else
             {
-                Cons cdatum = as(
+                Cons cdatum = Scut.as(
                         Cons.class,
                         datum );
                 // datum must be at least a one element list.

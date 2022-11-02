@@ -9,6 +9,7 @@ package de.michab.scream;
 import java.util.HashSet;
 
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.util.Scut;
 import urschleim.Continuation;
 import urschleim.Holder;
 
@@ -240,7 +241,7 @@ public class Cons
         Cons result = this;
 
         for ( long i = 0 ; i < k ; i++ )
-            result = as( Cons.class, result._cdr );
+            result = Scut.as( Cons.class, result._cdr );
 
         return result;
     }
@@ -472,7 +473,7 @@ public class Cons
         return _compile(
                     env,
                     r.get(),
-                    as( Cons.class, getCdr() ) );
+                    Scut.as( Cons.class, getCdr() ) );
     }
 
     /**
