@@ -39,11 +39,15 @@ public class SyntaxCase extends Syntax
         // Validate clauses
         for ( var i = clauses ; i != Cons.NIL ; i = Scut.as( Cons.class, i.getCdr() ) )
         {
-            var c = Scut.as( Cons.class, i.getCar() );
+            final var fi = i;
+            final var c = Scut.as(
+                    Cons.class,
+                    i.getCar(),
+                    s -> { throw Scut.mBadClause( fi ); } );
             // datum exp1 ...
             checkArgumentCount( 2, Integer.MAX_VALUE, c );
 
-            var datum = c.getCar();
+            final var datum = c.getCar();
 
             if ( FirstClassObject.equal( ELSE, datum ) )
             {
@@ -55,7 +59,8 @@ public class SyntaxCase extends Syntax
             {
                 Cons cdatum = Scut.as(
                         Cons.class,
-                        datum );
+                        datum,
+                        s -> { throw Scut.mBadClause( c ); });
                 // datum must be at least a one element list.
                 checkArgumentCount(
                         1,

@@ -197,6 +197,18 @@ public class ScutTest extends ScreamBaseTest
     }
 
     @Test
+    public void _17_badClause_3() throws Exception
+    {
+        var badClause = parse( "(bad clause)" );
+
+        var x = validateMessageAndType(
+                Scut.mBadClause( badClause ),
+                Code.BAD_CLAUSE,
+                17 );
+        assertEquals( badClause.toString(), x.getArguments()[0] );
+    }
+
+    @Test
     public void _46_duplicateElement_1() throws Exception
     {
         var x = validateMessageAndType(

@@ -149,6 +149,40 @@ public class SyntaxTest extends ScreamBaseTest
         assertEquals( i(7).toString(), se.getArguments()[0] );
     }
 
+    /**
+     * Cons error: Duplicate symbol.
+     */
+    @Test
+    public void syntaxCaseError_noListCarClause() throws Exception
+    {
+        var badClause = parse("(\"fail\" 'prime)");
+
+        var env = scriptEngine().getInteraction();
+
+        Cons opCall = readSingleExpression(
+                """
+                (case (+ 3 4)
+                 ("fail" 'prime)
+                 ((1 4 6 8 7) 'composite))
+                """,
+                Cons.class );
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                opCall.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        assertNotNull( error.get() );
+        RuntimeX se = (RuntimeX)error.get();
+        assertEquals( Code.BAD_CLAUSE, se.getCode() );
+        assertEquals( badClause.toString(), se.getArguments()[0] );
+    }
+
     @Test
     public void syntaxLambdaTest() throws Exception
     {

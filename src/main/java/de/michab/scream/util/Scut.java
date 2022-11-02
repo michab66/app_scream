@@ -124,6 +124,18 @@ public class Scut
                 position );
     }
 
+    //    BAD_CLAUSE_1 = \
+    //            17 : Bad clause: {0}
+    public static  <T1 extends FirstClassObject>
+    RuntimeX mBadClause(
+            FirstClassObject clause )
+                    throws RuntimeX
+    {
+        return new RuntimeX(
+                Code.BAD_CLAUSE,
+                FirstClassObject.toString( clause ) );
+    }
+
     //  #
     //  # A list contained a duplicate element.  Used in case-syntax.
     //  #
