@@ -89,7 +89,7 @@ public class SyntaxTest extends ScreamBaseTest
      * Cons error: Duplicate symbol.
      */
     @Test
-    public void syntaxCaseError_1() throws Exception
+    public void syntaxCaseError_duplicateSingleClause() throws Exception
     {
         var env = scriptEngine().getInteraction();
 
@@ -98,6 +98,38 @@ public class SyntaxTest extends ScreamBaseTest
                 (case (+ 3 4)
                  ((2 3 5 7 7) 'prime)
                  ((1 4 6 8) 'composite))
+                """,
+                Cons.class );
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                opCall.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        assertNotNull( error.get() );
+        RuntimeX se = (RuntimeX)error.get();
+        assertEquals( Code.DUPLICATE_ELEMENT, se.getCode() );
+        assertEquals( i(7).toString(), se.getArguments()[0] );
+    }
+
+    /**
+     * Cons error: Duplicate symbol.
+     */
+    @Test
+    public void syntaxCaseError_duplicateAcrossClause() throws Exception
+    {
+        var env = scriptEngine().getInteraction();
+
+        Cons opCall = readSingleExpression(
+                """
+                (case (+ 3 4)
+                 ((2 3 5 7) 'prime)
+                 ((1 4 6 8 7) 'composite))
                 """,
                 Cons.class );
 

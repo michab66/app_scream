@@ -1,13 +1,10 @@
 package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
-
-import de.michab.scream.ScreamException.Code;
 
 public class RuntimeXTest extends ScreamBaseTest
 {
@@ -24,36 +21,6 @@ public class RuntimeXTest extends ScreamBaseTest
                 se.getCode() );
     }
 
-    private RuntimeX validateMessageAndType( RuntimeX x, Code c, int id )
-    {
-        var msg = x.getMessage();
-        assertNotNull( msg );
-        assertEquals(
-                c,
-                x.getCode() );
-        assertEquals(
-                id,
-                x.getId() );
-        return x;
-    }
-
-    @Test
-    public void _11_typeError_2() throws Exception
-    {
-        validateMessageAndType(
-                RuntimeX.mTypeError( Cons.class, SchemeDouble.class ),
-                Code.TYPE_ERROR,
-                11 );
-    }
-    @Test
-    public void _11_typeError_3() throws Exception
-    {
-        validateMessageAndType(
-                RuntimeX.mTypeError( Cons.class, SchemeDouble.class, 313 ),
-                Code.TYPE_ERROR,
-                11 );
-    }
-
     @Test
     public void _16_badBinding() throws Exception
     {
@@ -68,18 +35,6 @@ public class RuntimeXTest extends ScreamBaseTest
 
         assertTrue( se.getMessage().contains( "a1" ) );
         assertTrue( se.getMessage().contains( "a2" ) );
-    }
-
-    @Test
-    public void _46_duplicateElement_1() throws Exception
-    {
-        var x = validateMessageAndType(
-                RuntimeX.mDuplicateElement( s3 ),
-                Code.DUPLICATE_ELEMENT,
-                46 );
-        assertNotNull( x.getArguments() );
-        assertEquals( 1, x.getArguments().length );
-        assertEquals( s3.toString(), x.getArguments()[0] );
     }
 
     @Test

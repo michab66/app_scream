@@ -7,6 +7,7 @@
 package de.michab.scream;
 
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.util.Scut;
 import urschleim.Continuation;
 
 /**
@@ -516,7 +517,7 @@ public abstract class FirstClassObject
             return c.cast(this);
         }
         catch (ClassCastException e) {
-            throw RuntimeX.mTypeError( c, getClass() ).addCause( e );
+            throw Scut.mTypeError( c, getClass() ).addCause( e );
         }
     }
 }
