@@ -585,6 +585,12 @@ public class Cons
     {
         return consAttributes( new Holder<Long>( null ) )[1];
     }
+    static public boolean isProper( Cons list )
+    {
+        return Cons.NIL == list ?
+                true :
+                list.isProperList();
+    }
 
     /**
      * @return {@code true} if the passed list is circular.

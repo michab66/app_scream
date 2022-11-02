@@ -185,6 +185,14 @@ public class ScutTest extends ScreamBaseTest
     }
 
     @Test
+    public void _6_typeError_2() throws Exception
+    {
+        validateMessageAndType(
+                Scut.mExpectedProperList( parse( "(a . b)" ) ),
+                Code.EXPECTED_PROPER_LIST,
+                6 );
+    }
+    @Test
     public void _11_typeError_2() throws Exception
     {
         validateMessageAndType(
@@ -200,7 +208,6 @@ public class ScutTest extends ScreamBaseTest
                 Code.TYPE_ERROR,
                 11 );
     }
-
     @Test
     public void _17_badClause_3() throws Exception
     {

@@ -19,8 +19,32 @@ import de.michab.scream.ScreamException.Code;
  */
 public class Scut
 {
+    @FunctionalInterface
+    public interface ConsumerX<T> {
+        void accept(T t) throws RuntimeX;
+    }
+
+    public static void checkProperLength(
+            Cons cons,
+            long min,
+            long max,
+            ConsumerX<Long> below,
+            ConsumerX<Long> above )
+        throws RuntimeX
+    {
+        if ( ! Cons.isProper( cons ) )
+            throw mExpectedProperList( cons );
+
+        var length = cons.length();
+
+        if ( length < min )
+            below.accept( length );
+        else if ( length > max )
+            above.accept( length );
+    }
+
     /**
-     * Convert an object.  Calls the fail lambda if the conversion
+     * Convert an object.  Calls the fail-lambda if the conversion
      * is not possible.
      *
      * @param <T> Conversion target type.
@@ -92,6 +116,19 @@ public class Scut
                 throw mDuplicateElement( cdr );
             break;
         }
+    }
+
+//    EXPECTED_PROPER_LIST = \
+//            6 : Expected proper list.
+//            EXPECTED_PROPER_LIST_1 = \
+//            6 : Expected proper list.  Received {0}
+    public static RuntimeX mExpectedProperList(
+            FirstClassObject actual )
+                    throws RuntimeX
+    {
+        return new RuntimeX(
+                Code.EXPECTED_PROPER_LIST,
+                FirstClassObject.toString( actual ) );
     }
 
     //  #
