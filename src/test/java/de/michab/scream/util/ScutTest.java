@@ -1,3 +1,8 @@
+/*
+ * Scream @ https://github.com/michab/dev_smack
+ *
+ * Copyright © 2022 Michael G. Binz
+ */
 package de.michab.scream.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

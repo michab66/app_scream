@@ -1,3 +1,8 @@
+/*
+ * Scream @ https://github.com/michab/dev_smack
+ *
+ * Copyright © 2022 Michael G. Binz
+ */
 package de.michab.scream.pops;
 
 import java.util.HashSet;
@@ -26,6 +31,44 @@ public class SyntaxCase extends Syntax
         super( "case" );
     }
 
+    /**
+     * Validate a single clause.
+     *
+     * @param unifier
+     * @param clause
+     * @throws RuntimeX
+     */
+    private void validateClause( HashSet<FirstClassObject> unifier, final Cons clause )
+            throws RuntimeX
+    {
+        // datum exp1 ...
+        checkArgumentCount( 2, Integer.MAX_VALUE, clause );
+
+        final var datum = clause.getCar();
+
+        if ( FirstClassObject.equal( ELSE, datum ) )
+        {
+            // must be last clause.
+            if ( Cons.NIL != clause.getCdr() )
+                throw new RuntimeX( Code.BAD_CLAUSE );
+        }
+        else
+        {
+            Cons cdatum = Scut.as(
+                    Cons.class,
+                    datum,
+                    s -> { throw Scut.mBadClause( clause ); });
+            // datum must be at least a one element list.
+            checkArgumentCount(
+                    1,
+                    Integer.MAX_VALUE,
+                    cdatum );
+            Scut.checkUnique(
+                    unifier,
+                    cdatum );
+        }
+    }
+
     @Override
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
@@ -44,32 +87,8 @@ public class SyntaxCase extends Syntax
                     Cons.class,
                     i.getCar(),
                     s -> { throw Scut.mBadClause( fi ); } );
-            // datum exp1 ...
-            checkArgumentCount( 2, Integer.MAX_VALUE, c );
 
-            final var datum = c.getCar();
-
-            if ( FirstClassObject.equal( ELSE, datum ) )
-            {
-                // must be last clause.
-                if ( Cons.NIL != c.getCdr() )
-                    throw new RuntimeX( Code.BAD_CLAUSE );
-            }
-            else
-            {
-                Cons cdatum = Scut.as(
-                        Cons.class,
-                        datum,
-                        s -> { throw Scut.mBadClause( c ); });
-                // datum must be at least a one element list.
-                checkArgumentCount(
-                        1,
-                        Integer.MAX_VALUE,
-                        cdatum );
-                Scut.checkUnique(
-                        unifier,
-                        cdatum );
-            }
+            validateClause( unifier, c );
         }
 
         L l = (e,c) -> Continuation._case(
