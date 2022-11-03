@@ -9,7 +9,6 @@ package de.michab.scream;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Assignment;
-import de.michab.scream.pops.ShortcutAnd;
 import de.michab.scream.pops.ShortcutOr;
 import de.michab.scream.util.Scut;
 import urschleim.Continuation;
@@ -192,34 +191,6 @@ public class Syntax
         return evaluateTrailingContext( seq[ seq.length-1 ], env );
     }
 
-
-    /**
-     * (and <test1> ...) syntax; r5rs 11
-     *
-     * The test expressions are evaluated from left to right, and the value of
-     * the first expression that evaluates to a false value (see section 6.3.1)
-     * is returned. Any remaining expressions are not evaluated. If all the
-     * expressions evaluate to true values, the value of the last expression is
-     * returned.  If there are no expressions then #t is returned.
-     */
-    static private Syntax andSyntax = new Syntax( "and" )
-    {
-        @Override
-        public FirstClassObject compile( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            // Constant expression optimization.
-            if ( args.length == 0 )
-                return SchemeBoolean.T;
-
-            // Compile all passed expressions.
-            for ( int i = args.length-1 ; i >= 0 ; i-- )
-                args[i] = compile( args[i], parent );
-
-            return new ShortcutAnd( args );
-        }
-    };
-
     /**
      * (or <test1> ... ) syntax; r5rs 11
      *
@@ -244,50 +215,6 @@ public class Syntax
                 args[i] = compile( args[i], parent );
 
             return new ShortcutOr( args );
-        }
-    };
-
-    /**
-     * (define <variable> <expression>) syntax; r5rs 16
-     * (define (<variable> <formals>) <body>) syntax; r5rs 16
-     * (define (<variable> . <formal>) <body>) syntax; r5rs 16
-     */
-    static private Syntax defineSyntax = new Syntax( "define" )
-    {
-        @Override
-        public FirstClassObject activate( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkMinimumArgumentCount( 2, args );
-
-            // Type check.
-            if ( args[0] instanceof Symbol )
-            {
-                if ( args.length > 2 )
-                    throw new RuntimeX( Code.TOO_MANY_SUBEXPRESSIONS,
-                            "define" );
-                // Get the value.
-                FirstClassObject value = evaluate( args[1], parent );
-                // At last bind it.
-                parent.set( (Symbol)args[0], value );
-            }
-            else if ( args[0] instanceof Cons && ((Cons)args[0]).length() > 0 )
-            {
-                FirstClassObject symbol = ((Cons)args[0]).getCar();
-                if ( ! (symbol instanceof Symbol) )
-                    throw new RuntimeX( Code.DEFINE_ERROR );
-
-                Procedure procToBind = new Procedure( parent,
-                        ((Cons)args[0]).getCdr(),
-                        Cons.create( args, 1 ) );
-                procToBind.setName( (Symbol)symbol );
-                parent.set( (Symbol)symbol, procToBind );
-            }
-            else
-                throw new RuntimeX( Code.SYNTAX_ERROR );
-
-            // This is unspecified.
-            return Cons.NIL;
         }
     };
 
@@ -403,9 +330,7 @@ public class Syntax
      */
     static Environment extendTopLevelEnvironment( Environment tle )
     {
-        tle.setPrimitive( andSyntax );
         tle.setPrimitive( orSyntax );
-        tle.setPrimitive( defineSyntax );
         tle.setPrimitive( setSyntax );
         tle.setPrimitive( syntaxSyntax );
 
