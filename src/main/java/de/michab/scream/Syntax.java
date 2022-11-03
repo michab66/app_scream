@@ -9,7 +9,6 @@ package de.michab.scream;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Assignment;
-import de.michab.scream.pops.ShortcutOr;
 import de.michab.scream.util.Scut;
 import urschleim.Continuation;
 import urschleim.Continuation.Cont;
@@ -192,33 +191,6 @@ public class Syntax
     }
 
     /**
-     * (or <test1> ... ) syntax; r5rs 11
-     *
-     * The test expressions are evaluated from left to right, and the value of
-     * the first expression that evaluates to a true value (see section 6.3.1) is
-     * returned. Any remaining expressions are not evaluated. If all expressions
-     * evaluate to false values, the value of the last expression is returned. If
-     * there are no expressions then #f is returned.
-     */
-    static private Syntax orSyntax = new Syntax( "or" )
-    {
-        @Override
-        public FirstClassObject compile( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            // Constant expression optimisation.
-            if ( args.length == 0 )
-                return SchemeBoolean.F;
-
-            // Compile all passed expressions.
-            for ( int i = args.length-1 ; i >= 0 ; i-- )
-                args[i] = compile( args[i], parent );
-
-            return new ShortcutOr( args );
-        }
-    };
-
-    /**
      * (set! <variable> <expression>) syntax; r7rs 14
      */
     static private Operation setSyntax = new Syntax( "set!" )
@@ -330,7 +302,6 @@ public class Syntax
      */
     static Environment extendTopLevelEnvironment( Environment tle )
     {
-        tle.setPrimitive( orSyntax );
         tle.setPrimitive( setSyntax );
         tle.setPrimitive( syntaxSyntax );
 
