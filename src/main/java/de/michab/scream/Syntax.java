@@ -6,11 +6,7 @@
 
 package de.michab.scream;
 
-import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.pops.Assignment;
-import de.michab.scream.util.Scut;
-import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
 
@@ -191,45 +187,6 @@ public class Syntax
     }
 
     /**
-     * (set! <variable> <expression>) syntax; r7rs 14
-     */
-    static private Operation setSyntax = new Syntax( "set!" )
-    {
-        @Override
-        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-        {
-            checkArgumentCount( 2, args );
-
-            var symbol = Scut.as(
-                    Symbol.class,
-                    args.getCar() );
-            var value = args.listRef( 1 );
-
-            L l = (e,c) -> Continuation._assign(
-                    e,
-                    symbol,
-                    value,
-                    c);
-
-            return new Lambda( l, getName() );
-        }
-
-        private Class<?>[] formalArglist =
-                new Class[]{ Symbol.class,
-                        FirstClassObject.class };
-        /**
-         *
-         */
-        @Override
-        public FirstClassObject compile( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkArguments( formalArglist, args );
-            return new Assignment( (Symbol)args[0], compile( args[1], parent ) );
-        }
-    };
-
-    /**
      * (%time exp)
      *
      * Returns a pair, where the car part holds the time that <code>exp</code>
@@ -302,7 +259,6 @@ public class Syntax
      */
     static Environment extendTopLevelEnvironment( Environment tle )
     {
-        tle.setPrimitive( setSyntax );
         tle.setPrimitive( syntaxSyntax );
 
         tle.setPrimitive( timeSyntax );

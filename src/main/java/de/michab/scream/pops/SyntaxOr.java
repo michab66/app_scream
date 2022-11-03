@@ -17,7 +17,7 @@ import de.michab.scream.Syntax;
  */
 public class SyntaxOr extends Syntax
 {
-    SyntaxOr()
+    private SyntaxOr()
     {
         super( "or" );
     }
