@@ -200,37 +200,6 @@ public class Syntax
     }
 
     /**
-     * (lambda <formals> <body>) syntax; r7rs 4.1.4 p9
-     */
-    static private Operation lambdaSyntax = new Syntax( "lambda" )
-    {
-        @Override
-        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-        {
-            checkArgumentCount( 2, Integer.MAX_VALUE, args );
-            var formals = args.listRef( 0 );
-            checkArgument( 0, formals, Symbol.class, Cons.class );
-            var body = Scut.as( Cons.class,args.getCdr() );
-
-            Lambda.L result = (e,c) -> {
-                return  c.accept(
-                        new Procedure( e, formals, body ) );
-            };
-
-            return new Lambda( result, getName() );
-        }
-
-        @Override
-        public FirstClassObject activate( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkMinimumArgumentCount( 2, args );
-
-            return new Procedure( parent, args[0], Cons.create( args, 1 ) );
-        }
-    };
-
-    /**
      * r7rs 4.1.5
      *
      * <code>
@@ -949,7 +918,6 @@ public class Syntax
      */
     static Environment extendTopLevelEnvironment( Environment tle )
     {
-        tle.setPrimitive( lambdaSyntax );
         tle.setPrimitive( ifSyntax );
         tle.setPrimitive( condSyntax );
         tle.setPrimitive( andSyntax );
