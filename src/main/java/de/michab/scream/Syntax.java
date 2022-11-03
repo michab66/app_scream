@@ -16,7 +16,6 @@ import de.michab.scream.util.Scut;
 import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
-import urschleim.Holder;
 
 /**
  * Followed the scheme spec in naming this class.  An alternate name would be
@@ -246,59 +245,6 @@ public class Syntax
                 args[i] = compile( args[i], parent );
 
             return new ShortcutOr( args );
-        }
-    };
-
-    /**
-     * (begin exp1 exp2 ...) library syntax; r7rs 17
-     */
-    static private Operation beginSyntax = new Operation( "begin" )
-    {
-        @Override
-        public FirstClassObject compile( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            throw new InternalError();
-        }
-
-        @Override
-        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-        {
-            L l = (e,c) -> Continuation._begin(
-                    e,
-                    args,
-                    c);
-
-            return new Lambda( l, getName() );
-        }
-
-        @Override
-        public FirstClassObject activate( Environment e, Cons argumentList )
-                throws RuntimeX
-        {
-            Holder<FirstClassObject> r =
-                    new Holder<FirstClassObject>( null );
-            Holder<ScreamException> error =
-                    new Holder<>( null );
-
-            Continuation.trampoline( _activate(
-                    e,
-                    argumentList,
-                    Continuation.endCall( r::set ) ),
-                    error::set );
-
-            if ( error.get() != null )
-                throw (RuntimeX)error.get();
-
-           return r.get();
-        }
-
-        @Override
-        public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
-        {
-
-            return Continuation._begin( e, args, c );
         }
     };
 
@@ -574,7 +520,6 @@ public class Syntax
     {
         tle.setPrimitive( andSyntax );
         tle.setPrimitive( orSyntax );
-        tle.setPrimitive( beginSyntax );
         tle.setPrimitive( doSyntax );
         tle.setPrimitive( defineSyntax );
         tle.setPrimitive( setSyntax );
