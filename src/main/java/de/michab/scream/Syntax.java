@@ -9,7 +9,6 @@ package de.michab.scream;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Assignment;
-import de.michab.scream.pops.Cond;
 import de.michab.scream.pops.If;
 import de.michab.scream.pops.Let;
 import de.michab.scream.pops.LetAsterisk;
@@ -313,91 +312,6 @@ public class Syntax
 
             // Now create the compiled node.
             return new If( condition, onTrue, onFalse );
-        }
-    };
-
-    /**
-     * (cond <clause1> <clause2> ...)  syntax r7rs, 4.2.1, p14
-     */
-    static private Operation condSyntax = new Syntax( "cond" )
-    {
-        @Override
-        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-        {
-            checkArgumentCount( 1, Integer.MAX_VALUE, args );
-
-            for ( Cons c = args ; c != Cons.NIL ; c = Scut.as( Cons.class, c.getCdr() ) )
-            {
-                var fco = c.getCar();
-                if ( ! (fco instanceof Cons) )
-                    throw new RuntimeX( Code.BAD_CLAUSE,
-                            toString( fco ) );
-                Cons clause = Scut.as( Cons.class, fco);
-
-                // TODO unexpected ELSE message.
-                if ( eqv( ELSE, clause.getCar() ) )
-                {
-                    if ( Cons.NIL != c.getCdr() )
-                        throw new RuntimeX( Code.BAD_CLAUSE,
-                                toString( fco ) );
-                    clause.setCar( SchemeBoolean.T );
-                }
-            }
-
-            L l = (e,c) -> Continuation._cond(
-                    e,
-                    args,
-                    c);
-
-            return new Lambda( l, getName() );
-        }
-
-        @Override
-        public FirstClassObject compile( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkMinimumArgumentCount( 1, args );
-
-            Cons[] clausesTmp = new Cons[ args.length ];
-            // Check if all the clauses are actually lists.  The do-while loop is
-            // used to keep 'i' in a local scope.  'i' in turn is needed in the try
-            // and catch scope to create a meaningful error message.
-
-            {
-                int i = 0;
-                try
-                {
-                    for ( i = 0 ; i < args.length ; i++ )
-                    {
-                        clausesTmp[i] = (Cons)args[i];
-                        if ( Cons.NIL == clausesTmp[i] )
-                            throw new ClassCastException();
-                    }
-                }
-                catch ( ClassCastException e )
-                {
-                    throw new RuntimeX( Code.BAD_CLAUSE,
-                            toString( args[i] ) );
-                }
-            }
-
-            // Everything is fine so far.  Convert the lists into arrays that can be
-            // handled much more efficiently.
-            FirstClassObject[][] clauses = new FirstClassObject[ args.length ][];
-            for ( int i = 0 ; i < clauses.length ; i++ )
-                clauses[i] = clausesTmp[i].asArray();
-
-            if ( eqv( ELSE, clauses[ args.length-1 ][0] ) )
-                clauses[ args.length-1 ][0] = SchemeBoolean.T;
-
-            // Finally compile all the subexpressions.
-            for ( int i = 0 ; i < clauses.length ; i++ )
-                for ( int j = 0 ; j < clauses[i].length ; j++ )
-                    clauses[i][j] = compile( clauses[i][j], parent );
-
-            // TODO Remove static subexpressions.
-
-            return new Cond( clauses );
         }
     };
 
@@ -919,7 +833,6 @@ public class Syntax
     static Environment extendTopLevelEnvironment( Environment tle )
     {
         tle.setPrimitive( ifSyntax );
-        tle.setPrimitive( condSyntax );
         tle.setPrimitive( andSyntax );
         tle.setPrimitive( orSyntax );
         tle.setPrimitive( letSyntax );
