@@ -19,7 +19,7 @@ import urschleim.Holder;
  */
 public class SyntaxQuote extends Operation
 {
-    public SyntaxQuote()
+    private SyntaxQuote()
     {
         super( "quote" );
     }
