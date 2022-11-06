@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import javax.script.ScriptException;
+
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
@@ -178,4 +180,24 @@ public class SchemeIntegerTest extends ScreamBaseTest
 
         typeFailureTest( fourtynine::divide );
     }
+
+    @Test
+    public void divisionByZero()
+    {
+        try
+        {
+        scriptEngine().evalFco(
+                """
+                (/ 313 0)
+                """ );
+        fail();
+        }
+        catch ( ScriptException sex )
+        {
+            RuntimeX rx = (RuntimeX)sex.getCause();
+            assertEquals( Code.DIVISION_BY_ZERO, rx.getCode() );
+            assertNotNull( rx.getMessage() );
+        }
+    }
+
 }
