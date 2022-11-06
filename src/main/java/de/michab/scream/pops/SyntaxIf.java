@@ -4,8 +4,8 @@ import de.michab.scream.Cons;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
+import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Syntax;
 import de.michab.scream.util.Scut;
 import urschleim.Continuation;
 
@@ -25,7 +25,7 @@ import urschleim.Continuation;
  * yields a false value and no <alternate> is specified, then the result of
  * the expression is unspecified.
  */
-public class SyntaxIf extends Syntax
+public class SyntaxIf extends Operation
 {
     private SyntaxIf()
     {
@@ -128,6 +128,13 @@ public class SyntaxIf extends Syntax
 
         // Now create the compiled node.
         return new If( condition, onTrue, onFalse );
+    }
+    @Override
+    protected FirstClassObject activate( Environment parent,
+            FirstClassObject[] arguments )
+                    throws RuntimeX
+    {
+        return evaluate( compile( parent, arguments ), parent );
     }
 
     /**
