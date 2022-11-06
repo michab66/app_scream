@@ -99,42 +99,19 @@ public class SyntaxIf extends Operation
 
     // Legacy ..
     @Override
-    public FirstClassObject compile( Environment parent, FirstClassObject[] args )
+    public FirstClassObject compile( Environment parent, Cons args )
             throws RuntimeX
     {
-        checkMinimumArgumentCount( 2, args );
-        checkMaximumArgumentCount( 3, args );
-
-        // Compile referenced nodes.
-        for ( int i = 0 ; i < args.length ; i++ )
-            args[i] = compile( args[i], parent );
-
-        FirstClassObject condition = args[0];
-        FirstClassObject onTrue = args[1];
-        // Handle optional 'else' branch.
-        FirstClassObject onFalse = args.length == 3 ? args[2] : Cons.NIL;
-
-        // Optimisation of constant sub expressions.  If this is sth like
-        // (if #t ...) no 'if' node is needed at all.
-        //      if ( isConstant( condition ) )
-        //      {
-        //        System.err.println( "removed 'if'" );
-        //
-        //        if ( condition != SchemeBoolean.F )
-        //          return onTrue;
-        //        else
-        //          return onFalse;
-        //      }
-
-        // Now create the compiled node.
-        return new If( condition, onTrue, onFalse );
+        return _compile( parent, args );
     }
     @Override
-    protected FirstClassObject activate( Environment parent,
-            FirstClassObject[] arguments )
+    public FirstClassObject activate( Environment parent,
+            Cons arguments )
                     throws RuntimeX
     {
-        return evaluate( compile( parent, arguments ), parent );
+        var λ = _compile( parent, arguments );
+
+        return FirstClassObject.evaluate( λ, parent );
     }
 
     /**
