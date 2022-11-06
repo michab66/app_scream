@@ -212,4 +212,17 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
         assertEqualq( parse( "(b c)" ), result );
     }
 
+    /**
+     * p15
+     */
+    @Test
+    public void or_5() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (or)
+            """ );
+        assertEqualq( SchemeBoolean.F, result );
+    }
+
 }
