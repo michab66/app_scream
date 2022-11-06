@@ -8,7 +8,7 @@ import de.michab.scream.Operation;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 
-public class SyntaxSyntaxTest extends ScreamBaseTest
+public class SyntaxAndTest extends ScreamBaseTest
 {
     @Test
     public void exists() throws Exception
@@ -17,7 +17,7 @@ public class SyntaxSyntaxTest extends ScreamBaseTest
 
         var result = se.evalFco(
                 """
-                %syntax
+                and
                 """ );
         assertInstanceOf( Operation.class, result );
     }

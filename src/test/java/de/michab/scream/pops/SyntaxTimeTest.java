@@ -11,7 +11,7 @@ import de.michab.scream.ScreamEvaluator;
 public class SyntaxTimeTest extends ScreamBaseTest
 {
     @Test
-    public void syntaxTime_basic() throws Exception
+    public void exists() throws Exception
     {
         ScreamEvaluator se = scriptEngine();
 
