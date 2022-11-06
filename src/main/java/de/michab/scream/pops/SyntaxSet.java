@@ -5,16 +5,16 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
+import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Symbol;
-import de.michab.scream.Syntax;
 import de.michab.scream.util.Scut;
 import urschleim.Continuation;
 
 /**
  * (set! <variable> <expression>) syntax; r7rs 14
  */
-public class SyntaxSet extends Syntax
+public final class SyntaxSet extends Operation
 {
     private SyntaxSet()
     {
@@ -53,6 +53,13 @@ public class SyntaxSet extends Syntax
         checkArguments( formalArglist, args );
         return new Assignment( (Symbol)args[0], compile( args[1], parent ) );
     }
+    @Override
+    protected FirstClassObject activate( Environment parent,
+            FirstClassObject[] arguments )
+                    throws RuntimeX
+    {
+        return evaluate( compile( parent, arguments ), parent );
+    }
 
     /**
      * Base operations setup.
@@ -66,5 +73,4 @@ public class SyntaxSet extends Syntax
 
         return tle;
     }
-
 }
