@@ -143,7 +143,7 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             """
             (and 1 2 'c '(f g))
             """ );
-        assertEqualq( c( s("f"), s("g") ), result );
+        assertEqualq( parse( "(f g)" ), result );
     }
 
     /**
@@ -157,6 +157,59 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             (and)
             """ );
         assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    public void or_1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (or (= 2 2) (> 2 1))
+            """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    public void or_2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (or (= 2 2) (< 2 1))
+            """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    public void or_3() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (or #f #f #f)
+            """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    public void or_4() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (or (memq 'b '(a b c))
+                (/ 3 0))
+            """ );
+        assertEqualq( parse( "(b c)" ), result );
     }
 
 }
