@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
+import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamBaseTest;
 
 /**
@@ -104,6 +105,58 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
              (else => (lambda (x) x)))
             """ );
         assertEquals( s("c"), result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    public void and_1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (and (= 2 2) (> 2 1))
+            """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    public void and_2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (and (= 2 2) (< 2 1))
+            """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    public void and_3() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (and 1 2 'c '(f g))
+            """ );
+        assertEqualq( c( s("f"), s("g") ), result );
+    }
+
+    /**
+     * p15
+     */
+    @Test
+    public void and_4() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (and)
+            """ );
+        assertEquals( SchemeBoolean.T, result );
     }
 
 }
