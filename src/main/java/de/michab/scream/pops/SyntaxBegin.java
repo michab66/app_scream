@@ -7,11 +7,9 @@ import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.ScreamException;
 import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
-import urschleim.Holder;
 
 /**
  * (begin exp1 exp2 ...) library syntax; r7rs 17
@@ -25,16 +23,9 @@ public class SyntaxBegin extends Operation
     }
 
     @Override
-    public FirstClassObject compile( Environment parent, FirstClassObject[] args )
-            throws RuntimeX
-    {
-        throw new InternalError();
-    }
-
-    @Override
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
-        L l = (e,c) -> Continuation._begin(
+        L l = (e,c) -> _begin(
                 e,
                 args,
                 c);
@@ -42,25 +33,63 @@ public class SyntaxBegin extends Operation
         return new Lambda( l, getName() );
     }
 
+    /**
+     * Evaluate a list of expressions and return the value of the final element.
+     * @param e The environment for evaluation.
+     * @param body A list of expressions.
+     * @param previousResult The result of the previous expression.
+     * @param c The continuation receiving the result.
+     * @return The thunk.
+     */
+    private static Thunk _begin(
+            Environment e,
+            Cons body,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c )
+    {
+        if ( body == Cons.NIL )
+            return () -> c.accept( previousResult );
+
+        Cont<FirstClassObject> next =
+                (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
+
+        return () -> Continuation._eval( e, body.getCar(), next );
+    }
+
+    /**
+     * Evaluate a list of expressions and return the value of the final element.
+     * @param e The environment for evaluation.
+     * @param body A list of expressions.
+     * @param previousResult The result of the previous expression.
+     * @param c The continuation receiving the result.
+     * @return The thunk.
+     */
+    public static Thunk _begin(
+            Environment e,
+            Cons body,
+            Cont<FirstClassObject> c )
+    {
+        return _begin(
+                e,
+                body,
+                Cons.NIL,
+                c );
+    }
+
     @Override
-    public FirstClassObject activate( Environment e, Cons argumentList )
+    public FirstClassObject compile( Environment parent, Cons args )
             throws RuntimeX
     {
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( null );
-        Holder<ScreamException> error =
-                new Holder<>( null );
+        return _compile( parent, args );
+    }
+    @Override
+    public FirstClassObject activate( Environment parent,
+            Cons arguments )
+                    throws RuntimeX
+    {
+        var λ = _compile( parent, arguments );
 
-        Continuation.trampoline( _activate(
-                e,
-                argumentList,
-                Continuation.endCall( r::set ) ),
-                error::set );
-
-        if ( error.get() != null )
-            throw (RuntimeX)error.get();
-
-       return r.get();
+        return FirstClassObject.evaluate( λ, parent );
     }
 
     @Override
@@ -68,7 +97,7 @@ public class SyntaxBegin extends Operation
             throws RuntimeX
     {
 
-        return Continuation._begin( e, args, c );
+        return _begin( e, args, c );
     }
 
     /**

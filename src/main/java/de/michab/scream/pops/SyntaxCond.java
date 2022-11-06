@@ -1,3 +1,8 @@
+/*
+ * Scream @ https://github.com/michab/dev_smack
+ *
+ * Copyright © 1998-2022 Michael G. Binz
+ */
 package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
@@ -5,15 +10,17 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
+import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
-import de.michab.scream.Syntax;
 import de.michab.scream.util.Scut;
 import urschleim.Continuation;
+import urschleim.Continuation.Cont;
+import urschleim.Continuation.Thunk;
 
-public class SyntaxCond extends Syntax
+public class SyntaxCond extends Operation
 {
     static Symbol ELSE = Symbol.createObject( "else" );
 
@@ -45,7 +52,7 @@ public class SyntaxCond extends Syntax
             }
         }
 
-        L l = (e,c) -> Continuation._cond(
+        L l = (e,c) -> _cond(
                 e,
                 args,
                 c);
@@ -53,52 +60,71 @@ public class SyntaxCond extends Syntax
         return new Lambda( l, getName() );
     }
 
+    private static Thunk _clause(
+            Environment e,
+            Cons clause,
+            Cont<FirstClassObject> trueBranch,
+            Thunk falseBranch)
+                    throws RuntimeX
+    {
+        Cont<FirstClassObject> next = s -> {
+            if ( ! SchemeBoolean.isTrue( s ) )
+                return falseBranch;
+
+            Cons afterTest = (Cons)clause.getCdr();
+
+            // rsr7: If the selected <clause> contains only the <test> and no
+            // <expression>s, then the value of the <test> is returned as
+            // the result.
+            if ( Cons.NIL == afterTest )
+                return trueBranch.accept( s );
+
+            return SyntaxBegin._begin( e, (Cons)clause.getCdr(), trueBranch );
+        };
+
+        return Continuation._eval(
+                e,
+                clause.getCar(),
+                next );
+    }
+
+    private static Thunk _cond(
+            Environment e,
+            Cons clauses,
+            Cont<FirstClassObject> c) throws RuntimeX
+    {
+        if ( Cons.NIL == clauses )
+            return c.accept( Cons.NIL );
+
+        Thunk next = () -> _cond(
+                e,
+                (Cons)clauses.getCdr(),
+                c );
+
+        return _clause(
+                e,
+                (Cons)clauses.getCar(),
+                c,
+                next );
+    }
+
+    /**
+     *
+     */
     @Override
-    public FirstClassObject compile( Environment parent, FirstClassObject[] args )
+    public FirstClassObject compile( Environment parent, Cons args )
             throws RuntimeX
     {
-        checkMinimumArgumentCount( 1, args );
+        return _compile( parent, args );
+    }
+    @Override
+    public FirstClassObject activate( Environment parent,
+            Cons arguments )
+                    throws RuntimeX
+    {
+        var λ = _compile( parent, arguments );
 
-        Cons[] clausesTmp = new Cons[ args.length ];
-        // Check if all the clauses are actually lists.  The do-while loop is
-        // used to keep 'i' in a local scope.  'i' in turn is needed in the try
-        // and catch scope to create a meaningful error message.
-
-        {
-            int i = 0;
-            try
-            {
-                for ( i = 0 ; i < args.length ; i++ )
-                {
-                    clausesTmp[i] = (Cons)args[i];
-                    if ( Cons.NIL == clausesTmp[i] )
-                        throw new ClassCastException();
-                }
-            }
-            catch ( ClassCastException e )
-            {
-                throw new RuntimeX( Code.BAD_CLAUSE,
-                        toString( args[i] ) );
-            }
-        }
-
-        // Everything is fine so far.  Convert the lists into arrays that can be
-        // handled much more efficiently.
-        FirstClassObject[][] clauses = new FirstClassObject[ args.length ][];
-        for ( int i = 0 ; i < clauses.length ; i++ )
-            clauses[i] = clausesTmp[i].asArray();
-
-        if ( eqv( ELSE, clauses[ args.length-1 ][0] ) )
-            clauses[ args.length-1 ][0] = SchemeBoolean.T;
-
-        // Finally compile all the subexpressions.
-        for ( int i = 0 ; i < clauses.length ; i++ )
-            for ( int j = 0 ; j < clauses[i].length ; j++ )
-                clauses[i][j] = compile( clauses[i][j], parent );
-
-        // TODO Remove static subexpressions.
-
-        return new Cond( clauses );
+        return FirstClassObject.evaluate( λ, parent );
     }
 
     /**

@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.logging.Level;
@@ -277,36 +276,4 @@ public class UrschleimTest extends ScreamBaseTest
                 error.get() );
     }
 
-    @Test
-    void _begin() throws Exception
-    {
-        Scream si = new Scream();
-        ScreamEvaluator se = (ScreamEvaluator)si.getScriptEngine();
-
-        Environment env =
-                se.getInteraction();
-
-        Cons cons = (Cons)new SchemeParser(
-            """
-                ((define one 1)
-                 (define two 2)
-                 313)
-            """ ).getExpression();
-
-        Holder<FirstClassObject> r =
-                new Holder<>( null );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                Continuation._begin(
-                        env,
-                        cons,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        assertTrue( i313.equal( r.get() ) );
-        assertTrue( i1.equal( env.get( s1 ) ) );
-        assertTrue( i2.equal( env.get( s2 ) ) );
-    }
 }

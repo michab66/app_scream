@@ -7,6 +7,7 @@
 package de.michab.scream;
 
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.pops.SyntaxBegin;
 import urschleim.Continuation;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
@@ -118,7 +119,7 @@ public class Procedure
                 ex,
                 _formalArguments,
                 cons,
-                (s)->Continuation._begin( s, _body, c ) );
+                (s)->SyntaxBegin._begin( s, _body, c ) );
 
         return () -> Continuation.listEval( e, args, cc );
     }

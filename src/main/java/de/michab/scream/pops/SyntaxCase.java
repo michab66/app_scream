@@ -12,17 +12,20 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
+import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
-import de.michab.scream.Syntax;
 import de.michab.scream.util.Scut;
 import urschleim.Continuation;
+import urschleim.Continuation.Cont;
+import urschleim.Continuation.Thunk;
 
 /**
  * (case <key> <clause1> <clause2> ...) syntax; r7rs 15
  */
-public class SyntaxCase extends Syntax
+public class SyntaxCase extends Operation
 {
     static Symbol ELSE = Symbol.createObject( "else" );
 
@@ -91,7 +94,7 @@ public class SyntaxCase extends Syntax
             validateClause( unifier, c );
         }
 
-        L l = (e,c) -> Continuation._case(
+        L l = (e,c) -> _case(
                 e,
                 key,
                 clauses,
@@ -100,48 +103,86 @@ public class SyntaxCase extends Syntax
         return new Lambda( l, getName() );
     }
 
-    @Override
-    public FirstClassObject activate( Environment parent,
-            FirstClassObject[] args )
-                    throws RuntimeX
+    /**
+     *
+     * @param e
+     * @param key the evaluated key.
+     * @param clauses The remaining clauses.  May be nil.
+     * @param datums The datum list of the current clause. nil if no clauses remain.
+     * @param body the expressions of the current clause.
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
+    private static Thunk _caseImpl(
+            Environment e,
+            FirstClassObject key,
+            Cons clauses,
+            Cont<FirstClassObject> c) throws RuntimeX
     {
-        checkMinimumArgumentCount( 2, args );
+        if ( Cons.NIL == clauses )
+            return c.accept( Cons.NIL );
 
-        // Evaluate the key.
-        FirstClassObject key = evaluate( args[0], parent );
+        var currentClause = Scut.as( Cons.class, clauses.getCar() );
 
-        // Now try to find the key in one of the clauses
-        for ( int j = 1 ; j < args.length ; j++ )
+        if ( Symbol.createObject( "else" ).equals( currentClause.getCar() ))
         {
-            if ( !( args[j] instanceof Cons ) )
-                throw new RuntimeX( Code.BAD_CLAUSE,
-                        toString( args[j] ) );
-
-            FirstClassObject[] clause = ((Cons)args[j]).asArray();
-
-            if ( clause.length < 2 )
-                throw new RuntimeX( Code.BAD_CLAUSE,
-                        toString( args[j] ) );
-
-            // If this is the last clause and there is an 'else' clause...
-            if ( j == args.length-1 && eqv( clause[0], ELSE ) )
-                // ...make sure, that we are eqv to the key.
-                clause[0] = new Cons( key, Cons.NIL );
-            else if ( !( clause[0] instanceof Cons ) )
-                throw new RuntimeX( Code.BAD_CLAUSE,
-                        toString( args[j] ) );
-
-            FirstClassObject[] clauseData = ((Cons)clause[0]).asArray();
-
-            for ( int i = 0 ; i < clauseData.length ; i++ )
-            {
-                if ( eqv( key, clauseData[i] ) )
-                    return interpretTailSequence( clause, 1, parent );
-            }
+            return SyntaxBegin._begin(
+                    e,
+                    Scut.as( Cons.class, currentClause.getCdr() ),
+                    c );
+        }
+        var datums = Scut.as( Cons.class, currentClause.getCar() );
+        if ( SchemeBoolean.isTrue( datums.member( key ) ) )
+        {
+            return SyntaxBegin._begin(
+                    e,
+                    Scut.as( Cons.class, currentClause.getCdr() ),
+                    c );
         }
 
-        // Unspecified according to the standard.
-        return Cons.NIL;
+        return _caseImpl(
+                e,
+                key,
+                (Cons)clauses.getCdr(),
+                c );
+    }
+
+    private static Thunk _case(
+            Environment e,
+            FirstClassObject key,
+            Cons clauses,
+            Cont<FirstClassObject> c) throws RuntimeX
+    {
+        if ( Cons.NIL == clauses )
+            return c.accept( Cons.NIL );
+
+        Cont<FirstClassObject> next = (fco) -> _caseImpl(
+                e,
+                fco,
+                clauses,
+                c );
+
+        return Continuation._eval(
+                e,
+                key,
+                next );
+    }
+
+    @Override
+    public FirstClassObject compile( Environment parent, Cons args )
+            throws RuntimeX
+    {
+        return _compile( parent, args );
+    }
+    @Override
+    public FirstClassObject activate( Environment parent,
+            Cons arguments )
+                    throws RuntimeX
+    {
+        var λ = _compile( parent, arguments );
+
+        return FirstClassObject.evaluate( λ, parent );
     }
 
     /**

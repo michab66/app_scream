@@ -10,7 +10,7 @@ import java.util.HashSet;
 
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
-import urschleim.Continuation;
+import de.michab.scream.pops.SyntaxBegin;
 import urschleim.Continuation.Cont;
 import urschleim.Continuation.Thunk;
 
@@ -280,7 +280,7 @@ public class Operation
                 ex,
                 _formalArguments,
                 args,
-                (s)->Continuation._begin( s, _body, c ) );
+                (s)->SyntaxBegin._begin( s, _body, c ) );
     }
 
     /**
@@ -591,7 +591,7 @@ public class Operation
                 ex,
                 _formalArguments,
                 args,
-                (s)->Continuation._begin( s, _body, c ) );
+                (s)->SyntaxBegin._begin( s, _body, c ) );
     }
 
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX

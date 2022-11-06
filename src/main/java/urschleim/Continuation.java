@@ -15,7 +15,6 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException;
 import de.michab.scream.Symbol;
-import de.michab.scream.util.Scut;
 
 public class Continuation
 {
@@ -134,49 +133,6 @@ public class Continuation
         return c.accept( e.get( o ) );
     }
 
-    /**
-     * Evaluate a list of expressions and return the value of the final element.
-     * @param e The environment for evaluation.
-     * @param body A list of expressions.
-     * @param previousResult The result of the previous expression.
-     * @param c The continuation receiving the result.
-     * @return The thunk.
-     */
-    private static Thunk _begin(
-            Environment e,
-            Cons body,
-            FirstClassObject previousResult,
-            Cont<FirstClassObject> c )
-    {
-        if ( body == Cons.NIL )
-            return () -> c.accept( previousResult );
-
-        Cont<FirstClassObject> next =
-                (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
-
-        return () -> _eval( e, body.getCar(), next );
-    }
-
-    /**
-     * Evaluate a list of expressions and return the value of the final element.
-     * @param e The environment for evaluation.
-     * @param body A list of expressions.
-     * @param previousResult The result of the previous expression.
-     * @param c The continuation receiving the result.
-     * @return The thunk.
-     */
-    public static Thunk _begin(
-            Environment e,
-            Cons body,
-            Cont<FirstClassObject> c )
-    {
-        return _begin(
-                e,
-                body,
-                Cons.NIL,
-                c );
-    }
-
     public static Thunk _if(
             Environment e,
             FirstClassObject condition,
@@ -215,121 +171,6 @@ public class Continuation
                 c );
 
         return _eval( e, condition, next );
-    }
-
-    public static Thunk _clause(
-            Environment e,
-            Cons clause,
-            Cont<FirstClassObject> trueBranch,
-            Thunk falseBranch)
-                    throws RuntimeX
-    {
-        Cont<FirstClassObject> next = s -> {
-            if ( ! SchemeBoolean.isTrue( s ) )
-                return falseBranch;
-
-            Cons afterTest = (Cons)clause.getCdr();
-
-            // rsr7: If the selected <clause> contains only the <test> and no
-            // <expression>s, then the value of the <test> is returned as
-            // the result.
-            if ( Cons.NIL == afterTest )
-                return trueBranch.accept( s );
-
-            return _begin( e, (Cons)clause.getCdr(), trueBranch );
-        };
-
-        return _eval(
-                e,
-                clause.getCar(),
-                next );
-    }
-
-    public static Thunk _cond(
-            Environment e,
-            Cons clauses,
-            Cont<FirstClassObject> c) throws RuntimeX
-    {
-        if ( Cons.NIL == clauses )
-            return c.accept( Cons.NIL );
-
-        Thunk next = () -> _cond(
-                e,
-                (Cons)clauses.getCdr(),
-                c );
-
-        return _clause(
-                e,
-                (Cons)clauses.getCar(),
-                c,
-                next );
-    }
-
-
-    /**
-     *
-     * @param e
-     * @param key the evaluted key.
-     * @param clauses The remaining clauses.  May be nil.
-     * @param datums The datumlist of the current clause. nil if no clauses remain.
-     * @param body the expressions of the current clause.
-     * @param c
-     * @return
-     * @throws RuntimeX
-     */
-    private static Thunk _caseImpl(
-            Environment e,
-            FirstClassObject key,
-            Cons clauses,
-            Cont<FirstClassObject> c) throws RuntimeX
-    {
-        if ( Cons.NIL == clauses )
-            return c.accept( Cons.NIL );
-
-        var currentClause = Scut.as( Cons.class, clauses.getCar() );
-
-        if ( Symbol.createObject( "else" ).equals( currentClause.getCar() ))
-        {
-            return _begin(
-                    e,
-                    Scut.as( Cons.class, currentClause.getCdr() ),
-                    c );
-        }
-        var datums = Scut.as( Cons.class, currentClause.getCar() );
-        if ( SchemeBoolean.isTrue( datums.member( key ) ) )
-        {
-            return _begin(
-                    e,
-                    Scut.as( Cons.class, currentClause.getCdr() ),
-                    c );
-        }
-
-        return _caseImpl(
-                e,
-                key,
-                (Cons)clauses.getCdr(),
-                c );
-    }
-
-    public static Thunk _case(
-            Environment e,
-            FirstClassObject key,
-            Cons clauses,
-            Cont<FirstClassObject> c) throws RuntimeX
-    {
-        if ( Cons.NIL == clauses )
-            return c.accept( Cons.NIL );
-
-        Cont<FirstClassObject> next = (fco) -> _caseImpl(
-                e,
-                fco,
-                clauses,
-                c );
-
-        return _eval(
-                e,
-                key,
-                next );
     }
 
     private static Thunk listEval(
