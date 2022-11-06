@@ -194,14 +194,6 @@ public class UrschleimTest extends ScreamBaseTest
     {
         ScreamEvaluator se = scriptEngine();
 
-        var result = se.evalFco(
-                """
-                (define x 0)
-                (set! x 313)
-                x
-                """ );
-        assertEquals( result, ScreamBaseTest.i313 );
-
         var env = se.getInteraction();
         env.set( s313, i1  );
 

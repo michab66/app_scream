@@ -84,10 +84,10 @@ public class Continuation
     }
 
     /**
-     * Assing a value.
+     * Assign an existing value.
      *
      * @param e The environment for evaluation.
-     * @param o The symbol to set.
+     * @param s The symbol to set.
      * @param o The object to evaluate.
      * @param c A continuation receiving NIL.
      * @return The thunk.
@@ -100,7 +100,7 @@ public class Continuation
                     throws RuntimeX
     {
         Cont<FirstClassObject> next = v -> {
-            e.set( s, v );
+            e.assign( s, v );
             return c.accept( Cons.NIL );
         };
 

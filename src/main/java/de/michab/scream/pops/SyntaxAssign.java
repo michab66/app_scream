@@ -40,25 +40,23 @@ public final class SyntaxAssign extends Operation
         return new Lambda( l, getName() );
     }
 
-    private Class<?>[] formalArglist =
-            new Class[]{ Symbol.class,
-                    FirstClassObject.class };
     /**
      *
      */
     @Override
-    public FirstClassObject compile( Environment parent, FirstClassObject[] args )
+    public FirstClassObject compile( Environment parent, Cons args )
             throws RuntimeX
     {
-        checkArguments( formalArglist, args );
-        return new Assignment( (Symbol)args[0], compile( args[1], parent ) );
+        return _compile( parent, args );
     }
     @Override
-    protected FirstClassObject activate( Environment parent,
-            FirstClassObject[] arguments )
+    public FirstClassObject activate( Environment parent,
+            Cons arguments )
                     throws RuntimeX
     {
-        return evaluate( compile( parent, arguments ), parent );
+        var λ = _compile( parent, arguments );
+
+        return FirstClassObject.evaluate( λ, parent );
     }
 
     /**
