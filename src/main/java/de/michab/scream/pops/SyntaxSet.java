@@ -16,7 +16,7 @@ import urschleim.Continuation;
  */
 public class SyntaxSet extends Syntax
 {
-    SyntaxSet()
+    private SyntaxSet()
     {
         super( "set!" );
     }

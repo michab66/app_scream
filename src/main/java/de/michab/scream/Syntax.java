@@ -187,36 +187,6 @@ public class Syntax
     }
 
     /**
-     * (%time exp)
-     *
-     * Returns a pair, where the car part holds the time that <code>exp</code>
-     * needed to execute and the cdr holds the result of <code>exp</code>.
-     */
-    static private Syntax timeSyntax = new Syntax( "%time" )
-    {
-        @Override
-        public FirstClassObject activate( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkArgumentCount( 1, args );
-
-            // Trigger an explicit garbage collection before starting with the time
-            // measurements.
-            System.gc();
-
-            // Get the start time...
-            long startTime = System.currentTimeMillis();
-            // ...do the actual evaluation...
-            FirstClassObject resultCdr = evaluate( args[0], parent );
-            // ...and compute the time that was needed for the evaluation.
-            FirstClassObject resultCar = SchemeInteger.createObject(
-                    System.currentTimeMillis() - startTime );
-
-            return new Cons( resultCar, resultCdr );
-        }
-    };
-
-    /**
      * (%syntax exp)
      *
      * Very similar to 'define'.  Generates macros whose body gets called
@@ -260,8 +230,6 @@ public class Syntax
     static Environment extendTopLevelEnvironment( Environment tle )
     {
         tle.setPrimitive( syntaxSyntax );
-
-        tle.setPrimitive( timeSyntax );
 
         return tle;
     }
