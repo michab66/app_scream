@@ -9,8 +9,6 @@ package de.michab.scream.language;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-import javax.script.ScriptException;
-
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
@@ -76,9 +74,8 @@ public class QuoteTest extends ScreamBaseTest
                 (quote)
                 """ );
         }
-        catch ( ScriptException e )
+        catch ( RuntimeX rx )
         {
-            RuntimeX rx = (RuntimeX)e.getCause();
             assertNotNull( rx.getMessage() );
             assertEquals( Code.WRONG_NUMBER_OF_ARGUMENTS, rx.getCode() );
         }
@@ -96,9 +93,8 @@ public class QuoteTest extends ScreamBaseTest
                 (quote 8 'q)
                 """ );
         }
-        catch ( ScriptException e )
+        catch ( RuntimeX rx )
         {
-            RuntimeX rx = (RuntimeX)e.getCause();
             assertNotNull( rx.getMessage() );
             assertEquals( Code.WRONG_NUMBER_OF_ARGUMENTS, rx.getCode() );
         }

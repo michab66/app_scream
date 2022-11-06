@@ -3,8 +3,6 @@ package de.michab.scream.language;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import javax.script.ScriptException;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -386,9 +384,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
                 """ );
             fail();
         }
-        catch ( ScriptException x )
+        catch ( RuntimeX rx )
         {
-            RuntimeX rx = (RuntimeX)x.getCause();
             assertEquals( Code.EXPECTED_PROPER_LIST, rx.getCode() );
         }
     }

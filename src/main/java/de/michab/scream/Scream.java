@@ -142,11 +142,6 @@ public class Scream implements ScriptEngineFactory
     @Resource
     private static String[] schemeInstanceExtensions;
 
-    /**
-     *
-     */
-    //    private final static String KEY_SCREAM_SHELL = "scream.shell";
-
     @Resource
     private static String shell;
 
@@ -155,38 +150,6 @@ public class Scream implements ScriptEngineFactory
      * added via the "kernel.integrateClasses" property.
      */
     private final static String INIT_NAME = "extendTopLevelEnvironment";
-
-    /**
-     * The parser used by this interpreter.
-     */
-    //private final SchemeReader _parser;
-
-    /**
-     * The evaluator used by this interpreter.
-     */
-    //private final SchemeEvaluator _evaluator;
-
-    /**
-     * The standard input port for this interpreter instance.
-     *
-     * @see de.michab.scream.SchemeInterpreter2#getInPort
-     */
-    //private final Port _inPort;
-
-    /**
-     * The standard output port for this interpreter instance.
-     *
-     * @see de.michab.scream.SchemeInterpreter2#getOutPort
-     */
-    //private final Port _outPort;
-
-    /**
-     * The standard common error port for the system.
-     *
-     * @see de.michab.scream.SchemeInterpreter2#getErrorPort
-     * @see de.michab.scream.SchemeInterpreter2#_errorWriter
-     */
-    //private static Port _errorPort;
 
     /**
      * Creates an instance of an working Scheme interpreter.
@@ -318,7 +281,7 @@ public class Scream implements ScriptEngineFactory
             Environment environment,
             SchemeReader sreader,
             Writer sink )
-                    throws ScreamException
+                    throws RuntimeX
     {
         Thread currentThread = Thread.currentThread();
 

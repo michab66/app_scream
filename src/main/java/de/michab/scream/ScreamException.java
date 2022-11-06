@@ -263,7 +263,7 @@ extends Exception
      * message resource bundle.
      */
     @Deprecated
-    public ScreamException( String msg )
+    protected ScreamException( String msg )
     {
         this( msg, new Object[0] );
     }
@@ -278,7 +278,7 @@ extends Exception
      * either @{code null} or the empty string.
      */
     @Deprecated
-    public ScreamException( String msg, Object ... args )
+    protected ScreamException( String msg, Object ... args )
     {
         super( msg );
 
@@ -292,12 +292,12 @@ extends Exception
                 args;
     }
 
-    public ScreamException( Code c )
+    protected ScreamException( Code c )
     {
         this( c.toString() );
     }
 
-    public ScreamException( Code c, Object ... arguments )
+    protected ScreamException( Code c, Object ... arguments )
     {
         this( c.toString(), arguments );
     }

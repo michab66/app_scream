@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import javax.script.ScriptException;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -63,9 +61,8 @@ public class R7rs_4_1_4_Pocedures_Test extends ScreamBaseTest
                 """ );
             fail();
         }
-        catch ( ScriptException x )
+        catch ( RuntimeX rx )
         {
-            RuntimeX rx = (RuntimeX)x.getCause();
             assertEquals( Code.TOO_MANY_ARGUMENTS, rx.getCode() );
         }
     }
@@ -131,9 +128,8 @@ public class R7rs_4_1_4_Pocedures_Test extends ScreamBaseTest
                 3 4 5 6)
                 """ );
         }
-        catch (ScriptException e) {
-            RuntimeX r = (RuntimeX)e.getCause();
-            assertEquals( Code.DUPLICATE_FORMAL, r.getCode() );
+        catch (RuntimeX rx) {
+            assertEquals( Code.DUPLICATE_FORMAL, rx.getCode() );
         }
     }
 

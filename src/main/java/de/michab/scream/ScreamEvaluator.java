@@ -24,7 +24,7 @@ import de.michab.scream.binding.SchemeObject;
  *
  * @author Michael Binz
  */
-public class ScreamEvaluator implements ScriptEngine
+public final class ScreamEvaluator implements ScriptEngine
 {
     @SuppressWarnings("unused")
     private static Logger _log =
@@ -96,18 +96,14 @@ public class ScreamEvaluator implements ScriptEngine
         return eval( new StringReader( script ) );
     }
 
-    public FirstClassObject evalFco(String script) throws ScriptException {
-        return evalFco( new StringReader( script ) );
-    }
-
     @Override
     public Object eval(Reader reader) throws ScriptException
     {
-        var result = evalFco( reader );
-        if ( result == Cons.NIL )
-            return null;
-
-        try {
+        try
+        {
+            var result = evalFco( reader );
+            if ( result == Cons.NIL )
+                return null;
             return result.toJava();
         }
         catch ( ScreamException e )
@@ -116,19 +112,32 @@ public class ScreamEvaluator implements ScriptEngine
         }
     }
 
-    public FirstClassObject evalFco(Reader reader) throws ScriptException
+    /**
+     * Evaluates the expressions read from the passed Reader in the Scream
+     * type system.
+     *
+     * @param reader Delivers the expressions to be evaluated.
+     * @return The evaluation result.
+     * @throws RuntimeX In case of an error.
+     */
+    public FirstClassObject evalFco(Reader reader) throws RuntimeX
     {
-        try
-        {
             return Scream.evalImpl(
                     _interaction,
                     new SchemeReader( reader),
                     _context.getWriter() );
-        }
-        catch ( ScreamException e )
-        {
-            throw new ScriptException( e );
-        }
+    }
+
+    /**
+     * Evaluates the passed expressions in the Scream
+     * type system.
+     *
+     * @param script The expressions to be evaluated.
+     * @return The evaluation result.
+     * @throws RuntimeX In case of an error.
+     */
+    public FirstClassObject evalFco(String script) throws RuntimeX {
+        return evalFco( new StringReader( script ) );
     }
 
     @Override
