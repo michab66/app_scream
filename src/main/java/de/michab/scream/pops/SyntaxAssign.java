@@ -14,9 +14,9 @@ import urschleim.Continuation;
 /**
  * (set! <variable> <expression>) syntax; r7rs 14
  */
-public final class SyntaxSet extends Operation
+public final class SyntaxAssign extends Operation
 {
-    private SyntaxSet()
+    private SyntaxAssign()
     {
         super( "set!" );
     }
@@ -69,7 +69,7 @@ public final class SyntaxSet extends Operation
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
     {
-        tle.setPrimitive( new SyntaxSet() );
+        tle.setPrimitive( new SyntaxAssign() );
 
         return tle;
     }
