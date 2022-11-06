@@ -65,7 +65,7 @@ public class SyntaxAnd extends Syntax
     {
         if ( expressions == Cons.NIL )
             return () -> c.accept( previousResult );
-        if ( previousResult == SchemeBoolean.F )
+        if ( ! SchemeBoolean.isTrue( previousResult ) )
             return () -> c.accept( previousResult );
 
         Cont<FirstClassObject> next =

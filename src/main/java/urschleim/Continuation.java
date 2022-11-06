@@ -187,7 +187,7 @@ public class Continuation
     {
         Cont<FirstClassObject> next = s -> _eval(
                 e,
-                s == SchemeBoolean.F ? falseBranch : trueBranch,
+                SchemeBoolean.isTrue( s ) ? trueBranch : falseBranch,
                 c );
 
         return _eval( e, condition, next );
@@ -211,7 +211,7 @@ public class Continuation
     {
         Cont<FirstClassObject> next = s -> _eval(
                 e,
-                s == SchemeBoolean.F ? SchemeBoolean.F : trueBranch,
+                SchemeBoolean.isTrue( s ) ? trueBranch : SchemeBoolean.F,
                 c );
 
         return _eval( e, condition, next );
@@ -225,7 +225,7 @@ public class Continuation
                     throws RuntimeX
     {
         Cont<FirstClassObject> next = s -> {
-            if (  s == SchemeBoolean.F )
+            if ( ! SchemeBoolean.isTrue( s ) )
                 return falseBranch;
 
             Cons afterTest = (Cons)clause.getCdr();
@@ -296,7 +296,7 @@ public class Continuation
                     c );
         }
         var datums = Scut.as( Cons.class, currentClause.getCar() );
-        if ( datums.member( key ) != SchemeBoolean.F )
+        if ( SchemeBoolean.isTrue( datums.member( key ) ) )
         {
             return _begin(
                     e,
