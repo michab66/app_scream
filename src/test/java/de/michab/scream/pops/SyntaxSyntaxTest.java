@@ -1,5 +1,6 @@
 package de.michab.scream.pops;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
@@ -21,4 +22,19 @@ public class SyntaxSyntaxTest extends ScreamBaseTest
                 """ );
         assertInstanceOf( Operation.class, result );
     }
+
+
+    @Test
+    public void syntaxSyntaxTest() throws Exception
+    {
+        var se = scriptEngine();
+
+        var result = se.eval(
+                """
+                (%syntax (xquote value) value)
+                (xquote micbinz)
+                """ );
+        assertEquals( "micbinz", result );
+    }
+
 }
