@@ -73,7 +73,7 @@ public class JavaClassAdapter
     /**
      * The logger for this class.
      */
-    private final static Logger log =
+    private final static Logger LOG =
             Logger.getLogger( JavaClassAdapter.class.getName() );
 
     /**
@@ -457,7 +457,7 @@ public class JavaClassAdapter
         // Check recursion break.
         if ( c == null )
         {
-            System.err.println( "JavaClassAdapter.findCallable: " +
+            LOG.warning( "JavaClassAdapter.findCallable: " +
                     "No replacement found.  Return original." );
             return m;
         }
@@ -568,7 +568,7 @@ public class JavaClassAdapter
         }
 
         // Signatures were 100% equal? Should be not possible.
-        log.warning( "Assertion failed: selectArgumentList 2" );
+        LOG.warning( "Assertion failed: selectArgumentList 2" );
         return false;
     }
 
@@ -603,7 +603,7 @@ public class JavaClassAdapter
         else if ( formal.isArray() )
             result = mapJavaNumber( formal.getComponentType() );
         else
-            log.severe( "Map number failed." );
+            LOG.severe( "Map number failed." );
 
         return result;
     }

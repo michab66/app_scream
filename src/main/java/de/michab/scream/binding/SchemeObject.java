@@ -1,9 +1,7 @@
-/* $Id: SchemeObject.java 209 2009-11-24 09:14:44Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / JavaBinding
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2003 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream.binding;
 
@@ -33,39 +31,37 @@ import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
 import de.michab.scream.Vector;
 
-
-
 /**
- * <p>An instance of this class boxes an entity from the Java object system,
+ * An instance of this class boxes an entity from the Java object system,
  * e.g. an object or a class, i.e. it wraps the objects and implements the
- * Scheme/Java call mapping in both directions.</p>
- * <p>Note that a <code>SchemeObject</code> is basically a
+ * Scheme/Java call mapping in both directions.
+ * <p>
+ * Note that a <code>SchemeObject</code> is basically a
  * <code>FirstClassObject</code>.  It's not yet clear what this really
- * means because it's the result of a very fuzzy thought.</p>
- * <p>But why is it not possible to say something like</p>
+ * means because it's the result of a very fuzzy thought.
+ * <p>But why is it not possible to say something like
  * <pre><code>
  *  (define i (vector 1 2 3 4))
  *  (i (getElement 3))
  * </code></pre>
  * <p>This would allow to implement most of the standard procedures in Scheme.
  * On a more philosophic level it would unify the procedural world of Scheme
- * and the OO world of Java which is definitely good.</p>
- * <p>The only drawback would be that the resulting code for the standard
+ * and the OO world of Java which is definitely good.
+ * <p>
+ * The only drawback would be that the resulting code for the standard
  * procedures that are used everywhere in Scheme programs would be very
- * reflective and as such not very fast.</p>
+ * reflective and as such not very fast.
  *
  * @author Michael G. Binz
  */
 public class SchemeObject
-extends Syntax
+    extends Syntax
 {
     /**
      * The logger for this class.
      */
     private final static Logger _log =
             Logger.getLogger( SchemeObject.class.getName() );
-
-
 
     /**
      * The name of the type as used by error reporting.
@@ -74,14 +70,10 @@ extends Syntax
      */
     public static final String TYPE_NAME = "object";
 
-
-
     /**
      * The instance that is managed.  Note that this must never be null.
      */
     private final java.lang.Object _theInstance;
-
-
 
     /**
      * <code>True</code> if this object represents a Java class,
@@ -89,14 +81,10 @@ extends Syntax
      */
     private final boolean _isClass;
 
-
-
     /**
      * The instance's class adapter.
      */
     private final JavaClassAdapter _classAdapter;
-
-
 
     /**
      * <p>Create a new SchemeObject for a given object.  The object is used as is,
@@ -127,8 +115,6 @@ extends Syntax
         _classAdapter = adapter;
     }
 
-
-
     /**
      * Create a new SchemeObject for a given object.  The object is used as is,
      * i.e. it isn't copied.
@@ -139,9 +125,6 @@ extends Syntax
     {
         this( object, JavaClassAdapter.createObject( object.getClass() ) );
     }
-
-
-
 
     /**
      * The factory for SchemeObjects.  Note that if a FirstClassObject is created
@@ -306,11 +289,10 @@ extends Syntax
         }
     }
 
-
-
     /**
-     * Converts an FirstClassObject into an object suitable for inserting into an
+     * Converts a FirstClassObject into an object suitable for inserting into an
      * argument list for a java method call.
+     * <p>
      * Currently not all possible conversion are done.  It would be no problem to
      * change this method so it accepts a int scheme argument and converts this
      * to a Java double.  This wasn't done because then we need another order of
@@ -318,6 +300,7 @@ extends Syntax
      * contained in the method list of java.lang.Math long abs( long ).  As a
      * result the integer argument <i>always</i> was converted and there was no
      * possibility to call the integer method.
+     * <p>
      * A similar example is the trivial boolean conversion that explicitly is
      * <i>not</i> carried out by this method:  In Scheme everything but #F is #T.
      * If we would implement this here, the result were that if by chance the
@@ -446,8 +429,6 @@ extends Syntax
         return result;
     }
 
-
-
     /**
      * This method is responsible for handling
      * <code>InvocationTargetException</code>s.  Basically this means that in
@@ -546,8 +527,6 @@ extends Syntax
                             ) );
     }
 
-
-
     /**
      * Converts a Java array into a scream vector.  The passed object must be an
      * array, i.e. <code>Array.isArray()</code> must return true for it.  This is
@@ -564,8 +543,6 @@ extends Syntax
             vector[i] = convertJava2Scream( Array.get( object, i ) );
         return new Vector( vector, false );
     }
-
-
 
     /**
      * Processes a procedure invocation.
@@ -670,8 +647,6 @@ extends Syntax
         }
     }
 
-
-
     /**
      * Sets an attribute on the passed object.
      *
@@ -742,8 +717,6 @@ extends Syntax
         }
     }
 
-
-
     /**
      * Create a string from this object.  This can't be used to read the object
      * back in.
@@ -755,8 +728,6 @@ extends Syntax
     {
         return "@Object:" + _theInstance.getClass().getName() + "=" + _theInstance;
     }
-
-
 
     /**
      * Clone this scheme object.  Makes a deep copy.
@@ -785,12 +756,6 @@ extends Syntax
             return this;
         }
     }
-
-
-
-    // Procedure definitions.
-
-
 
     /**
      * (make-object createlist) where createlist is (string:classname ctorarg1 ...)
@@ -830,8 +795,6 @@ extends Syntax
         }
     };
 
-
-
     /**
      * (object obj) -- Wraps the passed first class object with a scheme object.
      */
@@ -858,9 +821,6 @@ extends Syntax
         }
     };
 
-
-
-
     /**
      * (object? obj)
      */
@@ -874,8 +834,6 @@ extends Syntax
             return SchemeBoolean.createObject( args[0] instanceof SchemeObject );
         }
     };
-
-
 
     /**
      * (describe-object obj) -> #f
@@ -920,8 +878,6 @@ extends Syntax
         }
     };
 
-
-
     /**
      * <p><code>(%catch expression error-handler)</code></p>
      * Evaluates the passed <code>expression</code> and executes the
@@ -955,8 +911,6 @@ extends Syntax
             }
         }
     };
-
-
 
     /**
      * Object operations setup.

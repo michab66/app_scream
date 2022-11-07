@@ -1,16 +1,14 @@
-/* $Id: InterfaceConfigurator.java 1 2008-09-19 16:30:02Z binzm $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / JavaBinding
- *
- * Released under Gnu Public License
- * Copyright (c) 2001 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream.binding;
 
-import de.michab.scream.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Method;
 
-
+import de.michab.scream.Operation;
+import de.michab.scream.Procedure;
 
 /**
  * Represents a default interface that is always added to the list of

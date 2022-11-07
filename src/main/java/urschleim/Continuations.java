@@ -4,13 +4,9 @@ import java.math.BigInteger;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Logger;
 
 public class Continuations
 {
-    private static Logger LOG =
-            Logger.getLogger( Continuations.class.getName() );
-
     @FunctionalInterface
     public interface Cont<R> {
         Thunk apply(R result);

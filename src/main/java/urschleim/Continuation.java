@@ -6,7 +6,6 @@
 package urschleim;
 
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Environment;
@@ -18,10 +17,6 @@ import de.michab.scream.Symbol;
 
 public class Continuation
 {
-    private static Logger LOG =
-            Logger.getLogger( Continuation.class.getName() );
-
-
     public Continuation( Consumer<RuntimeX> errorHandler )
     {
         _errorHandler = errorHandler;

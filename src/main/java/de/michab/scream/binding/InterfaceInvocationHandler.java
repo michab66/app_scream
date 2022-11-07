@@ -1,11 +1,8 @@
-/* $Id: InterfaceInvocationHandler.java 162 2009-02-21 23:33:55Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / JavaBinding
- *
- * Released under Gnu Public License
- * Copyright (c) 2001-2009 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
-
 package de.michab.scream.binding;
 
 import java.lang.reflect.InvocationHandler;
@@ -18,8 +15,6 @@ import de.michab.scream.FirstClassObject;
 import de.michab.scream.Operation;
 import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
-
-
 
 /**
  * The universal invocation handler that gets associated with a dynamically
@@ -152,7 +147,7 @@ public final class InterfaceInvocationHandler
     }
 
     /**
-     * Create a valid value for the given class that is valid to be put into an
+     * Create a value for the given class that is valid to be put into an
      * parameter slot of the passed type.  For object references this will
      * be always <code>null</code>.  For the primitives this will be a zero.
      */
