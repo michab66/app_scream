@@ -28,6 +28,7 @@ import org.smack.util.resource.ResourceManager.Resource;
 import de.michab.scream.FirstClassObject.Unwind;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.util.LoadContext;
+import de.michab.scream.util.LogUtil;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -54,6 +55,10 @@ public class Scream implements ScriptEngineFactory
         org.smack.util.ServiceManager.getApplicationService(
                 org.smack.util.resource.ResourceManager.class )
         .injectResources( Scream.class );
+
+        LogUtil.setLevel(
+                Level.WARNING,
+                Scream.class.getPackage().getName() );
     }
 
     /**
