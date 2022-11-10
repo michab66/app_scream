@@ -9,8 +9,8 @@ package de.michab.scream;
 import java.util.HashSet;
 
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.pops.Continuation;
 import de.michab.scream.util.Scut;
-import urschleim.Continuation;
 import urschleim.Holder;
 
 /**

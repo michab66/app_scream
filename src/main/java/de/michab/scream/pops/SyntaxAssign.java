@@ -9,7 +9,6 @@ import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Symbol;
 import de.michab.scream.util.Scut;
-import urschleim.Continuation;
 
 /**
  * (set! <variable> <expression>) syntax; r7rs 14

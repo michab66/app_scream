@@ -7,7 +7,7 @@
 package de.michab.scream;
 
 import de.michab.scream.ScreamException.Code;
-import urschleim.Continuation;
+import de.michab.scream.pops.Continuation;
 
 /**
  * The base class for all Scheme first-class objects.  A first class object is

@@ -10,12 +10,11 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
+import de.michab.scream.pops.Continuation.Cont;
+import de.michab.scream.pops.Continuation.Thunk;
 import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
-import urschleim.Continuation;
-import urschleim.Continuation.Cont;
-import urschleim.Continuation.Thunk;
 
 /**
  * (or <test1> ... ) syntax; r7rs p15

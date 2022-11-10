@@ -7,7 +7,6 @@ import de.michab.scream.Lambda;
 import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.util.Scut;
-import urschleim.Continuation;
 
 /**
  * r7rs 4.1.5

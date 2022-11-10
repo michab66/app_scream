@@ -1,8 +1,8 @@
 package de.michab.scream;
 
-import urschleim.Continuation;
-import urschleim.Continuation.Cont;
-import urschleim.Continuation.Thunk;
+import de.michab.scream.pops.Continuation;
+import de.michab.scream.pops.Continuation.Cont;
+import de.michab.scream.pops.Continuation.Thunk;
 import urschleim.Holder;
 
 /**

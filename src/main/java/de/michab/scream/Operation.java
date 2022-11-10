@@ -11,8 +11,8 @@ import java.util.HashSet;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.SyntaxBegin;
-import urschleim.Continuation.Cont;
-import urschleim.Continuation.Thunk;
+import de.michab.scream.pops.Continuation.Cont;
+import de.michab.scream.pops.Continuation.Thunk;
 
 /**
  * Represents an abstract operation.  Is the base class for macros (syntaxes in

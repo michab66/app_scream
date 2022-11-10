@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.frontend.SchemeParser;
-import urschleim.Continuation;
+import de.michab.scream.pops.Continuation;
 import urschleim.Holder;
 
 public class UrschleimTest extends ScreamBaseTest

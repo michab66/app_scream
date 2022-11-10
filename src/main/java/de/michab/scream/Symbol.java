@@ -7,7 +7,7 @@ package de.michab.scream;
 
 import org.smack.util.collections.WeakMapWithProducer;
 
-import urschleim.Continuation;
+import de.michab.scream.pops.Continuation;
 
 
 /**

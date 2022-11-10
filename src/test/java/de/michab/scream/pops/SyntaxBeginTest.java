@@ -13,7 +13,6 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException;
 import de.michab.scream.frontend.SchemeParser;
-import urschleim.Continuation;
 import urschleim.Holder;
 
 public class SyntaxBeginTest extends ScreamBaseTest

@@ -3,7 +3,7 @@
  *
  * Copyright © 2022 Michael G. Binz
  */
-package urschleim;
+package de.michab.scream.pops;
 
 import java.util.function.Consumer;
 

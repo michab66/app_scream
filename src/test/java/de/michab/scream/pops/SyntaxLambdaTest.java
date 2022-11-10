@@ -15,7 +15,6 @@ import de.michab.scream.Operation;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException;
-import urschleim.Continuation;
 import urschleim.Holder;
 
 public class SyntaxLambdaTest extends ScreamBaseTest

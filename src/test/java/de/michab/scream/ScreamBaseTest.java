@@ -20,7 +20,7 @@ import org.smack.util.JavaUtil;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
-import urschleim.Continuation;
+import de.michab.scream.pops.Continuation;
 import urschleim.Holder;
 
 public class ScreamBaseTest

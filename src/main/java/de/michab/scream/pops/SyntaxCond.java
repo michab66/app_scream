@@ -14,11 +14,10 @@ import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.pops.Continuation.Cont;
+import de.michab.scream.pops.Continuation.Thunk;
 import de.michab.scream.Symbol;
 import de.michab.scream.util.Scut;
-import urschleim.Continuation;
-import urschleim.Continuation.Cont;
-import urschleim.Continuation.Thunk;
 
 public class SyntaxCond extends Operation
 {
