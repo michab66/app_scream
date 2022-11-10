@@ -212,9 +212,25 @@ public class Continuation
         return _eval( e, init, evalResult );
     }
 
-    public static Thunk _bindLet( Environment e, Cons bindings, Cont<Environment> c ) throws RuntimeX
+    private static Thunk _bindLetAsterisk(
+            Environment extended,
+            Cons bindings,
+            Cont<Environment> c )
+                    throws RuntimeX
     {
-        return _bindLet( e, e.extend(), bindings, c );
+        if ( bindings == Cons.NIL )
+            return c.accept( extended );
+
+        Cons bindingElement = (Cons)bindings.getCar();
+        Symbol variable = (Symbol)bindingElement.listRef(0);
+        FirstClassObject init = bindingElement.listRef(1);
+
+        Cont<FirstClassObject> evalResult = fco -> {
+            extended.set( variable, fco );
+            return _bindLetAsterisk( extended, (Cons)bindings.getCdr(), c );
+        };
+
+        return _eval( extended, init, evalResult );
     }
 
     public static Thunk _let(
@@ -227,6 +243,20 @@ public class Continuation
                 ext -> _begin( ext, body, c );
         return _bindLet(
                 e,
+                e.extend(),
+                bindings,
+                next );
+    }
+
+    public static Thunk _letAsterisk(
+            Environment e,
+            Cons bindings,
+            Cons body,
+            Cont<FirstClassObject> c ) throws RuntimeX
+    {
+        Cont<Environment> next =
+                ext -> _begin( ext, body, c );
+        return _bindLetAsterisk(
                 e.extend(),
                 bindings,
                 next );

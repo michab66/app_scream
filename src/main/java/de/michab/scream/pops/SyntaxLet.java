@@ -210,14 +210,50 @@ public abstract class SyntaxLet
     static private Syntax letAsteriskSyntax = new SyntaxLet( "let*" )
     {
         @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            checkArgumentCount( 2, Integer.MAX_VALUE, args );
+
+            var bindings =
+                    Scut.as( Cons.class, args.getCar() );
+            var body =
+                    Scut.as( Cons.class, args.getCdr() );
+
+            validateBindings( bindings );
+
+            L l = (e,c) -> Continuation._letAsterisk(
+                    e,
+                    bindings,
+                    body,
+                    c);
+
+            return new Lambda( l, getName() );
+        }
+
+        @Override
         FirstClassObject createPop( Symbol[] variables,
                 FirstClassObject[] inits,
                 FirstClassObject[] body )
         {
-            return new LetAsterisk( variables, inits, body );
+            throw new InternalError();
+        }
+
+        @Override
+        public FirstClassObject compile( Environment parent, Cons args )
+                throws RuntimeX
+        {
+            return _compile( parent, args );
+        }
+        @Override
+        public FirstClassObject activate( Environment parent,
+                Cons arguments )
+                        throws RuntimeX
+        {
+            var λ = _compile( parent, arguments );
+
+            return FirstClassObject.evaluate( λ, parent );
         }
     };
-
 
     /**
      * (letrec <bindings> <body>) syntax r5rs, 11
