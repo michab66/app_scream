@@ -11,6 +11,7 @@ import de.michab.scream.Cons;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.Symbol;
 
 /**
  * Scream utilities.
@@ -24,7 +25,7 @@ public class Scut
         void accept(T t) throws RuntimeX;
     }
 
-    public static void checkProperLength(
+    public static long checkProperLength(
             Cons cons,
             long min,
             long max,
@@ -35,12 +36,14 @@ public class Scut
         if ( ! Cons.isProper( cons ) )
             throw mExpectedProperList( cons );
 
-        var length = cons.length();
+        var length = Cons.length( cons );
 
         if ( length < min )
             below.accept( length );
         else if ( length > max )
             above.accept( length );
+
+        return length;
     }
 
     /**
@@ -140,7 +143,6 @@ public class Scut
     //  11 : Argument has wrong type.  Expected {0} but found {1}.
     //  TYPE_ERROR_3 = \
     //  11 : Argument {2} has wrong type.  Expected {0} but found {1}.
-
     public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
     RuntimeX mTypeError(
             Class<T1> expected,
@@ -164,6 +166,26 @@ public class Scut
                 FirstClassObject.typename( expected ),
                 FirstClassObject.typename( actual ),
                 position );
+    }
+
+//    #
+//    # Used in a number of syntax implementations.
+//    #
+//    # arg 0: The name of the syntax.
+//    # arg 1: The wrong binding
+//    #
+//    BAD_BINDING_2 = \
+//    16 : Bad binding in {0} syntax: {1}
+    public static  <T1 extends FirstClassObject>
+    RuntimeX mBadBinding(
+            Symbol syntaxName,
+            Cons binding )
+                    throws RuntimeX
+    {
+        return new RuntimeX(
+                Code.BAD_BINDING,
+                FirstClassObject.toString( syntaxName ),
+                FirstClassObject.toString( binding ) );
     }
 
     //    BAD_CLAUSE_1 = \

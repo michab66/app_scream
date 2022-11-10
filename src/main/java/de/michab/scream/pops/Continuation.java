@@ -69,12 +69,58 @@ public class Continuation
         };
     }
 
-    public static Thunk _quote(
+    /**
+     * Shortcut and.
+     *
+     * @param e The environment for evaluation.
+     * @param expressions The list of tests.
+     * @param previousResult The value of the previous test.
+     * @param c The continuation.
+     * @return A thunk.
+     * @throws RuntimeX In case of an error.
+     */
+    private static Thunk _and(
             Environment e,
-            FirstClassObject quote,
-            Cont<FirstClassObject> c) throws RuntimeX
+            Cons expressions,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
     {
-        return c.accept( quote );
+        if ( expressions == Cons.NIL )
+            return () -> c.accept( previousResult );
+        if ( ! SchemeBoolean.isTrue( previousResult ) )
+            return () -> c.accept( previousResult );
+
+        Cont<FirstClassObject> next =
+                (fco) -> _and( e, (Cons)expressions.getCdr(), fco, c);
+
+        return () -> Continuation._eval(
+                e,
+                expressions.getCar(),
+                next );
+    }
+
+    /**
+     * Shortcut and.
+     *
+     * @param e The environment for evaluation.
+     * @param expressions The list of tests.
+     * @param previousResult The value of the previous test.
+     * @param c The continuation.
+     * @return A thunk.
+     * @throws RuntimeX In case of an error.
+     */
+    public static Thunk _and(
+            Environment e,
+            Cons expressions,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        return _and(
+                e,
+                expressions,
+                SchemeBoolean.T,
+                c );
     }
 
     /**
@@ -102,6 +148,89 @@ public class Continuation
     }
 
     /**
+     * Evaluate a list of expressions and return the value of the final element.
+     * @param e The environment for evaluation.
+     * @param body A list of expressions.
+     * @param previousResult The result of the previous expression.
+     * @param c The continuation receiving the result.
+     * @return The thunk.
+     */
+    private static Thunk _begin(
+            Environment e,
+            Cons body,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c )
+    {
+        if ( body == Cons.NIL )
+            return () -> c.accept( previousResult );
+
+        Cont<FirstClassObject> next =
+                (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
+
+        return () -> Continuation._eval( e, body.getCar(), next );
+    }
+
+    /**
+     * Evaluate a list of expressions and return the value of the final element.
+     * @param e The environment for evaluation.
+     * @param body A list of expressions.
+     * @param previousResult The result of the previous expression.
+     * @param c The continuation receiving the result.
+     * @return The thunk.
+     */
+    public static Thunk _begin(
+            Environment e,
+            Cons body,
+            Cont<FirstClassObject> c )
+    {
+        return _begin(
+                e,
+                body,
+                Cons.NIL,
+                c );
+    }
+
+    private static Thunk _bindLet(
+            Environment e,
+            Environment extended,
+            Cons bindings,
+            Cont<Environment> c )
+                    throws RuntimeX
+    {
+        if ( bindings == Cons.NIL )
+            return c.accept( extended );
+
+        Cons bindingElement = (Cons)bindings.getCar();
+        Symbol variable = (Symbol)bindingElement.listRef(0);
+        FirstClassObject init = bindingElement.listRef(1);
+
+        Cont<FirstClassObject> evalResult = fco -> {
+            extended.set( variable, fco );
+            return _bindLet( e, extended, (Cons)bindings.getCdr(), c );
+        };
+
+        return _eval( e, init, evalResult );
+    }
+    public static Thunk _bindLet( Environment e, Cons bindings, Cont<Environment> c ) throws RuntimeX
+    {
+        return _bindLet( e, e.extend(), bindings, c );
+    }
+    public static Thunk _let(
+            Environment e,
+            Cons bindings,
+            Cons body,
+            Cont<FirstClassObject> c ) throws RuntimeX
+    {
+        Cont<Environment> next =
+                ext -> _begin( ext, body, c );
+        return _bindLet(
+                e,
+                e.extend(),
+                bindings,
+                next );
+    }
+
+    /**
      * Evaluate an object.
      *
      * @param e The environment for evaluation.
@@ -119,15 +248,6 @@ public class Continuation
                     FirstClassObject.evaluate( o, e ) );
     }
 
-    public static Thunk _resolve(
-            Environment e,
-            Symbol o,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-        return c.accept( e.get( o ) );
-    }
-
     public static Thunk _if(
             Environment e,
             FirstClassObject condition,
@@ -143,6 +263,7 @@ public class Continuation
 
         return _eval( e, condition, next );
     }
+
     /**
      * r7rs - 4.1.5 -- no false branch.
      * Unspecified result if no 'else' -> #F
@@ -166,6 +287,23 @@ public class Continuation
                 c );
 
         return _eval( e, condition, next );
+    }
+
+    public static Thunk _quote(
+            Environment e,
+            FirstClassObject quote,
+            Cont<FirstClassObject> c) throws RuntimeX
+    {
+        return c.accept( quote );
+    }
+
+    public static Thunk _resolve(
+            Environment e,
+            Symbol o,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        return c.accept( e.get( o ) );
     }
 
     private static Thunk listEval(

@@ -192,6 +192,7 @@ public class ScutTest extends ScreamBaseTest
                 Code.EXPECTED_PROPER_LIST,
                 6 );
     }
+
     @Test
     public void _11_typeError_2() throws Exception
     {
@@ -208,6 +209,20 @@ public class ScutTest extends ScreamBaseTest
                 Code.TYPE_ERROR,
                 11 );
     }
+
+    @Test
+    public void _16_badBinding_2() throws Exception
+    {
+        var badBinding = readSingleExpression( "(bad binding)", Cons.class );
+
+        var x = validateMessageAndType(
+                Scut.mBadBinding( s313, badBinding ),
+                Code.BAD_BINDING,
+                16 );
+        assertEquals( s313.toString(), x.getArgument(0) );
+        assertEquals( badBinding.toString(), x.getArgument(1) );
+    }
+
     @Test
     public void _17_badClause_3() throws Exception
     {

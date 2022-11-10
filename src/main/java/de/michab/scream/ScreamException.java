@@ -177,6 +177,10 @@ extends Exception
     {
         return _errorArguments;
     }
+    public Object getArgument( int idx )
+    {
+        return _errorArguments[idx];
+    }
 
     /**
      * Get a numeric error id.  In case there was a misconfiguration in the

@@ -10,10 +10,7 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.SchemeBoolean;
 import de.michab.scream.Syntax;
 
 /**
@@ -37,66 +34,12 @@ public class SyntaxAnd extends Syntax
     {
         checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-        L l = (e,c) -> _and(
+        L l = (e,c) -> Continuation._and(
                 e,
                 args,
                 c);
 
         return new Lambda( l, getName() );
-    }
-
-    /**
-     * Shortcut and.
-     *
-     * @param e The environment for evaluation.
-     * @param expressions The list of tests.
-     * @param previousResult The value of the previous test.
-     * @param c The continuation.
-     * @return A thunk.
-     * @throws RuntimeX In case of an error.
-     */
-    private static Thunk _and(
-            Environment e,
-            Cons expressions,
-            FirstClassObject previousResult,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-        if ( expressions == Cons.NIL )
-            return () -> c.accept( previousResult );
-        if ( ! SchemeBoolean.isTrue( previousResult ) )
-            return () -> c.accept( previousResult );
-
-        Cont<FirstClassObject> next =
-                (fco) -> _and( e, (Cons)expressions.getCdr(), fco, c);
-
-        return () -> Continuation._eval(
-                e,
-                expressions.getCar(),
-                next );
-    }
-
-    /**
-     * Shortcut and.
-     *
-     * @param e The environment for evaluation.
-     * @param expressions The list of tests.
-     * @param previousResult The value of the previous test.
-     * @param c The continuation.
-     * @return A thunk.
-     * @throws RuntimeX In case of an error.
-     */
-    public static Thunk _and(
-            Environment e,
-            Cons expressions,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-        return _and(
-                e,
-                expressions,
-                SchemeBoolean.T,
-                c );
     }
 
     @Override
