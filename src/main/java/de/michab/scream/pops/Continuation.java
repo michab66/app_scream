@@ -211,10 +211,12 @@ public class Continuation
 
         return _eval( e, init, evalResult );
     }
+
     public static Thunk _bindLet( Environment e, Cons bindings, Cont<Environment> c ) throws RuntimeX
     {
         return _bindLet( e, e.extend(), bindings, c );
     }
+
     public static Thunk _let(
             Environment e,
             Cons bindings,
@@ -287,6 +289,60 @@ public class Continuation
                 c );
 
         return _eval( e, condition, next );
+    }
+
+    /**
+     * Shortcut or.
+     *
+     * @param e The environment for evaluation.
+     * @param expressions The list of tests.
+     * @param previousResult The value of the previous test.
+     * @param c The continuation.
+     * @return A thunk.
+     * @throws RuntimeX In case of an error.
+     */
+    private static Thunk _or(
+            Environment e,
+            Cons expressions,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        if ( expressions == Cons.NIL )
+            return () -> c.accept( previousResult );
+        if ( SchemeBoolean.isTrue( previousResult ) )
+            return () -> c.accept( previousResult );
+
+        Cont<FirstClassObject> next =
+                (fco) -> _or( e, (Cons)expressions.getCdr(), fco, c);
+
+        return () -> Continuation._eval(
+                e,
+                expressions.getCar(),
+                next );
+    }
+
+    /**
+     * Shortcut or.
+     *
+     * @param e The environment for evaluation.
+     * @param expressions The list of tests.
+     * @param previousResult The value of the previous test.
+     * @param c The continuation.
+     * @return A thunk.
+     * @throws RuntimeX In case of an error.
+     */
+    public static Thunk _or(
+            Environment e,
+            Cons expressions,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        return _or(
+                e,
+                expressions,
+                SchemeBoolean.F,
+                c );
     }
 
     public static Thunk _quote(

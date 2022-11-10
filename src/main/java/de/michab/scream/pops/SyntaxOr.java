@@ -10,11 +10,8 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
 import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.SchemeBoolean;
 
 /**
  * (or <test1> ... ) syntax; r7rs p15
@@ -37,66 +34,12 @@ public class SyntaxOr extends Operation
     {
         checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-        L l = (e,c) -> _or(
+        L l = (e,c) -> Continuation._or(
                 e,
                 args,
                 c);
 
         return new Lambda( l, getName() );
-    }
-
-    /**
-     * Shortcut or.
-     *
-     * @param e The environment for evaluation.
-     * @param expressions The list of tests.
-     * @param previousResult The value of the previous test.
-     * @param c The continuation.
-     * @return A thunk.
-     * @throws RuntimeX In case of an error.
-     */
-    private static Thunk _or(
-            Environment e,
-            Cons expressions,
-            FirstClassObject previousResult,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-        if ( expressions == Cons.NIL )
-            return () -> c.accept( previousResult );
-        if ( SchemeBoolean.isTrue( previousResult ) )
-            return () -> c.accept( previousResult );
-
-        Cont<FirstClassObject> next =
-                (fco) -> _or( e, (Cons)expressions.getCdr(), fco, c);
-
-        return () -> Continuation._eval(
-                e,
-                expressions.getCar(),
-                next );
-    }
-
-    /**
-     * Shortcut or.
-     *
-     * @param e The environment for evaluation.
-     * @param expressions The list of tests.
-     * @param previousResult The value of the previous test.
-     * @param c The continuation.
-     * @return A thunk.
-     * @throws RuntimeX In case of an error.
-     */
-    public static Thunk _or(
-            Environment e,
-            Cons expressions,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-        return _or(
-                e,
-                expressions,
-                SchemeBoolean.F,
-                c );
     }
 
     @Override

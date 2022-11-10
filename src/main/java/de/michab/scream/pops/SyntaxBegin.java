@@ -5,10 +5,10 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
 import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.pops.Continuation.Cont;
+import de.michab.scream.pops.Continuation.Thunk;
 
 /**
  * (begin exp1 exp2 ...) library syntax; r7rs 17
@@ -24,55 +24,12 @@ public class SyntaxBegin extends Operation
     @Override
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
-        L l = (e,c) -> _begin(
+        L l = (e,c) -> Continuation._begin(
                 e,
                 args,
                 c);
 
         return new Lambda( l, getName() );
-    }
-
-    /**
-     * Evaluate a list of expressions and return the value of the final element.
-     * @param e The environment for evaluation.
-     * @param body A list of expressions.
-     * @param previousResult The result of the previous expression.
-     * @param c The continuation receiving the result.
-     * @return The thunk.
-     */
-    private static Thunk _begin(
-            Environment e,
-            Cons body,
-            FirstClassObject previousResult,
-            Cont<FirstClassObject> c )
-    {
-        if ( body == Cons.NIL )
-            return () -> c.accept( previousResult );
-
-        Cont<FirstClassObject> next =
-                (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
-
-        return () -> Continuation._eval( e, body.getCar(), next );
-    }
-
-    /**
-     * Evaluate a list of expressions and return the value of the final element.
-     * @param e The environment for evaluation.
-     * @param body A list of expressions.
-     * @param previousResult The result of the previous expression.
-     * @param c The continuation receiving the result.
-     * @return The thunk.
-     */
-    public static Thunk _begin(
-            Environment e,
-            Cons body,
-            Cont<FirstClassObject> c )
-    {
-        return _begin(
-                e,
-                body,
-                Cons.NIL,
-                c );
     }
 
     @Override
@@ -95,8 +52,7 @@ public class SyntaxBegin extends Operation
     public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
-
-        return _begin( e, args, c );
+        return Continuation._begin( e, args, c );
     }
 
     /**

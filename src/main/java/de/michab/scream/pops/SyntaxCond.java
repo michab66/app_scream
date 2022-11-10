@@ -14,9 +14,9 @@ import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.Symbol;
 import de.michab.scream.pops.Continuation.Cont;
 import de.michab.scream.pops.Continuation.Thunk;
-import de.michab.scream.Symbol;
 import de.michab.scream.util.Scut;
 
 public class SyntaxCond extends Operation
@@ -78,7 +78,7 @@ public class SyntaxCond extends Operation
             if ( Cons.NIL == afterTest )
                 return trueBranch.accept( s );
 
-            return SyntaxBegin._begin( e, (Cons)clause.getCdr(), trueBranch );
+            return Continuation._begin( e, (Cons)clause.getCdr(), trueBranch );
         };
 
         return Continuation._eval(
