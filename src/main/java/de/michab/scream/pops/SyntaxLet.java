@@ -26,8 +26,10 @@ public abstract class SyntaxLet
     /**
      * A proper list with length greater than 0 of two element lists, each having
      * a symbol as the first element.
+     *
+     * @return A proper list of symbols that are assigned in the binding list.
      */
-    protected void validateBindings( Cons bindings ) throws RuntimeX
+    protected Cons validateBindings( Cons bindings ) throws RuntimeX
     {
         final var originalBindings = bindings;
         ConsumerX<Long> ic = s -> {
@@ -40,6 +42,8 @@ public abstract class SyntaxLet
                 Integer.MAX_VALUE,
                 ic ,
                 ic );
+
+        Cons result = Cons.NIL;
 
         while ( bindings != Cons.NIL )
         {
@@ -65,8 +69,12 @@ public abstract class SyntaxLet
                         throw Scut.mBadBinding( getName(), c );
                     } );
 
+            result = new Cons( symbol, result );
+
             bindings = (Cons)bindings.getCdr();
         }
+
+        return result;
     }
 
     @Override
@@ -262,6 +270,44 @@ public abstract class SyntaxLet
      */
     static private Syntax letrecSyntax = new SyntaxLet( "letrec" )
     {
+        @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            checkArgumentCount( 2, Integer.MAX_VALUE, args );
+
+            var bindings =
+                    Scut.as( Cons.class, args.getCar() );
+            var body =
+                    Scut.as( Cons.class, args.getCdr() );
+
+            var symbols = validateBindings( bindings );
+
+            L l = (e,c) -> Continuation._letRec(
+                    e,
+                    bindings,
+                    body,
+                    symbols,
+                    c);
+
+            return new Lambda( l, getName() );
+        }
+
+        @Override
+        public FirstClassObject compile( Environment parent, Cons args )
+                throws RuntimeX
+        {
+            return _compile( parent, args );
+        }
+        @Override
+        public FirstClassObject activate( Environment parent,
+                Cons arguments )
+                        throws RuntimeX
+        {
+            var λ = _compile( parent, arguments );
+
+            return FirstClassObject.evaluate( λ, parent );
+        }
+
         @Override
         FirstClassObject createPop( Symbol[] variables,
                 FirstClassObject[] inits,

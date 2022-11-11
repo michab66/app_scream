@@ -148,6 +148,57 @@ public class Continuation
     }
 
     /**
+     * Create a new value.
+     *
+     * @param e The environment for evaluation.
+     * @param s The symbol to set.
+     * @param o The object to evaluate.
+     * @param c A continuation receiving NIL.
+     * @return The thunk.
+     */
+    public static Thunk _define(
+            Environment e,
+            Symbol s,
+            FirstClassObject o,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        Cont<FirstClassObject> next = v -> {
+            e.set( s, v );
+            return c.accept( Cons.NIL );
+        };
+
+        return _eval( e, o, next );
+    }
+
+    /**
+     * Create a list of new values.
+     *
+     * @param e The environment for evaluation.
+     * @param s The symbol to set.
+     * @param o The object to evaluate.
+     * @param c A continuation receiving NIL.
+     * @return The thunk.
+     */
+    public static Thunk _define(
+            Environment e,
+            Cons symbols,
+            FirstClassObject o,
+            Cont<Environment> c )
+                    throws RuntimeX
+    {
+        if ( symbols == Cons.NIL )
+            return c.accept( e );
+
+        Cont<FirstClassObject> next = v -> {
+            e.set( (Symbol)symbols.getCar(), v );
+            return _define( e, (Cons)symbols.getCdr(), o, c );
+        };
+
+        return _eval( e, o, next );
+    }
+
+    /**
      * Evaluate a list of expressions and return the value of the final element.
      * @param e The environment for evaluation.
      * @param body A list of expressions.
@@ -190,6 +241,37 @@ public class Continuation
                 c );
     }
 
+    /**
+     *
+     * @param e The evaluation environment.
+     * @param extended The definition environment.
+     * @param bindings
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
+    private static Thunk _bindLetx(
+            Environment e,
+            Environment extended,
+            Cons bindings,
+            Cont<Environment> c )
+                    throws RuntimeX
+    {
+        if ( bindings == Cons.NIL )
+            return c.accept( extended );
+
+        Cons bindingElement = (Cons)bindings.getCar();
+        Symbol variable = (Symbol)bindingElement.listRef(0);
+        FirstClassObject init = bindingElement.listRef(1);
+
+        Cont<FirstClassObject> evalResult = fco -> {
+            extended.assign( variable, fco );
+            return _bindLetx( e, extended, (Cons)bindings.getCdr(), c );
+        };
+
+        return _eval( e, init, evalResult );
+    }
+
     private static Thunk _bindLet(
             Environment e,
             Environment extended,
@@ -212,6 +294,7 @@ public class Continuation
         return _eval( e, init, evalResult );
     }
 
+    // TODO merge with above?
     private static Thunk _bindLetAsterisk(
             Environment extended,
             Cons bindings,
@@ -260,6 +343,40 @@ public class Continuation
                 e.extend(),
                 bindings,
                 next );
+    }
+
+    /**
+     *
+     * @param e
+     * @param bindings
+     * @param body
+     * @param symbols
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
+    public static Thunk _letRec( Environment e, Cons bindings, Cons body,
+            Cons symbols, Cont<FirstClassObject> c )
+    throws RuntimeX
+    {
+        Cont<Environment> begin =
+                env -> _begin(
+                        env,
+                        body,
+                        c );
+
+        Cont<Environment> bind =
+                env -> _bindLetx(
+                        env,
+                        env,
+                        bindings,
+                        begin );
+
+        return () -> _define(
+                e.extend(),
+                symbols,
+                Cons.NIL,
+                bind );
     }
 
     /**
@@ -436,4 +553,5 @@ public class Continuation
                 Cons.asArray( l ),
                 next );
     }
+
 }

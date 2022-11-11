@@ -46,6 +46,15 @@ public class Scut
         return length;
     }
 
+    public static long checkProperLength(
+            Cons cons,
+            long expected,
+            ConsumerX<Long> fail )
+        throws RuntimeX
+    {
+        return checkProperLength( cons, expected, expected, fail, fail );
+    }
+
     /**
      * Convert an object.  Calls the fail-lambda if the conversion
      * is not possible.
