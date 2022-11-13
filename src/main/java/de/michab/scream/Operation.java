@@ -248,7 +248,7 @@ public class Operation
             return c.accept( e );
         if ( argNames == Cons.NIL && _rest != Cons.NIL )
         {
-            e.set( (Symbol)_rest, argValues );
+            e.define( (Symbol)_rest, argValues );
             return c.accept( e );
         }
         if ( argNames == Cons.NIL && _rest == Cons.NIL )
@@ -261,7 +261,7 @@ public class Operation
                 (Symbol)argNames.getCar();
         FirstClassObject value =
                 argValues.getCar();
-        e.set( name, value );
+        e.define( name, value );
 
         return () -> _bind( e, (Cons)argNames.getCdr(), (Cons)argValues.getCdr(), c );
     }
@@ -274,7 +274,7 @@ public class Operation
         final var ex = e.extend( getName() );
 
         if ( _rest != Cons.NIL )
-            ex.set( (Symbol)_rest, Cons.NIL );
+            ex.define( (Symbol)_rest, Cons.NIL );
 
         return () -> _bind(
                 ex,
@@ -308,7 +308,7 @@ public class Operation
 
         // Initialise the 'rest' variable in the current environment.
         if ( _rest != Cons.NIL )
-            executionEnvironment.set( (Symbol)_rest, Cons.NIL );
+            executionEnvironment.define( (Symbol)_rest, Cons.NIL );
 
         for ( int i = 0 ; i < argumentList.length ; i++ )
         {
@@ -316,13 +316,13 @@ public class Operation
             if ( formalArg != Cons.NIL )
             {
                 // ...bind the argument.
-                executionEnvironment.set( (Symbol)formalArg.getCar(), argumentList[i] );
+                executionEnvironment.define( (Symbol)formalArg.getCar(), argumentList[i] );
                 formalArg = (Cons)formalArg.getCdr();
             }
             else if ( _rest != Cons.NIL )
             {
                 // ...bind it.
-                executionEnvironment.set( (Symbol)_rest, Cons.create( argumentList, i ) );
+                executionEnvironment.define( (Symbol)_rest, Cons.create( argumentList, i ) );
                 break;
             }
             else
@@ -585,7 +585,7 @@ public class Operation
         final var ex = e.extend( getName() );
 
         if ( _rest != Cons.NIL )
-            ex.set( (Symbol)_rest, Cons.NIL );
+            ex.define( (Symbol)_rest, Cons.NIL );
 
         return () -> _bind(
                 ex,

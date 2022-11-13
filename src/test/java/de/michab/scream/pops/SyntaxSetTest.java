@@ -32,7 +32,7 @@ public class SyntaxSetTest extends ScreamBaseTest
 
         var tle = se.getInteraction();
 
-        tle.set( s313, i1 );
+        tle.define( s313, i1 );
 
         var result = se.evalFco(
                 """

@@ -38,7 +38,7 @@ public class SyntaxSyntax extends Syntax
                     ((Cons)args[0]).getCdr(),
                     Cons.create( args, 1 ) );
             procToBind.setName( (Symbol)symbol );
-            parent.set( (Symbol)symbol, procToBind );
+            parent.define( (Symbol)symbol, procToBind );
         }
         else
             throw new RuntimeX( Code.SYNTAX_ERROR );

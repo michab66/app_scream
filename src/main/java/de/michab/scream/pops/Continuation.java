@@ -164,7 +164,7 @@ public class Continuation
                     throws RuntimeX
     {
         Cont<FirstClassObject> next = v -> {
-            e.set( s, v );
+            e.define( s, v );
             return c.accept( Cons.NIL );
         };
 
@@ -191,7 +191,7 @@ public class Continuation
             return c.accept( e );
 
         Cont<FirstClassObject> next = v -> {
-            e.set( (Symbol)symbols.getCar(), v );
+            e.define( (Symbol)symbols.getCar(), v );
             return _define( e, (Cons)symbols.getCdr(), o, c );
         };
 
@@ -267,7 +267,7 @@ public class Continuation
         FirstClassObject init = bindingElement.listRef(1);
 
         Cont<FirstClassObject> evalResult = fco -> {
-            extended.set( variable, fco );
+            extended.define( variable, fco );
             return _bindLet( e, extended, (Cons)bindings.getCdr(), c );
         };
 

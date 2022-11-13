@@ -21,7 +21,7 @@ public class LetRecTest extends ScreamBaseTest
      * Checking the opposite of the r7rs test on p16.
      */
     @Test
-    public void letrec_1x() throws Exception
+    public void letrec_1x1() throws Exception
     {
         var result = scriptEngine().evalFco(
             """
@@ -36,6 +36,50 @@ public class LetRecTest extends ScreamBaseTest
                             #f
                             (even? (- n 1))))))
              (even? 89))
+            """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+    /**
+     * Checking the opposite of the r7rs test on p16.
+     */
+    @Test
+    public void letrec_1x2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (letrec ((even?
+                      (lambda (n)
+                        (if (zero? n)
+                            #t
+                            (odd? (- n 1)))))
+                     (odd?
+                       (lambda (n)
+                         (if (zero? n)
+                            #f
+                            (even? (- n 1))))))
+             (odd? 89))
+            """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+    /**
+     * Checking the opposite of the r7rs test on p16.
+     */
+    @Test
+    public void letrec_1x3() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (letrec ((even?
+                      (lambda (n)
+                        (if (zero? n)
+                            #t
+                            (odd? (- n 1)))))
+                     (odd?
+                       (lambda (n)
+                         (if (zero? n)
+                            #f
+                            (even? (- n 1))))))
+             (odd? 88))
             """ );
         assertEquals( SchemeBoolean.F, result );
     }

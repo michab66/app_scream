@@ -74,7 +74,7 @@ public class Loop
     // Init phase.  Create the bindings.  Backwards iteration for elegance and
     // speed.
     for ( int i = _variables.length -1 ; i >= 0 ; i-- )
-      nested.set( _variables[i], evaluate( _inits[i], p ) );
+      nested.define( _variables[i], evaluate( _inits[i], p ) );
 
     // Actual loop execution.
     while ( SchemeBoolean.F == evaluate( _test, nested ) )

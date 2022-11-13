@@ -50,7 +50,7 @@ public class UrschleimTest extends ScreamBaseTest
     {
         var symbol = Symbol.createObject( "car" );
         var env = new Environment();
-        env.set( symbol, SchemeInteger.createObject( 313 ) );
+        env.define( symbol, SchemeInteger.createObject( 313 ) );
 
         Holder<FirstClassObject> r =
                 new Holder<FirstClassObject>( Cons.NIL );
@@ -194,7 +194,7 @@ public class UrschleimTest extends ScreamBaseTest
         ScreamEvaluator se = scriptEngine();
 
         var env = se.getInteraction();
-        env.set( s313, i1  );
+        env.define( s313, i1  );
 
         FirstClassObject opCall =
                 new SchemeParser( "(set! threethirteen 313)" ).getExpression();
@@ -228,16 +228,16 @@ public class UrschleimTest extends ScreamBaseTest
     public void listEvalTest() throws Exception
     {
         Environment env = new Environment();
-        env.set(
+        env.define(
                 ScreamBaseTest.s1,
                 ScreamBaseTest.i1 );
-        env.set(
+        env.define(
                 ScreamBaseTest.s2,
                 ScreamBaseTest.i2 );
-        env.set(
+        env.define(
                 ScreamBaseTest.s3,
                 ScreamBaseTest.i3 );
-        env.set(
+        env.define(
                 ScreamBaseTest.s4,
                 ScreamBaseTest.i4 );
 

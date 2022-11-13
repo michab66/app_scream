@@ -292,8 +292,8 @@ public class Scream implements ScriptEngineFactory
 
         // Before starting the evaluation we add symbols for error handling to
         // the TLE.
-        environment.set( ERROR_ID, Cons.NIL );
-        environment.set( ERROR_OBJ, Cons.NIL );
+        environment.define( ERROR_ID, Cons.NIL );
+        environment.define( ERROR_OBJ, Cons.NIL );
 
         FirstClassObject result = null;
 

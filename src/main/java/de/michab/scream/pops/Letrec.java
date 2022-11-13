@@ -66,7 +66,7 @@ public class Letrec
     Environment nested = p.extend();
 
     for ( int i = _variables.length-1 ; i >= 0 ; i-- )
-      nested.set( _variables[i], LETREC_UNDEFINED );
+      nested.define( _variables[i], LETREC_UNDEFINED );
 
     // Do the bindings.  Backwards iteration for elegance and speed.
     for ( int i = 0 ; i < _variables.length ; i++ )

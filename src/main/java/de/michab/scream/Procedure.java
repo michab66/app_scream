@@ -112,7 +112,7 @@ public class Procedure
         final var ex = e.extend( getName() );
 
         if ( _rest != Cons.NIL )
-            ex.set( (Symbol)_rest, Cons.NIL );
+            ex.define( (Symbol)_rest, Cons.NIL );
 
         Cont<Cons> cc = (cons) -> _bind(
                 ex,

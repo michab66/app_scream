@@ -138,15 +138,17 @@ public final class Environment
     }
 
     /**
-     * Create a new entry in this environment.  In scheme parlance bind a new
-     * value.
+     * Create a new entry in this environment.  If the entry already exists,
+     * it will be replaced.
      *
-     * @param symbol The symbol that will be bound to the value.
+     * @param symbol The symbol to bind.
      * @param value The value to bind.
+     * @see #assign(Symbol, FirstClassObject)
      */
-    public synchronized void set( Symbol symbol, FirstClassObject value )
+    public Environment define( Symbol symbol, FirstClassObject value )
     {
         _symbolMap.put( symbol, value );
+        return this;
     }
 
     /**
@@ -206,16 +208,17 @@ public final class Environment
      *
      * @param symbol The symbol to assign to.
      * @param value The value to assign.
+     * @see #define(Symbol, FirstClassObject)
      * @throws RuntimeX If the symbol to be assigned didn't exist in this
      *         environment.
      */
-    public void assign( Symbol symbol, FirstClassObject value )
+    public Environment assign( Symbol symbol, FirstClassObject value )
             throws RuntimeX
     {
         if ( _symbolMap.containsKey( symbol ) )
-            set( symbol, value );
+            return define( symbol, value );
         else if ( _parent != null )
-            _parent.assign( symbol, value  );
+            return _parent.assign( symbol, value  );
         else
             throw new RuntimeX( Code.SYMBOL_NOT_ASSIGNABLE, symbol );
     }
@@ -256,7 +259,7 @@ public final class Environment
         if ( name == Operation.DEFAULT_NAME )
             throw new IllegalArgumentException( "Primitives need to be named." );
 
-        set( name, op );
+        define( name, op );
     }
 
     /**

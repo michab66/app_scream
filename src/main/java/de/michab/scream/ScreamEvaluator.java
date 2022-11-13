@@ -56,7 +56,7 @@ public final class ScreamEvaluator implements ScriptEngine
                 interpreter;
         _interaction =
                 tle;
-        _interaction.set(
+        _interaction.define(
                 ANCHOR_SYMBOL,
                 new SchemeObject( this ) );
     }

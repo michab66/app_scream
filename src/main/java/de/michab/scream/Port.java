@@ -586,7 +586,7 @@ public String toString()
    */
   static Environment extendTopLevelEnvironment( Environment tle )
   {
-    tle.set( EOF, EOF );
+    tle.define( EOF, EOF );
 
     return tle;
   }

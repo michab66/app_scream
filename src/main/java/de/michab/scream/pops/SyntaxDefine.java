@@ -36,7 +36,7 @@ public class SyntaxDefine extends Syntax
             // Get the value.
             FirstClassObject value = evaluate( args[1], parent );
             // At last bind it.
-            parent.set( (Symbol)args[0], value );
+            parent.define( (Symbol)args[0], value );
         }
         else if ( args[0] instanceof Cons && ((Cons)args[0]).length() > 0 )
         {
@@ -48,7 +48,7 @@ public class SyntaxDefine extends Syntax
                     ((Cons)args[0]).getCdr(),
                     Cons.create( args, 1 ) );
             procToBind.setName( (Symbol)symbol );
-            parent.set( (Symbol)symbol, procToBind );
+            parent.define( (Symbol)symbol, procToBind );
         }
         else
             throw new RuntimeX( Code.SYNTAX_ERROR );
