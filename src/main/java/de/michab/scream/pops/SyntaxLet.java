@@ -229,7 +229,7 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            L l = (e,c) -> Continuation._letAsterisk(
+            L l = (e,c) -> Continuation._letStar(
                     e,
                     bindings,
                     body,

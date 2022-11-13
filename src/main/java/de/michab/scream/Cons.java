@@ -179,7 +179,7 @@ public class Cons
      * @return The concatenated list.
      * @throws RuntimeX in case this list is not proper.
      */
-    public FirstClassObject append( FirstClassObject tail )
+    public Cons append( FirstClassObject tail )
             throws RuntimeX
     {
         if ( ! isProperList() )

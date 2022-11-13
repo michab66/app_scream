@@ -242,36 +242,16 @@ public class Continuation
     }
 
     /**
+     * Performs variable binding for the {@code let...} syntax.
      *
-     * @param e The evaluation environment.
-     * @param extended The definition environment.
-     * @param bindings
-     * @param c
+     * @param e The environment used to evaluate the {@code <init>} expressions.
+     * @param extended The environment receiving the bound values.
+     * @param bindings The list of bindings to process.
+     * Format is like {@code ((<variable1> <init1>) ...)}.
+     * @param A continuation that receives the extended environment.
      * @return
      * @throws RuntimeX
      */
-    private static Thunk _bindLetx(
-            Environment e,
-            Environment extended,
-            Cons bindings,
-            Cont<Environment> c )
-                    throws RuntimeX
-    {
-        if ( bindings == Cons.NIL )
-            return c.accept( extended );
-
-        Cons bindingElement = (Cons)bindings.getCar();
-        Symbol variable = (Symbol)bindingElement.listRef(0);
-        FirstClassObject init = bindingElement.listRef(1);
-
-        Cont<FirstClassObject> evalResult = fco -> {
-            extended.assign( variable, fco );
-            return _bindLetx( e, extended, (Cons)bindings.getCdr(), c );
-        };
-
-        return _eval( e, init, evalResult );
-    }
-
     private static Thunk _bindLet(
             Environment e,
             Environment extended,
@@ -294,55 +274,44 @@ public class Continuation
         return _eval( e, init, evalResult );
     }
 
-    // TODO merge with above?
-    private static Thunk _bindLetAsterisk(
-            Environment extended,
-            Cons bindings,
-            Cont<Environment> c )
-                    throws RuntimeX
-    {
-        if ( bindings == Cons.NIL )
-            return c.accept( extended );
-
-        Cons bindingElement = (Cons)bindings.getCar();
-        Symbol variable = (Symbol)bindingElement.listRef(0);
-        FirstClassObject init = bindingElement.listRef(1);
-
-        Cont<FirstClassObject> evalResult = fco -> {
-            extended.set( variable, fco );
-            return _bindLetAsterisk( extended, (Cons)bindings.getCdr(), c );
-        };
-
-        return _eval( extended, init, evalResult );
-    }
-
     public static Thunk _let(
             Environment e,
             Cons bindings,
             Cons body,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
-        Cont<Environment> next =
-                ext -> _begin( ext, body, c );
+        Cont<Environment> begin =
+                ext -> _begin(
+                        ext,
+                        body,
+                        c );
+
         return _bindLet(
                 e,
                 e.extend(),
                 bindings,
-                next );
+                begin );
     }
 
-    public static Thunk _letAsterisk(
+    public static Thunk _letStar(
             Environment e,
             Cons bindings,
             Cons body,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
-        Cont<Environment> next =
-                ext -> _begin( ext, body, c );
-        return _bindLetAsterisk(
-                e.extend(),
+        Cont<Environment> begin =
+                ext -> _begin(
+                        ext,
+                        body,
+                        c );
+
+        var extendedEnv = e.extend();
+
+        return _bindLet(
+                extendedEnv,
+                extendedEnv,
                 bindings,
-                next );
+                begin );
     }
 
     /**
@@ -355,9 +324,13 @@ public class Continuation
      * @return
      * @throws RuntimeX
      */
-    public static Thunk _letRec( Environment e, Cons bindings, Cons body,
-            Cons symbols, Cont<FirstClassObject> c )
-    throws RuntimeX
+    public static Thunk _letRec(
+            Environment e,
+            Cons bindings,
+            Cons body,
+            Cons symbols,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
     {
         Cont<Environment> begin =
                 env -> _begin(
@@ -366,7 +339,7 @@ public class Continuation
                         c );
 
         Cont<Environment> bind =
-                env -> _bindLetx(
+                env -> _bindLet(
                         env,
                         env,
                         bindings,
