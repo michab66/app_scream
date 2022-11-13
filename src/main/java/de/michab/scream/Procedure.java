@@ -118,9 +118,9 @@ public class Procedure
                 ex,
                 _formalArguments,
                 cons,
-                s -> Continuation._begin( s, _body, c ) );
+                s -> Continuation._x_begin( s, _body, c ) );
 
-        return () -> Continuation.listEval( e, args, cc );
+        return () -> Continuation._x_eval( e, args, cc );
     }
 
     /**

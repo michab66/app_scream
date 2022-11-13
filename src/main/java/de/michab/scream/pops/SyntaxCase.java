@@ -126,7 +126,7 @@ public class SyntaxCase extends Operation
 
         if ( Symbol.createObject( "else" ).equals( currentClause.getCar() ))
         {
-            return Continuation._begin(
+            return Continuation._x_begin(
                     e,
                     Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
@@ -134,7 +134,7 @@ public class SyntaxCase extends Operation
         var datums = Scut.as( Cons.class, currentClause.getCar() );
         if ( SchemeBoolean.isTrue( datums.member( key ) ) )
         {
-            return Continuation._begin(
+            return Continuation._x_begin(
                     e,
                     Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
@@ -162,7 +162,7 @@ public class SyntaxCase extends Operation
                 clauses,
                 c );
 
-        return Continuation._eval(
+        return Continuation._x_eval(
                 e,
                 key,
                 next );

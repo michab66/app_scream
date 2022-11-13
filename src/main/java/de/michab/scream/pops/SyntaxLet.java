@@ -175,7 +175,7 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            L l = (e,c) -> Continuation._let(
+            L l = (e,c) -> Continuation._x_let(
                     e,
                     bindings,
                     body,
@@ -229,7 +229,7 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            L l = (e,c) -> Continuation._letStar(
+            L l = (e,c) -> Continuation._x_letStar(
                     e,
                     bindings,
                     body,
@@ -282,7 +282,7 @@ public abstract class SyntaxLet
 
             var symbols = validateBindings( bindings );
 
-            L l = (e,c) -> Continuation._letRec(
+            L l = (e,c) -> Continuation._x_letRec(
                     e,
                     bindings,
                     body,
@@ -313,7 +313,7 @@ public abstract class SyntaxLet
                 FirstClassObject[] inits,
                 FirstClassObject[] body )
         {
-            return new Letrec( variables, inits, body );
+            throw new InternalError();
         }
     };
 

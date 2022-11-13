@@ -78,10 +78,10 @@ public class SyntaxCond extends Operation
             if ( Cons.NIL == afterTest )
                 return trueBranch.accept( s );
 
-            return Continuation._begin( e, (Cons)clause.getCdr(), trueBranch );
+            return Continuation._x_begin( e, (Cons)clause.getCdr(), trueBranch );
         };
 
-        return Continuation._eval(
+        return Continuation._x_eval(
                 e,
                 clause.getCar(),
                 next );

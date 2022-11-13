@@ -34,7 +34,7 @@ public class SyntaxOr extends Operation
     {
         checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-        L l = (e,c) -> Continuation._or(
+        L l = (e,c) -> Continuation._x_or(
                 e,
                 args,
                 c);

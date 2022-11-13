@@ -79,7 +79,7 @@ extends FirstClassObject
     {
         return new Lambda(
                 (e,c) ->
-                    Continuation._resolve( e, this, c ),
+                    Continuation._x_resolve( e, this, c ),
                 "resolve " + toString() );
     }
 

@@ -40,7 +40,7 @@ public class SyntaxIf extends Operation
         positive.setCar( cpositive );
 
         Lambda.L result = (e,c) -> {
-            return Continuation._if(
+            return Continuation._x_if(
                     e,
                     ccond,
                     cpositive,
@@ -60,7 +60,7 @@ public class SyntaxIf extends Operation
         negative.setCar( cnegative );
 
         Lambda.L result = (e,c) -> {
-            return Continuation._if(
+            return Continuation._x_if(
                     e,
                     ccond,
                     cpositive,

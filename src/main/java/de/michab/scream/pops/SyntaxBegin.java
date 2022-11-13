@@ -24,7 +24,7 @@ public class SyntaxBegin extends Operation
     @Override
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
-        L l = (e,c) -> Continuation._begin(
+        L l = (e,c) -> Continuation._x_begin(
                 e,
                 args,
                 c);
@@ -52,7 +52,7 @@ public class SyntaxBegin extends Operation
     public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
-        return Continuation._begin( e, args, c );
+        return Continuation._x_begin( e, args, c );
     }
 
     /**

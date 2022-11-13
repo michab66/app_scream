@@ -15,6 +15,11 @@ import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException;
 import de.michab.scream.Symbol;
 
+/**
+ * public _x_... are externally visible primitives.
+ * These always return an indirect thunk () -> ...
+ * @author micbinz
+ */
 public class Continuation
 {
     public Continuation( Consumer<RuntimeX> errorHandler )
@@ -94,7 +99,7 @@ public class Continuation
         Cont<FirstClassObject> next =
                 (fco) -> _and( e, (Cons)expressions.getCdr(), fco, c);
 
-        return () -> Continuation._eval(
+        return Continuation._x_eval(
                 e,
                 expressions.getCar(),
                 next );
@@ -110,13 +115,13 @@ public class Continuation
      * @return A thunk.
      * @throws RuntimeX In case of an error.
      */
-    public static Thunk _and(
+    public static Thunk _x_and(
             Environment e,
             Cons expressions,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        return _and(
+        return () -> _and(
                 e,
                 expressions,
                 SchemeBoolean.T,
@@ -132,7 +137,7 @@ public class Continuation
      * @param c A continuation receiving NIL.
      * @return The thunk.
      */
-    public static Thunk _assign(
+    public static Thunk _x_assign(
             Environment e,
             Symbol s,
             FirstClassObject o,
@@ -144,31 +149,7 @@ public class Continuation
             return c.accept( Cons.NIL );
         };
 
-        return _eval( e, o, next );
-    }
-
-    /**
-     * Create a new value.
-     *
-     * @param e The environment for evaluation.
-     * @param s The symbol to set.
-     * @param o The object to evaluate.
-     * @param c A continuation receiving NIL.
-     * @return The thunk.
-     */
-    public static Thunk _define(
-            Environment e,
-            Symbol s,
-            FirstClassObject o,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-        Cont<FirstClassObject> next = v -> {
-            e.define( s, v );
-            return c.accept( Cons.NIL );
-        };
-
-        return _eval( e, o, next );
+        return () -> _x_eval( e, o, next );
     }
 
     /**
@@ -180,7 +161,7 @@ public class Continuation
      * @param c A continuation receiving NIL.
      * @return The thunk.
      */
-    public static Thunk _define(
+    private static Thunk _define(
             Environment e,
             Cons symbols,
             FirstClassObject o,
@@ -195,7 +176,7 @@ public class Continuation
             return _define( e, (Cons)symbols.getCdr(), o, c );
         };
 
-        return _eval( e, o, next );
+        return _x_eval( e, o, next );
     }
 
     /**
@@ -205,20 +186,21 @@ public class Continuation
      * @param previousResult The result of the previous expression.
      * @param c The continuation receiving the result.
      * @return The thunk.
+     * @throws RuntimeX
      */
     private static Thunk _begin(
             Environment e,
             Cons body,
             FirstClassObject previousResult,
-            Cont<FirstClassObject> c )
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         if ( body == Cons.NIL )
-            return () -> c.accept( previousResult );
+            return c.accept( previousResult );
 
         Cont<FirstClassObject> next =
                 (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
 
-        return () -> Continuation._eval( e, body.getCar(), next );
+        return Continuation._x_eval( e, body.getCar(), next );
     }
 
     /**
@@ -228,13 +210,14 @@ public class Continuation
      * @param previousResult The result of the previous expression.
      * @param c The continuation receiving the result.
      * @return The thunk.
+     * @throws RuntimeX
      */
-    public static Thunk _begin(
+    public static Thunk _x_begin(
             Environment e,
             Cons body,
-            Cont<FirstClassObject> c )
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
-        return _begin(
+        return () -> _begin(
                 e,
                 body,
                 Cons.NIL,
@@ -271,43 +254,43 @@ public class Continuation
             return _bindLet( e, extended, (Cons)bindings.getCdr(), c );
         };
 
-        return _eval( e, init, evalResult );
+        return _x_eval( e, init, evalResult );
     }
 
-    public static Thunk _let(
+    public static Thunk _x_let(
             Environment e,
             Cons bindings,
             Cons body,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         Cont<Environment> begin =
-                ext -> _begin(
+                ext -> _x_begin(
                         ext,
                         body,
                         c );
 
-        return _bindLet(
+        return () -> _bindLet(
                 e,
                 e.extend(),
                 bindings,
                 begin );
     }
 
-    public static Thunk _letStar(
+    public static Thunk _x_letStar(
             Environment e,
             Cons bindings,
             Cons body,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         Cont<Environment> begin =
-                ext -> _begin(
+                ext -> _x_begin(
                         ext,
                         body,
                         c );
 
         var extendedEnv = e.extend();
 
-        return _bindLet(
+        return () -> _bindLet(
                 extendedEnv,
                 extendedEnv,
                 bindings,
@@ -324,7 +307,7 @@ public class Continuation
      * @return
      * @throws RuntimeX
      */
-    public static Thunk _letRec(
+    public static Thunk _x_letRec(
             Environment e,
             Cons bindings,
             Cons body,
@@ -333,7 +316,7 @@ public class Continuation
                     throws RuntimeX
     {
         Cont<Environment> begin =
-                env -> _begin(
+                env -> _x_begin(
                         env,
                         body,
                         c );
@@ -360,17 +343,17 @@ public class Continuation
      * @param c The continuation receiving the result.
      * @return The thunk.
      */
-    public static Thunk _eval(
+    public static Thunk _x_eval(
             Environment e,
             FirstClassObject o,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        return c.accept(
+        return () -> c.accept(
                     FirstClassObject.evaluate( o, e ) );
     }
 
-    public static Thunk _if(
+    public static Thunk _x_if(
             Environment e,
             FirstClassObject condition,
             FirstClassObject trueBranch,
@@ -378,12 +361,12 @@ public class Continuation
             Cont<FirstClassObject> c)
                     throws RuntimeX
     {
-        Cont<FirstClassObject> next = s -> _eval(
+        Cont<FirstClassObject> next = s -> _x_eval(
                 e,
                 SchemeBoolean.isTrue( s ) ? trueBranch : falseBranch,
                 c );
 
-        return _eval( e, condition, next );
+        return () -> _x_eval( e, condition, next );
     }
 
     /**
@@ -396,19 +379,19 @@ public class Continuation
      * @param c
      * @return
      */
-    public static Thunk _if(
+    public static Thunk _x_if(
             Environment e,
             FirstClassObject condition,
             FirstClassObject trueBranch,
             Cont<FirstClassObject> c)
                     throws RuntimeX
     {
-        Cont<FirstClassObject> next = s -> _eval(
+        Cont<FirstClassObject> next = s -> _x_eval(
                 e,
                 SchemeBoolean.isTrue( s ) ? trueBranch : SchemeBoolean.F,
                 c );
 
-        return _eval( e, condition, next );
+        return () -> _x_eval( e, condition, next );
     }
 
     /**
@@ -436,7 +419,7 @@ public class Continuation
         Cont<FirstClassObject> next =
                 (fco) -> _or( e, (Cons)expressions.getCdr(), fco, c);
 
-        return () -> Continuation._eval(
+        return Continuation._x_eval(
                 e,
                 expressions.getCar(),
                 next );
@@ -452,58 +435,50 @@ public class Continuation
      * @return A thunk.
      * @throws RuntimeX In case of an error.
      */
-    public static Thunk _or(
+    public static Thunk _x_or(
             Environment e,
             Cons expressions,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        return _or(
+        return () -> _or(
                 e,
                 expressions,
                 SchemeBoolean.F,
                 c );
     }
 
-    public static Thunk _quote(
+    public static Thunk _x_quote(
             Environment e,
             FirstClassObject quote,
             Cont<FirstClassObject> c) throws RuntimeX
     {
-        return c.accept( quote );
+        return () -> c.accept( quote );
     }
 
-    public static Thunk _resolve(
+    public static Thunk _x_resolve(
             Environment e,
             Symbol o,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        return c.accept( e.get( o ) );
+        return () -> c.accept( e.get( o ) );
     }
 
-    private static Thunk listEval(
+    private static Thunk _eval(
             Environment e,
             int i,
             FirstClassObject[] l,
-            Cont<FirstClassObject[]> c )
+            Cont<FirstClassObject[]> c ) throws RuntimeX
     {
         if ( i == l.length )
-            return () -> c.accept( l );
+            return c.accept( l );
 
         return () -> {
             if ( l[i]  != Cons.NIL )
                 l[i] = FirstClassObject.evaluate( l[i], e );
-            return listEval( e, i+1, l, c );
+            return _eval( e, i+1, l, c );
         };
-    }
-
-    public static Thunk listEval(
-            Environment e,
-            FirstClassObject[] l,
-            Cont<FirstClassObject[]> c )
-    {
-        return () -> listEval( e, 0, l, c );
     }
 
     /**
@@ -515,12 +490,12 @@ public class Continuation
      * the evaluated elements.
      * @return The thunk.
      */
-    public static Thunk listEval( Environment e, Cons l, Cont<Cons> c )
+    public static Thunk _x_eval( Environment e, Cons l, Cont<Cons> c )
     {
         Cont<FirstClassObject[]> next =
                 s -> c.accept( Cons.create( s ) );
 
-        return () -> listEval(
+        return () -> _eval(
                 e,
                 0,
                 Cons.asArray( l ),

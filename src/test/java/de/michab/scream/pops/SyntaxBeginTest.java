@@ -51,7 +51,7 @@ public class SyntaxBeginTest extends ScreamBaseTest
                 new Holder<>( null );
 
         Continuation.trampoline(
-                Continuation._begin(
+                Continuation._x_begin(
                         env,
                         cons,
                         Continuation.endCall( s -> r.set( s ) ) ),

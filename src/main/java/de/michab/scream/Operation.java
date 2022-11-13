@@ -280,7 +280,7 @@ public class Operation
                 ex,
                 _formalArguments,
                 args,
-                (s)->Continuation._begin( s, _body, c ) );
+                (s)->Continuation._x_begin( s, _body, c ) );
     }
 
     /**
@@ -591,7 +591,7 @@ public class Operation
                 ex,
                 _formalArguments,
                 args,
-                (s)->Continuation._begin( s, _body, c ) );
+                (s)->Continuation._x_begin( s, _body, c ) );
     }
 
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX

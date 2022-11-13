@@ -474,7 +474,7 @@ public abstract class FirstClassObject
     }
 
     private static Lambda _NIL = new Lambda(
-            (e,c) -> Continuation._quote(
+            (e,c) -> Continuation._x_quote(
                     e,
                     Cons.NIL,
                     c ),
@@ -492,7 +492,7 @@ public abstract class FirstClassObject
         throws RuntimeX
     {
         return new Lambda(
-                (e,c) -> Continuation._quote(
+                (e,c) -> Continuation._x_quote(
                         e,
                         this,
                         c ),

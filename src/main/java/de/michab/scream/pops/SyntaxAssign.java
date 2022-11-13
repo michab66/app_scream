@@ -30,7 +30,7 @@ public final class SyntaxAssign extends Operation
                 args.getCar() );
         var value = args.listRef( 1 );
 
-        L l = (e,c) -> Continuation._assign(
+        L l = (e,c) -> Continuation._x_assign(
                 e,
                 symbol,
                 value,
