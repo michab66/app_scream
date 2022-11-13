@@ -227,8 +227,7 @@ public abstract class FirstClassObject
     }
 
     /**
-     * The implementation of the scheme equal? procedure.  Handles a NIL left
-     * object.
+     * The implementation of the scheme equal? procedure.
      *
      * @param left The left operand for the comparison.
      * @param right The right operand of the comparison.
