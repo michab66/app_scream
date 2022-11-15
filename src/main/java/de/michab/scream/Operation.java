@@ -453,9 +453,12 @@ public class Operation
     protected void checkArgumentCount( Cons received )
                     throws RuntimeX
     {
-        var formalCount = _formalArguments.length();
-        var receivedCount = received.length();
-        var hasRest = _rest != Cons.NIL;
+        var formalCount =
+                Cons.length( _formalArguments );
+        var receivedCount =
+                Cons.length( received );
+        var hasRest =
+                _rest != Cons.NIL;
 
         if ( formalCount == receivedCount )
             return;
