@@ -115,6 +115,33 @@ public class ScutTest extends ScreamBaseTest
         assertEquals( 2L, i.asLong() );
     }
 
+    @Test
+    public void asIntegerNotNil() throws Exception
+    {
+        FirstClassObject fco = i313;
+
+        SchemeInteger i = Scut.asNotNil( SchemeInteger.class, fco );
+        assertEquals( 313L, i.asLong() );
+    }
+
+    @Test
+    public void asIntegerNotNilNil() throws Exception
+    {
+        try
+        {
+            FirstClassObject fco = Cons.NIL;
+
+            SchemeInteger i = Scut.asNotNil( SchemeInteger.class, fco );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.TYPE_ERROR, rx.getCode() );
+            assertEquals(
+                    FirstClassObject.toString( Cons.NIL ),
+                    rx.getArgument(1) );
+        }
+    }
 
     @Test
     public void unique() throws Exception

@@ -75,6 +75,33 @@ public class Continuation
     }
 
     /**
+     *
+     * @param e Environment used for evaluating the test.
+     * @param test The test.  If the test is true, then the result
+     * of the test evaluation is passed to the true branch.  Otherwise
+     * the false branch receives false.
+     * @param trueBranch Taken in case if a true test.
+     * @param falseBranch Taken in case of a false test.
+     * @return
+     * @throws RuntimeX
+     */
+    private static Thunk _if(
+            Environment e,
+            FirstClassObject test,
+            Cont<FirstClassObject> trueBranch,
+            Cont<FirstClassObject> falseBranch ) throws RuntimeX
+    {
+        Cont<FirstClassObject> branch = testResult ->
+        {
+            return SchemeBoolean.isTrue( testResult ) ?
+                    trueBranch.accept( testResult ) :
+                        falseBranch.accept( testResult );
+        };
+
+        return _eval( e, test, branch );
+    }
+
+    /**
      * Shortcut and.
      *
      * @param e The environment for evaluation.
@@ -467,6 +494,14 @@ public class Continuation
 
     private static Thunk _eval(
             Environment e,
+            FirstClassObject fco,
+            Cont<FirstClassObject> c ) throws RuntimeX
+    {
+        return fco.evaluate( e, c );
+    }
+
+    private static Thunk _eval(
+            Environment e,
             int i,
             FirstClassObject[] l,
             Cont<FirstClassObject[]> c ) throws RuntimeX
@@ -500,6 +535,74 @@ public class Continuation
                 0,
                 Cons.asArray( l ),
                 next );
+    }
+
+    private static Thunk _iteration(
+            Environment e,
+            Cons test,
+            Cons steps,
+            Cons commands,
+            Cont<FirstClassObject> c
+            ) throws RuntimeX
+    {
+        Cont<FirstClassObject> finish =
+                trueValue -> _begin(
+                        e,
+                        (Cons)test.getCdr(),
+                        trueValue,
+                        c );
+
+        Cont<FirstClassObject> restart =
+                ignore -> _iteration(
+                        e,
+                        test,
+                        steps,
+                        commands,
+                        c );
+
+        Cont<Environment> loopPerform =
+                env -> _begin(
+                        env,
+                        commands,
+                        Cons.NIL,
+                        restart );
+
+        Cont<FirstClassObject> loopInit =
+                trueValue -> _bindLet(
+                        e,
+                        e,
+                        steps,
+                        loopPerform );
+
+        return _if(
+                e,
+                test.getCar(),
+                finish,
+                loopInit );
+    }
+
+    public static Thunk _x_do(
+            Environment e,
+            Cons inits,
+            Cons steps,
+            Cons test,
+            Cons commands,
+            Cont<FirstClassObject> c )
+    {
+        Cont<Environment> iteration =
+                ext -> _iteration(
+                        ext,
+                        test,
+                        steps,
+                        commands,
+                        c );
+
+        return () -> _eval( e, test.getCar(), c );
+//        return () -> _bindLet(
+//                e,
+//                e.extend(),
+//                inits,
+//                iteration );
     }
 
 }

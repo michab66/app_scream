@@ -17,7 +17,7 @@ import de.michab.scream.ScreamEvaluator;
 public class MathTest extends ScreamBaseTest
 {
     @Test
-    public void mathEquals() throws Exception
+    public void mathEquals_t() throws Exception
     {
         ScreamEvaluator se = scriptEngine();
 
@@ -26,5 +26,16 @@ public class MathTest extends ScreamBaseTest
                 (= 313 313)
                 """ );
         assertEquals( SchemeBoolean.T, result );
+    }
+    @Test
+    public void mathEquals_f() throws Exception
+    {
+        ScreamEvaluator se = scriptEngine();
+
+        var result = se.evalFco(
+                """
+                (= 121 313)
+                """ );
+        assertEquals( SchemeBoolean.F, result );
     }
 }

@@ -17,7 +17,7 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
      * p18
      */
     @Test
-    public void let_1() throws Exception
+    public void do_1() throws Exception
     {
         var result = scriptEngine().evalFco(
             """
@@ -35,7 +35,7 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
      * p18
      */
     @Test
-    public void let_1x() throws Exception
+    public void do_1x() throws Exception
     {
         var result = scriptEngine().evalFco(
             """
@@ -53,7 +53,7 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
      * p18
      */
     @Test
-    public void let_2() throws Exception
+    public void do_2() throws Exception
     {
         var result = scriptEngine().evalFco(
             """
