@@ -6,10 +6,6 @@ import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.ScreamException;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
-import urschleim.Holder;
 
 /**
  * Switch off evaluation for the single passed argument.
@@ -42,43 +38,16 @@ public class SyntaxQuote extends Operation
     public FirstClassObject compile( Environment parent, Cons args )
             throws RuntimeX
     {
-        checkArgumentCount( 1, args );
-
-        var quoted = args.getCar();
-
-        Lambda.L result = (e,c) -> c.accept( quoted );
-
-        return new Lambda( result, getName().toString() );
+        return _compile( parent, args );
     }
-
     @Override
-    public FirstClassObject activate( Environment e, Cons argumentList )
-            throws RuntimeX
+    public FirstClassObject activate( Environment parent,
+            Cons arguments )
+                    throws RuntimeX
     {
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( null );
-        Holder<ScreamException> error =
-                new Holder<>( null );
+        var λ = _compile( parent, arguments );
 
-        Continuation.trampoline( _activate(
-                e,
-                argumentList,
-                Continuation.endCall( r::set ) ),
-                error::set );
-
-        if ( error.get() != null )
-            throw (RuntimeX)error.get();
-
-        return r.get();
-    }
-
-    @Override
-    public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX
-    {
-        checkArgumentCount( 1, args );
-        // setConstant?
-        return c.accept( args.getCar() );
+        return FirstClassObject.evaluate( λ, parent );
     }
 
     /**
