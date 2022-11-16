@@ -72,7 +72,7 @@ public class Operation
      */
     protected Operation( Symbol name )
     {
-        commonInit( name );
+        _name = name;
     }
     protected Operation( String name )
     {
@@ -93,15 +93,10 @@ public class Operation
             Environment compileEnv )
                     throws RuntimeX
     {
-        // Set the body and the argument list to constant.  This is not absolutely
-        // necessary if everything is done right.  But of we do something wrong
-        // this results in early detection.
-//        setConstant( formalArguments, true );
-//        setConstant( body, true );
         // Replace the argument list by a clone that gets modified later-on.
         formalArguments = copy( formalArguments );
 
-        commonInit( DEFAULT_NAME );
+       _name = DEFAULT_NAME;
 
         // Not very much to check for.
         FirstClassObject[] fcoa = body.asArray();
@@ -181,15 +176,6 @@ public class Operation
             else
                 throw new RuntimeX( Code.INVALID_FORMALS, cdr );
         }
-    }
-
-    /**
-     * Common initialization code.  Used from the constructors.
-     */
-    private void commonInit( Symbol name )
-    {
-        _name = name;
-        setConstant( false );
     }
 
     /**
