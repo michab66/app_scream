@@ -80,18 +80,6 @@ public class Operation
     }
 
     /**
-     * Default constructor.  Creates an operation with a default name. Note that
-     * operations should always explicitly receive a name to support error
-     * reporting.  Use the constructor for creating named operations instead.
-     *
-     * @see Operation#DEFAULT_NAME
-     */
-    protected Operation()
-    {
-        this( DEFAULT_NAME );
-    }
-
-    /**
      * Used for scheme defined @{code Operation} objects.
      *
      * @param formalArguments The operation's formal arguments as specified in
