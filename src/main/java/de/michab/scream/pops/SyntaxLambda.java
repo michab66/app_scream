@@ -27,19 +27,29 @@ public final class SyntaxLambda extends Operation
 
         Lambda.L result = (e,c) -> {
             return  c.accept(
-                    new Procedure( e, formals, body ) );
+                    new Procedure( env, formals, body ) );
         };
 
-        return new Lambda( result, getName() );
+        return new Lambda( result, getName() ).setInfo( args );
     }
 
+    /**
+     *
+     */
     @Override
-    public FirstClassObject activate( Environment parent, FirstClassObject[] args )
+    public FirstClassObject compile( Environment parent, Cons args )
             throws RuntimeX
     {
-        checkMinimumArgumentCount( 2, args );
+        return _compile( parent, args );
+    }
+    @Override
+    public FirstClassObject activate( Environment parent,
+            Cons arguments )
+                    throws RuntimeX
+    {
+        var λ = _compile( parent, arguments );
 
-        return new Procedure( parent, args[0], Cons.create( args, 1 ) );
+        return FirstClassObject.evaluate( λ, parent );
     }
 
     /**

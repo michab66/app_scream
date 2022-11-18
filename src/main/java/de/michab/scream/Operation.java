@@ -556,7 +556,7 @@ public class Operation
         return null;
     }
 
-    private Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+    protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         final var ex = e.extend( getName() );

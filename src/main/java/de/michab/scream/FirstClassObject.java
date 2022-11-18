@@ -499,23 +499,19 @@ public abstract class FirstClassObject
     }
 
     private Lambda _compiled;
-//
-//    @SuppressWarnings("unchecked")
-//    public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
-//    {
-//        if ( v == Cons.NIL )
-//            return (T)v;
-//        return v.as( c );
-//    }
-//
-//    public <T extends FirstClassObject> T as( Class<T> c ) throws RuntimeX
-//    {
-//        try
-//        {
-//            return c.cast(this);
-//        }
-//        catch (ClassCastException e) {
-//            throw Scut.mTypeError( c, getClass() ).addCause( e );
-//        }
-//    }
+
+    private static int _s_id = 0;
+
+    /**
+     * The fco's unique id. Used in debugging.
+     */
+    private final int _id = ++_s_id;
+
+    /**
+     * @return Get the unique id of this fco for debugging.
+     */
+    protected final int id()
+    {
+        return _id;
+    }
 }

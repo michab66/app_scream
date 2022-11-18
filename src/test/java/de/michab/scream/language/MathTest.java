@@ -8,13 +8,11 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
@@ -23,7 +21,6 @@ import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException;
-import de.michab.scream.Symbol;
 import de.michab.scream.pops.Continuation;
 import urschleim.Holder;
 
@@ -56,7 +53,6 @@ public class MathTest extends ScreamBaseTest
     }
 
     @Test
-    @Disabled
     public void _equalsCompile() throws Exception
     {
         String code = "(= 121 121)";
@@ -89,15 +85,9 @@ public class MathTest extends ScreamBaseTest
             fail();
         }
 
-        assertNotNull(
-                r.get() );
-        assertInstanceOf(
-                Symbol.class,
-                r.get() );
-        assertEquals(
-                Symbol.createObject( "not-defined-yet" ),
+        assertEqualq(
+                SchemeBoolean.T,
                 r.get() );
     }
-
 
 }
