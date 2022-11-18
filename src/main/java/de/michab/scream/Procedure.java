@@ -6,6 +6,7 @@
 
 package de.michab.scream;
 
+import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Continuation;
 import de.michab.scream.pops.Continuation.Cont;
@@ -67,6 +68,18 @@ public class Procedure
     {
         super( args, body, e );
         _closure = e;
+    }
+
+    @Override
+    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    {
+        checkArgumentCount( args );
+
+        L l = (e,c) -> _execute( _closure, args, c );
+
+        return new Lambda(
+                l,
+                this.toString() );
     }
 
     /**
