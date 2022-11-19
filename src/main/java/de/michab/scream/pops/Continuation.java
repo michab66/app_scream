@@ -597,12 +597,11 @@ public class Continuation
                         commands,
                         c );
 
-        return () -> _eval( e, test.getCar(), c );
-//        return () -> _bindLet(
-//                e,
-//                e.extend(),
-//                inits,
-//                iteration );
+        return () -> _bindLet(
+                e,
+                e.extend(),
+                inits,
+                iteration );
     }
 
 }

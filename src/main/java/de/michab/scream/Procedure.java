@@ -3,7 +3,6 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-
 package de.michab.scream;
 
 import de.michab.scream.Lambda.L;
@@ -13,7 +12,7 @@ import de.michab.scream.pops.Continuation.Cont;
 import de.michab.scream.pops.Continuation.Thunk;
 
 /**
- * Represents a scheme procedure or closure.
+ * Represents a scheme procedure.
  */
 public class Procedure
     extends Operation
@@ -61,7 +60,8 @@ public class Procedure
      * @param body The body of the new procedure.
      * @throws RuntimeX In case an error occurred.
      */
-    public Procedure( Environment e,
+    public Procedure(
+            Environment e,
             FirstClassObject args,
             Cons body  )
                     throws RuntimeX
@@ -71,15 +71,63 @@ public class Procedure
     }
 
     @Override
+    protected Thunk _execute( Environment
+            e,
+            Cons args,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        checkArgumentCount( args );
+
+        final var ex = e.extend( getName() );
+
+        if ( _rest != Cons.NIL )
+            ex.define( (Symbol)_rest, Cons.NIL );
+
+        return () -> _bind(
+                ex,
+                _formalArguments,
+                args,
+                s -> Continuation._x_begin( s, _body, c ) );
+    }
+
+    /**
+     * Evaluates the arguments in the received environment and passes on to
+     * {@link #_execute(Environment, Cons, Cont)} for execution of the
+     * _body in the procedure's closure.
+     *
+     * @param e
+     * @param args
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
+    private Thunk _prepareExecute( Environment e, Cons args, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        // Execute in our _closure.
+        Cont<Cons> cc = evaluated -> _execute(
+                _closure,
+                evaluated,
+                c );
+
+        // Evaluate the arguments in the environment that we receive.
+        return () -> Continuation._x_eval(
+                e,
+                args,
+                cc );
+    }
+
+    @Override
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
         checkArgumentCount( args );
 
-        L l = (e,c) -> _execute( _closure, args, c );
+        L l = (e,c) -> _prepareExecute( e, args, c );
 
         return new Lambda(
                 l,
-                this.toString() );
+                this.toString() ).setInfo( args );
     }
 
     /**
