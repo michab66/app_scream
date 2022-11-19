@@ -49,7 +49,7 @@ public class SyntaxBegin extends Operation
     }
 
     @Override
-    public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
+    public Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         return Continuation._x_begin( e, args, c );
