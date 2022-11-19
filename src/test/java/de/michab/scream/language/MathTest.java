@@ -53,11 +53,67 @@ public class MathTest extends ScreamBaseTest
     }
 
     @Test
+    public void mathEquals_t2() throws Exception
+    {
+        ScreamEvaluator se = scriptEngine();
+
+        se.evalFco( "(define i 121)" );
+        assertEqualq( i(121), se.evalFco( "i" ) );
+
+        var result = se.evalFco(
+                """
+                (= i 121)
+                """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    @Test
     public void _equalsCompile() throws Exception
     {
         String code = "(= 121 121)";
 
         ScreamEvaluator se = scriptEngine();
+
+        var result = se.evalFco(
+                code );
+        assertEquals( SchemeBoolean.T, result );
+
+        FirstClassObject opCall = parse(
+                code );
+        assertInstanceOf( Cons.class, opCall );
+
+        var env = se.getInteraction();
+
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                opCall.evaluate( env,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+        {
+            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
+            fail();
+        }
+
+        assertEqualq(
+                SchemeBoolean.T,
+                r.get() );
+    }
+
+    @Test
+    public void _equalsCompile2() throws Exception
+    {
+        String code = "(= i 121)";
+
+        ScreamEvaluator se = scriptEngine();
+        se.evalFco( "(define i 121)" );
+        var checkIfSet = se.evalFco( "i" );
+        assertEqualq( i(121), checkIfSet );
 
         var result = se.evalFco(
                 code );
