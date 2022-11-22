@@ -537,6 +537,17 @@ public class Continuation
                 next );
     }
 
+    /**
+     * The iteration step of a do syntax.
+     *
+     * @param e
+     * @param test
+     * @param steps
+     * @param commands
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
     private static Thunk _iteration(
             Environment e,
             Cons test,
@@ -552,7 +563,7 @@ public class Continuation
                         trueValue,
                         c );
 
-        Cont<FirstClassObject> restart =
+        Cont<Environment> restart =
                 ignore -> _iteration(
                         e,
                         test,
@@ -560,25 +571,25 @@ public class Continuation
                         commands,
                         c );
 
-        Cont<Environment> loopPerform =
-                env -> _begin(
-                        env,
-                        commands,
-                        Cons.NIL,
-                        restart );
-
         Cont<FirstClassObject> loopInit =
-                trueValue -> _bindLet(
+                unused -> _bindLet(
                         e,
                         e,
                         steps,
-                        loopPerform );
+                        restart );
 
+        // Process the command list.
+        Cont<FirstClassObject> loopPerform =
+                falseValue -> _begin(
+                        e,
+                        commands,
+                        Cons.NIL,
+                        loopInit );
         return _if(
                 e,
                 test.getCar(),
                 finish,
-                loopInit );
+                loopPerform );
     }
 
     public static Thunk _x_do(

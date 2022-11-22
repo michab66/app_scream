@@ -3,10 +3,11 @@ package de.michab.scream.pops;
 import de.michab.scream.Cons;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
+import de.michab.scream.Lambda;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
+import de.michab.scream.util.Scut;
 
 /**
  * <code>
@@ -52,78 +53,92 @@ public class SyntaxDo extends Syntax
     }
 
     /**
-     * Checks if the passed argument is a <code>Cons</code>, is not NIL and is
-     * a proper list.  Transforms the list into an array and returns that.
+     *
+     * @param variables {@code ((<var1> <init1> opt<step1>) ... )}
+     * @return Two lists: The car-list contains the init-expressions.  The cdr-list
+     * contains the step-expressions.
      * @throws RuntimeX
      */
-    private FirstClassObject[] isNonNilAndProper( FirstClassObject fco ) throws RuntimeX
+    private Cons validateVariables( Cons variables ) throws RuntimeX
     {
-        if ( Cons.NIL == fco )
-            throw new ClassCastException();
-        if ( ! ((Cons)fco).isProperList() )
-            throw new ClassCastException();
-        return ((Cons)fco).asArray();
+
+        Cons inits = Cons.NIL;
+        Cons steps = Cons.NIL;
+
+        while ( variables != Cons.NIL )
+        {
+            var variableDef =
+                    Scut.as( Cons.class, variables.getCar() );
+            checkArgumentCount( 2, 3, variableDef );
+
+            Symbol variable =
+                    Scut.as( Symbol.class, variableDef.listRef( 0 ) );
+
+            // Add a new init pair.
+            inits = new Cons(
+                    Cons.create(
+                            variable,
+                            variableDef.listRef( 1 )), inits );
+
+            if ( variableDef.length() == 3 )
+            {
+                // Add a new step pair.
+                steps = new Cons(
+                        Cons.create(
+                                variable,
+                                variableDef.listRef( 2 )), steps );
+            }
+
+            variables = (Cons)variables.getCdr();
+        }
+
+        return new Cons( inits, steps );
     }
 
     @Override
-    public FirstClassObject compile( Environment parent, FirstClassObject[] args )
+    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    {
+        checkArgumentCount( 2, Integer.MAX_VALUE, args );
+
+        var variables =
+                Scut.as( Cons.class, args.listRef( 0 ) );
+        var test =
+                Scut.as( Cons.class, args.listRef( 1 ) );
+        // May be nil.
+        var commands =
+                args.listTail( 2 );
+
+        var setup =
+                validateVariables( variables );
+
+        checkArgumentCount( 1, Integer.MAX_VALUE, test );
+
+
+        return new Lambda(
+                (e,c) -> Continuation._x_do(
+                        e,
+                        (Cons)setup.getCar(),
+                        (Cons)setup.getCdr(),
+                        test,
+                        commands,
+                        c ),
+                this.getName() ).setInfo( args );
+    }
+
+    @Override
+    public FirstClassObject compile( Environment parent, Cons args )
             throws RuntimeX
     {
-        checkMinimumArgumentCount( 2, args );
+        return _compile( parent, args );
+    }
+    @Override
+    public FirstClassObject activate( Environment parent,
+            Cons arguments )
+                    throws RuntimeX
+    {
+        var λ = _compile( parent, arguments );
 
-        try
-        {
-            FirstClassObject[] bindings = isNonNilAndProper( args[0] );
-
-            Symbol[] vars = new Symbol[ bindings.length ];
-            FirstClassObject[] inits = new FirstClassObject[ vars.length ];
-            FirstClassObject[] steps = new FirstClassObject[ vars.length ];
-
-            for ( int i = 0 ; i < vars.length ; i++ )
-            {
-                FirstClassObject[] binding = isNonNilAndProper( bindings[i] );
-
-                if ( Cons.NIL == binding[0] )
-                    throw new ClassCastException();
-
-                switch ( binding.length )
-                {
-                case 2:
-                    vars[i] = (Symbol)binding[0];
-                    inits[i] = compile( binding[1], parent );
-                    steps[i] = vars[i];
-                    break;
-                case 3:
-                    vars[i] = (Symbol)binding[0];
-                    inits[i] = compile( binding[1], parent );
-                    steps[i] = compile( binding[2], parent );
-                    break;
-
-                default:
-                    throw new ClassCastException();
-                }
-            }
-
-            FirstClassObject[] testSequence = isNonNilAndProper( args[1] );
-            for ( int i = 0 ; i < testSequence.length ; i++ )
-                testSequence[i] = compile( testSequence[i], parent );
-
-            FirstClassObject test = testSequence[0];
-
-            FirstClassObject[] exps = new FirstClassObject[ testSequence.length -1 ];
-            System.arraycopy( testSequence, 1, exps, 0, exps.length );
-
-            FirstClassObject[] cmds = new FirstClassObject[ args.length -2 ];
-            System.arraycopy( args, 2, cmds, 0, cmds.length );
-            for ( int i = 0 ; i < cmds.length ; i++ )
-                cmds[i] = compile( cmds[i], parent );
-
-            return new Loop( vars, inits, steps, test, exps, cmds );
-        }
-        catch ( ClassCastException e )
-        {
-            throw new RuntimeX( Code.BAD_BINDING );
-        }
+        return FirstClassObject.evaluate( λ, parent );
     }
 
     /**

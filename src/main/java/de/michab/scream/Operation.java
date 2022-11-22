@@ -240,23 +240,23 @@ public class Operation
         return () -> _bind( e, (Cons)argNames.getCdr(), (Cons)argValues.getCdr(), c );
     }
 
-    public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX
-    {
-        checkArgumentCount( args );
-
-        final var ex = e.extend( getName() );
-
-        if ( _rest != Cons.NIL )
-            ex.define( (Symbol)_rest, Cons.NIL );
-
-        return () -> _bind(
-                ex,
-                _formalArguments,
-                args,
-                (s)->Continuation._x_begin( s, _body, c ) );
-    }
-
+//    public Thunk _activate_( Environment e, Cons args, Cont<FirstClassObject> c )
+//            throws RuntimeX
+//    {
+//        checkArgumentCount( args );
+//
+//        final var ex = e.extend( getName() );
+//
+//        if ( _rest != Cons.NIL )
+//            ex.define( (Symbol)_rest, Cons.NIL );
+//
+//        return () -> _bind(
+//                ex,
+//                _formalArguments,
+//                args,
+//                (s)->Continuation._x_begin( s, _body, c ) );
+//    }
+//
     /**
      * Execute the operation in a given environment and based on the passed
      * parameters.  This default implementation executes an

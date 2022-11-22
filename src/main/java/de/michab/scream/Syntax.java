@@ -6,9 +6,6 @@
 
 package de.michab.scream;
 
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
-
 /**
  * Followed the scheme spec in naming this class.  An alternate name would be
  * 'macro', also common is 'special form'.
@@ -46,11 +43,6 @@ public class Syntax
      * @see FirstClassObject#typename()
      */
     public static final String TYPE_NAME = "syntax";
-
-    /**
-     *
-     */
-    private static final Symbol ELSE = Symbol.createObject( "else" );
 
     /**
      * Default constructor.  Used for Java-defined specializations.
@@ -120,20 +112,20 @@ public class Syntax
         return super.activate( parent, arguments );
     }
 
-    @Override
-    public Thunk _activate( Environment e, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX
-    {
-        if ( _body == Cons.NIL )
-        {
-            var toEval = compile( e, args );
-
-            return toEval.evaluate( e, c );
-        }
-
-        return super._activate( e, args, c );
-    }
-
+//    @Override
+//    public Thunk _activate_( Environment e, Cons args, Cont<FirstClassObject> c )
+//            throws RuntimeX
+//    {
+//        if ( _body == Cons.NIL )
+//        {
+//            var toEval = compile( e, args );
+//
+//            return toEval.evaluate( e, c );
+//        }
+//
+//        return super._activate_( e, args, c );
+//    }
+//
     /**
      * @return A string representation for this syntax.
      * @see FirstClassObject#toString
