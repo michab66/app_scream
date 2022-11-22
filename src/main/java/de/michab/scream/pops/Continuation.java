@@ -537,6 +537,17 @@ public class Continuation
                 next );
     }
 
+    /**
+     * The iteration step of a do syntax.
+     *
+     * @param e
+     * @param test
+     * @param steps
+     * @param commands
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
     private static Thunk _iteration(
             Environment e,
             Cons test,
@@ -559,7 +570,6 @@ public class Continuation
                         steps,
                         commands,
                         c );
-
 
         Cont<FirstClassObject> loopInit =
                 unused -> _bindLet(
