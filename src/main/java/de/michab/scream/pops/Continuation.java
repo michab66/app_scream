@@ -379,16 +379,6 @@ public class Continuation
         return () -> c.accept(
                     FirstClassObject.evaluate( o, e ) );
     }
-    public static Thunk _x_eval2(
-            Environment e,
-            FirstClassObject o,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-//        return o.evaluate( e, c );
-        return () -> c.accept(
-                    FirstClassObject.evaluate( o, e ) );
-    }
 
     public static Thunk _x_if(
             Environment e,
@@ -535,7 +525,7 @@ public class Continuation
      * the evaluated elements.
      * @return The thunk.
      */
-    public static Thunk _x_eval( Environment e, Cons l, Cont<Cons> c )
+    public static Thunk _x_evalCons( Environment e, Cons l, Cont<Cons> c )
     {
         Cont<FirstClassObject[]> next =
                 s -> c.accept( Cons.create( s ) );

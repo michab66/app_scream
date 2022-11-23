@@ -112,7 +112,7 @@ public class Procedure
                 c );
 
         // Evaluate the arguments in the environment that we receive.
-        return () -> Continuation._x_eval(
+        return () -> Continuation._x_evalCons(
                 e,
                 args,
                 cc );

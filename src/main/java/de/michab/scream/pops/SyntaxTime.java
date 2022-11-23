@@ -20,9 +20,9 @@ import de.michab.scream.pops.Continuation.Thunk;
 
 /**
  * (%time expression)
- *
- * Returns a pair where the car part holds the time that {@code exp}
- * needed to execute and the cdr holds the result of {@code exp}.
+ * <p>
+ * Returns a pair where the car part holds the time that {@code expression}
+ * needed to execute and the cdr holds the result of {@code expression}.
  */
 public class SyntaxTime extends Syntax
 {
@@ -62,7 +62,7 @@ public class SyntaxTime extends Syntax
         L l = (e,c) -> {
             TimeProbe tp =
                     new TimeProbe( getName().toString() ).start();
-            return Continuation._x_eval2(
+            return Continuation._x_eval(
                     e,
                     expression,
                     fco -> finish( tp, fco, c ) );
