@@ -121,45 +121,4 @@ public class Syntax
     {
         return "<Syntax " + getName() + ">";
     }
-
-    /**
-     * Interprets a tail sequence.  A tail sequence is represented by a list of
-     * expressions whose last one will be evaluated as trailing context.
-     *
-     * @param seq The list of expressions.
-     * @param env The environment used for expression evaluation.
-     * @return The result of the last expression in the list.
-     * @throws RuntimeX If an error occurs while evaluating the expressions.
-     */
-    protected static FirstClassObject interpretTailSequence(
-            FirstClassObject[] seq,
-            Environment env )
-                    throws
-                    RuntimeX
-    {
-        return interpretTailSequence( seq, 0, env );
-    }
-
-    /**
-     * Interprets a tail sequence.  A tail sequence is represented by a list of
-     * expressions whose last one will be evaluated as trailing context.
-     *
-     * @param seq The list of expressions.
-     * @param startIdx The index of the first expression to evaluate.
-     * @param env The environment used for expression evaluation.
-     * @return The result of the last expression in the list.
-     * @throws RuntimeX If an error occurs while evaluating the expressions.
-     */
-    protected static FirstClassObject interpretTailSequence(
-            FirstClassObject[] seq,
-            int startIdx,
-            Environment env )
-                    throws
-                    RuntimeX
-    {
-        for ( int i = startIdx ; i < seq.length -1 ; i++ )
-            evaluate( seq[i], env );
-
-        return evaluateTrailingContext( seq[ seq.length-1 ], env );
-    }
 }

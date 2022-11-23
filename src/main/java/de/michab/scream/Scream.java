@@ -266,14 +266,11 @@ public class Scream implements ScriptEngineFactory
 
     static private FirstClassObject saveEval( FirstClassObject x, Environment e ) throws RuntimeX
     {
-        if ( x == Cons.NIL )
-            return Cons.NIL;
-
 //        x = x.compile( e );
 
         try
         {
-            return x.evaluate( e );
+            return FirstClassObject.evaluate( x, e );
         }
         catch ( Unwind u )
         {

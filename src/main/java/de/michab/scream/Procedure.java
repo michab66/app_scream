@@ -217,6 +217,7 @@ public class Procedure
      * @return The result of the procedure application.
      * @throws RuntimeX In case of an error.
      */
+    @Deprecated
     protected FirstClassObject apply( Environment parent,
             FirstClassObject[] evaluatedArgs )
                     throws RuntimeX
@@ -235,6 +236,7 @@ public class Procedure
      * @return The result of the procedure application.
      * @throws RuntimeX In case of an error.
      */
+    @Deprecated
     protected FirstClassObject apply( FirstClassObject[] evaluatedArgs )
             throws RuntimeX
     {

@@ -254,6 +254,7 @@ public class Operation
      * @return The result of the activation.
      * @throws RuntimeX In case the activation failed.
      */
+    @Deprecated
     protected FirstClassObject activate( Environment e,
             FirstClassObject[] argumentList )
                     throws RuntimeX

@@ -5,7 +5,6 @@
  */
 package de.michab.scream;
 
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Continuation;
 import de.michab.scream.pops.Continuation.Cont;
 import de.michab.scream.pops.Continuation.Thunk;
@@ -39,6 +38,7 @@ public abstract class FirstClassObject
      * procedures in constant stack space.
      */
     @SuppressWarnings("serial")
+    @Deprecated
     static class Unwind
     extends Error
     {
@@ -80,6 +80,7 @@ public abstract class FirstClassObject
      * @return The result of the evaluation.
      * @throws RuntimeX In case the evaluation failed.
      */
+    @Deprecated
     public static FirstClassObject evaluate( FirstClassObject fco, Environment env )
             throws RuntimeX
     {
@@ -150,16 +151,10 @@ public abstract class FirstClassObject
      * @return The result of the evaluation.
      * @throws RuntimeX In case the evaluation failed.
      */
+    @Deprecated
     protected FirstClassObject evaluate( Environment e )
             throws RuntimeX
     {
-        // The following code allows to interrupt an ongoing scheme computation.
-        // Note that the interrupted() static method call resets the interrupted
-        // flag of the current thread, so the thread will be able to do additional
-        // work after handling the error message.
-        if ( Thread.interrupted() )
-            throw new RuntimeX( Code.INTERRUPTED );
-
         return this;
     }
 
