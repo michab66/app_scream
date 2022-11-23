@@ -322,7 +322,7 @@ public abstract class FirstClassObject
      *
      * @return A copy of the object.
      */
-    public FirstClassObject copy()
+    protected FirstClassObject copy()
     {
         return this;
     }
