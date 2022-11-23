@@ -3,19 +3,20 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-
 package de.michab.scream;
 
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Continuation;
+import de.michab.scream.pops.Continuation.Cont;
+import de.michab.scream.pops.Continuation.Thunk;
 
 /**
  * The base class for all Scheme first-class objects.  A first class object is
  * an object that can be bound to a symbol.
- * <p>The static versions of the methods on this object provide additional
+ * <p>The static versions of the methods on this object offer additional
  * NIL handling over the non-static ones.
  * <p>Implementations of FirstClassObjects represent types in Scheme.  Each
- * implementation has to offer a string attribute named TYPE_NAME as a static
+ * implementation has to provide a string attribute named TYPE_NAME as a static
  * final member for full integration with type conversion messages.
  */
 public abstract class FirstClassObject
@@ -103,8 +104,27 @@ public abstract class FirstClassObject
     }
 
     /**
+     * Evaluates the passed scheme object and returns the result.  Handles a NIL
+     * object to evaluate.
+     *
+     * @param fco The FirstClassObject to evaluate.
+     * @param env The environment for the evaluation.
+     * @param c The target continuation.
+     * @return A thunk.
+     * @throws RuntimeX In case the evaluation failed.
+     */
+    public static Thunk evaluate( FirstClassObject fco, Environment env, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        if ( fco == Cons.NIL )
+            return c.accept( fco );
+
+        return fco.evaluate( env, c );
+    }
+
+    /**
      * Does the evaluation of a trailing context.  That means that the current
-     * stackframe will be removed before the evaluation starts.
+     * stack frame will be removed before the evaluation starts.
      *
      * @param fco The FirstClassObject to evaluate.
      * @param env The environment for the evaluation.
@@ -112,6 +132,7 @@ public abstract class FirstClassObject
      * @throws RuntimeX In case the evaluation failed.
      * @see #evaluate( FirstClassObject fco, Environment e )
      */
+    @Deprecated
     public static FirstClassObject evaluateTrailingContext(
             FirstClassObject fco,
             Environment env )
