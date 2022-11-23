@@ -5,15 +5,15 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
-import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Symbol;
+import de.michab.scream.Syntax;
 import de.michab.scream.util.Scut;
 
 /**
  * (set! <variable> <expression>) syntax; r7rs 14
  */
-public final class SyntaxAssign extends Operation
+public final class SyntaxAssign extends Syntax
 {
     private SyntaxAssign()
     {

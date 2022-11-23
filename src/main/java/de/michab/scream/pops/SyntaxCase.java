@@ -12,11 +12,11 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
-import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
+import de.michab.scream.Syntax;
 import de.michab.scream.pops.Continuation.Cont;
 import de.michab.scream.pops.Continuation.Thunk;
 import de.michab.scream.util.Scut;
@@ -24,7 +24,7 @@ import de.michab.scream.util.Scut;
 /**
  * (case <key> <clause1> <clause2> ...) syntax; r7rs 15
  */
-public class SyntaxCase extends Operation
+public class SyntaxCase extends Syntax
 {
     static Symbol ELSE = Symbol.createObject( "else" );
 

@@ -4,15 +4,15 @@ import de.michab.scream.Cons;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
-import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Syntax;
 
 /**
  * Switch off evaluation for the single passed argument.
  *
  * (quote <datum>) syntax; r5rs 8
  */
-public class SyntaxQuote extends Operation
+public class SyntaxQuote extends Syntax
 {
     private SyntaxQuote()
     {

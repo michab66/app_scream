@@ -5,15 +5,15 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
-import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Syntax;
 import de.michab.scream.pops.Continuation.Cont;
 import de.michab.scream.pops.Continuation.Thunk;
 
 /**
  * (begin exp1 exp2 ...) library syntax; r7rs 17
  */
-public class SyntaxBegin extends Operation
+public class SyntaxBegin extends Syntax
 {
     private SyntaxBegin()
     {

@@ -10,8 +10,8 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
-import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Syntax;
 
 /**
  * (or <test1> ... ) syntax; r7rs p15
@@ -22,7 +22,7 @@ import de.michab.scream.RuntimeX;
  * evaluate to false values, the value of the last expression is returned. If
  * there are no expressions then #f is returned.
  */
-public class SyntaxOr extends Operation
+public class SyntaxOr extends Syntax
 {
     private SyntaxOr()
     {

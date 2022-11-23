@@ -4,13 +4,13 @@ import de.michab.scream.Cons;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
-import de.michab.scream.Operation;
 import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Symbol;
+import de.michab.scream.Syntax;
 import de.michab.scream.util.Scut;
 
-public final class SyntaxLambda extends Operation
+public final class SyntaxLambda extends Syntax
 {
     private SyntaxLambda()
     {

@@ -10,16 +10,16 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
-import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
+import de.michab.scream.Syntax;
 import de.michab.scream.pops.Continuation.Cont;
 import de.michab.scream.pops.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
-public class SyntaxCond extends Operation
+public class SyntaxCond extends Syntax
 {
     static Symbol ELSE = Symbol.createObject( "else" );
 
