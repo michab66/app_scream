@@ -11,16 +11,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamEvaluator;
 
 public class IfTest extends ScreamBaseTest
 {
     @Test
     public void ifTest() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-
-        var result = se.evalFco(
+        var result = scriptEngine().evalFco(
                 """
                 (if #t 313 0)
                 """ );

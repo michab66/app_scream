@@ -112,20 +112,6 @@ public class Syntax
         return super.activate( parent, arguments );
     }
 
-//    @Override
-//    public Thunk _activate_( Environment e, Cons args, Cont<FirstClassObject> c )
-//            throws RuntimeX
-//    {
-//        if ( _body == Cons.NIL )
-//        {
-//            var toEval = compile( e, args );
-//
-//            return toEval.evaluate( e, c );
-//        }
-//
-//        return super._activate_( e, args, c );
-//    }
-//
     /**
      * @return A string representation for this syntax.
      * @see FirstClassObject#toString
