@@ -1,9 +1,7 @@
-/* $Id: SchemeString.java 174 2009-03-21 18:37:23Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2002 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -15,11 +13,10 @@ import de.michab.scream.ScreamException.Code;
  * (").  A double quote can be written inside a string only by escaping it with
  * a backslash (\), as in "The word \"recursion\" has many meanings."
  *
- * @version $Rev: 174 $
  * @author Michael Binz
  */
 public class SchemeString
-extends FirstClassObject
+    extends FirstClassObject
 {
     /**
      * The name of the type as used by error reporting.
@@ -28,14 +25,10 @@ extends FirstClassObject
      */
     public static final String TYPE_NAME = "string";
 
-
-
     /**
      * This string's value.
      */
     private final StringBuilder _value;
-
-
 
     /**
      * Create a new string in a specified length.  The string is filled with
@@ -81,8 +74,6 @@ extends FirstClassObject
         this( s, true );
     }
 
-
-
     /**
      * Create a SchemeString from a java string object.  Note that the input is
      * expected to contain literal character representations like '\n' and '\"'.
@@ -105,8 +96,6 @@ extends FirstClassObject
         setConstant( constant );
     }
 
-
-
     /**
      * Get this object's value as a Java string.  This is the actual string
      * value, not the literal string representation, i.e. no escaped characters
@@ -119,8 +108,6 @@ extends FirstClassObject
         return _value.toString();
     }
 
-
-
     /**
      * Get this string's length.
      *
@@ -130,8 +117,6 @@ extends FirstClassObject
     {
         return _value.length();
     }
-
-
 
     /**
      * Set the character at the specified position.  This is only allowed for
@@ -158,8 +143,6 @@ extends FirstClassObject
         }
     }
 
-
-
     /**
      * Get the character at the specified position.
      *
@@ -179,8 +162,6 @@ extends FirstClassObject
             throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, "" + idx );
         }
     }
-
-
 
     /**
      * Return a substring.  The passed start index has to be smaller than the
@@ -225,8 +206,6 @@ extends FirstClassObject
             return this;
     }
 
-
-
     /**
      * Compare this <code>SchemeString</code> with the passed string.
      *
@@ -240,8 +219,6 @@ extends FirstClassObject
     {
         return getValue().compareTo( other.getValue() );
     }
-
-
 
     /**
      * Compare this <code>SchemeString</code> with the passed string, ignoring
@@ -258,8 +235,6 @@ extends FirstClassObject
     {
         return getValue().compareToIgnoreCase( other.getValue() );
     }
-
-
 
     /**
      * Create a list of characters from this string.
@@ -329,8 +304,6 @@ extends FirstClassObject
         }
     }
 
-
-
     /**
      * This returns the literal representation of the string object in Scheme
      * syntax.  Use the <code>getValue()</code> for the physical string.
@@ -344,8 +317,6 @@ extends FirstClassObject
     {
         return "\"" + toStringLiteral() + "\"";
     }
-
-
 
     /**
      * Creates a literal representation of the string.  That means double quotes
@@ -362,7 +333,6 @@ extends FirstClassObject
 
         return result.toString();
     }
-
 
     /**
      * Searches through a passed string and replaces all occurrences of a given

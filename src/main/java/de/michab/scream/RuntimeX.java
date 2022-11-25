@@ -1,9 +1,7 @@
-/* $Id: RuntimeX.java 194 2009-08-03 20:26:36Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2002 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream;
 

@@ -3,7 +3,6 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-
 package de.michab.scream.scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.SchemeInteger;
-import de.michab.scream.ScreamException;
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.ScreamException;
 import de.michab.scream.frontend.FrontendX;
 
 public class FrontendNumbersTest

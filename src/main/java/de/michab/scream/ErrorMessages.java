@@ -1,7 +1,7 @@
 /*
- * usbview @ https://github.com/michab66/usbview
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 2018-2022 Michael Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.smack.util.JavaUtil;
-import org.smack.util.StringUtil;
 import org.smack.util.resource.ResourceMap;
 
 /**
@@ -44,19 +43,4 @@ class ErrorMessages
 
         return Collections.unmodifiableMap( n );
     });
-
-    /**
-     * @param id The id to resolve.
-     * @return A resolved vendor id in the form of 'Vendor (0x9999)'.  If the
-     * id is not known, then 'Unknown' is returned in place of 'Vendor' above.
-     */
-    public final static String _resolve( String id )
-    {
-        var name = map.get( id );
-
-        if ( StringUtil.isEmpty( name ) )
-            name = "Unknown";
-
-        return String.format( "%s (0x%04x)", name, id );
-    }
 }

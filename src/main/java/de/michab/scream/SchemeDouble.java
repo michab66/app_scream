@@ -1,9 +1,7 @@
-/* $Id: SchemeDouble.java 789 2015-01-10 23:13:22Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Kernel
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2000 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream;
 

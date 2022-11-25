@@ -1,9 +1,7 @@
-/* $Id: Number.java 210 2009-11-24 10:37:01Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Core
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2002 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream;
 

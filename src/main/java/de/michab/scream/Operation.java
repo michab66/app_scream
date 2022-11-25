@@ -3,7 +3,6 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-
 package de.michab.scream;
 
 import java.util.HashSet;
@@ -20,7 +19,7 @@ import de.michab.scream.pops.Continuation.Thunk;
  *
  * @author Michael Binz
  */
-public class Operation
+public abstract class Operation
     extends FirstClassObject
 {
     /**
@@ -93,9 +92,6 @@ public class Operation
             Environment compileEnv )
                     throws RuntimeX
     {
-        // Replace the argument list by a clone that gets modified later-on.
-        formalArguments = copy( formalArguments );
-
        _name = DEFAULT_NAME;
 
         // Not very much to check for.

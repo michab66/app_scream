@@ -1,3 +1,8 @@
+/*
+ * Scream @ https://github.com/michab/dev_smack
+ *
+ * Copyright © 1998-2022 Michael G. Binz
+ */
 package de.michab.scream.language;
 
 import org.junit.jupiter.api.Test;

@@ -3,7 +3,6 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-
 package de.michab.scream;
 
 /**
