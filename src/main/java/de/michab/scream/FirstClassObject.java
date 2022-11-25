@@ -462,6 +462,7 @@ public abstract class FirstClassObject
      * @throws RuntimeX In case of compile errors.
      * @see #compile( FirstClassObject, Environment )
      */
+    @Deprecated
     FirstClassObject compile( Environment environment )
             throws RuntimeX
     {
@@ -478,6 +479,7 @@ public abstract class FirstClassObject
      * @return The compiled object.
      * @throws RuntimeX In case of compile errors.
      */
+    @Deprecated
     public static FirstClassObject compile( FirstClassObject fco, Environment env )
             throws RuntimeX
     {
