@@ -180,6 +180,28 @@ public class Continuation
     }
 
     /**
+     * Define a new value.
+     *
+     * @param e The environment receiving the definition.
+     * @param symbol The symbol to set.
+     * @param value The value.  Not evaluated.
+     * @param c A continuation receiving NIL.
+     * @return A thunk.
+     */
+    public static Thunk _x_define(
+            Environment e,
+            Symbol symbol,
+            FirstClassObject value,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        return () -> {
+            e.define( symbol, value );
+            return c.accept( Cons.NIL );
+        };
+    }
+
+    /**
      * Create a list of new values.
      *
      * @param e The environment for evaluation.
