@@ -18,6 +18,8 @@ import de.michab.scream.Cons;
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
+import de.michab.scream.Lambda;
+import de.michab.scream.Lambda.L;
 import de.michab.scream.Operation;
 import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
@@ -30,6 +32,8 @@ import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
 import de.michab.scream.Vector;
+import de.michab.scream.pops.Continuation;
+import de.michab.scream.util.Scut;
 
 /**
  * An instance of this class boxes an entity from the Java object system,
@@ -762,37 +766,95 @@ public class SchemeObject
      */
     static private Syntax constructObjectSyntax = new Syntax( "make-object" )
     {
+        private Lambda compileSymbol( Symbol symbol )
+        {
+            L l = (e,c) -> {
+                return c.accept( createObject( symbol.toString(), null ) );
+            };
+
+            return new Lambda( l, getName() );
+        }
+
         @Override
-        public FirstClassObject activate( Environment context, FirstClassObject[] args )
-                throws RuntimeX
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
         {
             checkArgumentCount( 1, args );
 
-            if ( (args[0] instanceof Cons) && ((Cons)args[0]).isProperList() )
-            {
-                FirstClassObject[] createList = ((Cons)args[0]).asArray();
+            FirstClassObject argument = args.getCar();
 
-                // Test if first list element is symbol.
-                checkArgument( 1, Symbol.class, createList[0] );
+            if ( argument instanceof Symbol )
+                return compileSymbol( (Symbol)argument ).setInfo( args );
 
-                // Now evaluate the list of constructor arguments, but not the first
-                // list element.
-                for ( int i = 1 ; i < createList.length ; i++ )
-                    createList[i] = evaluate( createList[i], context );
+            Cons cons = Scut.as(
+                    Cons.class,
+                    argument );
+            Cons arguments = Scut.as(
+                    Cons.class,
+                    cons.getCdr() );
+            Symbol name = Scut.as(
+                    Symbol.class,
+                    cons.getCar() );
 
-                FirstClassObject[] params = new FirstClassObject[ createList.length -1 ];
-                System.arraycopy( createList, 1, params, 0, params.length );
-                return createObject( createList[0].toString(), params );
-            }
-            else if ( args[0] instanceof Symbol )
-            {
-                // Create a sole class representative.  This object is only of use to
-                // access class (static) fields or methods.
-                return createObject( args[0].toString(), null );
-            }
-            else
-                throw new RuntimeX( Code.SYNTAX_ERROR );
+            L l = (e,c) -> {
+                return Continuation._x_evalCons(
+                        e,
+                        arguments,
+                        evaluated -> c.accept(
+                                createObject(
+                                        name.toString(),
+                                        evaluated.asArray() ) ) );
+            };
+
+            return new Lambda( l, getName() );
         }
+
+        @Override
+        public FirstClassObject compile( Environment parent, Cons args )
+                throws RuntimeX
+        {
+            return _compile( parent, args );
+        }
+        @Override
+        public FirstClassObject activate( Environment parent,
+                Cons arguments )
+                        throws RuntimeX
+        {
+            var λ = _compile( parent, arguments );
+
+            return FirstClassObject.evaluate( λ, parent );
+        }
+
+//        @Override
+//        public FirstClassObject activate( Environment context, FirstClassObject[] args )
+//                throws RuntimeX
+//        {
+//            checkArgumentCount( 1, args );
+//
+//            if ( (args[0] instanceof Cons) && ((Cons)args[0]).isProperList() )
+//            {
+//                FirstClassObject[] createList = ((Cons)args[0]).asArray();
+//
+//                // Test if first list element is symbol.
+//                checkArgument( 1, Symbol.class, createList[0] );
+//
+//                // Now evaluate the list of constructor arguments, but not the first
+//                // list element.
+//                for ( int i = 1 ; i < createList.length ; i++ )
+//                    createList[i] = evaluate( createList[i], context );
+//
+//                FirstClassObject[] params = new FirstClassObject[ createList.length -1 ];
+//                System.arraycopy( createList, 1, params, 0, params.length );
+//                return createObject( createList[0].toString(), params );
+//            }
+//            else if ( args[0] instanceof Symbol )
+//            {
+//                // Create a sole class representative.  This object is only of use to
+//                // access class (static) fields or methods.
+//                return createObject( args[0].toString(), null );
+//            }
+//            else
+//                throw new RuntimeX( Code.SYNTAX_ERROR );
+//        }
     };
 
     /**
