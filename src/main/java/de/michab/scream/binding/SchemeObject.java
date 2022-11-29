@@ -886,31 +886,31 @@ public class SchemeObject
      * error ultimately submitted is the original error</i>.  Errors inside the
      * error-handler override the original error.
      */
-    static private Syntax catchExceptionSyntax =
-            new Syntax( "%catch" )
-    {
-        @Override
-        public FirstClassObject activate( Environment context,
-                FirstClassObject[] args )
-                        throws RuntimeX
-        {
-            checkArgumentCount( 2, args );
-
-            try
-            {
-                return FirstClassObject.evaluate( args[0], context );
-            }
-            catch ( RuntimeX e )
-            {
-                // Execute the error-handler for its side effects...
-                FirstClassObject.evaluate( args[1], context );
-                // ...then re-throw the original exception.  If an error happened in
-                // the above invocation of the error-handler, then this is thrown
-                // instead.
-                throw e;
-            }
-        }
-    };
+//    static private Syntax catchExceptionSyntax =
+//            new Syntax( "%catch" )
+//    {
+//        @Override
+//        public FirstClassObject activate( Environment context,
+//                FirstClassObject[] args )
+//                        throws RuntimeX
+//        {
+//            checkArgumentCount( 2, args );
+//
+//            try
+//            {
+//                return FirstClassObject.evaluate( args[0], context );
+//            }
+//            catch ( RuntimeX e )
+//            {
+//                // Execute the error-handler for its side effects...
+//                FirstClassObject.evaluate( args[1], context );
+//                // ...then re-throw the original exception.  If an error happened in
+//                // the above invocation of the error-handler, then this is thrown
+//                // instead.
+//                throw e;
+//            }
+//        }
+//    };
 
     /**
      * Object operations setup.
@@ -927,7 +927,7 @@ public class SchemeObject
         tle.setPrimitive( wrapObjectProcedure );
         tle.setPrimitive( constructObjectSyntax );
         tle.setPrimitive( describeObjectProcedure );
-        tle.setPrimitive( catchExceptionSyntax );
+//        tle.setPrimitive( catchExceptionSyntax );
         return tle;
     }
 }

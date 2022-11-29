@@ -223,6 +223,14 @@ public class Cons
 
         return Cons.create( result );
     }
+    public static Cons reverse( Cons c )
+            throws RuntimeX
+    {
+        if ( c == Cons.NIL )
+            return c;
+
+        return c.reverse();
+    }
 
     /**
      * Returns the sublist of list obtained by omitting the first k elements. It

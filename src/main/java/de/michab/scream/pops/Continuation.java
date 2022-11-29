@@ -22,6 +22,8 @@ import de.michab.scream.Symbol;
  */
 public class Continuation
 {
+    private static int _thunkCount;
+
     public Continuation( Consumer<RuntimeX> errorHandler )
     {
         _errorHandler = errorHandler;
@@ -58,6 +60,7 @@ public class Continuation
         try
         {
             while (t != null) {
+                _thunkCount++;
                 t = t.run();
             }
         }
@@ -74,6 +77,15 @@ public class Continuation
         };
     }
 
+    public static int thunkCount()
+    {
+        return _thunkCount;
+    }
+    public static void thunkCount( int newValue )
+    {
+        _thunkCount = newValue;
+    }
+
     /**
      *
      * @param e Environment used for evaluating the test.
@@ -85,7 +97,7 @@ public class Continuation
      * @return
      * @throws RuntimeX
      */
-    private static Thunk _if(
+    public static Thunk _if(
             Environment e,
             FirstClassObject test,
             Cont<FirstClassObject> trueBranch,
@@ -126,6 +138,10 @@ public class Continuation
         Cont<FirstClassObject> next =
                 (fco) -> _and( e, (Cons)expressions.getCdr(), fco, c);
 
+//        return FirstClassObject.evaluate(
+//                expressions.getCar(),
+//                e,
+//                next );
         return Continuation._x_eval(
                 e,
                 expressions.getCar(),
@@ -403,47 +419,6 @@ public class Continuation
                 FirstClassObject.evaluate( o, e ) );
     }
 
-    public static Thunk _x_if(
-            Environment e,
-            FirstClassObject condition,
-            FirstClassObject trueBranch,
-            FirstClassObject falseBranch,
-            Cont<FirstClassObject> c)
-                    throws RuntimeX
-    {
-        Cont<FirstClassObject> next = s -> _x_eval(
-                e,
-                SchemeBoolean.isTrue( s ) ? trueBranch : falseBranch,
-                c );
-
-        return () -> _x_eval( e, condition, next );
-    }
-
-    /**
-     * r7rs - 4.1.5 -- no false branch.
-     * Unspecified result if no 'else' -> #F
-     *
-     * @param e
-     * @param condition
-     * @param trueBranch
-     * @param c
-     * @return
-     */
-    public static Thunk _x_if(
-            Environment e,
-            FirstClassObject condition,
-            FirstClassObject trueBranch,
-            Cont<FirstClassObject> c)
-                    throws RuntimeX
-    {
-        Cont<FirstClassObject> next = s -> _x_eval(
-                e,
-                SchemeBoolean.isTrue( s ) ? trueBranch : SchemeBoolean.F,
-                c );
-
-        return () -> _x_eval( e, condition, next );
-    }
-
     /**
      * Shortcut or.
      *
@@ -525,18 +500,22 @@ public class Continuation
 
     private static Thunk _eval(
             Environment e,
-            int i,
-            FirstClassObject[] l,
-            Cont<FirstClassObject[]> c ) throws RuntimeX
+            Cons result,
+            Cons current,
+            Cont<Cons> c ) throws RuntimeX
     {
-        if ( i == l.length )
-            return c.accept( l );
+        if ( Cons.NIL == current )
+            return c.accept( Cons.reverse( result ) );
 
-        return () -> {
-            if ( l[i]  != Cons.NIL )
-                l[i] = FirstClassObject.evaluate( l[i], e );
-            return _eval( e, i+1, l, c );
-        };
+        Cont<FirstClassObject> set = fco -> _eval(
+                    e,
+                    new Cons( fco, result ),
+                    (Cons)current.getCdr(), c );
+
+        return FirstClassObject.evaluate(
+                current.getCar(),
+                e,
+                set );
     }
 
     /**
@@ -550,14 +529,11 @@ public class Continuation
      */
     public static Thunk _x_evalCons( Environment e, Cons l, Cont<Cons> c )
     {
-        Cont<FirstClassObject[]> next =
-                s -> c.accept( Cons.create( s ) );
-
         return () -> _eval(
                 e,
-                0,
-                Cons.asArray( l ),
-                next );
+                Cons.NIL,
+                l,
+                c );
     }
 
     /**

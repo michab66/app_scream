@@ -11,6 +11,7 @@ import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Syntax;
+import de.michab.scream.pops.Continuation.Cont;
 import de.michab.scream.util.Scut;
 
 /**
@@ -39,38 +40,45 @@ public class SyntaxIf extends Syntax
     private Lambda compImpl( Environment env, Cons cond, Cons positive )
             throws RuntimeX
     {
-        var ccond = FirstClassObject.compile( cond.getCar(), env );
-        cond.setCar( ccond );
-        var cpositive = FirstClassObject.compile( positive.getCar(), env );
-        positive.setCar( cpositive );
+        var ccond =
+                cond.getCar();
+        var cpositive =
+                positive.getCar();
 
         Lambda.L result = (e,c) -> {
-            return Continuation._x_if(
+            Cont<FirstClassObject> pos =
+                    fco -> Continuation._x_eval( e, cpositive, c );
+            Cont<FirstClassObject> neg =
+                    falseObject -> c.accept( falseObject );
+
+            return Continuation._if(
                     e,
                     ccond,
-                    cpositive,
-                    c );
+                    pos,
+                    neg );
         };
 
         return new Lambda( result, getName() );
     }
+
     private Lambda compImpl( Environment env, Cons cond, Cons positive, Cons negative )
             throws RuntimeX
     {
-        var ccond = FirstClassObject.compile( cond.getCar(), env );
-        cond.setCar( ccond );
-        var cpositive = FirstClassObject.compile( positive.getCar(), env );
-        positive.setCar( cpositive );
-        var cnegative = FirstClassObject.compile( negative.getCar(), env );
-        negative.setCar( cnegative );
+        var ccond = cond.getCar();
+        var cpositive = positive.getCar();
+        var cnegative = negative.getCar();
 
         Lambda.L result = (e,c) -> {
-            return Continuation._x_if(
+            Cont<FirstClassObject> pos =
+                    fco -> Continuation._x_eval( e, cpositive, c );
+            Cont<FirstClassObject> neg =
+                    fco -> Continuation._x_eval( e, cnegative, c );
+
+            return Continuation._if(
                     e,
                     ccond,
-                    cpositive,
-                    cnegative,
-                    c );
+                    pos,
+                    neg );
         };
 
         return new Lambda( result, getName() );

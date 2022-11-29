@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamBaseTest;
 
 public class IfTest extends ScreamBaseTest
@@ -22,6 +23,16 @@ public class IfTest extends ScreamBaseTest
                 (if #t 313 0)
                 """ );
         assertEquals( i313, result );
+    }
+
+    @Test
+    public void ifTestNoElse() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (if #f 313)
+                """ );
+        assertEquals( SchemeBoolean.F, result );
     }
 
     @Test
