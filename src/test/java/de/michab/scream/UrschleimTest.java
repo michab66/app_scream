@@ -102,7 +102,7 @@ public class UrschleimTest extends ScreamBaseTest
                 (%syntax (xquote value) value)
                 (xquote micbinz)
                 """ );
-        assertEquals( result, Symbol.createObject( "micbinz" ) );
+        assertEquals( s( "micbinz" ), result );
 
         FirstClassObject opCall =
                 new SchemeParser( "(xquote not-defined-yet)" ).getExpression();

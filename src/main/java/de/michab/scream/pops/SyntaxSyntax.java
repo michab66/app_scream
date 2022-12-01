@@ -67,22 +67,6 @@ public class SyntaxSyntax extends Syntax
                 this.toString() ).setInfo( args );
     }
 
-    @Override
-    public FirstClassObject compile( Environment parent, Cons args )
-            throws RuntimeX
-    {
-        return _compile( parent, args );
-    }
-    @Override
-    public FirstClassObject activate( Environment parent,
-            Cons arguments )
-                    throws RuntimeX
-    {
-        var λ = _compile( parent, arguments );
-
-        return FirstClassObject.evaluate( λ, parent );
-    }
-
 //    @Override
 //    public FirstClassObject activate( Environment parent, FirstClassObject[] args )
 //            throws RuntimeX

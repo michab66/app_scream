@@ -38,22 +38,6 @@ public class SyntaxBegin extends Syntax
     }
 
     @Override
-    public FirstClassObject compile( Environment parent, Cons args )
-            throws RuntimeX
-    {
-        return _compile( parent, args );
-    }
-    @Override
-    public FirstClassObject activate( Environment parent,
-            Cons arguments )
-                    throws RuntimeX
-    {
-        var λ = _compile( parent, arguments );
-
-        return FirstClassObject.evaluate( λ, parent );
-    }
-
-    @Override
     public Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {

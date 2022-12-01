@@ -238,7 +238,12 @@ public class SchemeObject
      * @see de.michab.scream.Operation#activate(Environment, Cons)
      */
     @Override
-    public FirstClassObject activate( Environment context, FirstClassObject[] args )
+    public FirstClassObject activate( Environment env, Cons args )
+        throws RuntimeX
+    {
+        return activate( env, Cons.asArray( args ) );
+    }
+    private FirstClassObject activate( Environment context, FirstClassObject[] args )
             throws RuntimeX
     {
         checkMinimumArgumentCount( 1, args );
@@ -806,22 +811,6 @@ public class SchemeObject
             };
 
             return new Lambda( l, getName() );
-        }
-
-        @Override
-        public FirstClassObject compile( Environment parent, Cons args )
-                throws RuntimeX
-        {
-            return _compile( parent, args );
-        }
-        @Override
-        public FirstClassObject activate( Environment parent,
-                Cons arguments )
-                        throws RuntimeX
-        {
-            var λ = _compile( parent, arguments );
-
-            return FirstClassObject.evaluate( λ, parent );
         }
 
 //        @Override

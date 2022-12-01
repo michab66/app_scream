@@ -7,7 +7,6 @@ package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Environment;
-import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.RuntimeX;
@@ -79,22 +78,6 @@ public abstract class SyntaxLet
         }
 
         return result;
-    }
-
-    @Override
-    public FirstClassObject compile( Environment parent, Cons args )
-            throws RuntimeX
-    {
-        return _compile( parent, args );
-    }
-    @Override
-    public FirstClassObject activate( Environment parent,
-            Cons arguments )
-                    throws RuntimeX
-    {
-        var λ = _compile( parent, arguments );
-
-        return FirstClassObject.evaluate( λ, parent );
     }
 
     /**

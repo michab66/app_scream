@@ -96,19 +96,19 @@ public class Syntax
      * @throws InternalError In case this method is not overridden.
      */
     @Override
-    protected FirstClassObject activate( Environment parent,
-            FirstClassObject[] arguments )
+    final public FirstClassObject compile( Environment parent, Cons args )
+            throws RuntimeX
+    {
+        return _compile( parent, args );
+    }
+    @Override
+    public FirstClassObject activate( Environment parent,
+            Cons arguments )
                     throws RuntimeX
     {
-        // TODO Below is the only reference to body from a subclass of Operation.
-        // This is really a HACK since i have no better idea currently how to
-        // differentiate btw Java and Scheme implemented Syntaxes/Operations.
-        // Think.  We should get rid of the _body reference and set body as private
-        // to Operation.
-        if ( _body == Cons.NIL )
-            return evaluate( compile( parent, arguments ), parent );
+        var λ = _compile( parent, arguments );
 
-        return super.activate( parent, arguments );
+        return FirstClassObject.evaluate( λ, parent );
     }
 
     /**

@@ -32,14 +32,12 @@ public class SyntaxSyntaxTest extends ScreamBaseTest
     @Test
     public void syntaxSyntaxTest() throws Exception
     {
-        var se = scriptEngine();
-
-        var result = se.eval(
+        var result = scriptEngine().evalFco(
                 """
                 (%syntax (xquote value) value)
                 (xquote micbinz)
                 """ );
-        assertEquals( "micbinz", result );
+        assertEquals( s( "micbinz" ), result );
     }
 
 }

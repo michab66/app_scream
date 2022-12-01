@@ -251,7 +251,7 @@ public abstract class Operation
      * @throws RuntimeX In case the activation failed.
      */
     @Deprecated
-    protected FirstClassObject activate( Environment e,
+    private FirstClassObject activate( Environment e,
             FirstClassObject[] argumentList )
                     throws RuntimeX
     {

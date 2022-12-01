@@ -68,27 +68,27 @@ extends ScreamException
         return this;
     }
 
-    /**
-     * (%error-catch expression)
-     */
-    static private Syntax errorCatchSyntax = new Syntax( "%error-catch" )
-    {
-        @Override
-        public FirstClassObject activate( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkArgumentCount( 1, args );
-
-            try
-            {
-                return FirstClassObject.evaluate( args[0], parent );
-            }
-            catch ( RuntimeX e )
-            {
-                return SchemeInteger.createObject( e.getId() );
-            }
-        }
-    };
+//    /**
+//     * (%error-catch expression)
+//     */
+//    static private Syntax errorCatchSyntax = new Syntax( "%error-catch" )
+//    {
+//        @Override
+//        public FirstClassObject activate( Environment parent, FirstClassObject[] args )
+//                throws RuntimeX
+//        {
+//            checkArgumentCount( 1, args );
+//
+//            try
+//            {
+//                return FirstClassObject.evaluate( args[0], parent );
+//            }
+//            catch ( RuntimeX e )
+//            {
+//                return SchemeInteger.createObject( e.getId() );
+//            }
+//        }
+//    };
 
     /**
      * Scream specific <code>(error ...)</code> procedure.  Interrupts the
@@ -147,7 +147,7 @@ extends ScreamException
     {
         // Add our local definitions.
         tle.setPrimitive( errorProcedure );
-        tle.setPrimitive( errorCatchSyntax );
+//        tle.setPrimitive( errorCatchSyntax );
         return tle;
     }
 }

@@ -220,6 +220,6 @@ public class Procedure
     protected FirstClassObject apply( FirstClassObject[] evaluatedArgs )
             throws RuntimeX
     {
-        return super.activate( _closure, evaluatedArgs );
+        return super.activate( _closure, Cons.create( evaluatedArgs ) );
     }
 }
