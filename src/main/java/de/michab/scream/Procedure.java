@@ -70,27 +70,6 @@ public class Procedure
         _closure = e;
     }
 
-    @Override
-    protected Thunk _execute( Environment
-            e,
-            Cons args,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-        checkArgumentCount( args );
-
-        final var ex = e.extend( getName() );
-
-        if ( _rest != Cons.NIL )
-            ex.define( (Symbol)_rest, Cons.NIL );
-
-        return () -> _bind(
-                ex,
-                _formalArguments,
-                args,
-                s -> Continuation._x_begin( s, _body, c ) );
-    }
-
     /**
      * Evaluates the arguments in the received environment and passes on to
      * {@link #_execute(Environment, Cons, Cont)} for execution of the
@@ -106,7 +85,7 @@ public class Procedure
             throws RuntimeX
     {
         // Execute in our _closure.
-        Cont<Cons> cc = evaluated -> _execute(
+        Cont<Cons> cc = evaluated -> super._execute(
                 _closure,
                 evaluated,
                 c );

@@ -39,7 +39,7 @@ public abstract class Operation
     /**
      * A default name used in the no-argument constructor.
      */
-    static protected final Symbol DEFAULT_NAME =
+    static final Symbol DEFAULT_NAME =
             Symbol.createObject( "anonymous" );
 
     /**
@@ -50,7 +50,7 @@ public abstract class Operation
     /**
      * This operation's body.
      */
-    protected Cons _body = Cons.NIL;
+    protected final Cons _body;
 
     /**
      * The formal argument list for this operation.
@@ -73,6 +73,7 @@ public abstract class Operation
     protected Operation( Symbol name )
     {
         _name = name;
+        _body = Cons.NIL;
     }
     protected Operation( String name )
     {
@@ -95,11 +96,7 @@ public abstract class Operation
     {
        _name = DEFAULT_NAME;
 
-        // Not very much to check for.
-        FirstClassObject[] fcoa = body.asArray();
-        for ( int i = 0 ; i < fcoa.length ; i++ )
-            fcoa[i] = FirstClassObject.compile( fcoa[i], compileEnv  );
-        _body = Cons.create( fcoa );
+        _body = body;
 
         // If the formal argument list is empty ...
         if ( Cons.NIL == formalArguments )

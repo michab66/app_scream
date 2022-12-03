@@ -7,13 +7,10 @@ package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Environment;
-import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Syntax;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
 
 /**
  * (begin exp1 exp2 ...) library syntax; r7rs 17
@@ -35,13 +32,6 @@ public class SyntaxBegin extends Syntax
                 c);
 
         return new Lambda( l, getName() );
-    }
-
-    @Override
-    public Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX
-    {
-        return Continuation._x_begin( e, args, c );
     }
 
     /**
