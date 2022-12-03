@@ -25,7 +25,6 @@ import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
-import de.michab.scream.FirstClassObject.Unwind;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
@@ -268,14 +267,7 @@ public class Scream implements ScriptEngineFactory
     {
 //        x = x.compile( e );
 
-        try
-        {
             return FirstClassObject.evaluate( x, e );
-        }
-        catch ( Unwind u )
-        {
-            return u.result();
-        }
     }
 
     // Merge with SchemeEvaluator.

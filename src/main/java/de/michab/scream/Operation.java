@@ -12,6 +12,7 @@ import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Continuation;
 import de.michab.scream.pops.Continuation.Cont;
 import de.michab.scream.pops.Continuation.Thunk;
+import urschleim.Holder;
 
 /**
  * Represents an abstract operation.  Is the base class for macros (syntaxes in
@@ -205,7 +206,22 @@ public abstract class Operation
     public FirstClassObject activate( Environment e, Cons argumentList )
             throws RuntimeX
     {
-        return activate( e, Cons.asArray( argumentList ) );
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                _execute(
+                        e,
+                        argumentList,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+            throw (RuntimeX)error.get();
+
+        return r.get();
     }
 
     protected Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
@@ -234,91 +250,6 @@ public abstract class Operation
         e.define( name, value );
 
         return () -> _bind( e, (Cons)argNames.getCdr(), (Cons)argValues.getCdr(), c );
-    }
-
-    /**
-     * Execute the operation in a given environment and based on the passed
-     * parameters.  This default implementation executes an
-     * <code>Operation</code> that is specified in Scheme as opposed to
-     * implemented in Java.  This method represents the final step in a chain of
-     * calls that can be overridden by Java operation implementations.  If none
-     * of these entries is overridden the activation ends up here.
-     *
-     * @param e The environment to use for the current activation.
-     * @param argumentList The list of arguments passed into the current
-     *        activation.
-     * @return The result of the activation.
-     * @throws RuntimeX In case the activation failed.
-     */
-    @Deprecated
-    private FirstClassObject activate( Environment e,
-            FirstClassObject[] argumentList )
-                    throws RuntimeX
-    {
-        // We're nearly ready to execute -- so let's extend the environment.
-        Environment executionEnvironment = e.extend( getName() );
-
-        Cons formalArg = _formalArguments;
-
-        // Initialise the 'rest' variable in the current environment.
-        if ( _rest != Cons.NIL )
-            executionEnvironment.define( (Symbol)_rest, Cons.NIL );
-
-        for ( int i = 0 ; i < argumentList.length ; i++ )
-        {
-            // If we haven't reached the end of our formal argument list...
-            if ( formalArg != Cons.NIL )
-            {
-                // ...bind the argument.
-                executionEnvironment.define( (Symbol)formalArg.getCar(), argumentList[i] );
-                formalArg = (Cons)formalArg.getCdr();
-            }
-            else if ( _rest != Cons.NIL )
-            {
-                // ...bind it.
-                executionEnvironment.define( (Symbol)_rest, Cons.create( argumentList, i ) );
-                break;
-            }
-            else
-            {
-                int numberOfFormals = 0;
-
-                if ( _formalArguments != null )
-                    numberOfFormals = (int)_formalArguments.length();
-
-                throw new RuntimeX( Code.WRONG_NUMBER_OF_ARGUMENTS,
-                        "" + numberOfFormals,
-                        "" + argumentList.length
-                        );
-            }
-        }
-
-        // Now check if there are more formal args.
-        if ( Cons.NIL != formalArg )
-            throw new RuntimeX( Code.WRONG_NUMBER_OF_ARGUMENTS,
-                    "" + _formalArguments.length(),
-                    "" + argumentList.length
-                    );
-
-        // What is left to be done is the actual evaluation of the body.
-        Cons expressionQueue = _body;
-        FirstClassObject result = Cons.NIL;
-
-        do
-        {
-            FirstClassObject currentExpr = expressionQueue.getCar();
-            expressionQueue = (Cons)expressionQueue.getCdr();
-
-            // If this is the last entry in the expression queue...
-            if ( expressionQueue == Cons.NIL )
-                // ...then this is evaluated in a trailing context.
-                result = evaluateTrailingContext( currentExpr, executionEnvironment );
-            else
-                result = evaluate( currentExpr, executionEnvironment );
-
-        } while ( expressionQueue != Cons.NIL );
-
-        return result;
     }
 
     /**

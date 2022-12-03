@@ -26,52 +26,6 @@ public abstract class FirstClassObject
     private boolean _isConstant;
 
     /**
-     * Helper used for implementation of tail recursiveness.  The exception is
-     * used for control flow purposes.  The reason for its <code>Error</code>
-     * base class is to keep the inner workings of that invisible to the user.
-     * <br>
-     * An instance is only thrown in the <code>static evaluateTailContext()</code>
-     * method and always catched in the <code>static evaluate()</code>
-     * method.<br>
-     * The purpose of this class is to be able to explicitly unwind one
-     * stackframe of the Java VM stack to be able to execute recursive Scheme
-     * procedures in constant stack space.
-     */
-    @SuppressWarnings("serial")
-    @Deprecated
-    static class Unwind
-    extends Error
-    {
-        /**
-         * The embedded object to be evaluated.
-         */
-        private final FirstClassObject _fco;
-
-        /**
-         * The embedded environment to be used for evaluation.
-         */
-        private final Environment _environment;
-
-        /**
-         * Creates an instance.
-         *
-         * @param fco The object to be evaluated.
-         * @param e The environment to use for evaluation.
-         */
-        Unwind( FirstClassObject fco, Environment e )
-        {
-            _fco = fco;
-            _environment = e;
-        }
-
-        FirstClassObject result()
-                throws RuntimeX
-        {
-            return evaluate( _fco, _environment );
-        }
-    }
-
-    /**
      * Evaluates the passed scheme object and returns the result.  Handles a NIL
      * object to evaluate.
      *
@@ -84,24 +38,10 @@ public abstract class FirstClassObject
     public static FirstClassObject evaluate( FirstClassObject fco, Environment env )
             throws RuntimeX
     {
-        while ( true )
-        {
-            try
-            {
-                if ( fco != Cons.NIL )
-                    return fco.evaluate( env );
-                else
-                    return Cons.NIL;
-            }
-            catch ( Unwind e )
-            {
-                // After we received a stack unwind notification (which is technically
-                // an Error), our local parameters get updated with the received
-                // information and evaluation is done in the next loop cycle.
-                fco = e._fco;
-                env = e._environment;
-            }
-        }
+        if ( fco != Cons.NIL )
+            return fco.evaluate( env );
+        else
+            return Cons.NIL;
     }
 
     /**
@@ -121,25 +61,6 @@ public abstract class FirstClassObject
             return c.accept( fco );
 
         return fco.evaluate( env, c );
-    }
-
-    /**
-     * Does the evaluation of a trailing context.  That means that the current
-     * stack frame will be removed before the evaluation starts.
-     *
-     * @param fco The FirstClassObject to evaluate.
-     * @param env The environment for the evaluation.
-     * @return The result of the evaluation.
-     * @throws RuntimeX In case the evaluation failed.
-     * @see #evaluate( FirstClassObject fco, Environment e )
-     */
-    @Deprecated
-    public static FirstClassObject evaluateTrailingContext(
-            FirstClassObject fco,
-            Environment env )
-                    throws RuntimeX
-    {
-        throw new Unwind( fco, env );
     }
 
     /**

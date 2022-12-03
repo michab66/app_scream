@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -229,6 +230,50 @@ public class SchemeObject
         return _theInstance;
     }
 
+//    @Override
+//    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+//    {
+//        long argsLen =
+//                checkArgumentCount( 1, 2, args );
+//
+//        L result;
+//
+//        if ( id() == 370 )
+//            System.out.println( 370 );
+//        if ( argsLen == 1 && args.listRef( 0 ) instanceof Cons )
+//        {
+//            var argsArray =
+//                    Cons.asArray( ((Cons)args.listRef( 0 )) );
+//            result = (e, c) -> {
+//                return c.accept( processInvocation( e, argsArray ) );
+//            };
+//        }
+//        else if ( argsLen == 1 && args.listRef( 0 ) instanceof Symbol) {
+//            var arg0 =
+//                    args.listRef( 0 );
+//            result = (e, c) -> {
+//                return c.accept( processAttributeGet( arg0 ) );
+//            };
+//        }
+//        else if ( argsLen == 2 && args.listRef( 0 ) instanceof Symbol )
+//        {
+//            var args0 = args.listRef( 0 );
+//            var args1 = args.listRef( 1 );
+//
+//            result = (e, c) -> {
+//                Cont<FirstClassObject> set = fco -> {
+//                    return c.accept( processAttributeSet( args0, fco ) );
+//                };
+//
+//                return Continuation._x_eval( e, args1, set );
+//            };
+//        }
+//        else
+//            throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
+//
+//        return new Lambda( result, toString() ).setInfo( args );
+//    }
+//
     /**
      * @param context The environment used for necessary evaluations.
      * @param args The passed arguments.
@@ -557,7 +602,7 @@ public class SchemeObject
      * Processes a procedure invocation.
      *
      * @param env The environment used for the evaluation of the argument list.
-     * @param list The areguments used for the invocation.
+     * @param list The arguments used for the invocation.
      * @return The result of the procedure invocation.
      * @throws RuntimeX In case there where access errors.
      */
@@ -565,6 +610,8 @@ public class SchemeObject
             FirstClassObject[] list )
                     throws RuntimeX
     {
+        _log.warning( Continuation.thunkCount() + " " + Arrays.toString( list ) );
+
         // Check if the first element in the list is a symbol.
         Operation.checkArgument( 1, Symbol.class, list[0] );
 
@@ -641,6 +688,8 @@ public class SchemeObject
     private FirstClassObject processAttributeGet( FirstClassObject attribute )
             throws RuntimeX
     {
+        _log.warning( attribute.toString() );
+
         // Make sure that the attribute is specified by a Symbol.
         Operation.checkArgument( 1, Symbol.class, attribute );
 
@@ -670,6 +719,8 @@ public class SchemeObject
             FirstClassObject value )
                     throws RuntimeX
     {
+        _log.warning( attribute + " = " + value );
+
         // Make sure that the attribute is specified by a Symbol.
         Operation.checkArgument( 1, Symbol.class, attribute );
 
