@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.RuntimeX;
@@ -19,6 +20,7 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.util.Scut;
+import urschleim.Holder;
 
 public class QuoteTest extends ScreamBaseTest
 {
@@ -29,13 +31,17 @@ public class QuoteTest extends ScreamBaseTest
 
         var e = se.getInteraction();
 
-        var x =readSingleExpression( "(quote a)", Cons.class );
+        var fco =
+                readSingleExpression( "(quote a)", Cons.class );
+        Lambda l = Scut.as(
+                Lambda.class,
+                FirstClassObject._compile( fco, e ) );
 
-        Lambda l = Scut.as( Lambda.class, x.compile( e ) );
+        Holder<FirstClassObject> r = new Holder<>( Cons.NIL );
 
-        var result =
-        FirstClassObject.evaluate( l, null );
-        assertEquals( s("a"), result );
+        l.evaluate( e, Continuation.endCall( r::set ) ).run();
+
+        assertEquals( s("a"), r.get() );
     }
 
     @Test

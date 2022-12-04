@@ -715,26 +715,4 @@ public class Cons
         setConstant( _car, what );
         setConstant( _cdr, what );
     }
-
-    @Override
-    public FirstClassObject compile( Environment e )
-            throws RuntimeX
-    {
-        try
-        {
-            // Evaluate the car position.  If this results in something that is
-            // no Syntax we bail out with CCX.
-            Operation op = (Operation)evaluate( _car, e );
-            FirstClassObject cop = op.compile( e, (Cons)_cdr );
-
-            // If the compilation returned identity that ment that compilation
-            // has not been implemented by this syntax.  So we return the
-            // unmodified list.
-            return op == cop ? this : cop;
-        }
-        catch ( Exception x )
-        {
-            return this;
-        }
-    }
 }

@@ -374,43 +374,6 @@ public abstract class FirstClassObject
         return _isConstant;
     }
 
-    /**
-     * Compile this <code>FirstClassObject</code>.  This default implementation
-     * just returns identity.
-     *
-     * @param environment The compile environment.
-     * @return The compiled object.
-     * @throws RuntimeX In case of compile errors.
-     * @see #compile( FirstClassObject, Environment )
-     */
-    @Deprecated
-    FirstClassObject compile( Environment environment )
-            throws RuntimeX
-    {
-        return this;
-    }
-
-    /**
-     * Compile the passed first class object.  This default implementation just
-     * returns identity.  Handles <code>NIL</code> references.  The passed
-     * environment is used to look up the needed definitions for compilation.
-     *
-     * @param fco The object to compile.
-     * @param env The compile environment
-     * @return The compiled object.
-     * @throws RuntimeX In case of compile errors.
-     */
-    @Deprecated
-    public static FirstClassObject compile( FirstClassObject fco, Environment env )
-            throws RuntimeX
-    {
-        FirstClassObject result = fco;
-
-        if ( fco != Cons.NIL )
-            result = fco.compile( env );
-        return result;
-    }
-
     private static Lambda _NIL = new Lambda(
             (e,c) -> Primitives._x_quote(
                     e,
