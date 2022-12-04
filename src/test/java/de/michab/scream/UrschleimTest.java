@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.frontend.SchemeParser;
-import de.michab.scream.pops.Continuation;
+import de.michab.scream.pops.Primitives;
 import urschleim.Holder;
 
 public class UrschleimTest extends ScreamBaseTest
@@ -35,11 +35,11 @@ public class UrschleimTest extends ScreamBaseTest
         Holder<FirstClassObject> r =
                 new Holder<FirstClassObject>( Cons.NIL );
 
-        Continuation c = new Continuation( s -> error.set( s ) );
+        Primitives c = new Primitives( s -> error.set( s ) );
 
         c.trampoline(
                 i.evaluate( null,
-                        Continuation.endCall( s -> r.set( s ) ) ));
+                        Primitives.endCall( s -> r.set( s ) ) ));
 
         assertEquals( "313", r.get().toString() );
         assertNull( error.get() );
@@ -58,9 +58,9 @@ public class UrschleimTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 symbol.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ));
 
         assertEquals( "313", r.get().toString() );
@@ -78,9 +78,9 @@ public class UrschleimTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 symbol.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set(s));
 
         assertNull(
@@ -115,9 +115,9 @@ public class UrschleimTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )
@@ -159,9 +159,9 @@ public class UrschleimTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )
@@ -205,9 +205,9 @@ public class UrschleimTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )

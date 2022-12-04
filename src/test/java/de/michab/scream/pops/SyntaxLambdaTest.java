@@ -52,9 +52,9 @@ public class SyntaxLambdaTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )

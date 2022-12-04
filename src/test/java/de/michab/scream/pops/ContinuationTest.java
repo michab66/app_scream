@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
+import de.michab.scream.pops.Primitives.Cont;
+import de.michab.scream.pops.Primitives.Thunk;
 import urschleim.Holder;
 
 public class ContinuationTest extends ScreamBaseTest
@@ -30,38 +30,38 @@ public class ContinuationTest extends ScreamBaseTest
     @Test
     void _basic() throws Exception
     {
-        Continuation.thunkCount(0);
+        Primitives.thunkCount(0);
         Holder<Integer> result =
                 new Holder<>( null );
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 add( 3,
                      4,
-                     Continuation.endCall( s -> result.set( s ) ) ),
+                     Primitives.endCall( s -> result.set( s ) ) ),
                 e -> error.set( e ) );
 
-        assertEquals( 1, Continuation.thunkCount() );
+        assertEquals( 1, Primitives.thunkCount() );
         assertEquals( 7, result.get() );
     }
 
     @Test
     void _basic2() throws Exception
     {
-        Continuation.thunkCount(0);
+        Primitives.thunkCount(0);
         Holder<Integer> result =
                 new Holder<>( null );
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 addd( 3,
                      4,
-                     Continuation.endCall( s -> result.set( s ) ) ),
+                     Primitives.endCall( s -> result.set( s ) ) ),
                 e -> error.set( e ) );
 
-        assertEquals( 2, Continuation.thunkCount() );
+        assertEquals( 2, Primitives.thunkCount() );
         assertEquals( 7, result.get() );
     }
 }

@@ -69,10 +69,10 @@ public class SyntaxTimeTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 cons.evaluate(
                         scriptEngine().getInteraction(),
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )

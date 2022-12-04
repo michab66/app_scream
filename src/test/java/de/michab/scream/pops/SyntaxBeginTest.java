@@ -55,11 +55,11 @@ public class SyntaxBeginTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
-                Continuation._x_begin(
+        Primitives.trampoline(
+                Primitives._x_begin(
                         env,
                         cons,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         assertEqualq( i313, r.get() );

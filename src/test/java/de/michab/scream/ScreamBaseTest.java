@@ -20,7 +20,7 @@ import org.smack.util.JavaUtil;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
-import de.michab.scream.pops.Continuation;
+import de.michab.scream.pops.Primitives;
 import urschleim.Holder;
 
 public class ScreamBaseTest
@@ -100,9 +100,9 @@ public class ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( expectedError != null )

@@ -119,7 +119,7 @@ public class SyntaxDo extends Syntax
 
 
         return new Lambda(
-                (e,c) -> Continuation._x_do(
+                (e,c) -> Primitives._x_do(
                         e,
                         (Cons)setup.getCar(),
                         (Cons)setup.getCdr(),

@@ -59,7 +59,7 @@ public class SyntaxSyntax extends Syntax
                     e,
                     parameterList,
                     body ).setName( name );
-            return Continuation._x_define( e, name, value, c );
+            return Primitives._x_define( e, name, value, c );
         };
 
         return new Lambda(

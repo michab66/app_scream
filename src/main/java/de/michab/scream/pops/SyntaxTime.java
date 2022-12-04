@@ -15,8 +15,8 @@ import de.michab.scream.Lambda.L;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeInteger;
 import de.michab.scream.Syntax;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
+import de.michab.scream.pops.Primitives.Cont;
+import de.michab.scream.pops.Primitives.Thunk;
 
 /**
  * (%time expression)
@@ -62,7 +62,7 @@ public class SyntaxTime extends Syntax
         L l = (e,c) -> {
             TimeProbe tp =
                     new TimeProbe( getName().toString() ).start();
-            return Continuation._x_eval(
+            return Primitives._x_eval(
                     e,
                     expression,
                     fco -> finish( tp, fco, c ) );

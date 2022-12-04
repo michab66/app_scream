@@ -11,7 +11,7 @@ import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Syntax;
-import de.michab.scream.pops.Continuation.Cont;
+import de.michab.scream.pops.Primitives.Cont;
 import de.michab.scream.util.Scut;
 
 /**
@@ -47,11 +47,11 @@ public class SyntaxIf extends Syntax
 
         Lambda.L result = (e,c) -> {
             Cont<FirstClassObject> pos =
-                    fco -> Continuation._x_eval( e, cpositive, c );
+                    fco -> Primitives._x_eval( e, cpositive, c );
             Cont<FirstClassObject> neg =
                     falseObject -> c.accept( falseObject );
 
-            return Continuation._if(
+            return Primitives._if(
                     e,
                     ccond,
                     pos,
@@ -70,11 +70,11 @@ public class SyntaxIf extends Syntax
 
         Lambda.L result = (e,c) -> {
             Cont<FirstClassObject> pos =
-                    fco -> Continuation._x_eval( e, cpositive, c );
+                    fco -> Primitives._x_eval( e, cpositive, c );
             Cont<FirstClassObject> neg =
-                    fco -> Continuation._x_eval( e, cnegative, c );
+                    fco -> Primitives._x_eval( e, cnegative, c );
 
-            return Continuation._if(
+            return Primitives._if(
                     e,
                     ccond,
                     pos,

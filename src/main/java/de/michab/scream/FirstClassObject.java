@@ -5,9 +5,9 @@
  */
 package de.michab.scream;
 
-import de.michab.scream.pops.Continuation;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
+import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.Primitives.Cont;
+import de.michab.scream.pops.Primitives.Thunk;
 
 /**
  * The base class for all Scheme first-class objects.  A first class object is
@@ -89,9 +89,9 @@ public abstract class FirstClassObject
      * @return The thunk.
      * @throws RuntimeX In case the evaluation failed.
      */
-    public Continuation.Thunk evaluate(
+    public Primitives.Thunk evaluate(
         Environment e,
-        Continuation.Cont<FirstClassObject> c )
+        Primitives.Cont<FirstClassObject> c )
             throws RuntimeX
     {
         return  () -> {
@@ -412,7 +412,7 @@ public abstract class FirstClassObject
     }
 
     private static Lambda _NIL = new Lambda(
-            (e,c) -> Continuation._x_quote(
+            (e,c) -> Primitives._x_quote(
                     e,
                     Cons.NIL,
                     c ),
@@ -430,7 +430,7 @@ public abstract class FirstClassObject
         throws RuntimeX
     {
         return new Lambda(
-                (e,c) -> Continuation._x_quote(
+                (e,c) -> Primitives._x_quote(
                         e,
                         this,
                         c ),

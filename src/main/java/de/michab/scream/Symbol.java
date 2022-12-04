@@ -7,7 +7,7 @@ package de.michab.scream;
 
 import org.smack.util.collections.WeakMapWithProducer;
 
-import de.michab.scream.pops.Continuation;
+import de.michab.scream.pops.Primitives;
 
 
 /**
@@ -79,7 +79,7 @@ extends FirstClassObject
     {
         return new Lambda(
                 (e,c) ->
-                    Continuation._x_resolve( e, this, c ),
+                    Primitives._x_resolve( e, this, c ),
                 "resolve " + toString() );
     }
 

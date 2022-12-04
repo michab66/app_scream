@@ -33,7 +33,7 @@ import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
 import de.michab.scream.Vector;
-import de.michab.scream.pops.Continuation;
+import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Scut;
 
 /**
@@ -610,7 +610,7 @@ public class SchemeObject
             FirstClassObject[] list )
                     throws RuntimeX
     {
-        _log.warning( Continuation.thunkCount() + " " + Arrays.toString( list ) );
+        _log.warning( Primitives.thunkCount() + " " + Arrays.toString( list ) );
 
         // Check if the first element in the list is a symbol.
         Operation.checkArgument( 1, Symbol.class, list[0] );
@@ -852,7 +852,7 @@ public class SchemeObject
                     cons.getCar() );
 
             L l = (e,c) -> {
-                return Continuation._x_evalCons(
+                return Primitives._x_evalCons(
                         e,
                         arguments,
                         evaluated -> c.accept(

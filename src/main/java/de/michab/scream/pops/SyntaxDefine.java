@@ -35,10 +35,10 @@ public class SyntaxDefine extends Syntax
 
         Lambda.L result = (e,c) -> {
 
-            return Continuation._x_eval(
+            return Primitives._x_eval(
                     e,
                     value.getCar(),
-                    fco -> Continuation._x_define(
+                    fco -> Primitives._x_define(
                             e,
                             variable,
                             fco,
@@ -92,7 +92,7 @@ public class SyntaxDefine extends Syntax
                     e,
                     parameterList,
                     body ).setName( name );
-            return Continuation._x_define( e, name, value, c );
+            return Primitives._x_define( e, name, value, c );
         };
 
         return new Lambda(

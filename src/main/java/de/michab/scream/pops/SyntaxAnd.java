@@ -33,7 +33,7 @@ public class SyntaxAnd extends Syntax
     {
         checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-        L l = (e,c) -> Continuation._x_and(
+        L l = (e,c) -> Primitives._x_and(
                 e,
                 args,
                 c);

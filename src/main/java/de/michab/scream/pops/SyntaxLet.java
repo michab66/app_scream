@@ -99,7 +99,7 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            L l = (e,c) -> Continuation._x_let(
+            L l = (e,c) -> Primitives._x_let(
                     e,
                     bindings,
                     body,
@@ -128,7 +128,7 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            L l = (e,c) -> Continuation._x_letStar(
+            L l = (e,c) -> Primitives._x_letStar(
                     e,
                     bindings,
                     body,
@@ -157,7 +157,7 @@ public abstract class SyntaxLet
 
             var symbols = validateBindings( bindings );
 
-            L l = (e,c) -> Continuation._x_letRec(
+            L l = (e,c) -> Primitives._x_letRec(
                     e,
                     bindings,
                     body,

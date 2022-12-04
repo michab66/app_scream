@@ -5,9 +5,9 @@
  */
 package de.michab.scream;
 
-import de.michab.scream.pops.Continuation;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
+import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.Primitives.Cont;
+import de.michab.scream.pops.Primitives.Thunk;
 import urschleim.Holder;
 
 /**
@@ -60,9 +60,9 @@ public class Lambda extends FirstClassObject
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline( evaluate(
+        Primitives.trampoline( evaluate(
                 e,
-                Continuation.endCall( r::set ) ),
+                Primitives.endCall( r::set ) ),
                 error::set );
 
         if ( error.get() != null )

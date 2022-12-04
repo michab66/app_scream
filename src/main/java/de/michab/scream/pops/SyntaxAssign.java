@@ -34,7 +34,7 @@ public final class SyntaxAssign extends Syntax
                 args.getCar() );
         var value = args.listRef( 1 );
 
-        L l = (e,c) -> Continuation._x_assign(
+        L l = (e,c) -> Primitives._x_assign(
                 e,
                 symbol,
                 value,

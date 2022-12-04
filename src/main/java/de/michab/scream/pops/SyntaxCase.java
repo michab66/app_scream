@@ -17,8 +17,8 @@ import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
+import de.michab.scream.pops.Primitives.Cont;
+import de.michab.scream.pops.Primitives.Thunk;
 import de.michab.scream.util.Scut;
 
 /**
@@ -126,7 +126,7 @@ public class SyntaxCase extends Syntax
 
         if ( Symbol.createObject( "else" ).equals( currentClause.getCar() ))
         {
-            return Continuation._x_begin(
+            return Primitives._x_begin(
                     e,
                     Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
@@ -134,7 +134,7 @@ public class SyntaxCase extends Syntax
         var datums = Scut.as( Cons.class, currentClause.getCar() );
         if ( SchemeBoolean.isTrue( datums.member( key ) ) )
         {
-            return Continuation._x_begin(
+            return Primitives._x_begin(
                     e,
                     Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
@@ -162,7 +162,7 @@ public class SyntaxCase extends Syntax
                 clauses,
                 c );
 
-        return Continuation._x_eval(
+        return Primitives._x_eval(
                 e,
                 key,
                 next );

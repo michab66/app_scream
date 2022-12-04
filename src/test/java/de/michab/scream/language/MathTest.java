@@ -20,7 +20,7 @@ import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException;
-import de.michab.scream.pops.Continuation;
+import de.michab.scream.pops.Primitives;
 import urschleim.Holder;
 
 public class MathTest extends ScreamBaseTest
@@ -88,9 +88,9 @@ public class MathTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )
@@ -129,9 +129,9 @@ public class MathTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )

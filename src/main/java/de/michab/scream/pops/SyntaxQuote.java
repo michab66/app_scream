@@ -31,7 +31,7 @@ public class SyntaxQuote extends Syntax
         var quoted = args.getCar();
 
         return new Lambda(
-                (e,c) -> Continuation._x_quote(
+                (e,c) -> Primitives._x_quote(
                         e,
                         quoted,
                         c ),

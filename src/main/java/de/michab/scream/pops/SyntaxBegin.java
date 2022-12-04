@@ -26,7 +26,7 @@ public class SyntaxBegin extends Syntax
     @Override
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
-        L l = (e,c) -> Continuation._x_begin(
+        L l = (e,c) -> Primitives._x_begin(
                 e,
                 args,
                 c);

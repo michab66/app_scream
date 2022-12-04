@@ -20,11 +20,11 @@ import de.michab.scream.Symbol;
  * These always return an indirect thunk () -> ...
  * @author micbinz
  */
-public class Continuation
+public class Primitives
 {
     private static int _thunkCount;
 
-    public Continuation( Consumer<RuntimeX> errorHandler )
+    public Primitives( Consumer<RuntimeX> errorHandler )
     {
         _errorHandler = errorHandler;
     }
@@ -142,7 +142,7 @@ public class Continuation
 //                expressions.getCar(),
 //                e,
 //                next );
-        return Continuation._x_eval(
+        return Primitives._x_eval(
                 e,
                 expressions.getCar(),
                 next );
@@ -265,7 +265,7 @@ public class Continuation
         Cont<FirstClassObject> next =
                 (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
 
-        return Continuation._x_eval( e, body.getCar(), next );
+        return Primitives._x_eval( e, body.getCar(), next );
     }
 
     /**
@@ -444,7 +444,7 @@ public class Continuation
         Cont<FirstClassObject> next =
                 (fco) -> _or( e, (Cons)expressions.getCdr(), fco, c);
 
-        return Continuation._x_eval(
+        return Primitives._x_eval(
                 e,
                 expressions.getCar(),
                 next );

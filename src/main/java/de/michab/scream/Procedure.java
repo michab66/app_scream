@@ -7,9 +7,9 @@ package de.michab.scream;
 
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.pops.Continuation;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
+import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.Primitives.Cont;
+import de.michab.scream.pops.Primitives.Thunk;
 
 /**
  * Represents a scheme procedure.
@@ -91,7 +91,7 @@ public class Procedure
                 c );
 
         // Evaluate the arguments in the environment that we receive.
-        return () -> Continuation._x_evalCons(
+        return () -> Primitives._x_evalCons(
                 e,
                 args,
                 cc );

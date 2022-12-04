@@ -9,9 +9,9 @@ import java.util.HashSet;
 
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.pops.Continuation;
-import de.michab.scream.pops.Continuation.Cont;
-import de.michab.scream.pops.Continuation.Thunk;
+import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.Primitives.Cont;
+import de.michab.scream.pops.Primitives.Thunk;
 import urschleim.Holder;
 
 /**
@@ -208,11 +208,11 @@ public abstract class Operation
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Continuation.trampoline(
+        Primitives.trampoline(
                 _execute(
                         e,
                         argumentList,
-                        Continuation.endCall( s -> r.set( s ) ) ),
+                        Primitives.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )
@@ -476,7 +476,7 @@ public abstract class Operation
                 ex,
                 _formalArguments,
                 args,
-                (s)->Continuation._x_begin( s, _body, c ) );
+                (s)->Primitives._x_begin( s, _body, c ) );
     }
 
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
