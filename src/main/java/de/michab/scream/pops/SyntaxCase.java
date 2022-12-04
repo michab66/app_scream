@@ -8,6 +8,8 @@ package de.michab.scream.pops;
 import java.util.HashSet;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
@@ -17,8 +19,6 @@ import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
-import de.michab.scream.pops.Primitives.Cont;
-import de.michab.scream.pops.Primitives.Thunk;
 import de.michab.scream.util.Scut;
 
 /**

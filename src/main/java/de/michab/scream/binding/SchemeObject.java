@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation;
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
@@ -610,7 +611,7 @@ public class SchemeObject
             FirstClassObject[] list )
                     throws RuntimeX
     {
-        _log.warning( Primitives.thunkCount() + " " + Arrays.toString( list ) );
+        _log.warning( Continuation.thunkCount() + " " + Arrays.toString( list ) );
 
         // Check if the first element in the list is a symbol.
         Operation.checkArgument( 1, Symbol.class, list[0] );

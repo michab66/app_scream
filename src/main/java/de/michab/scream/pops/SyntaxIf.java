@@ -6,12 +6,12 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Lambda;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Syntax;
-import de.michab.scream.pops.Primitives.Cont;
 import de.michab.scream.util.Scut;
 
 /**

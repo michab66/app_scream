@@ -9,7 +9,6 @@ package de.michab.scream;
 import java.util.HashSet;
 
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Scut;
 import urschleim.Holder;
 
@@ -470,9 +469,9 @@ public class Cons
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 car.evaluate( env,
-                        Primitives.endCall( s -> r.set( s ) ) ),
+                        Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )

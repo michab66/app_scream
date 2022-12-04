@@ -7,11 +7,11 @@ package de.michab.scream;
 
 import java.util.HashSet;
 
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Primitives;
-import de.michab.scream.pops.Primitives.Cont;
-import de.michab.scream.pops.Primitives.Thunk;
 import urschleim.Holder;
 
 /**
@@ -208,11 +208,11 @@ public abstract class Operation
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 _execute(
                         e,
                         argumentList,
-                        Primitives.endCall( s -> r.set( s ) ) ),
+                        Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )

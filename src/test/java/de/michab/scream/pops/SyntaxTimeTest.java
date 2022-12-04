@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Operation;
 import de.michab.scream.SchemeInteger;
@@ -69,10 +70,10 @@ public class SyntaxTimeTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 cons.evaluate(
                         scriptEngine().getInteraction(),
-                        Primitives.endCall( s -> r.set( s ) ) ),
+                        Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )

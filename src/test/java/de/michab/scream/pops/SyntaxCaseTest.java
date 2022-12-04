@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
@@ -60,9 +61,9 @@ public class SyntaxCaseTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 opCall.evaluate( env,
-                        Primitives.endCall( s -> r.set( s ) ) ),
+                        Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )
@@ -94,9 +95,9 @@ public class SyntaxCaseTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 opCall.evaluate( env,
-                        Primitives.endCall( s -> r.set( s ) ) ),
+                        Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         if ( error.get() != null )
@@ -131,9 +132,9 @@ public class SyntaxCaseTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 opCall.evaluate( env,
-                        Primitives.endCall( s -> r.set( s ) ) ),
+                        Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         assertNotNull( error.get() );
@@ -163,9 +164,9 @@ public class SyntaxCaseTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 opCall.evaluate( env,
-                        Primitives.endCall( s -> r.set( s ) ) ),
+                        Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         assertNotNull( error.get() );
@@ -197,9 +198,9 @@ public class SyntaxCaseTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 opCall.evaluate( env,
-                        Primitives.endCall( s -> r.set( s ) ) ),
+                        Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         assertNotNull( error.get() );

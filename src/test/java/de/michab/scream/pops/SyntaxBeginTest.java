@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Operation;
@@ -55,11 +56,11 @@ public class SyntaxBeginTest extends ScreamBaseTest
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 Primitives._x_begin(
                         env,
                         cons,
-                        Primitives.endCall( s -> r.set( s ) ) ),
+                        Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
         assertEqualq( i313, r.get() );

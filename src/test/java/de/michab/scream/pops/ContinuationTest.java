@@ -9,10 +9,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.Continuation;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException;
-import de.michab.scream.pops.Primitives.Cont;
-import de.michab.scream.pops.Primitives.Thunk;
 import urschleim.Holder;
 
 public class ContinuationTest extends ScreamBaseTest
@@ -30,38 +31,38 @@ public class ContinuationTest extends ScreamBaseTest
     @Test
     void _basic() throws Exception
     {
-        Primitives.thunkCount(0);
+        Continuation.thunkCount(0);
         Holder<Integer> result =
                 new Holder<>( null );
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 add( 3,
                      4,
-                     Primitives.endCall( s -> result.set( s ) ) ),
+                     Continuation.endCall( s -> result.set( s ) ) ),
                 e -> error.set( e ) );
 
-        assertEquals( 1, Primitives.thunkCount() );
+        assertEquals( 1, Continuation.thunkCount() );
         assertEquals( 7, result.get() );
     }
 
     @Test
     void _basic2() throws Exception
     {
-        Primitives.thunkCount(0);
+        Continuation.thunkCount(0);
         Holder<Integer> result =
                 new Holder<>( null );
         Holder<ScreamException> error =
                 new Holder<>( null );
 
-        Primitives.trampoline(
+        Continuation.trampoline(
                 addd( 3,
                      4,
-                     Primitives.endCall( s -> result.set( s ) ) ),
+                     Continuation.endCall( s -> result.set( s ) ) ),
                 e -> error.set( e ) );
 
-        assertEquals( 2, Primitives.thunkCount() );
+        assertEquals( 2, Continuation.thunkCount() );
         assertEquals( 7, result.get() );
     }
 }

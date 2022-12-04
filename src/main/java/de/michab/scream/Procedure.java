@@ -5,11 +5,11 @@
  */
 package de.michab.scream;
 
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Primitives;
-import de.michab.scream.pops.Primitives.Cont;
-import de.michab.scream.pops.Primitives.Thunk;
 
 /**
  * Represents a scheme procedure.

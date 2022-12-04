@@ -5,9 +5,9 @@
  */
 package de.michab.scream;
 
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.pops.Primitives;
-import de.michab.scream.pops.Primitives.Cont;
-import de.michab.scream.pops.Primitives.Thunk;
 
 /**
  * The base class for all Scheme first-class objects.  A first class object is
@@ -89,9 +89,9 @@ public abstract class FirstClassObject
      * @return The thunk.
      * @throws RuntimeX In case the evaluation failed.
      */
-    public Primitives.Thunk evaluate(
+    public Thunk evaluate(
         Environment e,
-        Primitives.Cont<FirstClassObject> c )
+        Cont<FirstClassObject> c )
             throws RuntimeX
     {
         return  () -> {
