@@ -6,7 +6,6 @@
 package de.michab.scream.binding;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,11 +16,11 @@ import java.util.logging.Logger;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Continuation;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
-import de.michab.scream.Lambda;
-import de.michab.scream.Lambda.L;
 import de.michab.scream.Operation;
 import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
@@ -66,7 +65,7 @@ public class SchemeObject
     /**
      * The logger for this class.
      */
-    private final static Logger _log =
+    private final static Logger LOG =
             Logger.getLogger( SchemeObject.class.getName() );
 
     /**
@@ -154,32 +153,29 @@ public class SchemeObject
 
         try
         {
-            Class<?> clazz = Class.forName( className );
             // Get the associated class adapter.
-            classAdapter = JavaClassAdapter.createObject( clazz );
+            classAdapter = JavaClassAdapter.createObject(
+                    Class.forName( className ) );
 
             // If we didn't receive any constructor arguments...
             if ( null == ctorArgs )
                 // ...we create a class representative.
                 return new SchemeObject( null, classAdapter );
 
-            // We received constructor arguments, so get the preselected list of
-            // available constructors...
-            Constructor<?>[] ctors = classAdapter.getConstructors();
-            // ...and select the one to call.
-            for ( int i = 0 ; i < ctors.length ; i++ )
+            // We received constructor arguments, select the ctor to call.
+            for ( var c : classAdapter.getConstructors() )
             {
-                java.lang.Object[] argumentList
-                = matchParameters( ctors[i].getParameterTypes(), ctorArgs );
+                var argumentList =
+                        matchParameters( c.getParameterTypes(), ctorArgs );
 
                 if ( null != argumentList )
-                    return convertJava2Scream( ctors[i].newInstance( argumentList ) );
+                    return convertJava2Scream( c.newInstance( argumentList ) );
             }
 
             // No constructor fit the argument list.
             throw new RuntimeX( Code.METHOD_NOT_FOUND,
                     className + "<init>",
-                            Cons.create( ctorArgs ) );
+                    Cons.create( ctorArgs ) );
         }
         catch ( ClassNotFoundException e )
         {
@@ -231,50 +227,41 @@ public class SchemeObject
         return _theInstance;
     }
 
-//    @Override
-//    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-//    {
-//        long argsLen =
-//                checkArgumentCount( 1, 2, args );
-//
-//        L result;
-//
-//        if ( id() == 370 )
-//            System.out.println( 370 );
-//        if ( argsLen == 1 && args.listRef( 0 ) instanceof Cons )
-//        {
-//            var argsArray =
-//                    Cons.asArray( ((Cons)args.listRef( 0 )) );
-//            result = (e, c) -> {
-//                return c.accept( processInvocation( e, argsArray ) );
-//            };
-//        }
-//        else if ( argsLen == 1 && args.listRef( 0 ) instanceof Symbol) {
-//            var arg0 =
-//                    args.listRef( 0 );
-//            result = (e, c) -> {
-//                return c.accept( processAttributeGet( arg0 ) );
-//            };
-//        }
-//        else if ( argsLen == 2 && args.listRef( 0 ) instanceof Symbol )
-//        {
-//            var args0 = args.listRef( 0 );
-//            var args1 = args.listRef( 1 );
-//
-//            result = (e, c) -> {
-//                Cont<FirstClassObject> set = fco -> {
-//                    return c.accept( processAttributeSet( args0, fco ) );
-//                };
-//
-//                return Continuation._x_eval( e, args1, set );
-//            };
-//        }
-//        else
-//            throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
-//
-//        return new Lambda( result, toString() ).setInfo( args );
-//    }
-//
+    @Override
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
+    {
+        long argsLen =
+                checkArgumentCount( 1, 2, args );
+
+        if ( argsLen == 1 && args.listRef( 0 ) instanceof Cons )
+        {
+            var argsArray =
+                    Cons.asArray( ((Cons)args.listRef( 0 )) );
+                return c.accept( processInvocation( e, argsArray ) );
+        }
+        else if ( argsLen == 1 && args.listRef( 0 ) instanceof Symbol) {
+            var arg0 =
+                    args.listRef( 0 );
+                return c.accept( processAttributeGet( arg0 ) );
+        }
+        else if ( argsLen == 2 && args.listRef( 0 ) instanceof Symbol )
+        {
+            var args0 = args.listRef( 0 );
+            var args1 = args.listRef( 1 );
+
+            return () -> {
+                Cont<FirstClassObject> set = fco -> {
+                    return c.accept( processAttributeSet( args0, fco ) );
+                };
+
+                return Primitives._x_eval( e, args1, set );
+            };
+        }
+        else
+            throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
+    }
+
     /**
      * @param context The environment used for necessary evaluations.
      * @param args The passed arguments.
@@ -504,7 +491,7 @@ public class SchemeObject
     {
         Throwable t = ite.getCause();
 
-        _log.log( Level.FINE, t.getMessage(), t );
+        LOG.log( Level.FINE, t.getMessage(), t );
 
         // This is needed for handling of the Resync error.  See the description
         // and definition in FirstClassObject.  In case this was no Resync the
@@ -611,7 +598,7 @@ public class SchemeObject
             FirstClassObject[] list )
                     throws RuntimeX
     {
-        _log.warning( Continuation.thunkCount() + " " + Arrays.toString( list ) );
+        LOG.warning( Continuation.thunkCount() + " " + Arrays.toString( list ) );
 
         // Check if the first element in the list is a symbol.
         Operation.checkArgument( 1, Symbol.class, list[0] );
@@ -689,7 +676,7 @@ public class SchemeObject
     private FirstClassObject processAttributeGet( FirstClassObject attribute )
             throws RuntimeX
     {
-        _log.warning( attribute.toString() );
+        LOG.warning( attribute.toString() );
 
         // Make sure that the attribute is specified by a Symbol.
         Operation.checkArgument( 1, Symbol.class, attribute );
@@ -720,7 +707,7 @@ public class SchemeObject
             FirstClassObject value )
                     throws RuntimeX
     {
-        _log.warning( attribute + " = " + value );
+        LOG.warning( attribute + " = " + value );
 
         // Make sure that the attribute is specified by a Symbol.
         Operation.checkArgument( 1, Symbol.class, attribute );
@@ -799,48 +786,30 @@ public class SchemeObject
     @Override
     public SchemeObject copy()
     {
-        if ( true )
-            throw new InternalError( getClass().getSimpleName() );
-        try
-        {
-            // Get the clone method...
-            Method cloneMethod =
-                    _theInstance.getClass().getMethod( "clone", new Class[0] );
-            // ...and try to call it.  Since this is protected on java.lang.Object,
-            // we try it via reflection.
-            return new SchemeObject(
-                    cloneMethod.invoke( _theInstance, new Object[0] ) );
-        }
-        catch ( Exception e )
-        {
-            // Well, cloning failed so return identity.
-            return this;
-        }
+        throw new InternalError( getClass().getSimpleName() );
     }
 
     /**
-     * (make-object createlist) where createlist is (string:classname ctorarg1 ...)
+     * Create an object or class representation.
+     *
+     * classname is a symbol.
+     *
+     * (make-object classname) -> class
+     * (make-object (classname ...) -> instance ctor
      */
     static private Syntax constructObjectSyntax = new Syntax( "make-object" )
     {
-        private Lambda compileSymbol( Symbol symbol )
-        {
-            L l = (e,c) -> {
-                return c.accept( createObject( symbol.toString(), null ) );
-            };
-
-            return new Lambda( l, getName() );
-        }
-
         @Override
-        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        protected Thunk _execute( Environment e, Cons args,
+                Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 1, args );
 
             FirstClassObject argument = args.getCar();
 
+            // This creates a class instance. TODO not intuitive.
             if ( argument instanceof Symbol )
-                return compileSymbol( (Symbol)argument ).setInfo( args );
+                return c.accept( createObject( argument.toString(), null ) );
 
             Cons cons = Scut.as(
                     Cons.class,
@@ -852,50 +821,14 @@ public class SchemeObject
                     Symbol.class,
                     cons.getCar() );
 
-            L l = (e,c) -> {
-                return Primitives._x_evalCons(
-                        e,
-                        arguments,
-                        evaluated -> c.accept(
-                                createObject(
-                                        name.toString(),
-                                        evaluated.asArray() ) ) );
-            };
-
-            return new Lambda( l, getName() );
+            return Primitives._x_evalCons(
+                    e,
+                    arguments,
+                    evaluated -> c.accept(
+                            createObject(
+                                    name.toString(),
+                                    Cons.asArray( evaluated ) ) ) );
         }
-
-//        @Override
-//        public FirstClassObject activate( Environment context, FirstClassObject[] args )
-//                throws RuntimeX
-//        {
-//            checkArgumentCount( 1, args );
-//
-//            if ( (args[0] instanceof Cons) && ((Cons)args[0]).isProperList() )
-//            {
-//                FirstClassObject[] createList = ((Cons)args[0]).asArray();
-//
-//                // Test if first list element is symbol.
-//                checkArgument( 1, Symbol.class, createList[0] );
-//
-//                // Now evaluate the list of constructor arguments, but not the first
-//                // list element.
-//                for ( int i = 1 ; i < createList.length ; i++ )
-//                    createList[i] = evaluate( createList[i], context );
-//
-//                FirstClassObject[] params = new FirstClassObject[ createList.length -1 ];
-//                System.arraycopy( createList, 1, params, 0, params.length );
-//                return createObject( createList[0].toString(), params );
-//            }
-//            else if ( args[0] instanceof Symbol )
-//            {
-//                // Create a sole class representative.  This object is only of use to
-//                // access class (static) fields or methods.
-//                return createObject( args[0].toString(), null );
-//            }
-//            else
-//                throw new RuntimeX( Code.SYNTAX_ERROR );
-//        }
     };
 
     /**
@@ -911,13 +844,13 @@ public class SchemeObject
 
             FirstClassObject result;
 
-            // If the passed object is a SchemeObject...
+            // If the passed object is already a SchemeObject...
             if ( args[0] == Cons.NIL || args[0] instanceof SchemeObject )
                 // ...then just return this one.
                 result = args[0];
 
             else
-                // In the other case return a wrapped object.
+                // Otherwise case return a wrapped object.
                 result = new SchemeObject( args[0] );
 
             return result;
@@ -954,8 +887,6 @@ public class SchemeObject
 
             try
             {
-                // This cast also performs implicit type checking.  If this is no
-                // SchemeObject we will continue in the catch.
                 SchemeObject so = (SchemeObject)args[0];
 
                 int i;
