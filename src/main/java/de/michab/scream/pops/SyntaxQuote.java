@@ -6,8 +6,10 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
-import de.michab.scream.Lambda;
+import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Syntax;
 
@@ -24,18 +26,17 @@ public class SyntaxQuote extends Syntax
     }
 
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 1, args );
 
         var quoted = args.getCar();
 
-        return new Lambda(
-                (e,c) -> Primitives._x_quote(
+        return Primitives._x_quote(
                         e,
                         quoted,
-                        c ),
-                this.toString() );
+                        c );
     }
 
     /**

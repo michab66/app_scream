@@ -6,9 +6,10 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
-import de.michab.scream.Lambda;
-import de.michab.scream.Lambda.L;
+import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
@@ -25,7 +26,8 @@ public final class SyntaxAssign extends Syntax
     }
 
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, args );
 
@@ -34,13 +36,11 @@ public final class SyntaxAssign extends Syntax
                 args.getCar() );
         var value = args.listRef( 1 );
 
-        L l = (e,c) -> Primitives._x_assign(
+        return Primitives._x_assign(
                 e,
                 symbol,
                 value,
                 c);
-
-        return new Lambda( l, getName() );
     }
 
     /**

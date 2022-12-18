@@ -12,8 +12,6 @@ import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
-import de.michab.scream.Lambda;
-import de.michab.scream.Lambda.L;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
@@ -72,7 +70,8 @@ public class SyntaxCase extends Syntax
     }
 
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -85,21 +84,19 @@ public class SyntaxCase extends Syntax
         for ( var i = clauses ; i != Cons.NIL ; i = Scut.as( Cons.class, i.getCdr() ) )
         {
             final var fi = i;
-            final var c = Scut.as(
+            final var ct = Scut.as(
                     Cons.class,
                     i.getCar(),
                     s -> { throw Scut.mBadClause( fi ); } );
 
-            validateClause( unifier, c );
+            validateClause( unifier, ct );
         }
 
-        L l = (e,c) -> _case(
+        return _case(
                 e,
                 key,
                 clauses,
                 c);
-
-        return new Lambda( l, getName() );
     }
 
     /**

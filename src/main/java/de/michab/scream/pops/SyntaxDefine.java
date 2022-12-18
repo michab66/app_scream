@@ -6,9 +6,10 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
-import de.michab.scream.Lambda;
 import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException.Code;
@@ -28,30 +29,9 @@ public class SyntaxDefine extends Syntax
         super( "define" );
     }
 
-    private Lambda compileVariableDefinition(
-            Symbol variable, Cons value ) throws RuntimeX
-    {
-        checkArgumentCount( 1, value );
-
-        Lambda.L result = (e,c) -> {
-
-            return Primitives._x_eval(
-                    e,
-                    value.getCar(),
-                    fco -> Primitives._x_define(
-                            e,
-                            variable,
-                            fco,
-                            c ) );
-            };
-
-        return new Lambda(
-                result,
-                this.toString() ).setInfo( value );
-    }
-
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -64,8 +44,18 @@ public class SyntaxDefine extends Syntax
                     throw new RuntimeX( Code.SYNTAX_ERROR );
                 } );
 
-        if ( variableSlot instanceof Symbol )
-            return compileVariableDefinition( (Symbol)variableSlot, rest );
+        if ( variableSlot instanceof Symbol ) {
+            checkArgumentCount( 1, rest );
+            return Primitives._x_eval(
+                    e,
+                    rest.getCar(),
+                    fco -> Primitives._x_define(
+                            e,
+                            (Symbol)variableSlot,
+                            fco,
+                            c ) );
+
+        }
 
         // This is a lambda define...
 
@@ -87,55 +77,15 @@ public class SyntaxDefine extends Syntax
                 Cons.class,
                 args.listTail( 1 ) );
 
-        Lambda.L result = (e,c) -> {
+        return () -> {
             var value = new Procedure(
                     e,
                     parameterList,
                     body ).setName( name );
             return Primitives._x_define( e, name, value, c );
         };
-
-        return new Lambda(
-                result,
-                this.toString() ).setInfo( args );
     }
 
-//    @Override
-//    public FirstClassObject activate( Environment parent, FirstClassObject[] args )
-//            throws RuntimeX
-//    {
-//        checkMinimumArgumentCount( 2, args );
-//
-//        // Type check.
-//        if ( args[0] instanceof Symbol )
-//        {
-//            if ( args.length > 2 )
-//                throw new RuntimeX( Code.TOO_MANY_SUBEXPRESSIONS,
-//                        "define" );
-//            // Get the value.
-//            FirstClassObject value = evaluate( args[1], parent );
-//            // At last bind it.
-//            parent.define( (Symbol)args[0], value );
-//        }
-//        else if ( args[0] instanceof Cons && ((Cons)args[0]).length() > 0 )
-//        {
-//            FirstClassObject symbol = ((Cons)args[0]).getCar();
-//            if ( ! (symbol instanceof Symbol) )
-//                throw new RuntimeX( Code.DEFINE_ERROR );
-//
-//            Procedure procToBind = new Procedure( parent,
-//                    ((Cons)args[0]).getCdr(),
-//                    Cons.create( args, 1 ) );
-//            procToBind.setName( (Symbol)symbol );
-//            parent.define( (Symbol)symbol, procToBind );
-//        }
-//        else
-//            throw new RuntimeX( Code.SYNTAX_ERROR );
-//
-//        // This is unspecified.
-//        return Cons.NIL;
-//    }
-//
     /**
      * Base operations setup.
      *

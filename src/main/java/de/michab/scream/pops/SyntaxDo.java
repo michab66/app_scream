@@ -6,8 +6,10 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
-import de.michab.scream.Lambda;
+import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
@@ -100,7 +102,8 @@ public class SyntaxDo extends Syntax
     }
 
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -118,15 +121,13 @@ public class SyntaxDo extends Syntax
         checkArgumentCount( 1, Integer.MAX_VALUE, test );
 
 
-        return new Lambda(
-                (e,c) -> Primitives._x_do(
+        return Primitives._x_do(
                         e,
                         (Cons)setup.getCar(),
                         (Cons)setup.getCdr(),
                         test,
                         commands,
-                        c ),
-                this.getName() ).setInfo( args );
+                        c );
     }
 
     /**

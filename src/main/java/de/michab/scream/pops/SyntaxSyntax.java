@@ -6,9 +6,10 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
-import de.michab.scream.Lambda;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
@@ -32,7 +33,8 @@ public class SyntaxSyntax extends Syntax
     }
 
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -54,44 +56,14 @@ public class SyntaxSyntax extends Syntax
                 Cons.class,
                 args.listTail( 1 ) );
 
-        Lambda.L result = (e,c) -> {
+        return () -> {
             var value = new Syntax(
                     e,
                     parameterList,
                     body ).setName( name );
             return Primitives._x_define( e, name, value, c );
         };
-
-        return new Lambda(
-                result,
-                this.toString() ).setInfo( args );
     }
-
-//    @Override
-//    public FirstClassObject activate( Environment parent, FirstClassObject[] args )
-//            throws RuntimeX
-//    {
-//        checkMinimumArgumentCount( 2, args );
-//
-//        // Type check.
-//        if ( args[0] instanceof Cons && ((Cons)args[0]).length() > 0 )
-//        {
-//            FirstClassObject symbol = ((Cons)args[0]).getCar();
-//            if ( ! (symbol instanceof Symbol) )
-//                throw new RuntimeX( Code.DEFINE_ERROR );
-//
-//            Syntax procToBind = new Syntax( parent,
-//                    ((Cons)args[0]).getCdr(),
-//                    Cons.create( args, 1 ) );
-//            procToBind.setName( (Symbol)symbol );
-//            parent.define( (Symbol)symbol, procToBind );
-//        }
-//        else
-//            throw new RuntimeX( Code.SYNTAX_ERROR );
-//
-//        // This is unspecified.
-//        return Cons.NIL;
-//    }
 
     /**
      * Base operations setup.
