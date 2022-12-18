@@ -199,7 +199,9 @@ public abstract class Operation
      *        activation.
      * @return The result of the activation.
      * @throws RuntimeX In case the activation failed.
+     * @deprecated
      */
+    @Deprecated
     public FirstClassObject activate( Environment e, Cons argumentList )
             throws RuntimeX
     {
@@ -221,7 +223,7 @@ public abstract class Operation
         return r.get();
     }
 
-    protected Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
+    private Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
         throws RuntimeX
     {
         if ( argNames != Cons.NIL && argValues == Cons.NIL)
@@ -464,9 +466,19 @@ public abstract class Operation
         return null;
     }
 
+    /**
+     * Holds the function implementation.
+     * @param e
+     * @param args
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
     protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
+        checkArgumentCount( args );
+
         final var ex = e.extend( getName() );
 
         if ( _rest != Cons.NIL )
@@ -479,15 +491,53 @@ public abstract class Operation
                 (s)->Primitives._x_begin( s, _body, c ) );
     }
 
+    /**
+     * Override if the compile environment is required.
+     * The default implementation forwards to {@link #_execute(Environment, Cons, Cont)}.
+     *
+     * @param compileEnv
+     * @param e
+     * @param args
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
+    protected Thunk _execute( Environment compileEnv, Environment e, Cons args, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        return _execute( e, args, c );
+    }
+
+    /**
+     * Returns A lambda that calls _execute.
+     * @param env
+     * @param args
+     * @return
+     * @throws RuntimeX
+     */
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
-        checkArgumentCount( args );
-
-        L l = (e,c) -> _execute( e, args, c );
+        L l = (e,c) -> _execute( env, e, args, c );
 
         return new Lambda(
                 l,
-                this.toString() );
+                this.toString() ).setInfo( args );
+    }
+
+    /**
+     * Performs the actual invocation of the operation.
+     * @param env
+     * @param args
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
+    public Thunk _invoke( Environment env, Cons args, Cont<FirstClassObject> c )
+            throws RuntimeX
+    {
+        Lambda l = _compile( env, args );
+
+        return FirstClassObject.evaluate( l, env, c );
     }
 
     /**

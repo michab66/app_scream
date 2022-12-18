@@ -96,7 +96,7 @@ public class Syntax
      * @throws InternalError In case this method is not overridden.
      */
     @Override
-    final public FirstClassObject compile( Environment parent, Cons args )
+    final public Lambda compile( Environment parent, Cons args )
             throws RuntimeX
     {
         return _compile( parent, args );

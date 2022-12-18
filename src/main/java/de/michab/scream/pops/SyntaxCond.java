@@ -10,8 +10,6 @@ import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
-import de.michab.scream.Lambda;
-import de.michab.scream.Lambda.L;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamException.Code;
@@ -29,13 +27,14 @@ public class SyntaxCond extends Syntax
     }
 
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
-        for ( Cons c = args ; c != Cons.NIL ; c = Scut.as( Cons.class, c.getCdr() ) )
+        for ( Cons arg = args ; arg != Cons.NIL ; arg = Scut.as( Cons.class, arg.getCdr() ) )
         {
-            var fco = c.getCar();
+            var fco = arg.getCar();
             if ( ! (fco instanceof Cons) )
                 throw new RuntimeX( Code.BAD_CLAUSE,
                         toString( fco ) );
@@ -44,19 +43,17 @@ public class SyntaxCond extends Syntax
             // TODO unexpected ELSE message.
             if ( eqv( ELSE, clause.getCar() ) )
             {
-                if ( Cons.NIL != c.getCdr() )
+                if ( Cons.NIL != arg.getCdr() )
                     throw new RuntimeX( Code.BAD_CLAUSE,
                             toString( fco ) );
                 clause.setCar( SchemeBoolean.T );
             }
         }
 
-        L l = (e,c) -> _cond(
+        return _cond(
                 e,
                 args,
                 c);
-
-        return new Lambda( l, getName() );
     }
 
     private static Thunk _clause(

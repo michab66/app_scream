@@ -6,9 +6,10 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
-import de.michab.scream.Lambda;
-import de.michab.scream.Lambda.L;
+import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Syntax;
 
@@ -29,16 +30,15 @@ public class SyntaxAnd extends Syntax
     }
 
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-        L l = (e,c) -> Primitives._x_and(
+        return Primitives._x_and(
                 e,
                 args,
                 c);
-
-        return new Lambda( l, getName() );
     }
 
     /**

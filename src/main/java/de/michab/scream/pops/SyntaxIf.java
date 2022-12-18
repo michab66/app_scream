@@ -7,9 +7,9 @@ package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
-import de.michab.scream.Lambda;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Syntax;
 import de.michab.scream.util.Scut;
@@ -37,7 +37,11 @@ public class SyntaxIf extends Syntax
         super( "if" );
     }
 
-    private Lambda compImpl( Environment env, Cons cond, Cons positive )
+    private Thunk compImpl(
+            Environment e,
+            Cons cond,
+            Cons positive,
+            Cont<FirstClassObject> c)
             throws RuntimeX
     {
         var ccond =
@@ -45,7 +49,7 @@ public class SyntaxIf extends Syntax
         var cpositive =
                 positive.getCar();
 
-        Lambda.L result = (e,c) -> {
+        return () -> {
             Cont<FirstClassObject> pos =
                     fco -> Primitives._x_eval( e, cpositive, c );
             Cont<FirstClassObject> neg =
@@ -57,18 +61,21 @@ public class SyntaxIf extends Syntax
                     pos,
                     neg );
         };
-
-        return new Lambda( result, getName() );
     }
 
-    private Lambda compImpl( Environment env, Cons cond, Cons positive, Cons negative )
+    private Thunk compImpl(
+            Environment e,
+            Cons cond,
+            Cons positive,
+            Cons negative,
+            Cont<FirstClassObject> c)
             throws RuntimeX
     {
         var ccond = cond.getCar();
         var cpositive = positive.getCar();
         var cnegative = negative.getCar();
 
-        Lambda.L result = (e,c) -> {
+        return () -> {
             Cont<FirstClassObject> pos =
                     fco -> Primitives._x_eval( e, cpositive, c );
             Cont<FirstClassObject> neg =
@@ -80,12 +87,11 @@ public class SyntaxIf extends Syntax
                     pos,
                     neg );
         };
-
-        return new Lambda( result, getName() );
     }
 
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         long argsLen =
                 checkArgumentCount( 2, 3, args );
@@ -93,17 +99,19 @@ public class SyntaxIf extends Syntax
         if ( argsLen == 2 )
         {
             return compImpl(
-                    env,
+                    e,
                     args,
-                    Scut.as( Cons.class, args.listTail( 1 ) ) );
+                    Scut.as( Cons.class, args.listTail( 1 ) ),
+                    c );
         }
         else if ( argsLen == 3 )
         {
             return compImpl(
-                    env,
+                    e,
                     args,
                     Scut.as( Cons.class, args.listTail( 1 ) ),
-                    Scut.as( Cons.class, args.listTail( 2 ) ) );
+                    Scut.as( Cons.class, args.listTail( 2 ) ),
+                    c );
         }
 
         throw new InternalError();

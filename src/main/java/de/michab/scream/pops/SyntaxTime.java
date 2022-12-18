@@ -12,8 +12,6 @@ import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
-import de.michab.scream.Lambda;
-import de.michab.scream.Lambda.L;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeInteger;
 import de.michab.scream.Syntax;
@@ -53,13 +51,14 @@ public class SyntaxTime extends Syntax
     }
 
     @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 1, args );
 
         var expression = args.getCar();
 
-        L l = (e,c) -> {
+        return () -> {
             TimeProbe tp =
                     new TimeProbe( getName().toString() ).start();
             return Primitives._x_eval(
@@ -67,8 +66,6 @@ public class SyntaxTime extends Syntax
                     expression,
                     fco -> finish( tp, fco, c ) );
         };
-
-        return new Lambda( l, getName() );
     }
 
     /**

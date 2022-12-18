@@ -6,9 +6,10 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Environment;
-import de.michab.scream.Lambda;
-import de.michab.scream.Lambda.L;
+import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
@@ -88,7 +89,8 @@ public abstract class SyntaxLet
     static private Syntax letSyntax = new SyntaxLet( "let" )
     {
         @Override
-        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        protected Thunk _execute( Environment e, Cons args,
+                Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -99,13 +101,11 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            L l = (e,c) -> Primitives._x_let(
+            return Primitives._x_let(
                     e,
                     bindings,
                     body,
                     c);
-
-            return new Lambda( l, getName() );
         }
     };
 
@@ -117,7 +117,8 @@ public abstract class SyntaxLet
     static private Syntax letAsteriskSyntax = new SyntaxLet( "let*" )
     {
         @Override
-        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        protected Thunk _execute( Environment e, Cons args,
+                Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -128,13 +129,11 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            L l = (e,c) -> Primitives._x_letStar(
+            return Primitives._x_letStar(
                     e,
                     bindings,
                     body,
                     c);
-
-            return new Lambda( l, getName() );
         }
     };
 
@@ -146,7 +145,8 @@ public abstract class SyntaxLet
     static private Syntax letrecSyntax = new SyntaxLet( "letrec" )
     {
         @Override
-        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        protected Thunk _execute( Environment e, Cons args,
+                Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -157,14 +157,12 @@ public abstract class SyntaxLet
 
             var symbols = validateBindings( bindings );
 
-            L l = (e,c) -> Primitives._x_letRec(
+            return Primitives._x_letRec(
                     e,
                     bindings,
                     body,
                     symbols,
                     c);
-
-            return new Lambda( l, getName() );
         }
     };
 
