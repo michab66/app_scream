@@ -25,6 +25,7 @@ import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
@@ -263,16 +264,9 @@ public class Scream implements ScriptEngineFactory
         return result;
     }
 
-    static private FirstClassObject saveEval( FirstClassObject x, Environment e ) throws RuntimeX
-    {
-//        x = x.compile( e );
-
-            return FirstClassObject.evaluate( x, e );
-    }
-
     // Merge with SchemeEvaluator.
     public static FirstClassObject evalImpl(
-            Environment environment,
+            Environment e,
             SchemeReader sreader,
             Writer sink )
                     throws RuntimeX
@@ -281,16 +275,14 @@ public class Scream implements ScriptEngineFactory
 
         // Before starting the evaluation we add symbols for error handling to
         // the TLE.
-        environment.define( ERROR_ID, Cons.NIL );
-        environment.define( ERROR_OBJ, Cons.NIL );
+        e.define( ERROR_ID, Cons.NIL );
+        e.define( ERROR_OBJ, Cons.NIL );
 
         FirstClassObject result = null;
 
         // This is the read-eval-print loop.
         while ( ! currentThread .isInterrupted() )
         {
-            //                try
-            //                {
             FirstClassObject expression =
                     sreader.getExpression();
 
@@ -299,33 +291,7 @@ public class Scream implements ScriptEngineFactory
 
             // Evaluate the expression...
             result =
-                    saveEval( expression, environment );
-            //                    // ...and print the result.
-            //                    sink.write( FirstClassObject.stringize( result ) );
-            //                }
-            //                catch ( RuntimeX e )
-            //                {
-            //                    environment.assign( ERROR_ID, SchemeInteger.createObject( e.getId() ) );
-            //                    environment.assign( ERROR_OBJ, new SchemeObject( e ) );
-            //
-            //                    // Print the name of the operation that reported the problem.
-            //                    Symbol operationName = e.getOperationName();
-            //                    if ( operationName == null )
-            //                        operationName = Symbol.createObject( "top-level" );
-            //                    sink.write( operationName.toString() );
-            //                    sink.write( " : " );
-            //                    // Write the actual error message.
-            //                    sink.write( e.getMessage() );
-            //                }
-            //                catch ( Error e )
-            //                {
-            //                    sink.write( e.getMessage() + " " + e );
-            //                }
-            //                finally
-            //                {
-            //                    sink.write( '\n' );
-            //                    sink.flush();
-            //                }
+                    FirstClassObject.evaluate( expression, e );
         }
 
         return result;
@@ -406,7 +372,7 @@ public class Scream implements ScriptEngineFactory
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    private static FirstClassObject load( LoadContext current, Environment environment )
+    private static FirstClassObject load( LoadContext current, Environment e )
             throws RuntimeX
     {
         var stack = loadStack.get();
@@ -436,15 +402,14 @@ public class Scream implements ScriptEngineFactory
                 if ( expression == Port.EOF )
                     break;
                 result =
-                        saveEval( expression, environment );
+                        FirstClassObject.evaluate( expression, e );
             }
 
             return result;
         }
-        catch ( IOException e )
+        catch ( IOException ioe )
         {
-            throw new RuntimeX( "IO_ERROR",
-                    new Object[]{ e.getMessage() } );
+            throw new RuntimeX( Code.IO_ERROR, ioe.getMessage() );
         }
         finally
         {
@@ -516,42 +481,42 @@ public class Scream implements ScriptEngineFactory
      *
      * Currently the environment arguments are not supported.
      */
-    static private Procedure evalProcedure = new Procedure( "eval" )
-    {
-        private Class<?>[] formalArglist =
-                new Class[]{ FirstClassObject.class, Environment.class };
-
-        @Override
-        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkArguments( formalArglist, args );
-
-            // Do it.
-            return evaluate( args[0], (Environment)args[1] );
-        }
-    };
+//    static private Procedure evalProcedure = new Procedure( "eval" )
+//    {
+//        private Class<?>[] formalArglist =
+//                new Class[]{ FirstClassObject.class, Environment.class };
+//
+//        @Override
+//        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
+//                throws RuntimeX
+//        {
+//            checkArguments( formalArglist, args );
+//
+//            // Do it.
+//            return evaluate( args[0], (Environment)args[1] );
+//        }
+//    };
 
     /**
      * (scheme-report-environment)
      *
      * Currently the environment arguments are not supported.
      */
-    static private Procedure tleProcedure = new Procedure( "scheme-report-environment" )
-    {
-        private Class<?>[] formalArglist =
-                new Class[]{ SchemeInteger.class };
-
-        @Override
-        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkArguments( formalArglist, args );
-
-            // Do it.
-            return _topLevelEnvironment;
-        }
-    };
+//    static private Procedure tleProcedure = new Procedure( "scheme-report-environment" )
+//    {
+//        private Class<?>[] formalArglist =
+//                new Class[]{ SchemeInteger.class };
+//
+//        @Override
+//        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
+//                throws RuntimeX
+//        {
+//            checkArguments( formalArglist, args );
+//
+//            // Do it.
+//            return _topLevelEnvironment;
+//        }
+//    };
 
     /**
      * Environment operations setup.
@@ -562,9 +527,9 @@ public class Scream implements ScriptEngineFactory
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
     {
-        tle.setPrimitive( evalProcedure );
+//        tle.setPrimitive( evalProcedure );
         tle.setPrimitive( loadProcedure );
-        tle.setPrimitive( tleProcedure );
+//        tle.setPrimitive( tleProcedure );
 
         return tle;
     }

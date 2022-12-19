@@ -8,7 +8,6 @@ package de.michab.scream.binding;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -606,37 +605,34 @@ public class SchemeObject
         // Evaluate the list, excluding the first entry.
         // TODO this is our callers job.  The environment is only needed because of
         // this loop.
-        for ( int i = 1 ; i < list.length ; i++ )
-            list[i] = evaluate( list[i], env );
-
         FirstClassObject[] actual = new FirstClassObject[ list.length -1 ];
-        System.arraycopy( list, 1, actual, 0, actual.length );
+        for ( int i = 0 ; i < actual.length ; i++ )
+            actual[i] = evaluate( list[i+1], env );
 
         java.lang.String methodName = list[0].toString();
-        java.lang.reflect.Method[] methods = _classAdapter.getMethods();
 
         try
         {
             // Select the method to call.
-            for ( int i = 0 ; i < methods.length ; i++ )
+            for ( var method : _classAdapter.getMethods() )
             {
                 // First check the name.
-                if ( methodName.equals( methods[i].getName() ) )
+                if ( methodName.equals( method.getName() ) )
                 {
                     java.lang.Object[] argumentList
-                    = matchParameters( methods[i].getParameterTypes(), actual );
+                    = matchParameters( method.getParameterTypes(), actual );
 
                     if ( null != argumentList )
                     {
                         // Check if it is tried to invoke an instance method on a class
                         // object.  Since the VM in this case simply throws a NPE we have
                         // to check for this condition manually.
-                        if ( _isClass && ! Modifier.isStatic( methods[i].getModifiers() ) )
+                        if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
                             throw new RuntimeX( Code.CANT_ACCESS_INSTANCE );
 
                         // Do the actual call.
                         return convertJava2Scream(
-                                methods[i].invoke( _theInstance, argumentList ) );
+                                method.invoke( _theInstance, argumentList ) );
                     }
                 }
             }
@@ -753,8 +749,6 @@ public class SchemeObject
     {
         try
         {
-            // Implicit type checking.  Won't survive the cast if this is no
-            // SchemeObject.
             SchemeObject otherSo = (SchemeObject)other;
 
             return _theInstance.equals( otherSo._theInstance );
@@ -871,47 +865,47 @@ public class SchemeObject
         }
     };
 
-    /**
-     * (describe-object obj) -> #f
-     *
-     * TODO: return a more scheme like representation...
-     */
-    static private Procedure describeObjectProcedure =
-            new Procedure( "describe-object" )
-    {
-        @Override
-        public FirstClassObject apply( FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkArgumentCount( 1, args );
-
-            try
-            {
-                SchemeObject so = (SchemeObject)args[0];
-
-                int i;
-
-                Method[] methods = so._classAdapter.getMethods();
-                FirstClassObject[] methodsV = new FirstClassObject[ methods.length ];
-                for ( i = 0 ; i < methods.length ; i++ )
-                    methodsV[i] = new SchemeString( methods[i].toString() );
-
-                Field[] attributes = so._classAdapter.getFields();
-                FirstClassObject[] fieldsV = new FirstClassObject[ attributes.length ];
-                for ( i = 0 ; i < attributes.length ; i++ )
-                    fieldsV[i] = new SchemeString( attributes[i].toString() );
-
-                return
-                        new Cons( new Vector( methodsV, false ),
-                                new Vector( fieldsV, false ) );
-            }
-            catch ( ClassCastException e )
-            {
-                return Cons.NIL;
-            }
-        }
-    };
-
+//    /**
+//     * (describe-object obj) -> #f
+//     *
+//     * TODO: return a more scheme like representation...
+//     */
+//    static private Procedure describeObjectProcedure =
+//            new Procedure( "describe-object" )
+//    {
+//        @Override
+//        public FirstClassObject apply( FirstClassObject[] args )
+//                throws RuntimeX
+//        {
+//            checkArgumentCount( 1, args );
+//
+//            try
+//            {
+//                SchemeObject so = (SchemeObject)args[0];
+//
+//                int i;
+//
+//                Method[] methods = so._classAdapter.getMethods();
+//                FirstClassObject[] methodsV = new FirstClassObject[ methods.length ];
+//                for ( i = 0 ; i < methods.length ; i++ )
+//                    methodsV[i] = new SchemeString( methods[i].toString() );
+//
+//                Field[] attributes = so._classAdapter.getFields();
+//                FirstClassObject[] fieldsV = new FirstClassObject[ attributes.length ];
+//                for ( i = 0 ; i < attributes.length ; i++ )
+//                    fieldsV[i] = new SchemeString( attributes[i].toString() );
+//
+//                return
+//                        new Cons( new Vector( methodsV, false ),
+//                                new Vector( fieldsV, false ) );
+//            }
+//            catch ( ClassCastException e )
+//            {
+//                return Cons.NIL;
+//            }
+//        }
+//    };
+//
     /**
      * <p><code>(%catch expression error-handler)</code></p>
      * Evaluates the passed <code>expression</code> and executes the
@@ -954,13 +948,11 @@ public class SchemeObject
      *         passed in.
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
-    // Note that it is *not* expected that this method overrides the method in
-    // the super class.  Both methods are called by the initialisation logic.
     {
         tle.setPrimitive( objectPredicateProcedure );
         tle.setPrimitive( wrapObjectProcedure );
         tle.setPrimitive( constructObjectSyntax );
-        tle.setPrimitive( describeObjectProcedure );
+//        tle.setPrimitive( describeObjectProcedure );
 //        tle.setPrimitive( catchExceptionSyntax );
         return tle;
     }

@@ -262,25 +262,25 @@ public final class Environment
         define( name, op );
     }
 
-    /**
-     * (evaluate <expression>)
-     *
-     * Currently the environment arguments are not supported.
-     */
-    static private Procedure evaluateProcedure = new Procedure( "evaluate" )
-    {
-        private Class<?>[] formalArglist = new Class[]{ FirstClassObject.class };
-
-        @Override
-        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
-                throws RuntimeX
-        {
-            checkArguments( formalArglist, args );
-
-            return evaluate( args[0], parent );
-        }
-    };
-
+//    /**
+//     * (evaluate <expression>)
+//     *
+//     * Currently the environment arguments are not supported.
+//     */
+//    static private Procedure evaluateProcedure = new Procedure( "evaluate" )
+//    {
+//        private Class<?>[] formalArglist = new Class[]{ FirstClassObject.class };
+//
+//        @Override
+//        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
+//                throws RuntimeX
+//        {
+//            checkArguments( formalArglist, args );
+//
+//            return evaluate( args[0], parent );
+//        }
+//    };
+//
     /**
      * Environment operations setup.
      *
@@ -290,7 +290,7 @@ public final class Environment
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
     {
-        tle.setPrimitive( evaluateProcedure );
+        //tle.setPrimitive( evaluateProcedure );
         return tle;
     }
 
