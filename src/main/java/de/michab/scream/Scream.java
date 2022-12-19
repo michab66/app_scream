@@ -462,6 +462,21 @@ public class Scream implements ScriptEngineFactory
         private Class<?>[] formalArglist =
                 new Class[]{ SchemeString.class };
 
+//        @Override
+//        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+//                throws RuntimeX
+//        {
+//            checkArgumentCount( 1, args );
+//
+//            var string = Scut.as(
+//                    SchemeString.class,
+//                    args.getCar() );
+//
+//            return c.accept( load(
+//                    string.getValue(),
+//                    e ) );
+//        }
+
         @Override
         public FirstClassObject apply( Environment parent, FirstClassObject[] args )
                 throws RuntimeX

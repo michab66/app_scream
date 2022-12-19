@@ -152,7 +152,7 @@ public class Procedure
      * @return The result of the procedure application.
      * @throws RuntimeX In case of an error.
      */
-    public FirstClassObject apply( Cons evaluatedArgs )
+    public final FirstClassObject apply( Cons evaluatedArgs )
             throws RuntimeX
     {
         FirstClassObject[] array;
@@ -196,7 +196,7 @@ public class Procedure
      * @throws RuntimeX In case of an error.
      */
     @Deprecated
-    protected FirstClassObject apply( FirstClassObject[] evaluatedArgs )
+    final protected FirstClassObject apply( FirstClassObject[] evaluatedArgs )
             throws RuntimeX
     {
         return super.activate( _closure, Cons.create( evaluatedArgs ) );
