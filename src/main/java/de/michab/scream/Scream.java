@@ -25,10 +25,13 @@ import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
+import de.michab.scream.util.Scut;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -459,35 +462,19 @@ public class Scream implements ScriptEngineFactory
      */
     static private Procedure loadProcedure = new Procedure( "load" )
     {
-        private Class<?>[] formalArglist =
-                new Class[]{ SchemeString.class };
-
-//        @Override
-//        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
-//                throws RuntimeX
-//        {
-//            checkArgumentCount( 1, args );
-//
-//            var string = Scut.as(
-//                    SchemeString.class,
-//                    args.getCar() );
-//
-//            return c.accept( load(
-//                    string.getValue(),
-//                    e ) );
-//        }
-
         @Override
-        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
+        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
-            checkArguments( formalArglist, args );
+            checkArgumentCount( 1, args );
 
+            var string = Scut.as(
+                    SchemeString.class,
+                    args.getCar() );
 
-            // Do it.
-            return load(
-                    ((SchemeString)args[0]).getValue(),
-                    parent );
+            return c.accept( load(
+                    string.getValue(),
+                    e ) );
         }
     };
 
