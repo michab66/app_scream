@@ -5,7 +5,11 @@
  */
 package de.michab.scream;
 
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Scut;
 
 /**
  * The base class for Scream's numeric types.
@@ -101,6 +105,15 @@ public abstract class Number
   public abstract double asDouble();
 
 
+  @FunctionalInterface
+  interface ArithmeticOperation
+  {
+      Thunk perform(
+              Environment e,
+              Cons list,
+              long listLength,
+              Cont<FirstClassObject> c ) throws RuntimeX;
+  }
 
   /**
    * Computes this plus the argument.
@@ -112,7 +125,39 @@ public abstract class Number
   public abstract Number add( FirstClassObject other )
     throws RuntimeX;
 
+  private static Thunk _add( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
+      throws RuntimeX
+  {
+      if ( rest == Cons.NIL )
+          return c.accept( total );
 
+      var current = Scut.as( Number.class, rest.getCar() );
+
+      return _add(
+              e,
+              total.add( current ),
+              Scut.as( Cons.class, rest.getCdr() ),
+              c );
+  }
+
+  // r7rs p. 36
+  private static Thunk _x_add(
+          Environment e,
+          Cons list,
+          long listLength,
+          Cont<FirstClassObject> c )
+  {
+      var zero = SchemeInteger.createObject( 0 );
+
+      if ( listLength == 0 )
+          return () -> Primitives._x_quote( e, zero, c );
+
+      return () -> _add(
+              e,
+              zero,
+              list,
+              c );
+  }
 
   /**
    * Computes this - other.
@@ -124,7 +169,40 @@ public abstract class Number
   public abstract Number subtract( FirstClassObject other )
     throws RuntimeX;
 
+  private static Thunk _subtract( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
+          throws RuntimeX
+      {
+          if ( rest == Cons.NIL )
+              return c.accept( total );
 
+          var current = Scut.as( Number.class, rest.getCar() );
+
+          return _subtract(
+                  e,
+                  total.subtract( current ),
+                  Scut.as( Cons.class, rest.getCdr() ),
+                  c );
+      }
+
+      private static Thunk _x_subtract(
+              Environment e,
+              Cons list,
+              long listLength,
+              Cont<FirstClassObject> c ) throws RuntimeX
+      {
+          if ( listLength == 1 )
+              return () -> _subtract(
+                      e,
+                      SchemeInteger.createObject( 0 ),
+                      list,
+                      c );
+
+          return () -> _subtract(
+                  e,
+                  Scut.as( Number.class, list.getCar() ),
+                  Scut.as( Cons.class, list.getCdr() ),
+                  c );
+      }
 
   /**
    * Computes this * other.
@@ -135,7 +213,38 @@ public abstract class Number
   public abstract Number multiply( FirstClassObject other )
     throws RuntimeX;
 
+  private static Thunk _multiply( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
+          throws RuntimeX
+      {
+          if ( rest == Cons.NIL )
+              return c.accept( total );
 
+          var current = Scut.as( Number.class, rest.getCar() );
+
+          return _multiply(
+                  e,
+                  total.multiply( current ),
+                  Scut.as( Cons.class, rest.getCdr() ),
+                  c );
+      }
+
+      private static Thunk _x_multiply(
+              Environment e,
+              Cons list,
+              long listLength,
+              Cont<FirstClassObject> c ) throws RuntimeX
+      {
+          var one = SchemeInteger.createObject( 1 );
+
+          if ( listLength == 0 )
+              return () -> Primitives._x_quote( e, one, c );
+
+          return () -> _multiply(
+                  e,
+                  one,
+                  list,
+                  c );
+      }
 
   /**
    * Computes this / other.
@@ -146,6 +255,46 @@ public abstract class Number
   public abstract Number divide( FirstClassObject other )
     throws RuntimeX;
 
+  private static Thunk _divide( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
+          throws RuntimeX
+      {
+          if ( rest == Cons.NIL )
+              return c.accept( total );
+
+          var current = Scut.as( Number.class, rest.getCar() );
+
+          try {
+          return _divide(
+                  e,
+                  total.divide( current ),
+                  Scut.as( Cons.class, rest.getCdr() ),
+                  c );
+          }
+          catch ( ArithmeticException aex )
+          {
+              throw new RuntimeX( Code.DIVISION_BY_ZERO );
+          }
+      }
+
+      private static Thunk _x_divide(
+              Environment e,
+              Cons list,
+              long listLength,
+              Cont<FirstClassObject> c ) throws RuntimeX
+      {
+          if ( listLength == 1 )
+              return () -> _divide(
+                      e,
+                      SchemeInteger.createObject( 1 ),
+                      list,
+                      c );
+
+          return () -> _divide(
+                  e,
+                  Scut.as( Number.class, list.getCar() ),
+                  Scut.as( Cons.class, list.getCdr() ),
+                  c );
+      }
 
 
   /**
@@ -230,24 +379,42 @@ public abstract class Number
       Operation.checkArgument( i, Number.class, list[i] );
   }
 
+  private static Thunk doArithmetic(
+          ArithmeticOperation opr,
+          Environment e,
+          Cons args,
+          long argsLength,
+          Cont<FirstClassObject> c )
+  {
 
+      return Primitives._x_evalCons(
+              e,
+              args,
+              cons -> opr.perform(
+                      e,
+                      cons,
+                      argsLength,
+                      c ) );
+  }
 
   /**
    * (+ ...
    */
   static private Procedure addProc = new Procedure( "+" )
   {
-    @Override
-    public FirstClassObject apply( FirstClassObject[] args )
-      throws RuntimeX
-    {
-      Number result = SchemeInteger.createObject( 0 );
-      // Note: Types will be checked in add.
-      for ( int i = 0 ; i < args.length ; i++ )
-        result = result.add( args[i] );
+      @Override
+      protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+              throws RuntimeX
+      {
+          var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-      return result;
-    }
+          return doArithmetic(
+                  Number::_x_add,
+                  e,
+                  args,
+                  len,
+                  c );
+      }
   };
 
 
@@ -257,114 +424,61 @@ public abstract class Number
    */
   static private Procedure subtractProc = new Procedure( "-" )
   {
-    @Override
-    public FirstClassObject apply( FirstClassObject[] args )
-      throws RuntimeX
-    {
-      Number result = SchemeInteger.createObject( 0 );
-
-      if ( 1 == args.length )
-          result = result.subtract( args[0] );
-      else if ( args.length > 1 )
+      @Override
+      protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+              throws RuntimeX
       {
-        // Prevent the need for typechecking.
-        result = result.add( args[ 0 ] );
-        // Note: Types will be checked in subtract.
-        for ( int i = 1 ; i < args.length ; i++ )
-          result = result.subtract( args[i] );
+          var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
+
+          return doArithmetic(
+                  Number::_x_subtract,
+                  e,
+                  args,
+                  len,
+                  c );
       }
-
-      return result;
-    }
   };
-
-
 
   /**
    * (* ...
    */
   static private Procedure multiplyProc = new Procedure( "*" )
   {
-    // TODO NIL handling is bad.
-    @Override
-    public FirstClassObject apply( FirstClassObject[] args )
-      throws RuntimeX
-    {
-      Number result = null;
-
-      try
+      @Override
+      protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+              throws RuntimeX
       {
-        catchNil( args );
+          var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-        if ( 0 == args.length )
-          result = SchemeInteger.createObject( 1 );
-        else if ( 1 == args.length )
-          result = (Number)args[ 0 ];
-        else
-        {
-          result = (Number)args[ 0 ];
-          // Note: Types will be checked in multiply.
-          for ( int i = 1 ; i < args.length ; i++ )
-            result = result.multiply( args[i] );
-        }
-      }
-      catch ( ClassCastException e )
-      {
-        // Arg 0 was no number somewhere above.  Perform explicit type check
-        // and trigger error reporting.
-        checkArgument( 1, Number.class, args[0] );
+          return doArithmetic(
+                  Number::_x_multiply,
+                  e,
+                  args,
+                  len,
+                  c );
       }
 
-      return result;
-    }
   };
-
-
 
   /**
    * (/ ...
    */
   static private Procedure divideProc = new Procedure( "/" )
   {
-    @Override
-    public FirstClassObject apply( FirstClassObject[] args )
-      throws RuntimeX
-    {
-      Number result = null;
+      @Override
+      protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+              throws RuntimeX
+      {
+          var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
-      try
-      {
-        catchNil( args );
-        // In case we have no argument...
-        if ( 0 == args.length )
-          // ...return 1.
-          result = SchemeInteger.createObject( 1 );
-        else if ( 1 == args.length )
-          // ...return the inverse.
-          result = SchemeDouble.createObject( 1.0 ).divide( args[0] );
-        else
-        {
-          result = (Number)args[ 0 ];
-          // Note: Types will be checked in divide.
-          for ( int i = 1 ; i < args.length ; i++ )
-            result = result.divide( args[i] );
-        }
+          return doArithmetic(
+                  Number::_x_divide,
+                  e,
+                  args,
+                  len,
+                  c );
       }
-      catch ( ClassCastException e )
-      {
-        // Arg 0 was no number somewhere above.  So do the explicit type check
-        // and trigger error handling.
-        checkArgument( 1, Number.class, args[0] );
-      }
-      catch ( ArithmeticException e )
-      {
-        throw new RuntimeX( Code.DIVISION_BY_ZERO );
-      }
-
-      return result;
-    }
   };
-
 
 
   /**
