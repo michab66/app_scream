@@ -7,7 +7,6 @@ package de.michab.scream;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.URL;
 import java.util.Arrays;
@@ -32,6 +31,7 @@ import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
 import de.michab.scream.util.Scut;
+import de.michab.scream.util.SupplierX;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -67,7 +67,7 @@ public class Scream implements ScriptEngineFactory
     /**
      * The logger for this class.
      */
-    private final static Logger log =
+    private final static Logger LOG =
             Logger.getLogger( Scream.class.getName() );
 
     private final static ThreadLocal<Stack<LoadContext>> loadStack =
@@ -77,7 +77,7 @@ public class Scream implements ScriptEngineFactory
      * @see de.michab.scream.Scream#getErrorPort
      * @see de.michab.scream.Scream#_errorPort
      */
-    private final static PrintWriter _errorWriter = new PrintWriter( System.err );
+//    private final static PrintWriter _errorWriter = new PrintWriter( System.err );
 
     /**
      * The symbol being bound to an object reference of the interpreter itself.
@@ -88,14 +88,14 @@ public class Scream implements ScriptEngineFactory
     /**
      * Symbol receives an error id when an error occurred.
      */
-    private final static Symbol ERROR_ID =
-            Symbol.createObject( "%error-id" );
+//    private final static Symbol ERROR_ID =
+//            Symbol.createObject( "%error-id" );
 
     /**
      * Symbol receives the actual exception when an error occurred.
      */
-    private final static Symbol ERROR_OBJ =
-            Symbol.createObject( "%error-object" );
+//    private final static Symbol ERROR_OBJ =
+//            Symbol.createObject( "%error-object" );
 
     /**
      * Symbol is bound to an error stream.  Available in static initialization.
@@ -107,7 +107,7 @@ public class Scream implements ScriptEngineFactory
      * This is the relative path to our extensions package.
      */
     private final static String EXTENSION_POSITION = "extensions/";
-    private final static String schemeTestPosition = "test/";
+//    private final static String schemeTestPosition = "test/";
 
     /**
      * Property key: specifies additional classes the kernel should load on
@@ -219,7 +219,7 @@ public class Scream implements ScriptEngineFactory
 
         for ( var crtClassName : integrateClasses )
         {
-            log.info( "Initializing: " + crtClassName );
+            LOG.info( "Initializing: " + crtClassName );
 
             try
             {
@@ -231,28 +231,28 @@ public class Scream implements ScriptEngineFactory
             }
             catch ( ClassNotFoundException e )
             {
-                log.log(
+                LOG.log(
                         Level.WARNING,
                         "Class for initialization not found: ''{0}''",
                         crtClassName );
             }
             catch ( NoSuchMethodException e )
             {
-                log.fine(
+                LOG.fine(
                         "No init needed for class '" +
                                 crtClassName +
                         "'." );
             }
             catch ( IllegalAccessException e )
             {
-                log.log(
+                LOG.log(
                         Level.WARNING,
                         "Illegal access: ''{0}''",
                         crtClassName );
             }
             catch ( java.lang.reflect.InvocationTargetException e )
             {
-                log.log(
+                LOG.log(
                         Level.WARNING,
                         "Init threw exception.",
                         e.getCause() );
@@ -267,27 +267,20 @@ public class Scream implements ScriptEngineFactory
         return result;
     }
 
-    // Merge with SchemeEvaluator.
     public static FirstClassObject evalImpl(
             Environment e,
-            SchemeReader sreader,
+            SupplierX<FirstClassObject> s,
+            // TODO
             Writer sink )
                     throws RuntimeX
     {
-        Thread currentThread = Thread.currentThread();
-
-        // Before starting the evaluation we add symbols for error handling to
-        // the TLE.
-        e.define( ERROR_ID, Cons.NIL );
-        e.define( ERROR_OBJ, Cons.NIL );
-
         FirstClassObject result = null;
 
         // This is the read-eval-print loop.
-        while ( ! currentThread .isInterrupted() )
+        while ( true )
         {
             FirstClassObject expression =
-                    sreader.getExpression();
+                    s.get();
 
             if ( expression == Port.EOF )
                 break;
@@ -336,7 +329,7 @@ public class Scream implements ScriptEngineFactory
             }
             catch ( RuntimeX e )
             {
-                log.log(
+                LOG.log(
                         Level.SEVERE,
                         e.getMessage() );
                 throw new InternalError( e );
@@ -396,19 +389,7 @@ public class Scream implements ScriptEngineFactory
             SchemeParser parser =
                     new SchemeParser( reader );
 
-            FirstClassObject result = Cons.NIL;
-
-            while (true)
-            {
-                var expression =
-                        parser.getExpression();
-                if ( expression == Port.EOF )
-                    break;
-                result =
-                        FirstClassObject.evaluate( expression, e );
-            }
-
-            return result;
+            return evalImpl( e, parser::getExpression, null );
         }
         catch ( IOException ioe )
         {
@@ -433,27 +414,6 @@ public class Scream implements ScriptEngineFactory
 
         engine.eval( new InputStreamReader( System.in ) );
     }
-
-    /**
-     * Starts Scream in standard IO mode, that is, only the standard IO streams
-     * are used for input and output.
-     */
-    //    private static void startStandardIoMode()
-    //    {
-    //        try
-    //        {
-    //            // This throws an IO exception, if the VM is running in background.
-    //            // That is tested with 1.2.2, 1.3, 1.4 beta on NT4.0
-    //            System.in.available();
-    //            createSchemeInterpreter(
-    //                    new InputStreamReader( System.in ),
-    //                    new PrintWriter( System.out ) );
-    //        }
-    //        catch ( IOException e )
-    //        {
-    //            System.exit( 1 );
-    //        }
-    //    }
 
     /**
      * (load <expression>)

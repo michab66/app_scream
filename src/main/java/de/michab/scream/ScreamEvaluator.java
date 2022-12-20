@@ -124,7 +124,7 @@ public final class ScreamEvaluator implements ScriptEngine
     {
             return Scream.evalImpl(
                     _interaction,
-                    new SchemeReader( reader),
+                    new SchemeReader( reader)::getExpression,
                     _context.getWriter() );
     }
 
