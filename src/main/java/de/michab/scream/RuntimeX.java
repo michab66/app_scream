@@ -5,6 +5,9 @@
  */
 package de.michab.scream;
 
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
+
 /**
  * An exception to be thrown at run-time of a scheme program.  This type of
  * exception gets transformed to a user error message.
@@ -97,27 +100,53 @@ extends ScreamException
     static private Procedure errorProcedure = new Procedure( "error" )
     {
         @Override
-        protected FirstClassObject apply( Environment parent, FirstClassObject[] args )
+        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
-            checkMinimumArgumentCount( 1, args );
-            checkArgument( 1, SchemeString.class, args[0] );
+            checkArgumentCount( 1, Integer.MAX_VALUE, args );
+            checkArgument( 1, SchemeString.class, args.listRef( 0 ) );
 
             // Yes, the first argument is definitely a SchemeString.
-            String message = createReadable( args[0] );
+            String message = createReadable( args.listRef( 0 ) );
 
             // Transform the remaining arguments in error arguments.
-            Object[] arguments = new Object[ args.length -1 ];
-            for ( int i = args.length-1 ; i > 0 ; i-- )
-                arguments[i-1] = createReadable( args[i] );
+            Object[] arguments = new Object[ (int)(args.length() -1) ];
+            for ( int i = (int)(args.length()-1) ; i > 0 ; i-- )
+                arguments[i-1] = createReadable( args.listRef( i ) );
 
             // We must have been called by a scheme-defined procedure.  Get its name
             // and report that as the operation in error.
             RuntimeX result = new RuntimeX( message, arguments );
-            result.setOperationName( parent.getName() );
+
+            // TODO: This is a temporary workaround.
+            // Remove as soon as the apply call chain is removed.
+            if ( e != null )
+                result.setOperationName( e.getName() );
             throw result;
         }
 
+//        @Override
+//        protected FirstClassObject apply( Environment parent, FirstClassObject[] args )
+//                throws RuntimeX
+//        {
+//            checkMinimumArgumentCount( 1, args );
+//            checkArgument( 1, SchemeString.class, args[0] );
+//
+//            // Yes, the first argument is definitely a SchemeString.
+//            String message = createReadable( args[0] );
+//
+//            // Transform the remaining arguments in error arguments.
+//            Object[] arguments = new Object[ args.length -1 ];
+//            for ( int i = args.length-1 ; i > 0 ; i-- )
+//                arguments[i-1] = createReadable( args[i] );
+//
+//            // We must have been called by a scheme-defined procedure.  Get its name
+//            // and report that as the operation in error.
+//            RuntimeX result = new RuntimeX( message, arguments );
+//            result.setOperationName( parent.getName() );
+//            throw result;
+//        }
+//
         /**
          * Makes a human readable string from a FirstClassObject.  That means for
          * a real scheme string that the double quotes are removed -- gnah instead

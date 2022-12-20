@@ -192,7 +192,7 @@ public abstract class Operation
     /**
      * Execute the operation in a given environment and based on the passed
      * parameters.  This default implementation just forwards the call to
-     * <code>activate( Environment, FirstClassObject[] )</code>.
+     * <code>_execute( Environment, FirstClassObject[] )</code>.
      *
      * @param e The environment to use for the current activation.
      * @param argumentList The list of arguments passed into the current

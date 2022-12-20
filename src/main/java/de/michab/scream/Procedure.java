@@ -140,65 +140,9 @@ public class Procedure
                 evaluatedArgs[i] = evaluate( evaluatedArgs[i], parent );
         }
 
-        return apply( parent, evaluatedArgs );
-    }
+        if ( _closure != null )
+            return super.activate( _closure, Cons.create( evaluatedArgs ) );
 
-    /**
-     * This is the public available apply procedure that is used from Scheme
-     * implemented methods via reflection.
-     *
-     * @param evaluatedArgs The list of evaluated arguments to be used for the
-     *        <code>apply</code> invocation.
-     * @return The result of the procedure application.
-     * @throws RuntimeX In case of an error.
-     */
-    public FirstClassObject apply( Cons evaluatedArgs )
-            throws RuntimeX
-    {
-        FirstClassObject[] array;
-
-        if ( Cons.NIL == evaluatedArgs )
-            array = _emptyArgArray;
-        else
-            array = evaluatedArgs.asArray();
-
-        // Just map to the array version of this method.
-        return apply( array );
-    }
-
-    /**
-     * Another point to be overridden.  In this case the parent environment
-     * is accessible.
-     *
-     * @param parent The environment to use for this procedure application.
-     * @param evaluatedArgs The list of evaluated arguments to be used for the
-     *        <code>apply</code> invocation.
-     * @return The result of the procedure application.
-     * @throws RuntimeX In case of an error.
-     */
-    @Deprecated
-    protected FirstClassObject apply( Environment parent,
-            FirstClassObject[] evaluatedArgs )
-                    throws RuntimeX
-    {
-        // Note that this override is only used by the implementations of
-        // the %error and evaluate procedures.
-        return apply( evaluatedArgs );
-    }
-
-    /**
-     * If not overridden this method actually executes the Scheme defined
-     * procedure.
-     *
-     * @param evaluatedArgs The list of evaluated arguments to be used for the
-     *        <code>apply</code> invocation.
-     * @return The result of the procedure application.
-     * @throws RuntimeX In case of an error.
-     */
-    @Deprecated
-    protected FirstClassObject apply( FirstClassObject[] evaluatedArgs )
-            throws RuntimeX
-    {
-        return super.activate( _closure, Cons.create( evaluatedArgs ) );
+        return super.activate( parent, Cons.create( evaluatedArgs ) );
     }
 }
