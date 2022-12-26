@@ -8,10 +8,16 @@ package de.michab.scream.util;
 import java.util.HashSet;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation;
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
+import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.ScreamException;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
+import urschleim.Holder;
 
 /**
  * Scream utilities.
@@ -251,4 +257,27 @@ public class Scut
                 FirstClassObject.toString( duplicate ) );
     }
 
+    @FunctionalInterface
+    interface ToStackOp {
+        Thunk call( Environment e, Cont<FirstClassObject> c );
+    }
+
+    public static FirstClassObject toStack( Environment e, ToStackOp op )
+        throws RuntimeX
+    {
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                op.call( e,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+            throw (RuntimeX)error.get();
+
+        return r.get();
+    }
 }

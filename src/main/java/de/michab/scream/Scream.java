@@ -526,7 +526,7 @@ public class Scream implements ScriptEngineFactory
     public static Environment extendTopLevelEnvironment( Environment tle )
     {
 //        tle.setPrimitive( evalProcedure );
-        tle.setPrimitive( loadProcedure );
+        tle.setPrimitive( loadProcedure.setClosure( tle ) );
 //        tle.setPrimitive( tleProcedure );
 
         return tle;

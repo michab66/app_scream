@@ -5,6 +5,8 @@
  */
 package de.michab.scream;
 
+import org.smack.util.JavaUtil;
+
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Lambda.L;
@@ -29,7 +31,7 @@ public class Procedure
      *
      * @label effective environment
      */
-    private final Environment _closure;
+    private Environment _closure;
 
     /**
      * Default constructor.  Used for Java-defined specialisations.
@@ -40,6 +42,12 @@ public class Procedure
     {
         super( name );
         _closure = null;
+    }
+    public Procedure setClosure( Environment closure )
+    {
+        JavaUtil.Assert( _closure == null );
+        _closure = closure;
+        return this;
     }
 
     /**
@@ -85,7 +93,7 @@ public class Procedure
             throws RuntimeX
     {
         // Execute in our _closure.
-        Cont<Cons> cc = evaluated -> super._execute(
+        Cont<Cons> cc = evaluated -> _execute(
                 _closure,
                 evaluated,
                 c );
@@ -100,7 +108,7 @@ public class Procedure
     @Override
     protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
-        checkArgumentCount( args );
+//        checkArgumentCount( args );
 
         L l = (e,c) -> _prepareExecute( e, args, c );
 
