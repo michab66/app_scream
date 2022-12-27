@@ -20,6 +20,7 @@ import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
+import de.michab.scream.Lambda;
 import de.michab.scream.Operation;
 import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
@@ -844,6 +845,12 @@ public class SchemeObject
                 return c.accept( a0 );
 
             return c.accept( new SchemeObject( a0 ) );
+        }
+        @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            // TODO Auto-generated method stub
+            return super._compile( env, args );
         }
     };
 

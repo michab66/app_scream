@@ -24,7 +24,7 @@ public final class SyntaxLambda extends Syntax
     }
 
     @Override
-    protected Thunk _execute( Environment compileEnvironment, Environment e, Cons args,
+    protected Thunk _execute( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -33,7 +33,7 @@ public final class SyntaxLambda extends Syntax
         var body = Scut.as( Cons.class,args.getCdr() );
 
         return c.accept(
-                new Procedure( compileEnvironment, formals, body ) );
+                new Procedure( e, formals, body ) );
     }
 
 //    @Override

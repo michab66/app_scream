@@ -502,7 +502,7 @@ public abstract class Operation
      * @return
      * @throws RuntimeX
      */
-    protected Thunk _execute( Environment compileEnv, Environment e, Cons args, Cont<FirstClassObject> c )
+    private Thunk _execute( Environment compileEnv, Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         return _execute( e, args, c );

@@ -439,7 +439,7 @@ public class Cons
         }
     }
 
-    private static Lambda _compile(
+    private static Lambda performInvocation(
             Environment e,
             FirstClassObject  op,
             Cons args )
@@ -477,7 +477,7 @@ public class Cons
         if ( error.get() != null )
             throw (RuntimeX)error.get();
 
-        return _compile(
+        return performInvocation(
                     env,
                     r.get(),
                     Scut.as( Cons.class, getCdr() ) );
