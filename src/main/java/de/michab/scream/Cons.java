@@ -411,6 +411,7 @@ public class Cons
      * @throws RuntimeX In case an error occurs.
      * @see FirstClassObject#evaluate(FirstClassObject, Environment)
      */
+    @Deprecated
     @Override
     public FirstClassObject evaluate( Environment e )
             throws RuntimeX

@@ -350,8 +350,6 @@ public class Primitives
                     throws RuntimeX
     {
         return () -> FirstClassObject.evaluate( o, e, c );
-//        return () -> c.accept(
-//                FirstClassObject.evaluate( o, e ) );
     }
 
     /**
