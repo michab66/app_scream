@@ -100,7 +100,7 @@ extends ScreamException
     static private Procedure errorProcedure = new Procedure( "error" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, Integer.MAX_VALUE, args );

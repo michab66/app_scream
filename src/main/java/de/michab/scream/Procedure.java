@@ -80,7 +80,7 @@ public class Procedure
 
     /**
      * Evaluates the arguments in the received environment and passes on to
-     * {@link #_execute(Environment, Cons, Cont)} for execution of the
+     * {@link #_executeImpl(Environment, Cons, Cont)} for execution of the
      * _body in the procedure's closure.
      *
      * @param e
@@ -89,11 +89,12 @@ public class Procedure
      * @return
      * @throws RuntimeX
      */
-    private Thunk _prepareExecute( Environment e, Cons args, Cont<FirstClassObject> c )
+    @Override
+    protected final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         // Execute in our _closure.
-        Cont<Cons> cc = evaluated -> _execute(
+        Cont<Cons> cc = evaluated -> _executeImpl(
                 _closure,
                 evaluated,
                 c );
@@ -110,7 +111,7 @@ public class Procedure
     {
 //        checkArgumentCount( args );
 
-        L l = (e,c) -> _prepareExecute( e, args, c );
+        L l = (e,c) -> _execute( e, args, c );
 
         return new Lambda(
                 l,

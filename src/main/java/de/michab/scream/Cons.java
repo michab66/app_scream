@@ -8,6 +8,9 @@ package de.michab.scream;
 
 import java.util.HashSet;
 
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
+import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.util.Scut;
 import urschleim.Holder;
@@ -439,15 +442,16 @@ public class Cons
         }
     }
 
-    private static Lambda performInvocation(
+    private static Thunk performInvocation(
             Environment e,
             FirstClassObject  op,
-            Cons args )
+            Cons args,
+            Cont<FirstClassObject> c )
         throws RuntimeX
     {
         try
         {
-            return ((Operation)op)._compile( e, args );
+            return ((Operation)op)._execute( e, args, c );
         }
         catch ( NullPointerException | ClassCastException x )
         {
@@ -463,24 +467,34 @@ public class Cons
             throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
 
         var car = getCar();
+        var cdr = Scut.as( Cons.class, getCdr() );
 
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
+        L l = (e,c) -> {
+            return FirstClassObject.evaluate(
+                    car,
+                    e,
+                    op -> performInvocation( e, op, cdr, c ) );
+        };
 
-        Continuation.trampoline(
-                car.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
+        return new Lambda( l, this.toString()  );
 
-        if ( error.get() != null )
-            throw (RuntimeX)error.get();
-
-        return performInvocation(
-                    env,
-                    r.get(),
-                    Scut.as( Cons.class, getCdr() ) );
+//        Holder<FirstClassObject> r =
+//                new Holder<FirstClassObject>( Cons.NIL );
+//        Holder<ScreamException> error =
+//                new Holder<>( null );
+//
+//        Continuation.trampoline(
+//                car.evaluate( env,
+//                        Continuation.endCall( s -> r.set( s ) ) ),
+//                s -> error.set( s ) );
+//
+//        if ( error.get() != null )
+//            throw (RuntimeX)error.get();
+//
+//        return performInvocation(
+//                    env,
+//                    r.get(),
+//                    Scut.as( Cons.class, getCdr() ) );
     }
 
     /**

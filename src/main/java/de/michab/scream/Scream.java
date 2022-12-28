@@ -459,7 +459,7 @@ public class Scream implements ScriptEngineFactory
     static private Procedure loadProcedure = new Procedure( "load" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );

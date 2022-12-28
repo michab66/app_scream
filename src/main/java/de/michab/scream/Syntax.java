@@ -5,6 +5,9 @@
  */
 package de.michab.scream;
 
+import de.michab.scream.Continuation.Cont;
+import de.michab.scream.Continuation.Thunk;
+
 /**
  * Followed the scheme spec in naming this class.  An alternate name would be
  * 'macro', also common is 'special form'.
@@ -78,6 +81,13 @@ public class Syntax
                     throws RuntimeX
     {
         super( args, body, e );
+    }
+
+    @Override
+    protected final Thunk _execute( Environment e, Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
+    {
+        return _executeImpl( e, args, c );
     }
 
     /**

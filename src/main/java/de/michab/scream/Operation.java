@@ -467,14 +467,14 @@ public abstract class Operation
     }
 
     /**
-     * Holds the function implementation.
+     * Holds the function implementation.  Override in Java-implemented Operations.
      * @param e
      * @param args
      * @param c
      * @return
      * @throws RuntimeX
      */
-    protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+    protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         checkArgumentCount( args );
@@ -490,6 +490,19 @@ public abstract class Operation
                 args,
                 (s)->Primitives._x_begin( s, _body, c ) );
     }
+
+    /**
+     * Holds the function implementation. This must be only overridden by the Procedure-
+     * implementation.
+     *
+     * @param e
+     * @param args
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
+    abstract protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+            throws RuntimeX;
 
     /**
      * Override if the compile environment is required.

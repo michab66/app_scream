@@ -228,7 +228,7 @@ public class SchemeObject
     }
 
     @Override
-    protected Thunk _execute( Environment e, Cons args,
+    protected Thunk _executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         long argsLen =
@@ -236,9 +236,13 @@ public class SchemeObject
 
         if ( argsLen == 1 && args.listRef( 0 ) instanceof Cons )
         {
-            var argsArray =
-                    Cons.asArray( ((Cons)args.listRef( 0 )) );
-                return c.accept( processInvocation( e, argsArray ) );
+            return processInvocationNew(
+                    e,
+                    (Cons)args.listRef( 0 ),
+                    c );
+//            var argsArray =
+//                    Cons.asArray( ((Cons)args.listRef( 0 )) );
+//            return c.accept( processInvocation( e, argsArray ) );
         }
         else if ( argsLen == 1 && args.listRef( 0 ) instanceof Symbol) {
             var arg0 =
@@ -270,12 +274,14 @@ public class SchemeObject
      * @throws RuntimeX In case of reflection errors.
      * @see de.michab.scream.Operation#activate(Environment, Cons)
      */
+    @Deprecated
     @Override
     public FirstClassObject activate( Environment env, Cons args )
         throws RuntimeX
     {
         return activate( env, Cons.asArray( args ) );
     }
+    @Deprecated
     private FirstClassObject activate( Environment context, FirstClassObject[] args )
             throws RuntimeX
     {
@@ -594,6 +600,154 @@ public class SchemeObject
      * @return The result of the procedure invocation.
      * @throws RuntimeX In case there where access errors.
      */
+//    private Thunk processInvocation( Environment env,
+//            FirstClassObject[] list,
+//            Cont<FirstClassObject> c)
+//                    throws RuntimeX
+//    {
+//        LOG.warning( Continuation.thunkCount() + " " + Arrays.toString( list ) );
+//
+//        // Check if the first element in the list is a symbol.
+//        Operation.checkArgument( 1, Symbol.class, list[0] );
+//
+//        // Evaluate the list, excluding the first entry.
+//        // TODO this is our callers job.  The environment is only needed because of
+//        // this loop.
+//        FirstClassObject[] actual = new FirstClassObject[ list.length -1 ];
+//        for ( int i = 0 ; i < actual.length ; i++ )
+//            actual[i] = evaluate( list[i+1], env );
+//
+//        java.lang.String methodName = list[0].toString();
+//
+//        try
+//        {
+//            // Select the method to call.
+//            for ( var method : _classAdapter.getMethods() )
+//            {
+//                // First check the name.
+//                if ( methodName.equals( method.getName() ) )
+//                {
+//                    Object[] argumentList =
+//                            matchParameters( method.getParameterTypes(), actual );
+//
+//                    if ( null != argumentList )
+//                    {
+//                        // Check if it is tried to invoke an instance method on a class
+//                        // object.  Since the VM in this case simply throws a NPE we have
+//                        // to check for this condition manually.
+//                        if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
+//                            throw new RuntimeX( Code.CANT_ACCESS_INSTANCE );
+//
+//                        // Do the actual call.
+//                        return c.accept( convertJava2Scream(
+//                                method.invoke( _theInstance, argumentList ) ) );
+//                    }
+//                }
+//            }
+//
+//            throw new RuntimeX( Code.METHOD_NOT_FOUND,
+//                    Cons.create( list ) );
+//        }
+//        catch ( InvocationTargetException e )
+//        {
+//            throw filterException( e, methodName );
+//        }
+//        catch ( IllegalArgumentException e )
+//        {
+//            // Not sure if this can be thrown under normal circumstances.  The only
+//            // reason know to me for that exception is if it is tried to invoke an
+//            // instance method on a java.lang.Class object.  In that case the illegal
+//            // argument is the first argument to invoke, that is on the one hand non
+//            // null, but on the other hand simply the wrong reference.
+//            throw new RuntimeX( Code.ILLEGAL_ARGUMENT,
+//                    methodName );
+//        }
+//        catch ( IllegalAccessException e )
+//        {
+//            throw new RuntimeX( Code.ILLEGAL_ACCESS, methodName );
+//        }
+//    }
+
+    private Thunk processInvocationNewImpl(
+            Environment env,
+            String methodName,
+            Cons list,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        try
+        {
+            // Select the method to call.
+            for ( var method : _classAdapter.getMethods() )
+            {
+                // First check the name.
+                if ( methodName.equals( method.getName() ) )
+                {
+                    java.lang.Object[] argumentList =
+                            matchParameters( method.getParameterTypes(), Cons.asArray( list ) );
+
+                    if ( null != argumentList )
+                    {
+                        // Check if it is tried to invoke an instance method on a class
+                        // object.  Since the VM in this case simply throws a NPE we have
+                        // to check for this condition manually.
+                        if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
+                            throw new RuntimeX( Code.CANT_ACCESS_INSTANCE );
+
+                        // Do the actual call.
+                        return c.accept( convertJava2Scream(
+                                method.invoke( _theInstance, argumentList ) ) );
+                    }
+                }
+            }
+
+            throw new RuntimeX( Code.METHOD_NOT_FOUND,
+                    Cons.create( list ) );
+        }
+        catch ( InvocationTargetException e )
+        {
+            throw filterException( e, methodName );
+        }
+        catch ( IllegalArgumentException e )
+        {
+            // Not sure if this can be thrown under normal circumstances.  The only
+            // reason know to me for that exception is if it is tried to invoke an
+            // instance method on a java.lang.Class object.  In that case the illegal
+            // argument is the first argument to invoke, that is on the one hand non
+            // null, but on the other hand simply the wrong reference.
+            throw new RuntimeX( Code.ILLEGAL_ARGUMENT,
+                    methodName );
+        }
+        catch ( IllegalAccessException e )
+        {
+            throw new RuntimeX( Code.ILLEGAL_ACCESS, methodName );
+        }
+
+    }
+
+    private Thunk processInvocationNew(
+            Environment env,
+            Cons list,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        LOG.warning( Continuation.thunkCount() + " " + list );
+
+        var symbol = Scut.as(
+                Symbol.class, list.getCar() );
+        var rest = Scut.as(
+                Cons.class, list.getCdr() );
+
+        return Primitives._x_evalCons(
+                env,
+                rest,
+                evaluated -> processInvocationNewImpl(
+                        env,
+                        symbol.toString(),
+                        evaluated,
+                        c ) );
+    }
+
     private FirstClassObject processInvocation( Environment env,
             FirstClassObject[] list )
                     throws RuntimeX
@@ -795,7 +949,7 @@ public class SchemeObject
     static private Syntax constructObjectSyntax = new Syntax( "make-object" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -832,7 +986,7 @@ public class SchemeObject
     static private Procedure wrapObjectProcedure = new Procedure( "object" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -860,7 +1014,7 @@ public class SchemeObject
     static private Procedure objectPredicateProcedure = new Procedure( "object?" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );

@@ -258,8 +258,9 @@ public class Scut
     }
 
     @FunctionalInterface
-    interface ToStackOp {
-        Thunk call( Environment e, Cont<FirstClassObject> c );
+    public interface ToStackOp {
+        Thunk call( Environment e, Cont<FirstClassObject> c )
+            throws RuntimeX;
     }
 
     public static FirstClassObject toStack( Environment e, ToStackOp op )

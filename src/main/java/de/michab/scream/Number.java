@@ -403,7 +403,7 @@ public abstract class Number
   static private Procedure addProc = new Procedure( "+" )
   {
       @Override
-      protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+      protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
               throws RuntimeX
       {
           var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
@@ -425,7 +425,7 @@ public abstract class Number
   static private Procedure subtractProc = new Procedure( "-" )
   {
       @Override
-      protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+      protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
               throws RuntimeX
       {
           var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
@@ -445,7 +445,7 @@ public abstract class Number
   static private Procedure multiplyProc = new Procedure( "*" )
   {
       @Override
-      protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+      protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
               throws RuntimeX
       {
           var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
@@ -466,7 +466,7 @@ public abstract class Number
   static private Procedure divideProc = new Procedure( "/" )
   {
       @Override
-      protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+      protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
               throws RuntimeX
       {
           var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
