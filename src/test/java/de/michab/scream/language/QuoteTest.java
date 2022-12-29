@@ -3,7 +3,6 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-
 package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -12,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
+import de.michab.scream.Continuation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.util.Scut;
 
 public class QuoteTest extends ScreamBaseTest
 {
@@ -30,7 +29,7 @@ public class QuoteTest extends ScreamBaseTest
         var fco =
                 readSingleExpression( "(quote a)", Cons.class );
 
-        var result = Scut.toStack(
+        var result = Continuation.toStack(
                 e,
                 fco::evaluate );
 

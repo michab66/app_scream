@@ -15,6 +15,11 @@ import java.util.List;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 
+/**
+ * See https://docs.oracle.com/javase/7/docs/technotes/guides/scripting/programmer_guide/
+ *
+ * @author micbinz
+ */
 public class SchemeContext implements ScriptContext
 {
     private Writer _stdout;

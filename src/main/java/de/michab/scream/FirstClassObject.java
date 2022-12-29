@@ -44,22 +44,6 @@ public abstract class FirstClassObject
         return fco.evaluate( env, c );
     }
 
-//    /**
-//     * Evaluate this scheme object and return the result.  This default version
-//     * just evaluates to itself.  This must only be called if it is ensured that
-//     * the target object is not null.  If in doubt call FCO.evaluate( FCO, FCO ).
-//     *
-//     * @param e The environment used to evaluate the object.
-//     * @return The result of the evaluation.
-//     * @throws RuntimeX In case the evaluation failed.
-//     */
-//    @Deprecated
-//    protected FirstClassObject evaluate( Environment e )
-//            throws RuntimeX
-//    {
-//        return this;
-//    }
-//
     /**
      * Evaluate this scheme object and return the result.  This default version
      * just evaluates to itself.  This must only be called if it is ensured that

@@ -33,7 +33,6 @@ import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.SupplierX;
-import urschleim.Holder;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -41,11 +40,8 @@ import urschleim.Holder;
  * entities is represented by a reader/writer pair, i.e. the primary interface
  * into the interpreter is stream based.</br>
  * The top level environment of each instance of this class contains a binding
- * %%interpreter%% that refers to the instance and makes access possible from
- * inside Scream.</br>
- * Interpreter instances are created by the <code>createInterpreter</code>
- * method.  An instance shuts down if an EOF is read from its reader or if the
- * <code>dispose()</code> method is called.
+ * %%interpreter%% that refers to the instance and allows access from
+ * inside Scream.
  *
  * @author Michael G. Binz
  */
@@ -269,7 +265,6 @@ public class Scream implements ScriptEngineFactory
         return result;
     }
 
-
     private static Thunk evalImpl_(
             Environment e,
             SupplierX<FirstClassObject> s,
@@ -304,46 +299,30 @@ public class Scream implements ScriptEngineFactory
     }
 
     public static FirstClassObject evalImpl(
-            Environment e,
+            Environment env,
             SupplierX<FirstClassObject> spl,
             // TODO
             Writer sink )
                     throws RuntimeX
     {
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                evalImpl(
-                        e,
-                        spl,
-                        sink,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-            throw (RuntimeX)error.get();
-
-        return r.get();
+        return Continuation.toStack(
+                env,
+                (e,c) -> evalImpl( e, spl, sink, c ) );
     }
 
     /**
-     * This method loads the specified extensions from Scheme source files. These
+     * Loads the specified extensions from Scheme source files. These
      * have to be located in a special package de.michab.scream.extensions and
      * each file has to be specified in the Scream.properties file by the
      * kernel.schemeExtensions key.
      *
      * @param env The environment used for evaluating the extensions.
-     * @param propertyName The properties file to use.
-     * @param err The error stream to be used in case of problems.
+     * @param fileNames The files to load.
      */
     private static void addExtensions(
             Environment env,
             String[] fileNames )
     {
-        // Init the parser...
         for ( var c : fileNames )
         {
             // The getResourceAsStream in the next line addresses resources relative

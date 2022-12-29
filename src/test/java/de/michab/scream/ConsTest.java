@@ -1,3 +1,8 @@
+/*
+ * Scream @ https://github.com/michab/dev_smack
+ *
+ * Copyright © 1998-2022 Michael G. Binz
+ */
 package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -10,7 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
-import de.michab.scream.util.Scut;
 
 public class ConsTest extends ScreamBaseTest
 {
@@ -176,7 +180,7 @@ public class ConsTest extends ScreamBaseTest
         var env = se.getInteraction();
         Cons cons = readSingleExpression( "(+ 1 2)", Cons.class );
 
-        var result =  Scut.toStack(
+        var result =  Continuation.toStack(
                 env,
                 cons::evaluate );
 
@@ -191,7 +195,7 @@ public class ConsTest extends ScreamBaseTest
         Cons cons = readSingleExpression( "(0 1 2)", Cons.class );
         try
         {
-            Scut.toStack(
+            Continuation.toStack(
                     env,
                     cons::evaluate );
             fail();
@@ -210,7 +214,7 @@ public class ConsTest extends ScreamBaseTest
         Cons cons = readSingleExpression( "(() 1 2)", Cons.class );
         try
         {
-            Scut.toStack(
+            Continuation.toStack(
                     env,
                     cons::evaluate );
             fail();

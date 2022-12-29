@@ -7,6 +7,8 @@ package de.michab.scream;
 
 import java.util.function.Consumer;
 
+import urschleim.Holder;
+
 /**
  * public _x_... are externally visible primitives.
  * These always return an indirect thunk () -> ...
@@ -78,4 +80,28 @@ public class Continuation
         _thunkCount = newValue;
     }
 
+    @FunctionalInterface
+    public interface ToStackOp {
+        Thunk call( Environment e, Cont<FirstClassObject> c )
+            throws RuntimeX;
+    }
+
+    public static FirstClassObject toStack( Environment e, ToStackOp op )
+        throws RuntimeX
+    {
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
+
+        Continuation.trampoline(
+                op.call( e,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
+
+        if ( error.get() != null )
+            throw (RuntimeX)error.get();
+
+        return r.get();
+    }
 }

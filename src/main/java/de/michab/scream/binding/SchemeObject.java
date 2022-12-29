@@ -235,13 +235,10 @@ public class SchemeObject
 
         if ( argsLen == 1 && args.listRef( 0 ) instanceof Cons )
         {
-            return processInvocationNew(
+            return processInvocation(
                     e,
                     (Cons)args.listRef( 0 ),
                     c );
-//            var argsArray =
-//                    Cons.asArray( ((Cons)args.listRef( 0 )) );
-//            return c.accept( processInvocation( e, argsArray ) );
         }
         else if ( argsLen == 1 && args.listRef( 0 ) instanceof Symbol) {
             var arg0 =
@@ -553,7 +550,7 @@ public class SchemeObject
         return new Vector( vector, false );
     }
 
-    private Thunk processInvocationNewImpl(
+    private Thunk processInvocationImpl(
             Environment env,
             String methodName,
             Cons list,
@@ -618,7 +615,7 @@ public class SchemeObject
      * @return The result of the procedure invocation.
      * @throws RuntimeX In case there where access errors.
      */
-    private Thunk processInvocationNew(
+    private Thunk processInvocation(
             Environment env,
             Cons list,
             Cont<FirstClassObject> c )
@@ -634,7 +631,7 @@ public class SchemeObject
         return Primitives._x_evalCons(
                 env,
                 rest,
-                evaluated -> processInvocationNewImpl(
+                evaluated -> processInvocationImpl(
                         env,
                         symbol.toString(),
                         evaluated,
