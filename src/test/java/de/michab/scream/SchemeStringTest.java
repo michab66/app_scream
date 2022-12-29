@@ -164,4 +164,13 @@ public class SchemeStringTest
         assertFalse( clone.isConstant() );
         assertTrue( clone.equal( thirteen ) );
     }
+
+    @Test
+    public void appendTest() throws Exception
+    {
+        var thirteen = new SchemeString( "313" );
+        var thirteenNull = thirteen.append( null );
+
+        assertTrue( thirteen.equals( thirteenNull ) );
+    }
 }

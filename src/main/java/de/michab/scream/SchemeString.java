@@ -183,7 +183,7 @@ public class SchemeString
         }
         catch ( StringIndexOutOfBoundsException e )
         {
-            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, "" + end );
+            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, end );
         }
     }
 
@@ -196,14 +196,12 @@ public class SchemeString
      */
     public SchemeString append( SchemeString other )
     {
-        if ( (FirstClassObject)other != Cons.NIL )
-        {
-            StringBuffer combined = new StringBuffer( getValue() );
-            combined.append( other.getValue() );
-            return new SchemeString( combined.toString(), false );
-        }
-        else
+        if ( other == null )
             return this;
+
+        StringBuffer combined = new StringBuffer( getValue() );
+        combined.append( other.getValue() );
+        return new SchemeString( combined.toString(), false );
     }
 
     /**
