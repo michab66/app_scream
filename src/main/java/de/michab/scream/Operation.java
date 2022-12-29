@@ -6,6 +6,7 @@
 package de.michab.scream;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
@@ -14,8 +15,8 @@ import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Primitives;
 
 /**
- * Represents an abstract operation.  Is the base class for macros (syntaxes in
- * Scheme parlance) and procedures.
+ * Represents an abstract operation.  Is the base class for macros
+ * and procedures.
  *
  * @author Michael Binz
  */
@@ -49,7 +50,7 @@ public abstract class Operation
     /**
      * This operation's body.
      */
-    protected final Cons _body;
+    private final Cons _body;
 
     /**
      * The formal argument list for this operation.
@@ -119,7 +120,7 @@ public abstract class Operation
         Cons fac = _formalArguments = (Cons)formalArguments;
 
         // The formal argument list must be a list of unique symbols.
-        java.util.Set<String> unifier = new HashSet<String>();
+        Set<String> unifier = new HashSet<String>();
 
         // TODO rethink this loop ... especially the break conditions.
         while ( fac != Cons.NIL )
@@ -172,8 +173,7 @@ public abstract class Operation
     }
 
     /**
-     * @return {@code true} if this is a variadic operation. (Accepts a
-     * variable number of arguments.)
+     * @return {@code true} if this is a variadic operation.
      */
     public boolean isVariadic()
     {
@@ -361,23 +361,6 @@ public abstract class Operation
         }
         // TODO better error message for multiple alternatives.
         throw new ConversionFailedX( received, alternatives[0], position );
-    }
-
-    /**
-     * Checks if the received argument types are the expected ones.
-     *
-     * @param formal The array of formal arguments.
-     * @param received The array of arguments received.
-     * @throws RuntimeX In case the argument lists do not correspond.
-     */
-    static protected void checkArguments( Class<?>[] formal,
-            FirstClassObject[] received )
-                    throws RuntimeX
-    {
-        checkArgumentCount( formal.length, received );
-
-        for ( int i = 0 ; i < formal.length ; i++ )
-            checkArgument( i, formal[i], received[i] );
     }
 
     /**

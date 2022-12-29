@@ -103,14 +103,4 @@ public class Procedure
                 args,
                 cc );
     }
-
-//    @Override
-//    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-//    {
-//        L l = (e,c) -> _execute( e, args, c );
-//
-//        return new Lambda(
-//                l,
-//                this.toString() ).setInfo( args );
-//    }
 }

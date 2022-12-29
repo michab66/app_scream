@@ -105,16 +105,6 @@ public final class Environment
     }
 
     /**
-     * Factory method for new environments.
-     *
-     * @return A nested environment.
-     */
-    public Environment extend()
-    {
-        return new Environment( null, this );
-    }
-
-    /**
      * Create a nested Environment with a symbolic name.
      *
      * @param name The name for the new Environment.

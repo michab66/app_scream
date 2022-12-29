@@ -271,7 +271,7 @@ public class Primitives
 
         return () -> _bindLet(
                 e,
-                e.extend(),
+                e.extend( Symbol.createObject( "x_let" ) ),
                 bindings,
                 begin );
     }
@@ -288,7 +288,7 @@ public class Primitives
                         body,
                         c );
 
-        var extendedEnv = e.extend();
+        var extendedEnv = e.extend( Symbol.createObject( "x_let*" ) );
 
         return () -> _bindLet(
                 extendedEnv,
@@ -329,7 +329,7 @@ public class Primitives
                         begin );
 
         return () -> _define(
-                e.extend(),
+                e.extend( Symbol.createObject( "x_letrec" ) ),
                 symbols,
                 Cons.NIL,
                 bind );
@@ -542,7 +542,7 @@ public class Primitives
 
         return () -> _bindLet(
                 e,
-                e.extend(),
+                e.extend( Symbol.createObject( "x_do" ) ),
                 inits,
                 iteration );
     }
