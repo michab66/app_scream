@@ -12,7 +12,6 @@ import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Primitives;
-import urschleim.Holder;
 
 /**
  * Represents an abstract operation.  Is the base class for macros (syntaxes in
@@ -189,40 +188,6 @@ public abstract class Operation
                 _formalArguments.length();
     }
 
-    /**
-     * Execute the operation in a given environment and based on the passed
-     * parameters.  This default implementation just forwards the call to
-     * <code>_execute( Environment, FirstClassObject[] )</code>.
-     *
-     * @param e The environment to use for the current activation.
-     * @param argumentList The list of arguments passed into the current
-     *        activation.
-     * @return The result of the activation.
-     * @throws RuntimeX In case the activation failed.
-     * @deprecated
-     */
-    @Deprecated
-    public FirstClassObject activate( Environment e, Cons argumentList )
-            throws RuntimeX
-    {
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                _execute(
-                        e,
-                        argumentList,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-            throw (RuntimeX)error.get();
-
-        return r.get();
-    }
-
     private Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
         throws RuntimeX
     {
@@ -352,45 +317,6 @@ public abstract class Operation
         throw new RuntimeX( Code.WRONG_NUMBER_OF_ARGUMENTS,
                 "" + formalCount,
                 "" + receivedCount );
-    }
-
-    /**
-     * Checks if at least a minimum number of actual arguments were received.
-     *
-     * @param minimum The minimum number of parameters required.
-     * @param received The parameter list received.
-     * @throws RuntimeX In case not enough parameters were passed.
-     */
-    static protected void checkMinimumArgumentCount(
-            int minimum,
-            FirstClassObject[] received )
-                    throws RuntimeX
-    {
-        if ( minimum > received.length )
-            throw new RuntimeX( Code.NOT_ENOUGH_ARGUMENTS,
-                    "" + minimum,
-                    "" + received.length
-                    );
-    }
-
-    /**
-     * Checks if at most a maximum number of actual arguments were received.
-     *
-     * @param maximum The maximum number of acceptable parameters.
-     * @param received The parameter list received.
-     * @throws RuntimeX In case the passed number of parameters exceeds the
-     *         maximum.
-     */
-    static protected void checkMaximumArgumentCount(
-            int maximum,
-            FirstClassObject[] received )
-                    throws RuntimeX
-    {
-        if ( maximum < received.length )
-            throw new RuntimeX( Code.TOO_MANY_ARGUMENTS,
-                    "" + maximum,
-                    "" + received.length
-                    );
     }
 
     /**
@@ -551,43 +477,6 @@ public abstract class Operation
         Lambda l = _compile( env, args );
 
         return FirstClassObject.evaluate( l, env, c );
-    }
-
-    /**
-     * Compiles the {@code Operation}.  The passed environment can be
-     * explicitly {@code null}.  Compilation will resolve all
-     * <code>Syntax</code> in the initial draft implementation.  This default
-     * implementation forwards the call to
-     * <code>compile( Environment, FirstClassObject[] )</code>.
-     *
-     * @param e An environment to use for the compilation.  May be
-     *        <code>null</code>.
-     * @param argList The argument list for compilation.
-     * @return The compiled operation.
-     * @throws RuntimeX In case of syntax errors.
-     */
-    public FirstClassObject compile( Environment e, Cons argList )
-            throws RuntimeX
-    {
-        return compile( e, argList.asArray() );
-    }
-
-    /**
-     * Compiles the <code>Operation</code>.  The passed environment can be
-     * explicitly <code>null</code>.  Compilation will resolve all
-     * <code>Syntax</code> in the initial draft implementation.  This default
-     * implementation returns identity.
-     *
-     * @param e An environment to use for the compilation.  May be
-     *        <code>null</code>.
-     * @param argList The argument list as array for compilation.
-     * @return The compiled operation.
-     * @throws RuntimeX In case of syntax errors.
-     */
-    public FirstClassObject compile( Environment e, FirstClassObject[] argList )
-            throws RuntimeX
-    {
-        return this;
     }
 
     /**

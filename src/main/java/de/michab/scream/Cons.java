@@ -401,48 +401,6 @@ public class Cons
         return assx( obj, Comparison.Equal );
     }
 
-    /**
-     * Evaluate the {@code Cons}.  The normal Scheme list evaluation takes
-     * place:  After evaluating the first list entry, the resulting
-     * {@code Operation} gets invoked.  If the first list entry does not
-     * evaluate to an {@code Operation] this results in an error.
-     *
-     * @param e The evaluation environment.
-     * @throws RuntimeX In case an error occurs.
-     * @see FirstClassObject#evaluate(FirstClassObject, Environment)
-     */
-    @Deprecated
-    @Override
-    public FirstClassObject evaluate( Environment e )
-            throws RuntimeX
-    {
-        if ( ! isProperList() )
-            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
-
-        FirstClassObject op = evaluate( _car, e );
-
-        try
-        {
-            if ( op == NIL )
-                // Throw a dummy ccx to get into the handler below.
-                throw new ClassCastException();
-
-            return ((Operation)op).activate( e, (Cons)_cdr );
-        }
-        catch ( ClassCastException x )
-        {
-            throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-                    toString( op ) );
-        }
-        catch ( RuntimeX rx )
-        {
-            // Set the operation's name onto the exception...
-            rx.setOperationName( ((Operation)op).getName() );
-            // ...and re-throw.
-            throw rx;
-        }
-    }
-
     private static Thunk performInvocation(
             Environment e,
             FirstClassObject  op,
@@ -478,24 +436,6 @@ public class Cons
         };
 
         return new Lambda( l, this.toString()  );
-
-//        Holder<FirstClassObject> r =
-//                new Holder<FirstClassObject>( Cons.NIL );
-//        Holder<ScreamException> error =
-//                new Holder<>( null );
-//
-//        Continuation.trampoline(
-//                car.evaluate( env,
-//                        Continuation.endCall( s -> r.set( s ) ) ),
-//                s -> error.set( s ) );
-//
-//        if ( error.get() != null )
-//            throw (RuntimeX)error.get();
-//
-//        return performInvocation(
-//                    env,
-//                    r.get(),
-//                    Scut.as( Cons.class, getCdr() ) );
     }
 
     /**

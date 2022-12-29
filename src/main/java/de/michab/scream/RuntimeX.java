@@ -125,28 +125,6 @@ extends ScreamException
             throw result;
         }
 
-//        @Override
-//        protected FirstClassObject apply( Environment parent, FirstClassObject[] args )
-//                throws RuntimeX
-//        {
-//            checkMinimumArgumentCount( 1, args );
-//            checkArgument( 1, SchemeString.class, args[0] );
-//
-//            // Yes, the first argument is definitely a SchemeString.
-//            String message = createReadable( args[0] );
-//
-//            // Transform the remaining arguments in error arguments.
-//            Object[] arguments = new Object[ args.length -1 ];
-//            for ( int i = args.length-1 ; i > 0 ; i-- )
-//                arguments[i-1] = createReadable( args[i] );
-//
-//            // We must have been called by a scheme-defined procedure.  Get its name
-//            // and report that as the operation in error.
-//            RuntimeX result = new RuntimeX( message, arguments );
-//            result.setOperationName( parent.getName() );
-//            throw result;
-//        }
-//
         /**
          * Makes a human readable string from a FirstClassObject.  That means for
          * a real scheme string that the double quotes are removed -- gnah instead

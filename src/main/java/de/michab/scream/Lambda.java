@@ -7,7 +7,6 @@ package de.michab.scream;
 
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
-import urschleim.Holder;
 
 /**
  * A lambda encapsulation for an fco.
@@ -50,25 +49,6 @@ public class Lambda extends FirstClassObject
         this( l, "anonymous" );
     }
 
-    @Override
-    @Deprecated
-    protected FirstClassObject evaluate( Environment e ) throws RuntimeX
-    {
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( null );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline( evaluate(
-                e,
-                Continuation.endCall( r::set ) ),
-                error::set );
-
-        if ( error.get() != null )
-            throw (RuntimeX)error.get();
-
-       return r.get();
-    }
     @Override
     public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
             throws RuntimeX

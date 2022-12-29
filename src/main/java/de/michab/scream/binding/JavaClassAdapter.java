@@ -264,21 +264,6 @@ public class JavaClassAdapter
      *
      * @return The instantiated object.
      * @throws RuntimeX If the instantiation failed.
-     * @deprecated Use instantiateInterface() w/o typo.
-     */
-    @Deprecated
-    public Object instanciateInterface()
-            throws RuntimeX
-    {
-        return instantiateInterface();
-    }
-
-    /**
-     * Create an instance for a dynamically created interface.  The class adapter
-     * has to be the result of a call to the array based createObject() method.
-     *
-     * @return The instantiated object.
-     * @throws RuntimeX If the instantiation failed.
      */
     public Object instantiateInterface()
             throws RuntimeX

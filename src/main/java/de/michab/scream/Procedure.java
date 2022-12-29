@@ -9,8 +9,6 @@ import org.smack.util.JavaUtil;
 
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
-import de.michab.scream.Lambda.L;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Primitives;
 
 /**
@@ -106,52 +104,13 @@ public class Procedure
                 cc );
     }
 
-    @Override
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-    {
-//        checkArgumentCount( args );
-
-        L l = (e,c) -> _execute( e, args, c );
-
-        return new Lambda(
-                l,
-                this.toString() ).setInfo( args );
-    }
-
-    /**
-     * Since we are a procedure the arguments are evaluated and rest of the job
-     * is delegated to the apply methods.  The passed argument list has to be
-     * proper.  Note that as the final step after bumping through the chain of
-     * <code>apply()</code> methods our superclass' <code>activate()</code> will
-     * be called for executing the Scheme defined procedure.  A procedure
-     * implemented in Java has to override one of the chained
-     * <code>apply()</code> methods.
-     *
-     * @param parent The parent environment.
-     * @param argumentList The actually passed argument list.
-     * @return The result of the procedure activation.
-     * @throws RuntimeX In case of an error.
-     */
-    @Override
-    public FirstClassObject activate( Environment parent, Cons argumentList )
-            throws RuntimeX
-    {
-        // Check if our argument list is proper.
-        if ( argumentList != Cons.NIL && !argumentList.isProperList() )
-            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
-
-        FirstClassObject[] evaluatedArgs = _emptyArgArray;
-
-        if ( argumentList != Cons.NIL )
-        {
-            evaluatedArgs = argumentList.asArray();
-            for ( int i = evaluatedArgs.length-1 ; i >= 0 ; i-- )
-                evaluatedArgs[i] = evaluate( evaluatedArgs[i], parent );
-        }
-
-        if ( _closure != null )
-            return super.activate( _closure, Cons.create( evaluatedArgs ) );
-
-        return super.activate( parent, Cons.create( evaluatedArgs ) );
-    }
+//    @Override
+//    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+//    {
+//        L l = (e,c) -> _execute( e, args, c );
+//
+//        return new Lambda(
+//                l,
+//                this.toString() ).setInfo( args );
+//    }
 }

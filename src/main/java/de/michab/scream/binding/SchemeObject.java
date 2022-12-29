@@ -9,7 +9,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -264,44 +263,6 @@ public class SchemeObject
         }
         else
             throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
-    }
-
-    /**
-     * @param context The environment used for necessary evaluations.
-     * @param args The passed arguments.
-     *
-     * @return The operation's result.
-     * @throws RuntimeX In case of reflection errors.
-     * @see de.michab.scream.Operation#activate(Environment, Cons)
-     */
-    @Deprecated
-    @Override
-    public FirstClassObject activate( Environment env, Cons args )
-        throws RuntimeX
-    {
-        return activate( env, Cons.asArray( args ) );
-    }
-    @Deprecated
-    private FirstClassObject activate( Environment context, FirstClassObject[] args )
-            throws RuntimeX
-    {
-        checkMinimumArgumentCount( 1, args );
-        checkMaximumArgumentCount( 2, args );
-
-        if ( args.length == 1 )
-        {
-            if ( args[0] instanceof Cons )
-                return processInvocation( context,
-                        ((Cons)args[0]).asArray() );
-
-            return processAttributeGet( args[0] );
-        }
-        else if ( args.length == 2 )
-            return processAttributeSet( args[0],
-                    // TODO Is that NIL save??
-                    evaluate( args[1], context ) );
-
-        throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
     }
 
     /**
@@ -592,82 +553,6 @@ public class SchemeObject
         return new Vector( vector, false );
     }
 
-    /**
-     * Processes a procedure invocation.
-     *
-     * @param env The environment used for the evaluation of the argument list.
-     * @param list The arguments used for the invocation.
-     * @return The result of the procedure invocation.
-     * @throws RuntimeX In case there where access errors.
-     */
-//    private Thunk processInvocation( Environment env,
-//            FirstClassObject[] list,
-//            Cont<FirstClassObject> c)
-//                    throws RuntimeX
-//    {
-//        LOG.warning( Continuation.thunkCount() + " " + Arrays.toString( list ) );
-//
-//        // Check if the first element in the list is a symbol.
-//        Operation.checkArgument( 1, Symbol.class, list[0] );
-//
-//        // Evaluate the list, excluding the first entry.
-//        // TODO this is our callers job.  The environment is only needed because of
-//        // this loop.
-//        FirstClassObject[] actual = new FirstClassObject[ list.length -1 ];
-//        for ( int i = 0 ; i < actual.length ; i++ )
-//            actual[i] = evaluate( list[i+1], env );
-//
-//        java.lang.String methodName = list[0].toString();
-//
-//        try
-//        {
-//            // Select the method to call.
-//            for ( var method : _classAdapter.getMethods() )
-//            {
-//                // First check the name.
-//                if ( methodName.equals( method.getName() ) )
-//                {
-//                    Object[] argumentList =
-//                            matchParameters( method.getParameterTypes(), actual );
-//
-//                    if ( null != argumentList )
-//                    {
-//                        // Check if it is tried to invoke an instance method on a class
-//                        // object.  Since the VM in this case simply throws a NPE we have
-//                        // to check for this condition manually.
-//                        if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
-//                            throw new RuntimeX( Code.CANT_ACCESS_INSTANCE );
-//
-//                        // Do the actual call.
-//                        return c.accept( convertJava2Scream(
-//                                method.invoke( _theInstance, argumentList ) ) );
-//                    }
-//                }
-//            }
-//
-//            throw new RuntimeX( Code.METHOD_NOT_FOUND,
-//                    Cons.create( list ) );
-//        }
-//        catch ( InvocationTargetException e )
-//        {
-//            throw filterException( e, methodName );
-//        }
-//        catch ( IllegalArgumentException e )
-//        {
-//            // Not sure if this can be thrown under normal circumstances.  The only
-//            // reason know to me for that exception is if it is tried to invoke an
-//            // instance method on a java.lang.Class object.  In that case the illegal
-//            // argument is the first argument to invoke, that is on the one hand non
-//            // null, but on the other hand simply the wrong reference.
-//            throw new RuntimeX( Code.ILLEGAL_ARGUMENT,
-//                    methodName );
-//        }
-//        catch ( IllegalAccessException e )
-//        {
-//            throw new RuntimeX( Code.ILLEGAL_ACCESS, methodName );
-//        }
-//    }
-
     private Thunk processInvocationNewImpl(
             Environment env,
             String methodName,
@@ -725,6 +610,14 @@ public class SchemeObject
 
     }
 
+    /**
+     * Processes a procedure invocation.
+     *
+     * @param env The environment used for the evaluation of the argument list.
+     * @param list The arguments used for the invocation.
+     * @return The result of the procedure invocation.
+     * @throws RuntimeX In case there where access errors.
+     */
     private Thunk processInvocationNew(
             Environment env,
             Cons list,
@@ -746,73 +639,6 @@ public class SchemeObject
                         symbol.toString(),
                         evaluated,
                         c ) );
-    }
-
-    private FirstClassObject processInvocation( Environment env,
-            FirstClassObject[] list )
-                    throws RuntimeX
-    {
-        LOG.warning( Continuation.thunkCount() + " " + Arrays.toString( list ) );
-
-        // Check if the first element in the list is a symbol.
-        Operation.checkArgument( 1, Symbol.class, list[0] );
-
-        // Evaluate the list, excluding the first entry.
-        // TODO this is our callers job.  The environment is only needed because of
-        // this loop.
-        FirstClassObject[] actual = new FirstClassObject[ list.length -1 ];
-        for ( int i = 0 ; i < actual.length ; i++ )
-            actual[i] = evaluate( list[i+1], env );
-
-        java.lang.String methodName = list[0].toString();
-
-        try
-        {
-            // Select the method to call.
-            for ( var method : _classAdapter.getMethods() )
-            {
-                // First check the name.
-                if ( methodName.equals( method.getName() ) )
-                {
-                    java.lang.Object[] argumentList
-                    = matchParameters( method.getParameterTypes(), actual );
-
-                    if ( null != argumentList )
-                    {
-                        // Check if it is tried to invoke an instance method on a class
-                        // object.  Since the VM in this case simply throws a NPE we have
-                        // to check for this condition manually.
-                        if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
-                            throw new RuntimeX( Code.CANT_ACCESS_INSTANCE );
-
-                        // Do the actual call.
-                        return convertJava2Scream(
-                                method.invoke( _theInstance, argumentList ) );
-                    }
-                }
-            }
-
-            throw new RuntimeX( Code.METHOD_NOT_FOUND,
-                    Cons.create( list ) );
-        }
-        catch ( InvocationTargetException e )
-        {
-            throw filterException( e, methodName );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            // Not sure if this can be thrown under normal circumstances.  The only
-            // reason know to me for that exception is if it is tried to invoke an
-            // instance method on a java.lang.Class object.  In that case the illegal
-            // argument is the first argument to invoke, that is on the one hand non
-            // null, but on the other hand simply the wrong reference.
-            throw new RuntimeX( Code.ILLEGAL_ARGUMENT,
-                    methodName );
-        }
-        catch ( IllegalAccessException e )
-        {
-            throw new RuntimeX( Code.ILLEGAL_ACCESS, methodName );
-        }
     }
 
     /**

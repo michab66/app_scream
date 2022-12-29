@@ -58,22 +58,6 @@ extends FirstClassObject
         setConstant( true );
     }
 
-    /**
-     * Looks up the symbol in the passed environment
-     * and returns its value.
-     *
-     * @param e The environment to use for evaluation of this symbol.
-     * @return The result of the evaluation.
-     * @throws RuntimeX In case this symbol couldn't be evaluated.
-     * @see FirstClassObject#evaluate
-     */
-    @Override
-    public FirstClassObject evaluate( Environment e )
-            throws RuntimeX
-    {
-        return e.get( this );
-    }
-
     @Override
     protected Lambda _compile( Environment env )
     {

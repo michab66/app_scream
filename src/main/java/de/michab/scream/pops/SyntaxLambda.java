@@ -36,22 +36,6 @@ public final class SyntaxLambda extends Syntax
                 new Procedure( e, formals, body ) );
     }
 
-//    @Override
-//    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-//    {
-//        checkArgumentCount( 2, Integer.MAX_VALUE, args );
-//        var formals = args.listRef( 0 );
-//        checkArgument( 0, formals, Symbol.class, Cons.class );
-//        var body = Scut.as( Cons.class,args.getCdr() );
-//
-//        Lambda.L result = (e,c) -> {
-//            return  c.accept(
-//                    new Procedure( env, formals, body ) );
-//        };
-//
-//        return new Lambda( result, getName() ).setInfo( args );
-//    }
-
     /**
      * Base operations setup.
      *
