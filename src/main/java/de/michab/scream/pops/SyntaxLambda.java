@@ -24,7 +24,7 @@ public final class SyntaxLambda extends Syntax
     }
 
     @Override
-    protected Thunk _execute( Environment compileEnvironment, Environment e, Cons args,
+    protected Thunk _executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -33,24 +33,8 @@ public final class SyntaxLambda extends Syntax
         var body = Scut.as( Cons.class,args.getCdr() );
 
         return c.accept(
-                new Procedure( compileEnvironment, formals, body ) );
+                new Procedure( e, formals, body ) );
     }
-
-//    @Override
-//    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-//    {
-//        checkArgumentCount( 2, Integer.MAX_VALUE, args );
-//        var formals = args.listRef( 0 );
-//        checkArgument( 0, formals, Symbol.class, Cons.class );
-//        var body = Scut.as( Cons.class,args.getCdr() );
-//
-//        Lambda.L result = (e,c) -> {
-//            return  c.accept(
-//                    new Procedure( env, formals, body ) );
-//        };
-//
-//        return new Lambda( result, getName() ).setInfo( args );
-//    }
 
     /**
      * Base operations setup.

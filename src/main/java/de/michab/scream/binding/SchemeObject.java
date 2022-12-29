@@ -9,7 +9,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,6 +19,7 @@ import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
+import de.michab.scream.Lambda;
 import de.michab.scream.Operation;
 import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
@@ -227,7 +227,7 @@ public class SchemeObject
     }
 
     @Override
-    protected Thunk _execute( Environment e, Cons args,
+    protected Thunk _executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         long argsLen =
@@ -235,9 +235,13 @@ public class SchemeObject
 
         if ( argsLen == 1 && args.listRef( 0 ) instanceof Cons )
         {
-            var argsArray =
-                    Cons.asArray( ((Cons)args.listRef( 0 )) );
-                return c.accept( processInvocation( e, argsArray ) );
+            return processInvocationNew(
+                    e,
+                    (Cons)args.listRef( 0 ),
+                    c );
+//            var argsArray =
+//                    Cons.asArray( ((Cons)args.listRef( 0 )) );
+//            return c.accept( processInvocation( e, argsArray ) );
         }
         else if ( argsLen == 1 && args.listRef( 0 ) instanceof Symbol) {
             var arg0 =
@@ -259,42 +263,6 @@ public class SchemeObject
         }
         else
             throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
-    }
-
-    /**
-     * @param context The environment used for necessary evaluations.
-     * @param args The passed arguments.
-     *
-     * @return The operation's result.
-     * @throws RuntimeX In case of reflection errors.
-     * @see de.michab.scream.Operation#activate(Environment, Cons)
-     */
-    @Override
-    public FirstClassObject activate( Environment env, Cons args )
-        throws RuntimeX
-    {
-        return activate( env, Cons.asArray( args ) );
-    }
-    private FirstClassObject activate( Environment context, FirstClassObject[] args )
-            throws RuntimeX
-    {
-        checkMinimumArgumentCount( 1, args );
-        checkMaximumArgumentCount( 2, args );
-
-        if ( args.length == 1 )
-        {
-            if ( args[0] instanceof Cons )
-                return processInvocation( context,
-                        ((Cons)args[0]).asArray() );
-
-            return processAttributeGet( args[0] );
-        }
-        else if ( args.length == 2 )
-            return processAttributeSet( args[0],
-                    // TODO Is that NIL save??
-                    evaluate( args[1], context ) );
-
-        throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
     }
 
     /**
@@ -585,32 +553,13 @@ public class SchemeObject
         return new Vector( vector, false );
     }
 
-    /**
-     * Processes a procedure invocation.
-     *
-     * @param env The environment used for the evaluation of the argument list.
-     * @param list The arguments used for the invocation.
-     * @return The result of the procedure invocation.
-     * @throws RuntimeX In case there where access errors.
-     */
-    private FirstClassObject processInvocation( Environment env,
-            FirstClassObject[] list )
+    private Thunk processInvocationNewImpl(
+            Environment env,
+            String methodName,
+            Cons list,
+            Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        LOG.warning( Continuation.thunkCount() + " " + Arrays.toString( list ) );
-
-        // Check if the first element in the list is a symbol.
-        Operation.checkArgument( 1, Symbol.class, list[0] );
-
-        // Evaluate the list, excluding the first entry.
-        // TODO this is our callers job.  The environment is only needed because of
-        // this loop.
-        FirstClassObject[] actual = new FirstClassObject[ list.length -1 ];
-        for ( int i = 0 ; i < actual.length ; i++ )
-            actual[i] = evaluate( list[i+1], env );
-
-        java.lang.String methodName = list[0].toString();
-
         try
         {
             // Select the method to call.
@@ -619,8 +568,8 @@ public class SchemeObject
                 // First check the name.
                 if ( methodName.equals( method.getName() ) )
                 {
-                    java.lang.Object[] argumentList
-                    = matchParameters( method.getParameterTypes(), actual );
+                    java.lang.Object[] argumentList =
+                            matchParameters( method.getParameterTypes(), Cons.asArray( list ) );
 
                     if ( null != argumentList )
                     {
@@ -631,8 +580,8 @@ public class SchemeObject
                             throw new RuntimeX( Code.CANT_ACCESS_INSTANCE );
 
                         // Do the actual call.
-                        return convertJava2Scream(
-                                method.invoke( _theInstance, argumentList ) );
+                        return c.accept( convertJava2Scream(
+                                method.invoke( _theInstance, argumentList ) ) );
                     }
                 }
             }
@@ -658,6 +607,38 @@ public class SchemeObject
         {
             throw new RuntimeX( Code.ILLEGAL_ACCESS, methodName );
         }
+
+    }
+
+    /**
+     * Processes a procedure invocation.
+     *
+     * @param env The environment used for the evaluation of the argument list.
+     * @param list The arguments used for the invocation.
+     * @return The result of the procedure invocation.
+     * @throws RuntimeX In case there where access errors.
+     */
+    private Thunk processInvocationNew(
+            Environment env,
+            Cons list,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        LOG.warning( Continuation.thunkCount() + " " + list );
+
+        var symbol = Scut.as(
+                Symbol.class, list.getCar() );
+        var rest = Scut.as(
+                Cons.class, list.getCdr() );
+
+        return Primitives._x_evalCons(
+                env,
+                rest,
+                evaluated -> processInvocationNewImpl(
+                        env,
+                        symbol.toString(),
+                        evaluated,
+                        c ) );
     }
 
     /**
@@ -794,7 +775,7 @@ public class SchemeObject
     static private Syntax constructObjectSyntax = new Syntax( "make-object" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -831,7 +812,7 @@ public class SchemeObject
     static private Procedure wrapObjectProcedure = new Procedure( "object" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -845,6 +826,12 @@ public class SchemeObject
 
             return c.accept( new SchemeObject( a0 ) );
         }
+        @Override
+        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+        {
+            // TODO Auto-generated method stub
+            return super._compile( env, args );
+        }
     };
 
     /**
@@ -853,7 +840,7 @@ public class SchemeObject
     static private Procedure objectPredicateProcedure = new Procedure( "object?" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );

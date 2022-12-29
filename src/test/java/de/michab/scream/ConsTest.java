@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
+import de.michab.scream.util.Scut;
 
 public class ConsTest extends ScreamBaseTest
 {
@@ -78,7 +79,7 @@ public class ConsTest extends ScreamBaseTest
                 "(0 1 2 3 4)",
                 Cons.class );
 
-        Cons tail2 = (Cons)c1.listTail( 2 );
+        Cons tail2 = c1.listTail( 2 );
         assertNotNull( tail2 );
         assertEquals( i(2), tail2.getCar() );
         assertEquals( 3, tail2.length() );
@@ -91,15 +92,14 @@ public class ConsTest extends ScreamBaseTest
                 "(0 1 2 3 4)",
                 Cons.class );
 
-        Cons tail1 = (Cons)c1.listTail( c1.length() );
+        Cons tail1 = c1.listTail( c1.length() );
         assertEquals( Cons.NIL, tail1 );
     }
 
     @Test
     public void proper() throws Exception
     {
-        var p = (Cons)
-                new SchemeParser( "(1 2 3)" ).getExpression();
+        new SchemeParser( "(1 2 3)" ).getExpression();
     }
 
     @Test
@@ -126,7 +126,7 @@ public class ConsTest extends ScreamBaseTest
                 "(0 1 2 3 4)",
                 Cons.class );
 
-        Cons tail2 = (Cons)c1.listTail( c1.length() -1 );
+        Cons tail2 = c1.listTail( c1.length() -1 );
         tail2.setCdr( c1 );
         assertTrue( c1.isCircular() );
         assertFalse( c1.isProperList() );
@@ -174,8 +174,13 @@ public class ConsTest extends ScreamBaseTest
     {
         ScreamEvaluator se = scriptEngine();
         var env = se.getInteraction();
-        Cons cons = (Cons)new SchemeParser( "(+ 1 2)" ).getExpression();
-        assertTrue( ScreamBaseTest.i3.equal( cons.evaluate( env ) ) );
+        Cons cons = readSingleExpression( "(+ 1 2)", Cons.class );
+
+        var result =  Scut.toStack(
+                env,
+                cons::evaluate );
+
+        assertEqualq( ScreamBaseTest.i3, result );
     }
 
     @Test
@@ -183,10 +188,12 @@ public class ConsTest extends ScreamBaseTest
     {
         ScreamEvaluator se = scriptEngine();
         var env = se.getInteraction();
-        Cons cons = (Cons)new SchemeParser( "(0 1 2)" ).getExpression();
+        Cons cons = readSingleExpression( "(0 1 2)", Cons.class );
         try
         {
-            cons.evaluate( env );
+            Scut.toStack(
+                    env,
+                    cons::evaluate );
             fail();
         }
         catch ( ScreamException e )
@@ -200,10 +207,12 @@ public class ConsTest extends ScreamBaseTest
     {
         ScreamEvaluator se = scriptEngine();
         var env = se.getInteraction();
-        Cons cons = (Cons)new SchemeParser( "(() 1 2)" ).getExpression();
+        Cons cons = readSingleExpression( "(() 1 2)", Cons.class );
         try
         {
-            cons.evaluate( env );
+            Scut.toStack(
+                    env,
+                    cons::evaluate );
             fail();
         }
         catch ( ScreamException e )

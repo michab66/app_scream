@@ -89,7 +89,7 @@ public abstract class SyntaxLet
     static private Syntax letSyntax = new SyntaxLet( "let" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -117,7 +117,7 @@ public abstract class SyntaxLet
     static private Syntax letAsteriskSyntax = new SyntaxLet( "let*" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -145,7 +145,7 @@ public abstract class SyntaxLet
     static private Syntax letrecSyntax = new SyntaxLet( "letrec" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );

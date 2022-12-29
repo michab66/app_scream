@@ -7,7 +7,6 @@
 package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
@@ -102,12 +101,12 @@ public class VectorTest extends ScreamBaseTest
     {
         var se = scriptEngine();
 
-        var result = (FirstClassObject)se.evalFco(
+        var result = se.evalFco(
                 """
                 (define v #(1 2 3))
                 (vector-ref v 0)
                 """ );
-        assertTrue( i1.equal( result ) );
+        assertEquals( i1, result );
     }
 
     @Test
@@ -115,12 +114,24 @@ public class VectorTest extends ScreamBaseTest
     {
         var se = scriptEngine();
 
-        var result = (FirstClassObject)se.evalFco(
+        var result = se.evalFco(
                 """
                 (define v #(1 2 3))
                 (vector-set! v 0 313)
                 (vector-ref v 0)
                 """ );
-        assertTrue( i313.equal( result ) );
+        assertEquals( i313, result );
+    }
+
+    @Test
+    public void pvector_Test() throws Exception
+    {
+        var se = scriptEngine();
+
+        var result = se.evalFco(
+                """
+                (vector? #(1 2 3))
+                """ );
+        assertEquals( SchemeBoolean.T, result );
     }
 }

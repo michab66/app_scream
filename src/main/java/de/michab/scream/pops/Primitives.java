@@ -349,9 +349,7 @@ public class Primitives
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-//        return () -> FirstClassObject.evaluate( o, e, c );
-        return () -> c.accept(
-                FirstClassObject.evaluate( o, e ) );
+        return () -> FirstClassObject.evaluate( o, e, c );
     }
 
     /**

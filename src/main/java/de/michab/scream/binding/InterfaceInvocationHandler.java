@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.logging.Logger;
 
-import de.michab.scream.Cons;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Operation;
 import de.michab.scream.Procedure;
@@ -95,12 +94,12 @@ public final class InterfaceInvocationHandler
             return computeDummyValue( method.getReturnType() );
         }
 
-        return
-                SchemeObject.convertScream2Java(
-                        method.getReturnType(),
-                        FirstClassObject.evaluate(
-                                new Cons( op, Cons.create( java2scream( args ) ) ),
-                                null ));
+        return null;
+//                SchemeObject.convertScream2Java(
+//                        method.getReturnType(),
+//                        FirstClassObject.evaluate(
+//                                new Cons( op, Cons.create( java2scream( args ) ) ),
+//                                null ));
     }
 
     /**

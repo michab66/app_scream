@@ -28,10 +28,12 @@ import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
+import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.SupplierX;
+import urschleim.Holder;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -267,30 +269,64 @@ public class Scream implements ScriptEngineFactory
         return result;
     }
 
-    public static FirstClassObject evalImpl(
+
+    private static Thunk evalImpl_(
             Environment e,
             SupplierX<FirstClassObject> s,
+            FirstClassObject previousResult,
+            FirstClassObject newExpression,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        if ( newExpression == Port.EOF )
+            return c.accept( previousResult );
+
+        return Primitives._x_eval(
+                e,
+                newExpression,
+                fco -> evalImpl_( e, s, fco, s.get(), c ) );
+    }
+
+    public static Thunk evalImpl(
+            Environment e,
+            SupplierX<FirstClassObject> s,
+            // TODO
+            Writer sink,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        return evalImpl_(
+                e,
+                s,
+                Cons.NIL,
+                s.get(),
+                c );
+    }
+
+    public static FirstClassObject evalImpl(
+            Environment e,
+            SupplierX<FirstClassObject> spl,
             // TODO
             Writer sink )
                     throws RuntimeX
     {
-        FirstClassObject result = null;
+        Holder<FirstClassObject> r =
+                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<ScreamException> error =
+                new Holder<>( null );
 
-        // This is the read-eval-print loop.
-        while ( true )
-        {
-            FirstClassObject expression =
-                    s.get();
+        Continuation.trampoline(
+                evalImpl(
+                        e,
+                        spl,
+                        sink,
+                        Continuation.endCall( s -> r.set( s ) ) ),
+                s -> error.set( s ) );
 
-            if ( expression == Port.EOF )
-                break;
+        if ( error.get() != null )
+            throw (RuntimeX)error.get();
 
-            // Evaluate the expression...
-            result =
-                    FirstClassObject.evaluate( expression, e );
-        }
-
-        return result;
+        return r.get();
     }
 
     /**
@@ -423,7 +459,7 @@ public class Scream implements ScriptEngineFactory
     static private Procedure loadProcedure = new Procedure( "load" )
     {
         @Override
-        protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -490,7 +526,7 @@ public class Scream implements ScriptEngineFactory
     public static Environment extendTopLevelEnvironment( Environment tle )
     {
 //        tle.setPrimitive( evalProcedure );
-        tle.setPrimitive( loadProcedure );
+        tle.setPrimitive( loadProcedure.setClosure( tle ) );
 //        tle.setPrimitive( tleProcedure );
 
         return tle;
