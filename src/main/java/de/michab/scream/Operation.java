@@ -21,7 +21,7 @@ import de.michab.scream.pops.Primitives;
  * @author Michael Binz
  */
 public abstract class Operation
-    extends FirstClassObject
+extends FirstClassObject
 {
     /**
      * The name of the type as used by error reporting.
@@ -55,13 +55,13 @@ public abstract class Operation
     /**
      * The formal argument list for this operation.
      */
-    protected Cons _formalArguments = Cons.NIL;
+    private Cons _formalArguments = Cons.NIL;
 
     /**
      * The symbol being bound to the rest of the argument list.  This symbol can
      * be used to access the dynamic arguments of an operation invocation.
      */
-    protected FirstClassObject _rest = Cons.NIL;
+    private Symbol _rest = null;
 
     /**
      * Creates a named operation.  Main purpose is for operation-derived objects
@@ -94,7 +94,7 @@ public abstract class Operation
             Environment compileEnv )
                     throws RuntimeX
     {
-       _name = DEFAULT_NAME;
+        _name = DEFAULT_NAME;
 
         _body = body;
 
@@ -107,7 +107,7 @@ public abstract class Operation
         if ( formalArguments instanceof Symbol )
         {
             // ...this means variable number of arguments.
-            _rest = formalArguments;
+            _rest = (Symbol)formalArguments;
             // Ready.
             return;
         }
@@ -162,7 +162,7 @@ public abstract class Operation
                     // Terminate the formal argument list...
                     fac.setCdr( Cons.NIL );
                     // ...and remember the rest symbol.
-                    _rest = cdr;
+                    _rest = (Symbol)cdr;
                 }
                 // Done.  Break out of the loop.
                 break;
@@ -177,7 +177,7 @@ public abstract class Operation
      */
     public boolean isVariadic()
     {
-        return _rest != Cons.NIL;
+        return _rest != null;
     }
 
     public long argumentCount()
@@ -185,23 +185,34 @@ public abstract class Operation
     {
         return _formalArguments == null ?
                 0 :
-                _formalArguments.length();
+                    _formalArguments.length();
     }
 
+    /**
+     * Binds the argument values to their respective names in the
+     * passed environment.
+     *
+     * @param e The environment that receives the bindings.
+     * @param argNames The names to bind.
+     * @param argValues The values to bind.
+     * @param c The continuation receiving the extended environment.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
     private Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
-        throws RuntimeX
+            throws RuntimeX
     {
         if ( argNames != Cons.NIL && argValues == Cons.NIL)
             // Cannot happen since we check in _activate.
             throw new InternalError( "NotEnough" );
         if ( argNames == Cons.NIL && argValues == Cons.NIL )
             return c.accept( e );
-        if ( argNames == Cons.NIL && _rest != Cons.NIL )
+        if ( argNames == Cons.NIL && isVariadic() )
         {
-            e.define( (Symbol)_rest, argValues );
+            e.define( _rest, argValues );
             return c.accept( e );
         }
-        if ( argNames == Cons.NIL && _rest == Cons.NIL )
+        if ( argNames == Cons.NIL && ! isVariadic() )
         {
             // Cannot happen since we check in _activate.
             throw new InternalError( "TooMany" );
@@ -300,18 +311,16 @@ public abstract class Operation
      * @throws RuntimeX If the number of arguments was wrong.
      */
     protected void checkArgumentCount( Cons received )
-                    throws RuntimeX
+            throws RuntimeX
     {
         var formalCount =
                 Cons.length( _formalArguments );
         var receivedCount =
                 Cons.length( received );
-        var hasRest =
-                _rest != Cons.NIL;
 
         if ( formalCount == receivedCount )
             return;
-        else if ( formalCount < receivedCount && hasRest )
+        else if ( formalCount < receivedCount && isVariadic() )
             return;
 
         throw new RuntimeX( Code.WRONG_NUMBER_OF_ARGUMENTS,
@@ -390,14 +399,14 @@ public abstract class Operation
 
         final var ex = e.extend( getName() );
 
-        if ( _rest != Cons.NIL )
-            ex.define( (Symbol)_rest, Cons.NIL );
+        if ( isVariadic() )
+            ex.define( _rest, Cons.NIL );
 
         return () -> _bind(
                 ex,
                 _formalArguments,
                 args,
-                (s)->Primitives._x_begin( s, _body, c ) );
+                env ->Primitives._x_begin( env, _body, c ) );
     }
 
     /**
@@ -444,22 +453,6 @@ public abstract class Operation
         return new Lambda(
                 l,
                 this.toString() ).setInfo( args );
-    }
-
-    /**
-     * Performs the actual invocation of the operation.
-     * @param env
-     * @param args
-     * @param c
-     * @return
-     * @throws RuntimeX
-     */
-    public Thunk _invoke( Environment env, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX
-    {
-        Lambda l = _compile( env, args );
-
-        return FirstClassObject.evaluate( l, env, c );
     }
 
     /**
