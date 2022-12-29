@@ -9,7 +9,6 @@ import org.smack.util.collections.WeakMapWithProducer;
 
 import de.michab.scream.pops.Primitives;
 
-
 /**
  * Represents the Scheme symbol type.
  */
@@ -71,7 +70,7 @@ extends FirstClassObject
      * Tests equivalence to another object.
      *
      * @param other The other object used for the comparison.
-     * @return <code>true</code> if the objects were equal.
+     * @return {@code true} if the objects were equal.
      * @see FirstClassObject#eq
      */
     @Override
@@ -105,7 +104,7 @@ extends FirstClassObject
     }
 
     /**
-     * The implementation of the standard <code>java.lang.Object.hashCode()</code>
+     * The implementation of the standard {@code java.lang.Object.hashCode()}
      * method.
      *
      * @return An hashcode for the object instance.

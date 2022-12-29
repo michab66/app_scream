@@ -6,6 +6,7 @@
 package de.michab.scream.frontend;
 
 import de.michab.scream.frontend.Token.Tk;
+import de.michab.scream.ScreamException.Code;
 
 %%
 
@@ -135,7 +136,7 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
     }
     catch ( NumberFormatException e )
     {
-      throw new FrontendX( "INTERNAL_ERROR", new Object[]{ e.getMessage() } );
+      throw new FrontendX( Code.INTERNAL_ERROR, e.getMessage() );
     }
   }
 
@@ -146,7 +147,7 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
     }
     catch ( NumberFormatException e )
     {
-      throw new FrontendX( "INTERNAL_ERROR", new Object[]{ e.getMessage() } );
+      throw new FrontendX( Code.INTERNAL_ERROR, e.getMessage() );
     }
   }
 
@@ -192,11 +193,11 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
 
   // Catch unbalanced double quotes
   \"({stringelement})*{eol} {
-    throw new FrontendX( yyline+1, yycolumn+1, "SCAN_UNBALANCED_QUOTE" );
+    throw new FrontendX( yyline+1, yycolumn+1, Code.SCAN_UNBALANCED_QUOTE );
   }
 
   // Catch unmatched characters.
   . {
-    throw new FrontendX( yyline+1, yycolumn+1, "SCAN_UNEXPECTED_CHAR", yytext() );
+    throw new FrontendX( yyline+1, yycolumn+1, Code.SCAN_UNEXPECTED_CHAR, yytext() );
   }
 }

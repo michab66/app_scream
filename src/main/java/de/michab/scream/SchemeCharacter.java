@@ -64,7 +64,7 @@ public class SchemeCharacter
      * character.
      *
      * @param value The integer value for the requested character.
-     * @return A new <code>SchemeCharacter</code> instance.
+     * @return A new {@code SchemeCharacter} instance.
      */
     static public SchemeCharacter createObject( int value )
     {
@@ -77,7 +77,7 @@ public class SchemeCharacter
      * character.
      *
      * @param value The integer value for the requested character.
-     * @return A new <code>SchemeCharacter</code> instance.
+     * @return A new {@code SchemeCharacter} instance.
      */
     static public SchemeCharacter createObject( char value )
     {
@@ -122,11 +122,11 @@ public class SchemeCharacter
     }
 
     /**
-     * Convert the <code>SchemeCharacter</code> into its native representation in
+     * Convert the {@code SchemeCharacter} into its native representation in
      * the Java type system.  This will result in a mapping to
-     * <code>java.lang.Character</code>.
+     * {@code java.lang.Character}.
      *
-     * @return References to <code>java.lang.Character</code> instances.
+     * @return References to {@code java.lang.Character} instances.
      */
     @Override
     public Object toJava()

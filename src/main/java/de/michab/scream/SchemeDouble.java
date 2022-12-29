@@ -9,15 +9,11 @@ import org.smack.util.collections.WeakMapWithProducer;
 
 import de.michab.scream.ScreamException.Code;
 
-
-
-
 /**
  * Represents the scheme real type.
  */
-public class SchemeDouble
-extends
-de.michab.scream.Number
+public class SchemeDouble extends
+    de.michab.scream.Number
 {
     /**
      * The name of the type as used by error reporting.
@@ -26,22 +22,16 @@ de.michab.scream.Number
      */
     public static final String TYPE_NAME = "real";
 
-
-
     /**
      * This object's value.
      */
     private final double _value;
-
-
 
     /**
      *
      */
     private static WeakMapWithProducer<Double, SchemeDouble> _flyweights =
             new WeakMapWithProducer<>( c -> new SchemeDouble( c ) );
-
-
 
     /**
      * A factory for scheme doubles.  Used for limiting generation for well
@@ -51,8 +41,6 @@ de.michab.scream.Number
     {
         return _flyweights.get( v );
     }
-
-
 
     /**
      * Create a new SchemeDouble.  This is only accessible via createObject to
@@ -64,8 +52,6 @@ de.michab.scream.Number
 
         _value = v;
     }
-
-
 
     /**
      * See FirstClassObject#eqv
@@ -89,8 +75,6 @@ de.michab.scream.Number
         return result;
     }
 
-
-
     /**
      * See java.lang.Object#toString
      */
@@ -99,8 +83,6 @@ de.michab.scream.Number
     {
         return "" + _value;
     }
-
-
 
     /**
      * @see Number#asLong
@@ -111,8 +93,6 @@ de.michab.scream.Number
         return (long)_value;
     }
 
-
-
     /**
      * @see Number#asDouble
      */
@@ -121,8 +101,6 @@ de.michab.scream.Number
     {
         return _value;
     }
-
-
 
     /**
      * @see Number#add
@@ -147,8 +125,6 @@ de.michab.scream.Number
         }
     }
 
-
-
     /**
      * @see Number#subtract
      */
@@ -171,8 +147,6 @@ de.michab.scream.Number
             throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
         }
     }
-
-
 
     /**
      * @see Number#multiply
@@ -197,8 +171,6 @@ de.michab.scream.Number
         }
     }
 
-
-
     /**
      * @see Number#divide
      */
@@ -221,8 +193,6 @@ de.michab.scream.Number
             throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
         }
     }
-
-
 
     /**
      * Converts this <code>SchemeDouble</code> instance into a

@@ -22,20 +22,20 @@ import de.michab.scream.ScreamException.Code;
 
 /**
  * This class encapsulates information for a Java class.  This is read from the
- * Java <code>Class</code> object and transformed into a format that allows
+ * Java {@code Class} object and transformed into a format that allows
  * quick access for the Scream interpreter.<br>
  *
  * The most important transformation is the removal of redundant method
- * signatures.  E.g. if a class exports <code>int doIt( float f )</code> as
- * well as <code>int doIt( double d )</code> then the first method will be
+ * signatures.  E.g. if a class exports {@code int doIt( float f )} as
+ * well as {@code int doIt( double d )} then the first method will be
  * thrown out since double is Scream's native format for floating point
  * numbers.<br>
  *
- * Worst case are two signatures like the following: <code><br>
+ * Worst case are two signatures like the following: {@code <br>
  * <br>
  * 1)  void argh( double d, float f );<br>
  * 2)  void argh( float f, double d );<br>
- * <br></code>
+ * <br>}
  * Both could be called, and are equally expensive.  So for this case it is
  * simply defined (yeah, I like definitions if I don't have to ask anybody) that
  * the first one is selected.  Reason behind this is that based on the first
@@ -65,7 +65,6 @@ import de.michab.scream.ScreamException.Code;
  *   }
  * it is not possible to call the string typed method.
  *
- * @version $Rev: 209 $
  * @author Michael Binz
  */
 public class JavaClassAdapter
@@ -85,7 +84,7 @@ public class JavaClassAdapter
             new HashMap<String, JavaClassAdapter>();
 
     /**
-     * The <code>java.lang.Class</code> this object is associated with.
+     * The {@code java.lang.Class} this object is associated with.
      */
     private final Class<?> _clazz;
 
@@ -388,13 +387,13 @@ public class JavaClassAdapter
      * defined in a class inaccessible to the caller. For example, the following
      * code only works some of the time, and will fail when the target object's
      * class is too private:
-     * <code>
+     * {@code
      *    void invokeCommandOn(Object target, String command) {
      *      try {
      *            Method m = target.getClass().getMethod(command, new Class[] {});
      *            m.invoke(target, new Object[] {});
      *      } catch ...
-     *    } </code>
+     *    } }
      *
      * The workaround is to use a much more complicated algorithm, which starts
      * with target.getClass() and works up the inheritance chain, looking for a

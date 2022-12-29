@@ -110,7 +110,7 @@ public class Scream implements ScriptEngineFactory
     /**
      * Property key: specifies additional classes the kernel should load on
      * startup.
-     * <code>kernel.integrateClasses = fooExtension bar baz</code>
+     * {@code kernel.integrateClasses = fooExtension bar baz}
      */
     @Resource
     private static String[] integrateClasses;
@@ -119,7 +119,7 @@ public class Scream implements ScriptEngineFactory
      * Property key: specifies additional scheme files the kernel should load on
      * startup.  These have to be located in a special subpackage 'extensions'.
      *
-     * Sample: <code>kernel.schemeExtensions = math.s common.s patch.s</code>
+     * Sample: {@code kernel.schemeExtensions = math.s common.s patch.s}
      *
      * @see de.michab.scream.Scream#kernelSchemeInstanceExtensionsP
      */
@@ -130,7 +130,7 @@ public class Scream implements ScriptEngineFactory
      * Property key: specifies scheme files containing regression tests.  These
      * have to be located in a special subpackage 'tests'.
      *
-     * Sample: <code>kernel.regression = tmath.s</code>
+     * Sample: {@code kernel.regression = tmath.s}
      */
     @Resource
     private static String[] regression;
@@ -143,7 +143,7 @@ public class Scream implements ScriptEngineFactory
      * class.  The extension definition files have to be located in a special
      * subpackage 'extensions'.
      *
-     * Sample: <code>kernel.schemeExtensions = math.s common.s patch.s</code>
+     * Sample: {@code kernel.schemeExtensions = math.s common.s patch.s}
      */
     @Resource
     private static String[] schemeInstanceExtensions;
@@ -206,7 +206,7 @@ public class Scream implements ScriptEngineFactory
     /**
      * Loads all classes defined in the kernel.integrateClasses property and
      * invokes the following method signature on the class:<br>
-     *  <code>public static Environment extendTopLevelEnvironment( Environment tle )</code><br>
+     *  {@code public static Environment extendTopLevelEnvironment( Environment tle )}<br>
      *
      * @param tle The top level environment to contain the new bindings.
      */

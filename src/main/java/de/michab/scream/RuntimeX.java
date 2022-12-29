@@ -9,15 +9,14 @@ import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 
 /**
- * An exception to be thrown at run-time of a scheme program.  This type of
+ * An exception to be thrown at run-time of a Scheme program.  This type of
  * exception gets transformed to a user error message.
  *
- * @version $Rev: 194 $
  * @author Michael Binz
  */
 @SuppressWarnings("serial")
 public class RuntimeX
-extends ScreamException
+    extends ScreamException
 {
     /**
      * Create an error message with parameters.
@@ -94,7 +93,7 @@ extends ScreamException
 //    };
 
     /**
-     * Scream specific <code>(error ...)</code> procedure.  Interrupts the
+     * Scream specific {@code (error ...)} procedure.  Interrupts the
      * current computation with a runtime error.
      */
     static private Procedure errorProcedure = new Procedure( "error" )

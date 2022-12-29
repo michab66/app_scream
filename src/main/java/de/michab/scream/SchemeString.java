@@ -60,10 +60,10 @@ public class SchemeString
     }
 
     /**
-     * Create a constant <code>SchemeString</code> from a Java string object.
+     * Create a constant {@code SchemeString} from a Java string object.
      * Note that the input is expected to contain literal character
      * representations like '\n' and '\"'.  These will be replaced by the
-     * respective character.  The <code>toString()</code> method can be used to
+     * respective character.  The {@code toString()} method can be used to
      * get again the same string representation as passed into this constructor
      * (but not the <i>same</i> string object with regards to object identity.)
      *
@@ -78,7 +78,7 @@ public class SchemeString
      * Create a SchemeString from a java string object.  Note that the input is
      * expected to contain literal character representations like '\n' and '\"'.
      * These will be replaced by the respective character.  The
-     * <code>toString()</code> method can be used to get again the same string
+     * {@code toString()} method can be used to get again the same string
      * representation as passed into this constructor (but not the <i>same</i>
      * string object with regards to object identity.)
      *
@@ -188,7 +188,7 @@ public class SchemeString
     }
 
     /**
-     * Creates a new <code>SchemeString</code> from the current one with the
+     * Creates a new {@code SchemeString} from the current one with the
      * argument String appended.
      *
      * @param other The string to append.
@@ -205,13 +205,13 @@ public class SchemeString
     }
 
     /**
-     * Compare this <code>SchemeString</code> with the passed string.
+     * Compare this {@code SchemeString} with the passed string.
      *
      * @param other The string to compare with.
      * @return a negative integer, zero, or a positive integer as the specified
      *         String is greater than, equal to, or less than this String.
      *         Note that this is not what is expected, but compliant with
-     *         <code>String.compareTo()</code>.
+     *         {@code String.compareTo()}.
      */
     public int compareTo( SchemeString other )
     {
@@ -219,7 +219,7 @@ public class SchemeString
     }
 
     /**
-     * Compare this <code>SchemeString</code> with the passed string, ignoring
+     * Compare this {@code SchemeString} with the passed string, ignoring
      * case considerations.
      *
      * @param other The string to compare with.
@@ -227,7 +227,7 @@ public class SchemeString
      *         String is greater than, equal to, or less than this String,
      *         ignoring case considerations.  Note that this is not what is
      *         expected, but compliant with
-     *         <code>String.compareIgnoreCase</code>.
+     *         {@code String.compareIgnoreCase}.
      */
     public int compareToIgnoreCase( SchemeString other )
     {
@@ -284,7 +284,7 @@ public class SchemeString
      * eqv? is used.
      *
      * @param other The string to compare with this string.
-     * @return <code>true</code> if the passed string is equal to this string.
+     * @return {@code true} if the passed string is equal to this string.
      */
     @Override
     public boolean equal( FirstClassObject other )
@@ -304,7 +304,7 @@ public class SchemeString
 
     /**
      * This returns the literal representation of the string object in Scheme
-     * syntax.  Use the <code>getValue()</code> for the physical string.
+     * syntax.  Use the {@code getValue()} for the physical string.
      *
      * @return A literal representation of the string.
      * @see SchemeString#getValue
@@ -335,7 +335,7 @@ public class SchemeString
     /**
      * Searches through a passed string and replaces all occurrences of a given
      * string by another string.  Note that beginning with JDK1.4 there's a
-     * method <code>replaceAll()</code> that provides the functionality that we
+     * method {@code replaceAll()} that provides the functionality that we
      * implemented here.  As soon as we move to that JDK version this method
      * should be used.
      *
@@ -368,7 +368,7 @@ public class SchemeString
     }
 
     /**
-     * Creates a clone of a given <code>SchemeString</code> object.  Note that
+     * Creates a clone of a given {@code SchemeString} object.  Note that
      * the returned string is not constant.
      *
      * @return A clone of this object.
@@ -382,7 +382,7 @@ public class SchemeString
 
     /**
      * Converts this this Scheme string object to a corresponding
-     * <code>java.lang.String</code> object.
+     * {@code java.lang.String} object.
      *
      * @return An object representing this object in the Java type system.
      */

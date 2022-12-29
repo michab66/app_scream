@@ -71,7 +71,7 @@ extends FirstClassObject
 
     /**
      * Default constructor.  Since this is an abstract class this is only
-     * implicitly called from an derived class implementing <code>Number</code>.
+     * implicitly called from an derived class implementing {@code Number}.
      */
     Number()
     {

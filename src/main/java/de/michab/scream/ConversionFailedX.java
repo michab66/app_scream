@@ -10,7 +10,7 @@ package de.michab.scream;
 /**
  * Exception is used in argument list conversion in SchemeObject.  This is
  * a convenience wrapper around the "TYPE_ERROR" and should be always used
- * instead of the code sequence <code>new RuntimeX( "TYPE_ERROR", ... )</code>.
+ * instead of the code sequence {@code new RuntimeX( "TYPE_ERROR", ... )}.
  *
  * @version $Rev: 209 $
  * @author Michael Binz
@@ -27,12 +27,9 @@ extends RuntimeX
      */
     public ConversionFailedX( FirstClassObject actual, Class<?> formal )
     {
-        super( "TYPE_ERROR",
-                new Object[]
-                        {
-                                formalName( formal ),
-                                FirstClassObject.getTypename( actual )
-                        } );
+        super( Code.TYPE_ERROR,
+                formalName( formal ),
+                FirstClassObject.getTypename( actual ) );
     }
 
     /**
@@ -45,26 +42,24 @@ extends RuntimeX
      */
     public ConversionFailedX( FirstClassObject actual, Class<?> formal, int position )
     {
-        super( "TYPE_ERROR",
-                new Object[]
-                        {
-                                formalName( formal ),
-                                FirstClassObject.getTypename( actual ),
-                                "" + position
-                        } );
+        super( Code.TYPE_ERROR,
+                formalName( formal ),
+                FirstClassObject.getTypename( actual ),
+                "" + position );
     }
 
     /**
      * Computes a formal type name for the passed class.  If the passed
-     * <code>Class</code> instance is a <code>FirstClassObject</code> then the
-     * <code>TYPE_NAME</code> attribute is returned.  If the passed class is not
-     * part of Scream then the class name will be returned.<br>
+     * {@code Class} instance is a {@code FirstClassObject} then the
+     * {@code TYPE_NAME} attribute is returned.  If the passed class is not
+     * part of Scream then the class name will be returned.
+     * <br>
      * The sense behind of that is that the class
-     * <code>de.michab.scream.SchemeString</code> is simply a <code>string</code>
+     * {@code de.michab.scream.SchemeString} is simply a {@code string}
      * when it comes to error messages.
      *
      * @param formal A reference to the class.
-     * @return A name for the type represented by the <code>formal</code>
+     * @return A name for the type represented by the {@code formal}
      *         argument.
      */
     private static String formalName( Class<?> formal )
@@ -76,7 +71,7 @@ extends RuntimeX
             if ( FirstClassObject.class.isAssignableFrom( formal ) )
                 result = (String)formal.getField( "TYPE_NAME" ).get( null );
         }
-        catch ( Exception e )
+        catch ( Exception ignore )
         {
             // Since result is initialized we do not have to do any special here.
         }

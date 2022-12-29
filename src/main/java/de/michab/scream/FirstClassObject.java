@@ -67,7 +67,7 @@ public abstract class FirstClassObject
     }
 
     /**
-     * The implementation of the Scheme <code>eqv?</code> procedure.  This static
+     * The implementation of the Scheme {@code eqv?} procedure.  This static
      * method also handles NIL references.
      *
      * @param left The left operand for the comparison.
@@ -86,8 +86,8 @@ public abstract class FirstClassObject
     }
 
     /**
-     * The implementation of the Scheme <code>eqv?</code> procedure.  The default
-     * implementation delegates the operation to the <code>eq()</code> method.
+     * The implementation of the Scheme {@code eqv?} procedure.  The default
+     * implementation delegates the operation to the {@code eq()} method.
      *
      * @param other The object to compare with.
      * @return The result of the comparison.
@@ -98,7 +98,7 @@ public abstract class FirstClassObject
     }
 
     /**
-     * The implementation of the scheme <code>eq?</code> procedure.  Handles NIL
+     * The implementation of the scheme {@code eq?} procedure.  Handles NIL
      * references.
      *
      * @param left The left operand for the comparison.
@@ -185,7 +185,7 @@ public abstract class FirstClassObject
 
     /**
      * Clone this scheme object.  The default implementation just returns itself.
-     * This <code>static</code> version of this method additionally handles NIL
+     * This {@code static} version of this method additionally handles NIL
      * references.
      *
      * @param fco The first class object to be cloned.
@@ -214,10 +214,10 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Convert this <code>FirstClassObject</code> into its corresponding raw
+     * Convert this {@code FirstClassObject} into its corresponding raw
      * Java representation.  If the object represents a
-     * <code>SchemeDouble</code> this method would return an instance of
-     * <code>java.lang.Double</code>.
+     * {@code SchemeDouble} this method would return an instance of
+     * {@code java.lang.Double}.
      *
      * @return The corresponding object from the Java type system.
      * @throws RuntimeX
@@ -240,9 +240,9 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Return the typename of this <code>FirstClassObject</code> instance.  This
+     * Return the typename of this {@code FirstClassObject} instance.  This
      * is one of:<br>
-     * <code>
+     * {@code
      *  list
      *  symbol
      *  vector
@@ -251,7 +251,7 @@ public abstract class FirstClassObject
      *  string
      *  char
      *  object
-     * </code>
+     * }
      * The default implementation returns the value of the public final static
      * TYPE_NAME field. If this does not exist or is not accessible the name
      * of the class is returned.
@@ -279,14 +279,14 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Mark a <code>FirstClassObject</code> as constant.  Note that it is not
+     * Mark a {@code FirstClassObject} as constant.  Note that it is not
      * possible to switch from constant to variable, only the state change from
      * variable to constant is allowed.  Handles NIL values.
      *
-     * @param fco The <code>FirstClassObject</code> to modify.
+     * @param fco The {@code FirstClassObject} to modify.
      * @param what The new value.
      * @throws IllegalArgumentException In case it has been tried to change the
-     *         state of the <code>FirstClassObject</code> from constant to
+     *         state of the {@code FirstClassObject} from constant to
      *         variable.
      */
     static void setConstant( FirstClassObject fco, boolean what )
@@ -296,13 +296,13 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Can be used to mark a <code>FirstClassObject</code> as constant.  Note
+     * Can be used to mark a {@code FirstClassObject} as constant.  Note
      * that it is not possible to switch from constant to variable, only the
      * state change from variable to constant is allowed.
      *
      * @param what The new value.
      * @throws IllegalArgumentException In case it has been tried to change the
-     *         state of the <code>FirstClassObject</code> from constant to
+     *         state of the {@code FirstClassObject} from constant to
      *         variable.
      */
     void setConstant( boolean what )
@@ -315,11 +315,11 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Returns whether an <code>FirstClassObject</code> is a constant. Constant
+     * Returns whether an {@code FirstClassObject} is a constant. Constant
      * objects are the self-evaluating primitives and can be created by the
-     * <code>quote</code> syntax.
+     * {@code quote} syntax.
      *
-     * @param fco The <code>FirstClassObject</code> to test.
+     * @param fco The {@code FirstClassObject} to test.
      * @return Whether this should be seen as a constant.
      */
     static boolean isConstant( FirstClassObject fco )
@@ -328,9 +328,9 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Returns whether an <code>FirstClassObject</code> is a constant. Constant
-     * objects are the self-evaluating primitves and can be created by the
-     * <code>quote</code> syntax.
+     * Returns whether an {@code FirstClassObject} is a constant. Constant
+     * objects are the self-evaluating primitives and can be created by the
+     * {@code quote} syntax.
      *
      * @return Whether this should be seen as a constant.
      */

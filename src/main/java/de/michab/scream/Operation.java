@@ -239,7 +239,7 @@ extends FirstClassObject
     }
 
     /**
-     * Get this <code>Operation</code>'s symbolic name.
+     * Get this {@code Operation}'s symbolic name.
      *
      * @return The operation's symbolic name.  If no name has been set then this
      *         will be 'anonymous'.
@@ -374,9 +374,9 @@ extends FirstClassObject
 
     /**
      * Conversion of Operation instances into Java objects return constantly
-     * <code>null</code>.
+     * {@code null}.
      *
-     * @return Always <code>null</code>.
+     * @return Always {@code null}.
      */
     @Override
     public Object toJava()

@@ -21,7 +21,7 @@ import de.michab.scream.ScreamException.Code;
  *
  * Environments can be named, i.e. on extension time a symbol naming the new
  * environment can be given.  If no name is given, e.g. by calling the version
- * of <code>extend()</code> without parameters then the name of the parent
+ * of {@code extend()} without parameters then the name of the parent
  * environment is inherited.  The top-level-environment has a symbolic name of
  * 'top-level'.  Naming environments is used in Scream to place the name of the
  * procedure that created the environment for error reporting.

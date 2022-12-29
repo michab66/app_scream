@@ -211,7 +211,7 @@ public class Vector
     }
 
     /**
-     * Converts the vector to an array of <code>java.lang.Object</code>s holding
+     * Converts the vector to an array of {@code java.lang.Object}s holding
      * recursively converted entries.
      * @throws RuntimeX
      */

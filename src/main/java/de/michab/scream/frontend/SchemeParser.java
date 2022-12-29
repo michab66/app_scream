@@ -1,9 +1,7 @@
-/* $Id: SchemeParser.java 172 2009-03-19 21:21:48Z Michael $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Scream / Frontend
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2009 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream.frontend;
 
@@ -46,15 +44,11 @@ public class SchemeParser
     private final static FirstClassObject QUASIQUOTE_SYMBOL
         = Symbol.createObject( "quasiquote" );
 
-
-
     /**
      * A flyweight unquote symbol.
      */
     public final static FirstClassObject UNQUOTE_SYMBOL
         = Symbol.createObject( "unquote" );
-
-
 
     /**
      * A flyweight unquote-splicing symbol.
@@ -276,14 +270,14 @@ public class SchemeParser
     }
 
     /**
-     * Parses any scheme expression.  Differs from the parseDatum() method
+     * Parses any Scheme expression.  Differs from the parseDatum() method
      * above in the EOF handling.  This method returns an EOF object when
      * reaching EOF.
      *
      * @return The next Scheme expression on the token stream.
      * @throws FrontendX In case of an error.
      */
-    private FirstClassObject parseTopLevelDatum()
+    public FirstClassObject getExpression()
             throws FrontendX
     {
         Token token = peekNextToken();
@@ -292,18 +286,5 @@ public class SchemeParser
             return Port.EOF;
 
         return parseDatum();
-    }
-
-    /**
-     * Read a single Scheme expression.
-     *
-     * @return An expression.  Returns Port.EOF in case the end of the input
-     * reader is reached.
-     * @throws FrontendX In case of an error.
-     */
-    public FirstClassObject getExpression()
-            throws FrontendX
-    {
-        return parseTopLevelDatum();
     }
 }
