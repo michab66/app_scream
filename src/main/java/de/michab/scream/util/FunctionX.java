@@ -24,10 +24,6 @@
  */
 package de.michab.scream.util;
 
-import java.util.function.Function;
-
-import de.michab.scream.RuntimeX;
-
 /**
  * Represents a function that accepts an arguments and produces a result.
  *
@@ -36,12 +32,9 @@ import de.michab.scream.RuntimeX;
  *
  * @param <T> the type of the first argument to the function
  * @param <R> the type of the result of the function
- *
- * @see Function
- * @since 1.8
  */
 @FunctionalInterface
-public interface FunctionX<T, R> {
+public interface FunctionX<T, R, X extends Exception> {
 
     /**
      * Applies this function to the given arguments.
@@ -50,5 +43,5 @@ public interface FunctionX<T, R> {
      * @return the function result
      */
     R apply(T t)
-        throws RuntimeX;
+        throws X;
 }

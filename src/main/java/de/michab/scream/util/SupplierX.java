@@ -1,9 +1,7 @@
 package de.michab.scream.util;
 
-import de.michab.scream.RuntimeX;
-
 @FunctionalInterface
-public interface SupplierX<T>
+public interface SupplierX<T,X extends Exception>
 {
-    T get() throws RuntimeX;
+    T get() throws X;
 }

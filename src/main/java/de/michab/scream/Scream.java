@@ -267,7 +267,7 @@ public class Scream implements ScriptEngineFactory
 
     private static Thunk evalImpl_(
             Environment e,
-            SupplierX<FirstClassObject> s,
+            SupplierX<FirstClassObject,RuntimeX> s,
             FirstClassObject previousResult,
             FirstClassObject newExpression,
             Cont<FirstClassObject> c )
@@ -284,7 +284,7 @@ public class Scream implements ScriptEngineFactory
 
     public static Thunk evalImpl(
             Environment e,
-            SupplierX<FirstClassObject> s,
+            SupplierX<FirstClassObject,RuntimeX> s,
             // TODO
             Writer sink,
             Cont<FirstClassObject> c )
@@ -300,7 +300,7 @@ public class Scream implements ScriptEngineFactory
 
     public static FirstClassObject evalImpl(
             Environment env,
-            SupplierX<FirstClassObject> spl,
+            SupplierX<FirstClassObject,RuntimeX> spl,
             // TODO
             Writer sink )
                     throws RuntimeX

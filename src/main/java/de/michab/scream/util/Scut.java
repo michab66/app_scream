@@ -72,7 +72,7 @@ public class Scut
     public static <T extends FirstClassObject> T as(
             Class<T> c,
             FirstClassObject v,
-            FunctionX<FirstClassObject, T> fail ) throws RuntimeX
+            FunctionX<FirstClassObject, T, RuntimeX> fail ) throws RuntimeX
     {
         if ( v == Cons.NIL )
             return (T)v;
@@ -88,7 +88,7 @@ public class Scut
 
     public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
     {
-        FunctionX<FirstClassObject, T> fail = (s) ->
+        FunctionX<FirstClassObject, T, RuntimeX> fail = (s) ->
             { throw mTypeError( c, s.getClass() );  };
 
         return as(
@@ -104,7 +104,7 @@ public class Scut
         if ( Cons.NIL == v )
             throw mTypeError( c, Cons.NIL );
 
-        FunctionX<FirstClassObject, T> fail = (s) ->
+        FunctionX<FirstClassObject, T, RuntimeX> fail = (s) ->
             { throw mTypeError( c, s.getClass() );  };
 
         return as(
