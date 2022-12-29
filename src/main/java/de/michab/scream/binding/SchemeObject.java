@@ -19,8 +19,6 @@ import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
-import de.michab.scream.Lambda;
-import de.michab.scream.Operation;
 import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
@@ -37,24 +35,8 @@ import de.michab.scream.util.Scut;
 
 /**
  * An instance of this class boxes an entity from the Java object system,
- * e.g. an object or a class, i.e. it wraps the objects and implements the
+ * e.g. an object or a class. This wraps the object and implements the
  * Scheme/Java call mapping in both directions.
- * <p>
- * Note that a <code>SchemeObject</code> is basically a
- * <code>FirstClassObject</code>.  It's not yet clear what this really
- * means because it's the result of a very fuzzy thought.
- * <p>But why is it not possible to say something like
- * <pre><code>
- *  (define i (vector 1 2 3 4))
- *  (i (getElement 3))
- * </code></pre>
- * <p>This would allow to implement most of the standard procedures in Scheme.
- * On a more philosophic level it would unify the procedural world of Scheme
- * and the OO world of Java which is definitely good.
- * <p>
- * The only drawback would be that the resulting code for the standard
- * procedures that are used everywhere in Scheme programs would be very
- * reflective and as such not very fast.
  *
  * @author Michael G. Binz
  */
@@ -80,8 +62,8 @@ public class SchemeObject
     private final java.lang.Object _theInstance;
 
     /**
-     * <code>True</code> if this object represents a Java class,
-     * <code>false</code> otherwise.
+     * {@code True} if this object represents a Java class,
+     * {@code false} otherwise.
      */
     private final boolean _isClass;
 
@@ -91,10 +73,11 @@ public class SchemeObject
     private final JavaClassAdapter _classAdapter;
 
     /**
-     * <p>Create a new SchemeObject for a given object.  The object is used as is,
+     * Create a new SchemeObject for a given object.  The object is used as is,
      * i.e. it isn't copied.  In case the passed object instance is null the
-     * instance will be set to the class adapter's embedded class.</p>
-     * <p>The resulting SchemeObject then represents a class.</p>
+     * instance will be set to the class adapter's embedded class.
+     * <p>
+     * The resulting SchemeObject then represents a class.
      *
      * @param object The object to be wrapped by the new instance.
      * @param adapter The class adapter for the new instance.
@@ -133,20 +116,21 @@ public class SchemeObject
     /**
      * The factory for SchemeObjects.  Note that if a FirstClassObject is created
      * this is not wrapped with a SchemeObject but returned as is.  If
-     * <code>null</code> is passed for ctor args, the resulting object represents
+     * {@code null} is passed for ctor args, the resulting object represents
      * a class and the instance is set to the associated java.lang.Class
      * instance.
      *
      * @param className The name of the class used to create an instance for.
      * @param ctorArgs The list of parameters for the constructor.
-     * @return The newly created FirstClasObject.
+     * @param c The continuation that receives the new object.
+     * @return The thunk.
      * @throws RuntimeX In case of reflection errors.
      */
-    private static FirstClassObject createObject(
+    private static Thunk createObject(
             String className,
-            FirstClassObject[] ctorArgs )
-                    throws
-                    RuntimeX
+            FirstClassObject[] ctorArgs,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
     {
         JavaClassAdapter classAdapter = null;
 
@@ -159,16 +143,16 @@ public class SchemeObject
             // If we didn't receive any constructor arguments...
             if ( null == ctorArgs )
                 // ...we create a class representative.
-                return new SchemeObject( null, classAdapter );
+                return c.accept( new SchemeObject( null, classAdapter ) );
 
             // We received constructor arguments, select the ctor to call.
-            for ( var c : classAdapter.getConstructors() )
+            for ( var ctr : classAdapter.getConstructors() )
             {
                 var argumentList =
-                        matchParameters( c.getParameterTypes(), ctorArgs );
+                        matchParameters( ctr.getParameterTypes(), ctorArgs );
 
                 if ( null != argumentList )
-                    return convertJava2Scream( c.newInstance( argumentList ) );
+                    return c.accept( convertJava2Scream( ctr.newInstance( argumentList ) ) );
             }
 
             // No constructor fit the argument list.
@@ -233,33 +217,35 @@ public class SchemeObject
         long argsLen =
                 checkArgumentCount( 1, 2, args );
 
-        if ( argsLen == 1 && args.listRef( 0 ) instanceof Cons )
+        var args0 = args.listRef( 0 );
+
+        if ( argsLen == 1 && args0 instanceof Cons )
         {
             return processInvocation(
                     e,
-                    (Cons)args.listRef( 0 ),
+                    (Cons)args0,
                     c );
         }
-        else if ( argsLen == 1 && args.listRef( 0 ) instanceof Symbol) {
-            var arg0 =
-                    args.listRef( 0 );
-                return c.accept( processAttributeGet( arg0 ) );
-        }
-        else if ( argsLen == 2 && args.listRef( 0 ) instanceof Symbol )
+
+        if ( argsLen == 1 && args0 instanceof Symbol)
         {
-            var args0 = args.listRef( 0 );
+            return processAttributeGet(
+                    (Symbol)args0,
+                    c );
+        }
+
+        if ( argsLen == 2 && args0 instanceof Symbol )
+        {
+            Symbol symbol = (Symbol)args0;
             var args1 = args.listRef( 1 );
 
-            return () -> {
-                Cont<FirstClassObject> set = fco -> {
-                    return c.accept( processAttributeSet( args0, fco ) );
-                };
-
-                return Primitives._x_eval( e, args1, set );
-            };
+            return Primitives._x_eval(
+                    e,
+                    args1,
+                    fco -> processAttributeSet( symbol, fco, c ) );
         }
-        else
-            throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
+
+        throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
     }
 
     /**
@@ -406,7 +392,7 @@ public class SchemeObject
     }
 
     /**
-     * Converts a vector, something like <code>#(1 2 3 4)</code>, into a Java
+     * Converts a vector, something like {@code #(1 2 3 4)}, into a Java
      * array.
      *
      * @param formal The array type (a.k.a. component type) for the resulting
@@ -437,18 +423,18 @@ public class SchemeObject
 
     /**
      * This method is responsible for handling
-     * <code>InvocationTargetException</code>s.  Basically this means that in
-     * case the exception embedded in an <code>InvocationTargetException</code>
-     * is a <code>RuntimeX</code> then this method unpacks and returns this.  In
-     * the other case a new <code>RuntimeX</code> is created and returned.
-     * Embedded <code>Error</code>s are unpacked and simply thrown.
+     * } {@code InvocationTargetException}s.  Basically this means that in
+     * case the exception embedded in an {@code InvocationTargetException}
+     * is a {@code RuntimeX} then this method unpacks and returns this.  In
+     * the other case a new {@code RuntimeX} is created and returned.
+     * Embedded {@code Error}s are unpacked and simply thrown.
      *
      * @param ite The exception to filter.
      * @param context A string to be used in case the embedded exception is not
-     *        an <code>Error</code> or <code>RuntimeX</code> and a generic
+     *        an {@code Error} or {@code RuntimeX} and a generic
      *        exception has to be created.
-     * @return An instance of a <code>RuntimeX</code> exception.
-     * @throws Error Embedded <code>Error</code> instances are thrown.
+     * @return An instance of a {@code RuntimeX} exception.
+     * @throws Error Embedded {@code Error} instances are thrown.
      */
     public static RuntimeX filterException( InvocationTargetException ite,
             String context )
@@ -497,45 +483,44 @@ public class SchemeObject
             return Cons.NIL;
 
         // Test for array types...
-        else if ( object.getClass().isArray() )
+        if ( object.getClass().isArray() )
             return convertJavaArray2ScreamVector( object );
 
         // Now we test for all primitive types supported by Java.
-        else if ( object instanceof java.lang.Integer ||
+        if ( object instanceof java.lang.Integer ||
                 object instanceof java.lang.Byte ||
                 object instanceof java.lang.Short ||
                 object instanceof java.lang.Long )
             return SchemeInteger.createObject( ((java.lang.Number)object).longValue() );
 
-        else if ( object instanceof java.lang.Double ||
+        if ( object instanceof java.lang.Double ||
                 object instanceof java.lang.Float )
             return SchemeDouble.createObject( ((java.lang.Number)object).doubleValue() );
 
-        else if ( object instanceof java.lang.Character )
+        if ( object instanceof java.lang.Character )
             return SchemeCharacter.createObject( ((java.lang.Character)object).charValue() );
 
-        else if ( object instanceof String )
+        if ( object instanceof String )
             return new SchemeString( (String)object );
 
-        else if ( object instanceof java.lang.Boolean )
+        if ( object instanceof java.lang.Boolean )
             return SchemeBoolean.createObject( ((java.lang.Boolean)object).booleanValue() );
 
         // This is needed for tightly integrated classes that know about Scream's
         // internal type system.
-        else if ( object instanceof FirstClassObject )
+        if ( object instanceof FirstClassObject )
             return (FirstClassObject)object;
 
-        // Everything else must be a Java native reference type...
-        else
-            // ...wrap it and return it.
-            return new SchemeObject( object,
-                    JavaClassAdapter.createObject( object.getClass()
-                            ) );
+        // Everything else must be a Java-native reference type...
+        // ...wrap it and return it.
+        return new SchemeObject( object,
+                JavaClassAdapter.createObject( object.getClass()
+                        ) );
     }
 
     /**
      * Converts a Java array into a scream vector.  The passed object must be an
-     * array, i.e. <code>Array.isArray()</code> must return true for it.  This is
+     * array, i.e. {@code Array.isArray()} must return true for it.  This is
      * not checked inside this method.
      *
      * @param object The object to convert to a vector.
@@ -647,19 +632,16 @@ public class SchemeObject
      * @return The attribute's value.
      * @throws RuntimeX In case the attribute could not be read.
      */
-    private FirstClassObject processAttributeGet( FirstClassObject attribute )
+    private Thunk processAttributeGet( Symbol attribute, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         LOG.warning( attribute.toString() );
 
-        // Make sure that the attribute is specified by a Symbol.
-        Operation.checkArgument( 1, Symbol.class, attribute );
-
         try
         {
             // Get the attribute.
-            return convertJava2Scream(
-                    _classAdapter.getField( attribute.toString() ).get( _theInstance ) );
+            return c.accept( convertJava2Scream(
+                    _classAdapter.getField( attribute.toString() ).get( _theInstance ) ) );
         }
         catch ( IllegalAccessException e )
         {
@@ -677,35 +659,24 @@ public class SchemeObject
      * @return The attribute's new value.
      * @throws RuntimeX In case the attribute could not be set.
      */
-    private FirstClassObject processAttributeSet( FirstClassObject attribute,
-            FirstClassObject value )
+    private Thunk processAttributeSet(
+            Symbol attribute,
+            FirstClassObject value,
+            Cont<FirstClassObject> c )
                     throws RuntimeX
     {
         LOG.warning( attribute + " = " + value );
 
-        // Make sure that the attribute is specified by a Symbol.
-        Operation.checkArgument( 1, Symbol.class, attribute );
-
         try
         {
-            // Now try to get a reference to the field...
-            Field field = _classAdapter.getField( attribute.toString() );
+            Field field = _classAdapter.getField(
+                    attribute.toString() );
 
-            // ...and prepare the value to be set in the field.  If this fails we
-            // will end up in the exception handler below.
-            Object[] newValue =
-                    new Object[]{ convertScream2Java( field.getType(), value ) };
+            field.set(
+                    _theInstance,
+                    convertScream2Java( field.getType(), value ) );
 
-            // Everything fine so far, now we set the value.  If we are not
-            // allowed to do this the exception handler will help us out.
-            field.set( _theInstance, newValue[0] );
-
-            // Since we are free to specify what to return from this method, we
-            // return the value we set on the field.
-            return value;
-            // An alternative could be to read the field, re-convert the received
-            // object into the Scream type system and return this.  But this isn't
-            // really cheap and not really needed so we decided against it.
+            return c.accept( value );
         }
         catch ( IllegalAccessException e )
         {
@@ -716,10 +687,10 @@ public class SchemeObject
     /**
      * Test for equality based on the embedded instance.  If we have no instance
      * which is the case for class representatives test if the same
-     * <code>JavaClassAdapter</code> is used.
+     * {@code JavaClassAdapter} is used.
      *
      * @param other The object to compare.
-     * @return <code>True</code> if the reference passed into this call is eqv to
+     * @return {@code True} if the reference passed into this call is eqv to
      *         this object.
      */
     @Override
@@ -738,9 +709,6 @@ public class SchemeObject
     }
 
     /**
-     * Create a string from this object.  This can't be used to read the object
-     * back in.
-     *
      * @return A string representation of this object.
      */
     @Override
@@ -781,7 +749,7 @@ public class SchemeObject
 
             // This creates a class instance. TODO not intuitive.
             if ( argument instanceof Symbol )
-                return c.accept( createObject( argument.toString(), null ) );
+                return createObject( argument.toString(), null, c );
 
             Cons cons = Scut.as(
                     Cons.class,
@@ -796,10 +764,11 @@ public class SchemeObject
             return Primitives._x_evalCons(
                     e,
                     arguments,
-                    evaluated -> c.accept(
+                    evaluated ->
                             createObject(
                                     name.toString(),
-                                    Cons.asArray( evaluated ) ) ) );
+                                    Cons.asArray( evaluated ),
+                                    c) );
         }
     };
 
@@ -822,12 +791,6 @@ public class SchemeObject
                 return c.accept( a0 );
 
             return c.accept( new SchemeObject( a0 ) );
-        }
-        @Override
-        protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
-        {
-            // TODO Auto-generated method stub
-            return super._compile( env, args );
         }
     };
 
@@ -889,9 +852,9 @@ public class SchemeObject
 //    };
 //
     /**
-     * <p><code>(%catch expression error-handler)</code></p>
-     * Evaluates the passed <code>expression</code> and executes the
-     * <code>error-handler</code> as soon as an error occurs in exception
+     * <p>{@code (%catch expression error-handler)}</p>
+     * Evaluates the passed {@code expression} and executes the
+     * {@code error-handler} as soon as an error occurs in exception
      * execution.  The error handler is executed for its side effects, <i>the
      * error ultimately submitted is the original error</i>.  Errors inside the
      * error-handler override the original error.
