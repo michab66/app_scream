@@ -8,12 +8,13 @@ package de.michab.scream;
 
 import java.util.HashSet;
 
+import org.smack.util.Holder;
+
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Lambda.L;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.util.Scut;
-import urschleim.Holder;
 
 /**
  * Represents a list cell.  A list cell consists of two references called car

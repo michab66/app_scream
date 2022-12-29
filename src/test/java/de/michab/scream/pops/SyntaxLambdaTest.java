@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
+import org.smack.util.Holder;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Continuation;
@@ -21,7 +22,6 @@ import de.michab.scream.Operation;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException;
-import urschleim.Holder;
 
 public class SyntaxLambdaTest extends ScreamBaseTest
 {

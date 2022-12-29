@@ -8,6 +8,7 @@ package de.michab.scream.pops;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
+import org.smack.util.Holder;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Continuation;
@@ -19,7 +20,6 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException;
 import de.michab.scream.frontend.SchemeParser;
-import urschleim.Holder;
 
 public class SyntaxBeginTest extends ScreamBaseTest
 {

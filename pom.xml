@@ -36,7 +36,7 @@
         <dependency>
             <groupId>micbinz</groupId>
             <artifactId>smack</artifactId>
-            <version>11.405</version>
+            <version>11.406</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

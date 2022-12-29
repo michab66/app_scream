@@ -9,6 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
+import org.smack.util.IntegerHolder;
 
 import urschleim.Continuations.Cont;
 import urschleim.Continuations.Thunk;

@@ -14,12 +14,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.function.Function;
 
+import org.smack.util.Holder;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
-import urschleim.Holder;
 
 public class ScreamBaseTest
 {

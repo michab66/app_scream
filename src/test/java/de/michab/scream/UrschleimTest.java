@@ -15,9 +15,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
+import org.smack.util.Holder;
 
 import de.michab.scream.frontend.SchemeParser;
-import urschleim.Holder;
 
 public class UrschleimTest extends ScreamBaseTest
 {

@@ -8,13 +8,13 @@ package de.michab.scream.pops;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.smack.util.Holder;
 
 import de.michab.scream.Continuation;
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException;
-import urschleim.Holder;
 
 public class ContinuationTest extends ScreamBaseTest
 {

@@ -7,7 +7,7 @@ package de.michab.scream;
 
 import java.util.function.Consumer;
 
-import urschleim.Holder;
+import org.smack.util.Holder;
 
 /**
  * public _x_... are externally visible primitives.

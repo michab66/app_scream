@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.smack.util.Holder;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Continuation;
@@ -19,7 +20,6 @@ import de.michab.scream.SchemeInteger;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException;
-import urschleim.Holder;
 
 public class SyntaxTimeTest extends ScreamBaseTest
 {
