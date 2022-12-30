@@ -140,7 +140,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
         assertNotNull( error.get() );
         RuntimeX se = (RuntimeX)error.get();
         assertEquals( Code.DUPLICATE_ELEMENT, se.getCode() );
-        assertEquals( i(7).toString(), se.getArguments()[0] );
+        assertEquals( i(7), se.getArguments()[0] );
     }
 
     /**
@@ -172,7 +172,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
         assertNotNull( error.get() );
         RuntimeX se = (RuntimeX)error.get();
         assertEquals( Code.DUPLICATE_ELEMENT, se.getCode() );
-        assertEquals( i(7).toString(), se.getArguments()[0] );
+        assertEquals( i(7), se.getArguments()[0] );
     }
 
     /**
@@ -206,6 +206,6 @@ public class SyntaxCaseTest extends ScreamBaseTest
         assertNotNull( error.get() );
         RuntimeX se = (RuntimeX)error.get();
         assertEquals( Code.BAD_CLAUSE, se.getCode() );
-        assertEquals( badClause.toString(), se.getArguments()[0] );
+        assertEqualq( badClause, (FirstClassObject)se.getArguments()[0] );
     }
 }

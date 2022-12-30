@@ -114,7 +114,7 @@ extends FirstClassObject
 
         // The formal arguments must be a list.
         if ( ! (formalArguments instanceof Cons) )
-            throw new RuntimeX( Code.SYNTAX_ERROR, formalArguments );
+            throw RuntimeX.mSyntaxError( formalArguments );
 
         // Remember the formal argument list.
         Cons fac = _formalArguments = (Cons)formalArguments;
@@ -134,12 +134,12 @@ extends FirstClassObject
 
                 // Set.add() returns false if the element is already contained.
                 if ( false == unifier.add( symbolName ) )
-                    throw new RuntimeX( Code.DUPLICATE_FORMAL, car );
+                    throw RuntimeX.mDuplicateFormal( car );
 
                 // This cell was fine.
             }
             else
-                throw new RuntimeX( Code.INVALID_FORMALS, car );
+                throw RuntimeX.mInvalidFormals(  car );
 
             // Check the cdr.
             FirstClassObject cdr = fac.getCdr();
@@ -156,7 +156,7 @@ extends FirstClassObject
                 // A 'rest' symbol was defined.
                 // Set.add() returns false if the element is already contained.
                 if ( false == unifier.add( cdr.toString() ) )
-                    throw new RuntimeX( Code.DUPLICATE_FORMAL, cdr );
+                    throw RuntimeX.mDuplicateFormal( cdr );
                 else
                 {
                     // Terminate the formal argument list...
@@ -168,7 +168,7 @@ extends FirstClassObject
                 break;
             }
             else
-                throw new RuntimeX( Code.INVALID_FORMALS, cdr );
+                throw RuntimeX.mInvalidFormals( cdr );
         }
     }
 
@@ -263,9 +263,9 @@ extends FirstClassObject
                     throws RuntimeX
     {
         if ( expected != received.length )
-            throw new RuntimeX( Code.WRONG_NUMBER_OF_ARGUMENTS,
-                    "" + expected,
-                    "" + received.length
+            throw RuntimeX.mWrongNumberOfArguments(
+                    expected,
+                    received.length
                     );
     }
 
@@ -289,13 +289,13 @@ extends FirstClassObject
 
         if ( argumentCount < min )
         {
-            throw new RuntimeX( Code.NOT_ENOUGH_ARGUMENTS,
+            throw RuntimeX.mNotEnoughArguments(
                     min,
                     argumentCount );
         }
         if ( argumentCount > max )
         {
-            throw new RuntimeX( Code.TOO_MANY_ARGUMENTS,
+            throw RuntimeX.mTooManyArguments(
                     max,
                     argumentCount );
         }

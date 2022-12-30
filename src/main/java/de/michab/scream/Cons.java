@@ -13,7 +13,6 @@ import org.smack.util.Holder;
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Lambda.L;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.util.Scut;
 
 /**
@@ -143,7 +142,7 @@ public class Cons
             throws RuntimeX
     {
         if ( isConstant() )
-            throw new RuntimeX( Code.CANT_MODIFY_CONSTANT, toString() );
+            throw RuntimeX.mCannotModifyConstant( this );
 
         _car = car;
     }
@@ -169,7 +168,7 @@ public class Cons
             throws RuntimeX
     {
         if ( isConstant() )
-            throw new RuntimeX( Code.CANT_MODIFY_CONSTANT, toString() );
+            throw RuntimeX.mCannotModifyConstant( this );
 
         _cdr = cdr;
     }
@@ -186,7 +185,7 @@ public class Cons
             throws RuntimeX
     {
         if ( ! isProperList() )
-            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+            throw RuntimeX.mExpectedProperList();
 
         // Copy the list (but not the contents).
         Cons thisCopy = Cons.create( asArray() );
@@ -212,7 +211,7 @@ public class Cons
             throws RuntimeX
     {
         if ( ! isProperList() )
-            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+            throw RuntimeX.mExpectedProperList();
 
         FirstClassObject[] result = asArray();
 
@@ -247,7 +246,7 @@ public class Cons
             throws RuntimeX
     {
         if ( k > length() || k < 0 )
-            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, k );
+            throw RuntimeX.mIndexOutOfBounds( k );
 
         Cons result = this;
 
@@ -271,7 +270,7 @@ public class Cons
         var result = listTail( k );
 
         if ( result == Cons.NIL )
-            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, k );
+            throw RuntimeX.mIndexOutOfBounds( k );
 
         return result.getCar();
     }
@@ -359,7 +358,7 @@ public class Cons
             FirstClassObject subList = listRef( i );
 
             if ( ! (subList instanceof Cons) )
-                throw new RuntimeX( Code.INVALID_ASSOC_LIST, this );
+                throw RuntimeX.mInvalidAssocList(  this );
 
             FirstClassObject subListsCar = ((Cons)subList)._car;
 
@@ -415,8 +414,7 @@ public class Cons
         }
         catch ( NullPointerException | ClassCastException x )
         {
-            throw new RuntimeX( Code.CALLED_NON_PROCEDURAL,
-                    toString( op ) ).addCause( x );
+            throw RuntimeX.mCalledNonProcedural( op ).addCause( x );
         }
     }
 
@@ -424,7 +422,7 @@ public class Cons
     protected Lambda _compile( Environment env ) throws RuntimeX
     {
         if ( ! isProperList() )
-            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+            throw RuntimeX.mExpectedProperList();
 
         var car = getCar();
         var cdr = Scut.as( Cons.class, getCdr() );
@@ -578,7 +576,7 @@ public class Cons
 
         // Circular.
         if ( pc[0] )
-            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+            throw RuntimeX.mExpectedProperList();
 
         return lengthOut.get();
     }
@@ -603,7 +601,7 @@ public class Cons
 
         // Not proper.
         if ( ! pc[1] )
-            throw new RuntimeX( Code.EXPECTED_PROPER_LIST );
+            throw RuntimeX.mExpectedProperList();
 
         return lengthOut.get();
     }

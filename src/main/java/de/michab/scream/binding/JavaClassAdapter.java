@@ -283,7 +283,7 @@ public class JavaClassAdapter
         }
         catch ( NoSuchMethodException e )
         {
-            throw new RuntimeX( Code.PROXY_CANT_INSTANTIATE, _clazz.getName() );
+            throw new RuntimeX( Code.PROXY_CANNOT_INSTANTIATE, _clazz.getName() );
         }
         catch ( IllegalAccessException e )
         {
@@ -291,7 +291,7 @@ public class JavaClassAdapter
         }
         catch ( InstantiationException e )
         {
-            throw new RuntimeX( Code.PROXY_CANT_INSTANTIATE, _clazz.getName() );
+            throw new RuntimeX( Code.PROXY_CANNOT_INSTANTIATE, _clazz.getName() );
         }
     }
 

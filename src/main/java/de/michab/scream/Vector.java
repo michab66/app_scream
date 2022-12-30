@@ -109,7 +109,7 @@ public class Vector
         }
         catch ( ArrayIndexOutOfBoundsException e )
         {
-            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, "" + idx );
+            throw RuntimeX.mIndexOutOfBounds( idx );
         }
     }
 

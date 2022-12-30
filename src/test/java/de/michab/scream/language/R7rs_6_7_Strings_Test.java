@@ -96,7 +96,7 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
         catch ( RuntimeX rx )
         {
             assertEquals( Code.INDEX_OUT_OF_BOUNDS, rx.getCode() );
-            assertEquals( 8, rx.getArgument(0) );
+            assertEquals( 8L, rx.getArgument(0) );
         }
     }
     @Test

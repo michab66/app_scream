@@ -14,7 +14,6 @@ import de.michab.scream.Environment;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Syntax;
 import de.michab.scream.util.Scut;
@@ -50,14 +49,14 @@ public class SyntaxCase extends Syntax
         {
             // must be last clause.
             if ( Cons.NIL != clause.getCdr() )
-                throw new RuntimeX( Code.BAD_CLAUSE );
+                throw RuntimeX.mBadClause( clause.getCdr() );
         }
         else
         {
             Cons cdatum = Scut.as(
                     Cons.class,
                     datum,
-                    s -> { throw Scut.mBadClause( clause ); });
+                    s -> { throw RuntimeX.mBadClause( clause ); });
             // datum must be at least a one element list.
             checkArgumentCount(
                     1,
@@ -87,7 +86,7 @@ public class SyntaxCase extends Syntax
             final var ct = Scut.as(
                     Cons.class,
                     i.getCar(),
-                    s -> { throw Scut.mBadClause( fi ); } );
+                    s -> { throw RuntimeX.mBadClause( fi ); } );
 
             validateClause( unifier, ct );
         }

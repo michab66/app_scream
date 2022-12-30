@@ -26,7 +26,6 @@ import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.LoadContext;
@@ -408,7 +407,7 @@ public class Scream implements ScriptEngineFactory
         }
         catch ( IOException ioe )
         {
-            throw new RuntimeX( Code.IO_ERROR, ioe.getMessage() );
+            throw RuntimeX.mIoError( ioe );
         }
         finally
         {

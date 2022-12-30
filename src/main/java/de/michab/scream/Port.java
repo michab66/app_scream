@@ -16,7 +16,6 @@ import java.net.URL;
 
 import org.smack.util.FileUtil;
 
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
 
@@ -143,12 +142,11 @@ public class Port
                         new FileOutputStream( name ) );
             }
             else
-                throw new RuntimeX( Code.INTERNAL_ERROR,
-                        getClass().getName() );
+                throw RuntimeX.mInternalError( getClass().getName() );
         }
         catch ( IOException e )
         {
-            throw new RuntimeX( Code.IO_ERROR, e.getMessage() );
+            throw RuntimeX.mIoError( e );
         }
     }
 
@@ -177,12 +175,11 @@ public class Port
                 _outPort = new PrintWriter( name.openConnection().getOutputStream() );
             }
             else
-                throw new RuntimeX( Code.INTERNAL_ERROR,
-                        getClass().getName() );
+                throw RuntimeX.mInternalError( getClass().getName() );
         }
         catch ( IOException e )
         {
-            throw new RuntimeX( Code.IO_ERROR, e.getMessage() );
+            throw RuntimeX.mIoError( e );
         }
     }
 
@@ -274,9 +271,9 @@ public class Port
             throws RuntimeX
     {
         if ( !isOutputPort() )
-            throw new RuntimeX( Code.EXPECTED_OUTPUT_PORT );
+            throw RuntimeX.mExpectedOutputPort();
         if ( isClosed() )
-            throw new RuntimeX( Code.PORT_CLOSED );
+            throw RuntimeX.mPortClosed();
 
         try
         {
@@ -287,8 +284,7 @@ public class Port
         }
         catch ( IOException e )
         {
-            throw new RuntimeX( Code.IO_ERROR,
-                    e.getMessage() );
+            throw RuntimeX.mIoError( e );
         }
     }
 
@@ -302,9 +298,9 @@ public class Port
             throws RuntimeX
     {
         if ( !isOutputPort() )
-            throw new RuntimeX( Code.EXPECTED_OUTPUT_PORT );
+            throw RuntimeX.mExpectedOutputPort();
         if ( isClosed() )
-            throw new RuntimeX( Code.PORT_CLOSED );
+            throw RuntimeX.mPortClosed();
 
         try
         {
@@ -312,8 +308,7 @@ public class Port
         }
         catch ( IOException e )
         {
-            throw new RuntimeX( Code.IO_ERROR,
-                    e.getMessage() );
+            throw RuntimeX.mIoError( e );
         }
     }
 
@@ -346,9 +341,9 @@ public class Port
             throws RuntimeX
     {
         if ( !isInputPort() )
-            throw new RuntimeX( Code.EXPECTED_INPUT_PORT );
+            throw RuntimeX.mExpectedInputPort();
         if ( isClosed() )
-            throw new RuntimeX( Code.PORT_CLOSED );
+            throw RuntimeX.mPortClosed();
 
         // In case no parser exists...
         if ( null == _parser )
@@ -377,9 +372,9 @@ public class Port
             throws RuntimeX
     {
         if ( !isInputPort() )
-            throw new RuntimeX( Code.EXPECTED_INPUT_PORT );
+            throw RuntimeX.mExpectedInputPort();
         if ( isClosed() )
-            throw new RuntimeX( Code.PORT_CLOSED );
+            throw RuntimeX.mPortClosed();
 
         try
         {
@@ -387,7 +382,7 @@ public class Port
         }
         catch ( IOException e )
         {
-            throw new RuntimeX( Code.IO_ERROR, e.getMessage() );
+            throw RuntimeX.mIoError( e );
         }
     }
 
@@ -405,9 +400,9 @@ public class Port
             throws RuntimeX
     {
         if ( !isInputPort() )
-            throw new RuntimeX( Code.EXPECTED_INPUT_PORT );
+            throw RuntimeX.mExpectedInputPort();
         if ( isClosed() )
-            throw new RuntimeX( Code.PORT_CLOSED );
+            throw RuntimeX.mPortClosed();
 
         if ( _peeked == NOT_PEEKED )
         {
@@ -417,8 +412,7 @@ public class Port
             }
             catch ( IOException e )
             {
-                throw new RuntimeX( Code.IO_ERROR,
-                        e.getMessage() );
+                throw RuntimeX.mIoError( e );
             }
         }
 
@@ -437,11 +431,10 @@ public class Port
     public FirstClassObject readCharacter()
             throws RuntimeX
     {
-        // Do the needed checks.
         if ( !isInputPort() )
-            throw new RuntimeX( Code.EXPECTED_INPUT_PORT );
+            throw RuntimeX.mExpectedInputPort();
         if ( isClosed() )
-            throw new RuntimeX( Code.PORT_CLOSED );
+            throw RuntimeX.mPortClosed();
 
         int c;
         if ( _peeked != NOT_PEEKED )
@@ -455,7 +448,7 @@ public class Port
         }
         catch ( IOException e )
         {
-            throw new RuntimeX( Code.IO_ERROR, e.getMessage() );
+            throw RuntimeX.mIoError( e );
         }
 
         if ( c == -1 )

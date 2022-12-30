@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.Cons;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.SchemeDouble;
 import de.michab.scream.SchemeInteger;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException;
@@ -25,19 +24,6 @@ import de.michab.scream.Symbol;
 
 public class ScutTest extends ScreamBaseTest
 {
-    private RuntimeX validateMessageAndType( RuntimeX x, Code c, int id )
-    {
-        var msg = x.getMessage();
-        assertNotNull( msg );
-        assertEquals(
-                c,
-                x.getCode() );
-        assertEquals(
-                id,
-                x.getId() );
-        return x;
-    }
-
     @Test
     public void asInteger() throws Exception
     {
@@ -92,7 +78,7 @@ public class ScutTest extends ScreamBaseTest
         {
             Scut.as( SchemeInteger.class,
                     fco,
-                    (s) -> { throw Scut.mDuplicateElement( s ); } );
+                    (s) -> { throw RuntimeX.mDuplicateElement( s ); } );
             fail();
         }
         catch ( ScreamException e )
@@ -131,14 +117,14 @@ public class ScutTest extends ScreamBaseTest
         {
             FirstClassObject fco = Cons.NIL;
 
-            SchemeInteger i = Scut.asNotNil( SchemeInteger.class, fco );
+            Scut.asNotNil( SchemeInteger.class, fco );
             fail();
         }
         catch ( RuntimeX rx )
         {
             assertEquals( Code.TYPE_ERROR, rx.getCode() );
             assertEquals(
-                    FirstClassObject.toString( Cons.NIL ),
+                    Cons.NIL,
                     rx.getArgument(1) );
         }
     }
@@ -163,7 +149,7 @@ public class ScutTest extends ScreamBaseTest
         catch ( RuntimeX x )
         {
             assertEquals( Code.DUPLICATE_ELEMENT, x.getCode() );
-            assertEquals( i1.toString(), x.getArguments()[0] );
+            assertEquals( i1, x.getArguments()[0] );
         }
     }
     @Test
@@ -186,7 +172,7 @@ public class ScutTest extends ScreamBaseTest
         catch ( RuntimeX x )
         {
             assertEquals( Code.DUPLICATE_ELEMENT, x.getCode() );
-            assertEquals( i1.toString(), x.getArguments()[0] );
+            assertEquals( i1, x.getArguments()[0] );
         }
     }
 
@@ -207,70 +193,7 @@ public class ScutTest extends ScreamBaseTest
         catch ( RuntimeX x )
         {
             assertEquals( Code.DUPLICATE_ELEMENT, x.getCode() );
-            assertEquals( i1.toString(), x.getArguments()[0] );
+            assertEquals( i1, x.getArguments()[0] );
         }
-    }
-
-    @Test
-    public void _6_typeError_2() throws Exception
-    {
-        validateMessageAndType(
-                Scut.mExpectedProperList( parse( "(a . b)" ) ),
-                Code.EXPECTED_PROPER_LIST,
-                6 );
-    }
-
-    @Test
-    public void _11_typeError_2() throws Exception
-    {
-        validateMessageAndType(
-                Scut.mTypeError( Cons.class, SchemeDouble.class ),
-                Code.TYPE_ERROR,
-                11 );
-    }
-    @Test
-    public void _11_typeError_3() throws Exception
-    {
-        validateMessageAndType(
-                Scut.mTypeError( Cons.class, SchemeDouble.class, 313 ),
-                Code.TYPE_ERROR,
-                11 );
-    }
-
-    @Test
-    public void _16_badBinding_2() throws Exception
-    {
-        var badBinding = readSingleExpression( "(bad binding)", Cons.class );
-
-        var x = validateMessageAndType(
-                Scut.mBadBinding( s313, badBinding ),
-                Code.BAD_BINDING,
-                16 );
-        assertEquals( s313.toString(), x.getArgument(0) );
-        assertEquals( badBinding.toString(), x.getArgument(1) );
-    }
-
-    @Test
-    public void _17_badClause_3() throws Exception
-    {
-        var badClause = parse( "(bad clause)" );
-
-        var x = validateMessageAndType(
-                Scut.mBadClause( badClause ),
-                Code.BAD_CLAUSE,
-                17 );
-        assertEquals( badClause.toString(), x.getArguments()[0] );
-    }
-
-    @Test
-    public void _46_duplicateElement_1() throws Exception
-    {
-        var x = validateMessageAndType(
-                Scut.mDuplicateElement( s3 ),
-                Code.DUPLICATE_ELEMENT,
-                46 );
-        assertNotNull( x.getArguments() );
-        assertEquals( 1, x.getArguments().length );
-        assertEquals( s3.toString(), x.getArguments()[0] );
     }
 }

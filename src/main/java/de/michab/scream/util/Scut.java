@@ -10,8 +10,6 @@ import java.util.HashSet;
 import de.michab.scream.Cons;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.ScreamException.Code;
-import de.michab.scream.Symbol;
 
 /**
  * Scream utilities.
@@ -34,7 +32,7 @@ public class Scut
         throws RuntimeX
     {
         if ( ! Cons.isProper( cons ) )
-            throw mExpectedProperList( cons );
+            throw RuntimeX.mExpectedProperList( cons );
 
         var length = Cons.length( cons );
 
@@ -89,7 +87,7 @@ public class Scut
     public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
     {
         FunctionX<FirstClassObject, T, RuntimeX> fail = (s) ->
-            { throw mTypeError( c, s.getClass() );  };
+            { throw RuntimeX.mTypeError( c, s.getClass() );  };
 
         return as(
                 c,
@@ -102,10 +100,10 @@ public class Scut
             throws RuntimeX
     {
         if ( Cons.NIL == v )
-            throw mTypeError( c, Cons.NIL );
+            throw RuntimeX.mTypeError( c, null );
 
         FunctionX<FirstClassObject, T, RuntimeX> fail = (s) ->
-            { throw mTypeError( c, s.getClass() );  };
+            { throw RuntimeX.mTypeError( c, s.getClass() );  };
 
         return as(
                 c,
@@ -130,7 +128,7 @@ public class Scut
             var cdr = c.getCdr();
 
             if ( ! unifier.add( car ) )
-                throw mDuplicateElement( car );
+                throw RuntimeX.mDuplicateElement( car );
 
             if ( Cons.NIL == cdr )
                 break;
@@ -141,113 +139,8 @@ public class Scut
             }
 
             if ( ! unifier.add( cdr ) )
-                throw mDuplicateElement( cdr );
+                throw RuntimeX.mDuplicateElement( cdr );
             break;
         }
-    }
-
-//    EXPECTED_PROPER_LIST = \
-//            6 : Expected proper list.
-//            EXPECTED_PROPER_LIST_1 = \
-//            6 : Expected proper list.  Received {0}
-    public static RuntimeX mExpectedProperList(
-            FirstClassObject actual )
-                    throws RuntimeX
-    {
-        return new RuntimeX(
-                Code.EXPECTED_PROPER_LIST,
-                FirstClassObject.toString( actual ) );
-    }
-
-    //  #
-    //  # 0: Name of expected type
-    //  # 1: Name of actual type
-    //  # 2: Optional: Position of wrong parameter in a parameter list.
-    //  #
-    //  TYPE_ERROR_2 = \
-    //  11 : Argument has wrong type.  Expected {0} but found {1}.
-    //  TYPE_ERROR_3 = \
-    //  11 : Argument {2} has wrong type.  Expected {0} but found {1}.
-    public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
-    RuntimeX mTypeError(
-            Class<T1> expected,
-            Class<T2> actual )
-                    throws RuntimeX
-    {
-        return new RuntimeX(
-                Code.TYPE_ERROR,
-                FirstClassObject.typename( expected ),
-                FirstClassObject.typename( actual ) );
-    }
-    public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
-    RuntimeX mTypeError(
-            Class<T1> expected,
-            FirstClassObject actual )
-                    throws RuntimeX
-    {
-        return new RuntimeX(
-                Code.TYPE_ERROR,
-                FirstClassObject.typename( expected ),
-                FirstClassObject.toString( actual ) );
-    }
-    public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
-    RuntimeX mTypeError(
-            Class<T1> expected,
-            Class<T2> actual,
-            int position )
-                    throws RuntimeX
-    {
-        return new RuntimeX(
-                Code.TYPE_ERROR,
-                FirstClassObject.typename( expected ),
-                FirstClassObject.typename( actual ),
-                position );
-    }
-
-//    #
-//    # Used in a number of syntax implementations.
-//    #
-//    # arg 0: The name of the syntax.
-//    # arg 1: The wrong binding
-//    #
-//    BAD_BINDING_2 = \
-//    16 : Bad binding in {0} syntax: {1}
-    public static  <T1 extends FirstClassObject>
-    RuntimeX mBadBinding(
-            Symbol syntaxName,
-            Cons binding )
-                    throws RuntimeX
-    {
-        return new RuntimeX(
-                Code.BAD_BINDING,
-                FirstClassObject.toString( syntaxName ),
-                FirstClassObject.toString( binding ) );
-    }
-
-    //    BAD_CLAUSE_1 = \
-    //            17 : Bad clause: {0}
-    public static  <T1 extends FirstClassObject>
-    RuntimeX mBadClause(
-            FirstClassObject clause )
-                    throws RuntimeX
-    {
-        return new RuntimeX(
-                Code.BAD_CLAUSE,
-                FirstClassObject.toString( clause ) );
-    }
-
-    //  #
-    //  # A list contained a duplicate element.  Used in case-syntax.
-    //  #
-    //  DUPLICATE_ELEMENT_1 = \
-    //  46 : Duplicate element : {0}
-    public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
-    RuntimeX mDuplicateElement(
-            FirstClassObject duplicate )
-                    throws RuntimeX
-    {
-        return new RuntimeX(
-                Code.DUPLICATE_ELEMENT,
-                FirstClassObject.toString( duplicate ) );
     }
 }
