@@ -10,7 +10,6 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.smack.util.Holder;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Continuation;
@@ -19,7 +18,6 @@ import de.michab.scream.Operation;
 import de.michab.scream.SchemeInteger;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
-import de.michab.scream.ScreamException;
 
 public class SyntaxTimeTest extends ScreamBaseTest
 {
@@ -65,21 +63,11 @@ public class SyntaxTimeTest extends ScreamBaseTest
                 (%time (+ 1 2))
             """ );
 
-        Holder<FirstClassObject> r =
-                new Holder<>( null );
-        Holder<ScreamException> error =
-                new Holder<>( null );
+        FirstClassObject r = Continuation.toStack(
+                scriptEngine().getInteraction(),
+                cons::evaluate );
 
-        Continuation.trampoline(
-                cons.evaluate(
-                        scriptEngine().getInteraction(),
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-            throw error.get();
-
-        validateResult( r.get() );
+        validateResult( r );
     }
 
 }

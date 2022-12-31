@@ -8,7 +8,6 @@ package de.michab.scream.pops;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
-import org.smack.util.Holder;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Continuation;
@@ -18,7 +17,6 @@ import de.michab.scream.Operation;
 import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
-import de.michab.scream.ScreamException;
 import de.michab.scream.frontend.SchemeParser;
 
 public class SyntaxBeginTest extends ScreamBaseTest
@@ -51,19 +49,14 @@ public class SyntaxBeginTest extends ScreamBaseTest
                  313)
             """ ).getExpression();
 
-        Holder<FirstClassObject> r =
-                new Holder<>( null );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                Primitives._x_begin(
-                        env,
+        FirstClassObject r = Continuation.toStack(
+                env,
+                (e,c) -> Primitives._x_begin(
+                        e,
                         cons,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
+                        c ) );
 
-        assertEqualq( i313, r.get() );
+        assertEqualq( i313, r );
         assertEqualq( i1, env.get( s1 ) );
         assertEqualq( i2, env.get( s2 ) );
     }
