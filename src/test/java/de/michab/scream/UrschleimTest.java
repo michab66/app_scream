@@ -10,16 +10,12 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.logging.Logger;
-
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.frontend.SchemeParser;
 
 public class UrschleimTest extends ScreamBaseTest
 {
-    private static Logger LOG = Logger.getLogger( UrschleimTest.class.getName() );
-
     @Test
     public void typeIntegerTest() throws Exception
     {

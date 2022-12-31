@@ -3,16 +3,14 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-package de.michab.scream.pops;
+package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Continuation;
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
-import de.michab.scream.ScreamBaseTest;
 
 public class ContinuationTest extends ScreamBaseTest
 {

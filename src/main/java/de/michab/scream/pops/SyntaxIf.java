@@ -104,7 +104,8 @@ public class SyntaxIf extends Syntax
                     Scut.as( Cons.class, args.listTail( 1 ) ),
                     c );
         }
-        else if ( argsLen == 3 )
+
+        if ( argsLen == 3 )
         {
             return compImpl(
                     e,

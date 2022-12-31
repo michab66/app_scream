@@ -45,7 +45,7 @@ public class Primitives
                         falseBranch.accept( testResult );
         };
 
-        return _eval( e, test, branch );
+        return evalImpl( e, test, branch );
     }
 
     /**
@@ -73,10 +73,6 @@ public class Primitives
         Cont<FirstClassObject> next =
                 (fco) -> _and( e, (Cons)expressions.getCdr(), fco, c);
 
-//        return FirstClassObject.evaluate(
-//                expressions.getCar(),
-//                e,
-//                next );
         return Primitives._x_eval(
                 e,
                 expressions.getCar(),
@@ -423,7 +419,7 @@ public class Primitives
         return () -> c.accept( e.get( o ) );
     }
 
-    private static Thunk _eval(
+    private static Thunk evalImpl(
             Environment e,
             FirstClassObject fco,
             Cont<FirstClassObject> c ) throws RuntimeX
@@ -431,7 +427,7 @@ public class Primitives
         return fco.evaluate( e, c );
     }
 
-    private static Thunk _eval(
+    private static Thunk evalImpl(
             Environment e,
             Cons result,
             Cons current,
@@ -440,7 +436,7 @@ public class Primitives
         if ( Cons.NIL == current )
             return c.accept( Cons.reverse( result ) );
 
-        Cont<FirstClassObject> set = fco -> _eval(
+        Cont<FirstClassObject> set = fco -> evalImpl(
                     e,
                     new Cons( fco, result ),
                     (Cons)current.getCdr(), c );
@@ -462,7 +458,7 @@ public class Primitives
      */
     public static Thunk _x_evalCons( Environment e, Cons l, Cont<Cons> c )
     {
-        return () -> _eval(
+        return () -> evalImpl(
                 e,
                 Cons.NIL,
                 l,
@@ -472,12 +468,12 @@ public class Primitives
     /**
      * The iteration step of a do syntax.
      *
-     * @param e
+     * @param e The environment used for evaluation.
      * @param test
      * @param steps
      * @param commands
      * @param c
-     * @return
+     * @return The thunk.
      * @throws RuntimeX
      */
     private static Thunk _iteration(
