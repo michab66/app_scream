@@ -14,9 +14,9 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Port;
+import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException;
 import de.michab.scream.Vector;
-import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
 
 public class SchemeParserTest
@@ -85,7 +85,7 @@ public class SchemeParserTest
             new SchemeParser( "(+ 300 13" ).getExpression();
             fail();
         }
-        catch( FrontendX e )
+        catch( RuntimeX e )
         {
             assertEquals(
                     ScreamException.Code.PARSE_UNEXPECTED_EOF,
@@ -102,7 +102,7 @@ public class SchemeParserTest
             new SchemeParser( ")" ).getExpression();
             fail();
         }
-        catch( FrontendX e )
+        catch( RuntimeX e )
         {
             assertEquals(
                     ScreamException.Code.PARSE_UNEXPECTED,
@@ -126,7 +126,7 @@ public class SchemeParserTest
             var z = sp.getExpression();
             assertEquals( Port.EOF, z );
         }
-        catch( FrontendX e )
+        catch( RuntimeX e )
         {
             // Unexpected end of input.
             assertEquals( 37, e.getId() );

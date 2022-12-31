@@ -12,12 +12,12 @@ import java.util.ArrayList;
 import de.michab.scream.Cons;
 import de.michab.scream.FirstClassObject;
 import de.michab.scream.Port;
+import de.michab.scream.RuntimeX;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.SchemeCharacter;
 import de.michab.scream.SchemeDouble;
 import de.michab.scream.SchemeInteger;
 import de.michab.scream.SchemeString;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.Symbol;
 import de.michab.scream.Vector;
 import de.michab.scream.frontend.Token.Tk;
@@ -100,7 +100,7 @@ public class SchemeParser
      * @see de.michab.scream.scanner.SchemeParserTest#peekNextToken
      */
     private Token getNextToken()
-            throws FrontendX
+            throws RuntimeX
     {
         Token result;
 
@@ -125,7 +125,7 @@ public class SchemeParser
      * @see de.michab.scream.scanner.SchemeParserTest#getNextToken
      */
     private Token peekNextToken()
-            throws FrontendX
+            throws RuntimeX
     {
         // If we do not have a lookahead token...
         if ( null == _peeked )
@@ -143,7 +143,7 @@ public class SchemeParser
      * @throws FrontendX In case of an error.
      */
     private FirstClassObject parseArray()
-            throws FrontendX
+            throws RuntimeX
     {
         ArrayList<FirstClassObject> collector =
                 new ArrayList<>();
@@ -168,7 +168,7 @@ public class SchemeParser
      * @throws FrontendX In case of an error.
      */
     private FirstClassObject parseList()
-            throws FrontendX
+            throws RuntimeX
     {
         // If this is the end of the list...
         if ( Tk.End == peekNextToken().getType() )
@@ -194,9 +194,7 @@ public class SchemeParser
 
             // List has to be finished.
             if ( Tk.End != getNextToken().getType() )
-                throw new FrontendX(
-                        Code.PARSE_EXPECTED,
-                        ")" );
+                throw RuntimeX.mParseExpected( Token.createToken( Tk.End ) );
         }
         else
             cdr = parseList();
@@ -212,7 +210,7 @@ public class SchemeParser
      * @throws FrontendX In case of an error.
      */
     private FirstClassObject parseDatum()
-            throws FrontendX
+            throws RuntimeX
     {
         Token token = getNextToken();
 
@@ -256,16 +254,13 @@ public class SchemeParser
                     new Cons( parseDatum(), Cons.NIL ) );
 
         case Boolean:
-            return
-                    SchemeBoolean.createObject( token.booleanValue() );
+            return SchemeBoolean.createObject( token.booleanValue() );
 
         case Eof:
-            throw new FrontendX( Code.PARSE_UNEXPECTED_EOF );
+            throw RuntimeX.mParseUnexpectedEof();
 
         default:
-            throw new FrontendX(
-                    Code.PARSE_UNEXPECTED,
-                    token.toString() );
+            throw RuntimeX.mParseUnexpected( token );
         }
     }
 
@@ -278,7 +273,7 @@ public class SchemeParser
      * @throws FrontendX In case of an error.
      */
     public FirstClassObject getExpression()
-            throws FrontendX
+            throws RuntimeX
     {
         Token token = peekNextToken();
 

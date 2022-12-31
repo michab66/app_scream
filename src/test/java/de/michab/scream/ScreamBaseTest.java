@@ -18,7 +18,6 @@ import org.smack.util.Holder;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
 
 public class ScreamBaseTest
@@ -49,7 +48,7 @@ public class ScreamBaseTest
 
     static public <S extends FirstClassObject> S readSingleExpression(
             String scheme, Class<S> cl )
-                    throws FrontendX
+                    throws RuntimeX
     {
         var parser =
                 new SchemeParser( scheme );
@@ -64,7 +63,7 @@ public class ScreamBaseTest
 
     static public FirstClassObject parse(
             String scheme )
-                    throws FrontendX
+                    throws RuntimeX
     {
         var parser =
                 new SchemeParser( scheme );
