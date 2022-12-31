@@ -37,7 +37,7 @@ public abstract class SyntaxLet
     {
         final var originalBindings = bindings;
         ConsumerX<Long> ic = s -> {
-            throw Scut.mBadBinding( getName(), originalBindings );
+            throw RuntimeX.mBadBinding( getName(), originalBindings );
         };
 
         Scut.checkProperLength(
@@ -56,7 +56,7 @@ public abstract class SyntaxLet
                     Cons.class,
                     bindings.getCar(),
                     s-> {
-                        throw Scut.mBadBinding( getName(), originalBindings );
+                        throw RuntimeX.mBadBinding( getName(), originalBindings );
                     });
             // Of length 2.
             Scut.checkProperLength(
@@ -70,7 +70,7 @@ public abstract class SyntaxLet
                     Symbol.class,
                     c.getCar(),
                     s -> {
-                        throw Scut.mBadBinding( getName(), c );
+                        throw RuntimeX.mBadBinding( getName(), c );
                     } );
 
             result = new Cons( symbol, result );

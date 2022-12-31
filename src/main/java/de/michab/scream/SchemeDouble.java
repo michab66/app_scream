@@ -7,8 +7,6 @@ package de.michab.scream;
 
 import org.smack.util.collections.WeakMapWithProducer;
 
-import de.michab.scream.ScreamException.Code;
-
 /**
  * Represents the scheme real type.
  */
@@ -121,7 +119,7 @@ public class SchemeDouble extends
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
+            throw RuntimeX.mInternalError( getClass() );
         }
     }
 
@@ -144,7 +142,7 @@ public class SchemeDouble extends
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
+            throw RuntimeX.mInternalError( getClass() );
         }
     }
 
@@ -167,7 +165,7 @@ public class SchemeDouble extends
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
+            throw RuntimeX.mInternalError( getClass() );
         }
     }
 
@@ -190,7 +188,7 @@ public class SchemeDouble extends
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw new RuntimeX( Code.INTERNAL_ERROR, getClass() );
+            throw RuntimeX.mInternalError( getClass() );
         }
     }
 

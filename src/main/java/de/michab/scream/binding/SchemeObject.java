@@ -9,8 +9,10 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.logging.Level;
+import java.util.Arrays;
 import java.util.logging.Logger;
+
+import org.smack.util.JavaUtil;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Continuation;
@@ -156,13 +158,12 @@ public class SchemeObject
             }
 
             // No constructor fit the argument list.
-            throw new RuntimeX( Code.METHOD_NOT_FOUND,
-                    className + "<init>",
-                    Cons.create( ctorArgs ) );
+            throw RuntimeX.mMethodNotFound(
+                    className + "<init>" + Arrays.toString( ctorArgs ));
         }
         catch ( ClassNotFoundException e )
         {
-            throw new RuntimeX( Code.CLASS_NOT_FOUND, className );
+            throw RuntimeX.mClassNotFound( className );
         }
         // We have to catch an error here, since this is thrown if we try to create
         // classes where the case of the class name differs from the actual upper
@@ -171,7 +172,7 @@ public class SchemeObject
         // de/michab/scream/JavaClassAdapter)"
         catch ( NoClassDefFoundError e )
         {
-            throw new RuntimeX( Code.CLASS_NOT_FOUND, className );
+            throw RuntimeX.mClassNotFound( className );
         }
         catch ( InvocationTargetException e )
         {
@@ -194,8 +195,7 @@ public class SchemeObject
         }
         catch ( IllegalAccessException e )
         {
-            throw new RuntimeX(
-                    Code.ILLEGAL_ACCESS,
+            throw RuntimeX.mIllegalAccess(
                     className + "<init>"  );
         }
     }
@@ -245,7 +245,7 @@ public class SchemeObject
                     fco -> processAttributeSet( symbol, fco, c ) );
         }
 
-        throw new RuntimeX( Code.INTERNAL_ERROR, SchemeObject.class );
+        throw RuntimeX.mInternalError( SchemeObject.class.toString() );
     }
 
     /**
@@ -440,34 +440,18 @@ public class SchemeObject
             String context )
     {
         Throwable t = ite.getCause();
-
-        LOG.log( Level.FINE, t.getMessage(), t );
-
-        // This is needed for handling of the Resync error.  See the description
-        // and definition in FirstClassObject.  In case this was no Resync the
-        // error will be handled latest in the REP loop.  Note that the Resync
-        // error is private to the FirstClassObject implementation and that this
-        // must not change.
-        if ( t instanceof Error )
-            throw (Error)t;
-
-        RuntimeX resultException = null;
+        JavaUtil.Assert( t != null );
 
         try
         {
-            // Try to unbox the exception i.e. if the exception wrapped in the
-            // invocation target exception is a RuntimeX then just remove the
-            // wrapper.
-            resultException = (RuntimeX)t;
+            return (RuntimeX)t;
         }
         catch ( Exception ee )
         {
-            resultException =
-                    new RuntimeX( Code.INVOCATION_EXCEPTION,
-                            context, t );
+            return RuntimeX.mInvocationException(
+                    context,
+                    t );
         }
-
-        return resultException;
     }
 
     /**

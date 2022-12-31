@@ -7,7 +7,6 @@ package de.michab.scream;
 
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Scut;
 
@@ -264,7 +263,7 @@ extends FirstClassObject
         }
         catch ( ArithmeticException aex )
         {
-            throw new RuntimeX( Code.DIVISION_BY_ZERO );
+            throw RuntimeX.mDivisionByZero();
         }
     }
 
@@ -345,7 +344,7 @@ extends FirstClassObject
                 result = dargs[i] >= dargs[i+1];
                 break;
             default:
-                throw new RuntimeX( Code.INTERNAL_ERROR, Number.class );
+                throw RuntimeX.mInternalError( Number.class.getName() );
             }
 
             // Shortcut evaluation.

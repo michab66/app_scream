@@ -8,8 +8,6 @@ package de.michab.scream;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.michab.scream.ScreamException.Code;
-
 /**
  * An Environment is an associative array indexed by Symbols.  Each environment
  * holds a set of symbol-value relations called bindings.  Environments can be
@@ -210,7 +208,7 @@ public final class Environment
         else if ( _parent != null )
             return _parent.assign( symbol, value  );
         else
-            throw new RuntimeX( Code.SYMBOL_NOT_ASSIGNABLE, symbol );
+            throw RuntimeX.mSymbolNotAssignable( symbol );
     }
 
     /**
@@ -228,7 +226,7 @@ public final class Environment
         else if ( _parent != null )
             return _parent.get( symbol );
         else
-            throw new RuntimeX( Code.SYMBOL_NOT_DEFINED, symbol );
+            throw RuntimeX.mSymbolNotDefined( symbol );
     }
 
     /**

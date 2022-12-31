@@ -1,16 +1,14 @@
-/* $Id: SchemeScanner.java 1 2008-09-19 16:30:02Z binzm $
+/*
+ * Scream @ https://github.com/michab/dev_smack
  *
- * Project: Scream / Frontend
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2000 Michael G. Binz
+ * Copyright © 1998-2022 Michael G. Binz
  */
 package de.michab.scream.frontend;
 
 import java.io.IOException;
 import java.io.Reader;
 
-import de.michab.scream.ScreamException.Code;
+import de.michab.scream.RuntimeX;
 import de.michab.scream.frontend.Token.Tk;
 
 /**
@@ -37,8 +35,7 @@ public class SchemeScanner
      * Get the next token from the input stream.
      */
     public Token getNextToken()
-            throws
-            FrontendX
+            throws RuntimeX
     {
         // No scanner means that we reached the end of input.
         if ( _scanner == null )
@@ -59,7 +56,7 @@ public class SchemeScanner
         }
         catch ( IOException e )
         {
-            throw new FrontendX( Code.IO_ERROR, e.getMessage() );
+            throw RuntimeX.mIoError( e );
         }
     }
 }

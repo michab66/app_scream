@@ -5,8 +5,6 @@
  */
 package de.michab.scream;
 
-import de.michab.scream.ScreamException.Code;
-
 /**
  * Represents the scheme string type.  Strings are sequences of characters.
  * Strings are written as sequences of characters enclosed within double quotes
@@ -131,7 +129,7 @@ public class SchemeString
             throws RuntimeX
     {
         if ( isConstant() )
-            throw new RuntimeX( Code.CANT_MODIFY_CONSTANT, _value );
+            throw RuntimeX.mCannotModifyConstant( this );
 
         try
         {
@@ -139,7 +137,7 @@ public class SchemeString
         }
         catch ( StringIndexOutOfBoundsException e )
         {
-            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, "" + idx );
+            throw RuntimeX.mIndexOutOfBounds( idx );
         }
     }
 
@@ -159,7 +157,7 @@ public class SchemeString
         }
         catch ( StringIndexOutOfBoundsException e )
         {
-            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, "" + idx );
+            throw RuntimeX.mIndexOutOfBounds( idx );
         }
     }
 
@@ -183,7 +181,7 @@ public class SchemeString
         }
         catch ( StringIndexOutOfBoundsException e )
         {
-            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, end );
+            throw RuntimeX.mIndexOutOfBounds( end );
         }
     }
 
@@ -273,7 +271,7 @@ public class SchemeString
             throws RuntimeX
     {
         if ( isConstant() )
-            throw new RuntimeX( Code.CANT_MODIFY_CONSTANT, _value );
+            throw RuntimeX.mCannotModifyConstant( this );
 
         uncheckedFill( filler );
     }

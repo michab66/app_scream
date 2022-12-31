@@ -13,7 +13,7 @@ import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 
 /**
- * The base class for all scream specific exceptions.  The message that this
+ * The base class for all Scream-specific exceptions.  The message that this
  * exception receives at instantiation time is used as a key into Scream's
  * ErrorMessages resource bundle.  Note that a suffix specifying the number of
  * parameters for the exception will be added to the key at resolution time.
@@ -81,7 +81,7 @@ extends Exception
         INTERRUPTED,
         CANT_MODIFY_CONSTANT,
         NO_PROXY,
-        PROXY_CANT_INSTANTIATE,
+        PROXY_CANNOT_INSTANTIATE,
         TEST_FAILED,
         ONLY_IN_QUASIQUOTE_CONTEXT,
         RADIX_NOT_SUPPORTED,
@@ -258,18 +258,6 @@ extends Exception
         {
             // Do nothing.  _errorId defaults to error code.
         }
-    }
-
-    /**
-     * Creates a scream exception.
-     *
-     * @param msg The message that will be used as a key into Scream's error
-     * message resource bundle.
-     */
-    @Deprecated
-    protected ScreamException( String msg )
-    {
-        this( msg, new Object[0] );
     }
 
     /**

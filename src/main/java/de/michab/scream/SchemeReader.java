@@ -51,7 +51,7 @@ public class SchemeReader
      * @throws FrontendX In case of an error.
      */
     public FirstClassObject getExpression()
-      throws FrontendX
+      throws RuntimeX
     {
         while ( true )
         {

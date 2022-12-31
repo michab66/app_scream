@@ -18,7 +18,7 @@ public class Token
     /**
      * The Scheme tokens used by the frontend.
      */
-    enum Tk {
+    public enum Tk {
         Symbol,
         Integer,
         Double,
