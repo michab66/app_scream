@@ -14,7 +14,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.function.Function;
 
-import org.smack.util.Holder;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.ScreamException.Code;
@@ -92,30 +91,35 @@ public class ScreamBaseTest
 
         var env = se.getInteraction();
 
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
+        FirstClassObject result =
+                null;
+        RuntimeX error =
+                null;
 
-        Continuation.trampoline(
-                opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
+        try {
+            result = Continuation.toStack(
+                env,
+                opCall::evaluate );
+        }
+        catch ( RuntimeX e )
+        {
+            error = e;
+        }
 
         if ( expectedError != null )
         {
-            assertNotNull( error.get() );
-            assertEquals( expectedError, error.get().getCode() );
-            assertNull( r.get() );
+            assertNotNull( error );
+            assertEquals( expectedError, error.getCode() );
+            assertNull( result );
             return Cons.NIL;
         }
 
-        if ( error.get() != null )
+        if ( error != null )
         {
-            fail( error.get().getMessage() );
+            fail( error.getMessage() );
         }
 
-        return r.get();
+        return result;
     }
 
     protected void _contTest(

@@ -8,13 +8,11 @@ package de.michab.scream.pops;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
-import org.smack.util.Holder;
 
 import de.michab.scream.Continuation;
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException;
 
 public class ContinuationTest extends ScreamBaseTest
 {
@@ -29,40 +27,27 @@ public class ContinuationTest extends ScreamBaseTest
     }
 
     @Test
-    void _basic() throws Exception
+    public void basic() throws Exception
     {
+        Continuation c = new Continuation();
         Continuation.thunkCount(0);
-        Holder<Integer> result =
-                new Holder<>( null );
-        Holder<ScreamException> error =
-                new Holder<>( null );
 
-        Continuation.trampoline(
-                add( 3,
-                     4,
-                     Continuation.endCall( s -> result.set( s ) ) ),
-                e -> error.set( e ) );
+        int result = c.toStack(
+                cont -> add(3,4,cont) );
 
         assertEquals( 1, Continuation.thunkCount() );
-        assertEquals( 7, result.get() );
+        assertEquals( 7, result );
     }
 
     @Test
-    void _basic2() throws Exception
+    public void basic2() throws Exception
     {
+        Continuation c = new Continuation();
         Continuation.thunkCount(0);
-        Holder<Integer> result =
-                new Holder<>( null );
-        Holder<ScreamException> error =
-                new Holder<>( null );
 
-        Continuation.trampoline(
-                addd( 3,
-                     4,
-                     Continuation.endCall( s -> result.set( s ) ) ),
-                e -> error.set( e ) );
+        int result = c.toStack( cont-> addd(3,4,cont) );
 
         assertEquals( 2, Continuation.thunkCount() );
-        assertEquals( 7, result.get() );
+        assertEquals( 7, result );
     }
 }

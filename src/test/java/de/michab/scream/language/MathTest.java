@@ -7,13 +7,8 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
-import org.smack.util.Holder;
 
 import de.michab.scream.Cons;
 import de.michab.scream.Continuation;
@@ -21,13 +16,9 @@ import de.michab.scream.FirstClassObject;
 import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
-import de.michab.scream.ScreamException;
 
 public class MathTest extends ScreamBaseTest
 {
-    private static final Logger LOG = Logger.getLogger(
-            MathTest.class.getName() );
-
     @Test
     public void mathEquals_t() throws Exception
     {
@@ -81,27 +72,13 @@ public class MathTest extends ScreamBaseTest
                 code );
         assertInstanceOf( Cons.class, opCall );
 
-        var env = se.getInteraction();
-
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-        {
-            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
-            fail();
-        }
+        FirstClassObject r = Continuation.toStack(
+                se.getInteraction(),
+                opCall::evaluate );
 
         assertEqualq(
                 SchemeBoolean.T,
-                r.get() );
+                r );
     }
 
     @Test
@@ -122,27 +99,12 @@ public class MathTest extends ScreamBaseTest
                 code );
         assertInstanceOf( Cons.class, opCall );
 
-        var env = se.getInteraction();
-
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-        {
-            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
-            fail();
-        }
+        FirstClassObject r = Continuation.toStack(
+                se.getInteraction(),
+                opCall::evaluate );
 
         assertEqualq(
                 SchemeBoolean.T,
-                r.get() );
+                r );
     }
-
 }

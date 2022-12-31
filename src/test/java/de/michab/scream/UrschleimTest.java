@@ -8,14 +8,11 @@ package de.michab.scream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.jupiter.api.Test;
-import org.smack.util.Holder;
 
 import de.michab.scream.frontend.SchemeParser;
 
@@ -26,69 +23,45 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     public void typeIntegerTest() throws Exception
     {
-        Holder<RuntimeX> error =
-                new Holder<RuntimeX>( null );
+        FirstClassObject r = Continuation.toStack(
+                null,
+                i313::evaluate );
 
-        var i = SchemeInteger.createObject( 313 );
-
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-
-        Continuation c = new Continuation( s -> error.set( s ) );
-
-        c.trampoline(
-                i.evaluate( null,
-                        Continuation.endCall( s -> r.set( s ) ) ));
-
-        assertEquals( "313", r.get().toString() );
-        assertNull( error.get() );
+        assertEquals( "313", r.toString() );
     }
 
     @Test
     public void typeSymbolTest() throws Exception
     {
-        var symbol = Symbol.createObject( "car" );
+        var symbol = s( "car" );
         var env = new Environment();
-        env.define( symbol, SchemeInteger.createObject( 313 ) );
+        env.define( symbol, i313 );
 
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
+        FirstClassObject r = Continuation.toStack(
+                env,
+                symbol::evaluate );
 
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                symbol.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ));
-
-        assertEquals( "313", r.get().toString() );
-        assertNull( error.get() );
+        assertEquals( "313", r.toString() );
     }
 
     @Test
     public void typeSymbolErrorTest() throws Exception
     {
         var symbol = Symbol.createObject( "car" );
-        var env = new Environment();
 
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                symbol.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set(s));
-
-        assertNull(
-                r.get() );
-        assertNotNull(
-                error.get() );
-        assertEquals(
-                ScreamException.Code.SYMBOL_NOT_DEFINED,
-                error.get().getCode() );
+        try
+        {
+            Continuation.toStack(
+                    new Environment(),
+                    symbol::evaluate );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals(
+                    ScreamException.Code.SYMBOL_NOT_DEFINED,
+                    rx.getCode() );
+        }
     }
 
     @Test
@@ -107,32 +80,18 @@ public class UrschleimTest extends ScreamBaseTest
                 new SchemeParser( "(xquote not-defined-yet)" ).getExpression();
         assertInstanceOf( Cons.class, opCall );
 
-        var env = se.getInteraction();
-
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-        {
-            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
-            fail();
-        }
+        var r = Continuation.toStack(
+                se.getInteraction(),
+                opCall::evaluate );
 
         assertNotNull(
-                r.get() );
+                r );
         assertInstanceOf(
                 Symbol.class,
-                r.get() );
+                r );
         assertEquals(
                 Symbol.createObject( "not-defined-yet" ),
-                r.get() );
+                r );
     }
 
     @Test
@@ -151,32 +110,18 @@ public class UrschleimTest extends ScreamBaseTest
                 new SchemeParser( "(add2 311)" ).getExpression();
         assertInstanceOf( Cons.class, opCall );
 
-        var env = se.getInteraction();
-
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-        {
-            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
-            fail();
-        }
+        FirstClassObject r = Continuation.toStack(
+                se.getInteraction(),
+                opCall::evaluate );
 
         assertNotNull(
-                r.get() );
+                r );
         assertInstanceOf(
                 SchemeInteger.class,
-                r.get() );
+                r );
         assertEquals(
                 ScreamBaseTest.i313,
-                r.get() );
+                r );
     }
 
     @Test
@@ -199,28 +144,16 @@ public class UrschleimTest extends ScreamBaseTest
                 new SchemeParser( "(set! threethirteen 313)" ).getExpression();
         assertInstanceOf( Cons.class, opCall );
 
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
-        Holder<ScreamException> error =
-                new Holder<>( null );
-
-        Continuation.trampoline(
-                opCall.evaluate( env,
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
-
-        if ( error.get() != null )
-        {
-            LOG.log( Level.SEVERE, error.get().getMessage(), error.get() );
-            fail();
-        }
+        FirstClassObject r = Continuation.toStack(
+                se.getInteraction(),
+                opCall::evaluate );
 
         assertEquals(
                 Cons.NIL,
-                r.get() );
+                r );
         assertEquals(
-                ScreamBaseTest.i313,
-                env.get( ScreamBaseTest.s313 ) );
+                i313,
+                env.get( s313 ) );
     }
 
 }
