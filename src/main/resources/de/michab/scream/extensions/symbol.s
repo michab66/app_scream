@@ -11,7 +11,7 @@
 ;; (symbol? symbol) procedure; r5rs 30
 ;;
 (define symbol?
-  (typePredicateGenerator "de.michab.scream.Symbol" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.Symbol" #t))
 
 
 
@@ -40,5 +40,5 @@
 ;;
 (define (string->symbol string)
   (if (string? string)
-    ((make-object de.michab.scream.Symbol) (createObject string))
+    ((make-object de.michab.scream.fcos.Symbol) (createObject string))
     (error "TYPE_ERROR" %type-string (%typename symbol))))

@@ -37,8 +37,8 @@
 ;; is signalled.
 ;;
 (define (open-input-file filename)
-  (let ((in ((make-object de.michab.scream.Port) Input)))
-   (make-object (de.michab.scream.Port filename in))))
+  (let ((in ((make-object de.michab.scream.fcos.Port) Input)))
+   (make-object (de.michab.scream.fcos.Port filename in))))
 
 
 
@@ -61,8 +61,8 @@
 ;; already exists, the effect is unspecified.
 ;;
 (define (open-output-file filename)
-  (let ((out ((make-object de.michab.scream.Port) Output)))
-   (make-object (de.michab.scream.Port filename out))))
+  (let ((out ((make-object de.michab.scream.fcos.Port) Output)))
+   (make-object (de.michab.scream.fcos.Port filename out))))
 
 
 
@@ -115,7 +115,7 @@
 ;; (%port? obj) procedure; r5rs 29
 ;;
 (define port?
-  (typePredicateGenerator "de.michab.scream.Port" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.Port" #t))
 
 
 

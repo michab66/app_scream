@@ -11,7 +11,7 @@
 ;; (procedure? obj) essential procedure; r5rs 27
 ;;
 (define procedure?
-  (typePredicateGenerator "de.michab.scream.Procedure" #f))
+  (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
 
 
 

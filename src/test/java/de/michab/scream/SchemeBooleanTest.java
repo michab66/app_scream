@@ -10,6 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.SchemeBoolean;
+
 public class SchemeBooleanTest extends ScreamBaseTest
 {
     @Test

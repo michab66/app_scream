@@ -6,10 +6,16 @@
 package de.michab.scream;
 
 import java.io.IOException;
+import java.lang.reflect.Executable;
 import java.util.Objects;
 
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Environment;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Procedure;
+import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.frontend.Token;
 
 /**
@@ -533,12 +539,12 @@ extends ScreamException
     //    #
     //    INVOCATION_EXCEPTION_2 = \
     //    29 : Invoked method {0} threw exception {1}.  See logfile for full exception.
-    public static RuntimeX mInvocationException( String method, Throwable e )
+    public static RuntimeX mInvocationException( Executable method, Throwable e )
     {
         return new RuntimeX(
                 Code.INVOCATION_EXCEPTION,
                 method,
-                e.getMessage() );
+                e.toString() );
     }
 
     //    # It has been tried to access instance information on a class.

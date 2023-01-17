@@ -5,11 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Operation;
-import de.michab.scream.SchemeBoolean;
-import de.michab.scream.SchemeInteger;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
+import de.michab.scream.fcos.Operation;
+import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.SchemeInteger;
 
 public class SchemeObjectTest extends ScreamBaseTest
 {

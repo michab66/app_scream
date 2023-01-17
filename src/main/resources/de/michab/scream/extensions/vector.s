@@ -11,7 +11,7 @@
 ;; (vector? obj) procedure; r5rs 31
 ;;
 (define vector?
-  (typePredicateGenerator "de.michab.scream.Vector" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.Vector" #t))
 
 
 
@@ -23,10 +23,10 @@
   (cond
     ;; If the optional argument is not given.
     ((null? filler)
-      (make-object (de.michab.scream.Vector vlength)))
+      (make-object (de.michab.scream.fcos.Vector vlength)))
     ;; If the optional argument exists.
     ((= (length filler) 1)
-      (make-object (de.michab.scream.Vector vlength (car filler))))
+      (make-object (de.michab.scream.fcos.Vector vlength (car filler))))
     ;; If there are more than one optional arguments.
     (else (error "TOO_MANY_ARGUMENTS" 2))))
 

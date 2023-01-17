@@ -10,9 +10,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.SchemeInteger;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException;
+import de.michab.scream.fcos.SchemeInteger;
 
 public class FrontendNumbersTest
 {

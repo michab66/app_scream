@@ -3,10 +3,12 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.fcos;
 
 import org.smack.util.JavaUtil;
 
+import de.michab.scream.Continuation;
+import de.michab.scream.RuntimeX;
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.pops.Primitives;

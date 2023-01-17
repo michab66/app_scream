@@ -10,10 +10,10 @@ import java.lang.reflect.Method;
 import java.util.Hashtable;
 import java.util.logging.Logger;
 
-import de.michab.scream.FirstClassObject;
-import de.michab.scream.Operation;
-import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Operation;
+import de.michab.scream.fcos.Procedure;
 
 /**
  * The universal invocation handler that gets associated with a dynamically

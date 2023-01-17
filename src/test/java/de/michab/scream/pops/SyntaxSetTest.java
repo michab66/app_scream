@@ -10,11 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Cons;
-import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Operation;
 
 public class SyntaxSetTest extends ScreamBaseTest
 {

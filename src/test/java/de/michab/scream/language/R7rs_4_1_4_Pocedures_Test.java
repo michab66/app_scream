@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Cons;
-import de.michab.scream.Operation;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Operation;
 
 /**
  * r7rs 4.1.4 Procedures.

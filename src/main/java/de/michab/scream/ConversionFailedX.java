@@ -7,6 +7,8 @@
  */
 package de.michab.scream;
 
+import de.michab.scream.fcos.FirstClassObject;
+
 /**
  * Exception is used in argument list conversion in SchemeObject.  This is
  * a convenience wrapper around the "TYPE_ERROR" and should be always used

@@ -279,7 +279,7 @@ public class JavaClassAdapter
         }
         catch( InvocationTargetException e )
         {
-            throw SchemeObject.filterException( e, c.getName() );
+            throw SchemeObject.filterException( e, c );
         }
         catch ( NoSuchMethodException e )
         {

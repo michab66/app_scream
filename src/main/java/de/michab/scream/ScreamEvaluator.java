@@ -16,6 +16,10 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
 import de.michab.scream.binding.SchemeObject;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Environment;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Symbol;
 
 /**
  * Contains a Scheme top level read-eval-print loop.  A SchemeEvaluator reads

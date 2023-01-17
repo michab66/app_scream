@@ -3,7 +3,7 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.fcos;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -16,6 +16,7 @@ import java.net.URL;
 
 import org.smack.util.FileUtil;
 
+import de.michab.scream.RuntimeX;
 import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
 
@@ -506,7 +507,7 @@ public class Port
      * @param tle The environment to extend.
      * @return The passed environment after extension.
      */
-    static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendTopLevelEnvironment( Environment tle )
     {
         tle.define( EOF, EOF );
 

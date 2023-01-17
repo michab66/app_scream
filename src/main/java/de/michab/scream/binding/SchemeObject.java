@@ -6,32 +6,34 @@
 package de.michab.scream.binding;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
 
-import de.michab.scream.Cons;
 import de.michab.scream.Continuation;
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ConversionFailedX;
-import de.michab.scream.Environment;
-import de.michab.scream.FirstClassObject;
-import de.michab.scream.Procedure;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.SchemeBoolean;
-import de.michab.scream.SchemeCharacter;
-import de.michab.scream.SchemeDouble;
-import de.michab.scream.SchemeInteger;
-import de.michab.scream.SchemeString;
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.Symbol;
-import de.michab.scream.Syntax;
-import de.michab.scream.Vector;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Environment;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Procedure;
+import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.SchemeCharacter;
+import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.SchemeString;
+import de.michab.scream.fcos.Symbol;
+import de.michab.scream.fcos.Syntax;
+import de.michab.scream.fcos.Vector;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Scut;
 
@@ -136,6 +138,9 @@ public class SchemeObject
     {
         JavaClassAdapter classAdapter = null;
 
+        // Used to transfer the constructor into the exception handlers.
+        Executable constructor = null;
+
         try
         {
             // Get the associated class adapter.
@@ -148,13 +153,17 @@ public class SchemeObject
                 return c.accept( new SchemeObject( null, classAdapter ) );
 
             // We received constructor arguments, select the ctor to call.
-            for ( var ctr : classAdapter.getConstructors() )
+            for ( var ctor : classAdapter.getConstructors() )
             {
                 var argumentList =
-                        matchParameters( ctr.getParameterTypes(), ctorArgs );
+                        matchParameters( ctor.getParameterTypes(), ctorArgs );
 
-                if ( null != argumentList )
-                    return c.accept( convertJava2Scream( ctr.newInstance( argumentList ) ) );
+                if ( null == argumentList )
+                    continue;
+
+                constructor = Objects.requireNonNull( ctor );
+
+                return c.accept( convertJava2Scream( ctor.newInstance( argumentList ) ) );
             }
 
             // No constructor fit the argument list.
@@ -176,7 +185,7 @@ public class SchemeObject
         }
         catch ( InvocationTargetException e )
         {
-            throw filterException( e, className );
+            throw filterException( e, constructor );
         }
         catch ( InstantiationException e )
         {
@@ -364,7 +373,7 @@ public class SchemeObject
             {
                 result = convertScreamVector2JavaArray(
                         formal,
-                        (de.michab.scream.Vector)actual );
+                        (de.michab.scream.fcos.Vector)actual );
             }
 
             // The last chance conversion.
@@ -403,7 +412,7 @@ public class SchemeObject
      */
     private static Object convertScreamVector2JavaArray(
             Class<?> formal,
-            de.michab.scream.Vector actual )
+            de.michab.scream.fcos.Vector actual )
                     throws
                     RuntimeX
     {
@@ -436,8 +445,8 @@ public class SchemeObject
      * @return An instance of a {@code RuntimeX} exception.
      * @throws Error Embedded {@code Error} instances are thrown.
      */
-    public static RuntimeX filterException( InvocationTargetException ite,
-            String context )
+    static RuntimeX filterException( InvocationTargetException ite,
+            Executable context )
     {
         Throwable t = ite.getCause();
         JavaUtil.Assert( t != null );
@@ -526,6 +535,8 @@ public class SchemeObject
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
+        Executable methodRef = null;
+
         try
         {
             // Select the method to call.
@@ -544,7 +555,8 @@ public class SchemeObject
                         // to check for this condition manually.
                         if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
                             throw new RuntimeX( Code.CANT_ACCESS_INSTANCE );
-
+                        // Store the method reference for the exception handler.
+                        methodRef = method;
                         // Do the actual call.
                         return c.accept( convertJava2Scream(
                                 method.invoke( _theInstance, argumentList ) ) );
@@ -557,7 +569,7 @@ public class SchemeObject
         }
         catch ( InvocationTargetException e )
         {
-            throw filterException( e, methodName );
+            throw filterException( e, methodRef );
         }
         catch ( IllegalArgumentException e )
         {

@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.util.Scut;
 
 public class FirstClassObjectTest extends ScreamBaseTest

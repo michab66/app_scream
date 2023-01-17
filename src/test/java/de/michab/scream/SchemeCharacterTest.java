@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.fcos.SchemeCharacter;
+
 public class SchemeCharacterTest
 {
     private final Character bang = '!';

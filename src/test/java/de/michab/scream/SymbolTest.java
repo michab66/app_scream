@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.fcos.Symbol;
+
 public class SymbolTest extends ScreamBaseTest
 {
     @Test

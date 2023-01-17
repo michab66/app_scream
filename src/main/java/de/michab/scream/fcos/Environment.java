@@ -3,10 +3,12 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.fcos;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import de.michab.scream.RuntimeX;
 
 /**
  * An Environment is an associative array indexed by Symbols.  Each environment

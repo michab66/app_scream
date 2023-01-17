@@ -26,6 +26,13 @@ import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Environment;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.Procedure;
+import de.michab.scream.fcos.SchemeString;
+import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.LoadContext;
@@ -244,7 +251,7 @@ public class Scream implements ScriptEngineFactory
             {
                 LOG.log(
                         Level.WARNING,
-                        "Illegal access: ''{0}''",
+                        "Operation ''{0}#" + INIT_NAME + "()'' is not accessible.",
                         crtClassName );
             }
             catch ( java.lang.reflect.InvocationTargetException e )
