@@ -11,7 +11,7 @@
 ;; (char? obj) procedure; r5rs 29
 ;;
 (define char?
-  (typePredicateGenerator "de.michab.scream.SchemeCharacter" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeCharacter" #t))
 
 
 

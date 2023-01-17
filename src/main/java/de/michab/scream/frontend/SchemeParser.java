@@ -9,17 +9,17 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 
-import de.michab.scream.Cons;
-import de.michab.scream.FirstClassObject;
-import de.michab.scream.Port;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.SchemeBoolean;
-import de.michab.scream.SchemeCharacter;
-import de.michab.scream.SchemeDouble;
-import de.michab.scream.SchemeInteger;
-import de.michab.scream.SchemeString;
-import de.michab.scream.Symbol;
-import de.michab.scream.Vector;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.SchemeCharacter;
+import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.SchemeString;
+import de.michab.scream.fcos.Symbol;
+import de.michab.scream.fcos.Vector;
 import de.michab.scream.frontend.Token.Tk;
 
 /**

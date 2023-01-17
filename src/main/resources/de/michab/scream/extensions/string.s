@@ -11,7 +11,7 @@
 ;; (string? obj) procedure; r5rs 30
 ;;
 (define string?
-  (typePredicateGenerator "de.michab.scream.SchemeString" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
 
 
 
@@ -26,7 +26,7 @@
     (error "TOO_MANY_ARGUMENTS" 1))
 
   (if (integer? k)
-    (let ((result (make-object (de.michab.scream.SchemeString k))))
+    (let ((result (make-object (de.michab.scream.fcos.SchemeString k))))
       (if (= 1 (length char))
         (if (char? (car char))
           ((object result) (fill (car char)))
@@ -118,7 +118,7 @@
   (if (string? string)
     (do
       ; Init
-      ((result (make-object (de.michab.scream.SchemeString string)))
+      ((result (make-object (de.michab.scream.fcos.SchemeString string)))
        (append-list optional-string-list (cdr append-list)))
 
       ; Test

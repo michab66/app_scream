@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.SchemeBoolean;
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.fcos.SchemeBoolean;
 
 /**
  * r7rs 6.3 Booleans.

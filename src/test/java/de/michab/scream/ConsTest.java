@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.frontend.SchemeParser;
 
 public class ConsTest extends ScreamBaseTest
@@ -168,9 +170,9 @@ public class ConsTest extends ScreamBaseTest
                 "(0 1 2 3 4)",
                 Cons.class );
 
-        assertTrue( c1.equal( c2 ) );
-        assertFalse( c1.eqv( c2 ) );
-        assertFalse( c1.eq( c2 ) );
+        assertTrue( FirstClassObject.equal( c1, c2 ) );
+        assertFalse( FirstClassObject.eqv( c1, c2 ) );
+        assertFalse( FirstClassObject.eq( c1, c2 ) );
     }
 
     @Test

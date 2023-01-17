@@ -14,6 +14,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Number;
+import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.Symbol;
 
 public class SchemeDoubleTest
 {

@@ -12,6 +12,8 @@ import java.util.Map;
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 
+import de.michab.scream.fcos.Symbol;
+
 /**
  * The base class for all Scream-specific exceptions.  The message that this
  * exception receives at instantiation time is used as a key into Scream's

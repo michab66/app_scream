@@ -3,15 +3,17 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.fcos;
 
 import org.smack.util.collections.WeakMapWithProducer;
+
+import de.michab.scream.RuntimeX;
 
 /**
  * Represents the scheme real type.
  */
 public class SchemeDouble extends
-    de.michab.scream.Number
+    de.michab.scream.fcos.Number
 {
     /**
      * The name of the type as used by error reporting.

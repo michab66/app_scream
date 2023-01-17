@@ -12,6 +12,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Environment;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 
 public class UrschleimTest extends ScreamBaseTest

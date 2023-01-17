@@ -138,7 +138,7 @@
 ;; A reference to the FirstClassObject's class.  This has to be used for
 ;; access to the static methods in the runtime implementations.
 ;;
-(define %fco-class (make-object de.michab.scream.FirstClassObject))
+(define %fco-class (make-object de.michab.scream.fcos.FirstClassObject))
 
 
 
@@ -157,23 +157,23 @@
 ;;
 ;;
 (define %type-symbol
-  ((make-object de.michab.scream.Symbol) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.Symbol) TYPE_NAME))
 (define %type-cons
-  ((make-object de.michab.scream.Cons) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.Cons) TYPE_NAME))
 (define %type-vector
-  ((make-object de.michab.scream.Vector) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.Vector) TYPE_NAME))
 (define %type-string
-  ((make-object de.michab.scream.SchemeString) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.SchemeString) TYPE_NAME))
 (define %type-char
-  ((make-object de.michab.scream.SchemeCharacter) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.SchemeCharacter) TYPE_NAME))
 (define %type-number
-  ((make-object de.michab.scream.Number) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.Number) TYPE_NAME))
 (define %type-integer
-  ((make-object de.michab.scream.SchemeInteger) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.SchemeInteger) TYPE_NAME))
 (define %type-real
-  ((make-object de.michab.scream.SchemeDouble) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.SchemeDouble) TYPE_NAME))
 (define %type-bool
-  ((make-object de.michab.scream.SchemeBoolean) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.SchemeBoolean) TYPE_NAME))
 (define %type-port
-  ((make-object de.michab.scream.Port) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.Port) TYPE_NAME))
 

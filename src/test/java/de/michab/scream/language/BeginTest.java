@@ -9,9 +9,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Cons;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
+import de.michab.scream.fcos.Cons;
 
 public class BeginTest extends ScreamBaseTest
 {

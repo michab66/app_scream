@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Cons;
-import de.michab.scream.Port;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException;
-import de.michab.scream.Vector;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.Vector;
 import de.michab.scream.frontend.SchemeParser;
 
 public class SchemeParserTest

@@ -3,7 +3,9 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.fcos;
+
+import de.michab.scream.RuntimeX;
 
 /**
  * Represents the scheme string type.  Strings are sequences of characters.
@@ -265,7 +267,7 @@ public class SchemeString
      *
      * @param filler The character to use for filling the entire string.
      * @throws RuntimeX In case the string was marked as constant.
-     * @see de.michab.scream.FirstClassObject#isConstant
+     * @see de.michab.scream.fcos.FirstClassObject#isConstant
      */
     public void fill( char filler )
             throws RuntimeX

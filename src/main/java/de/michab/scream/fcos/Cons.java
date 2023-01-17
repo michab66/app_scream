@@ -4,15 +4,17 @@
  * Copyright © 1998-2022 Michael G. Binz
  */
 
-package de.michab.scream;
+package de.michab.scream.fcos;
 
 import java.util.HashSet;
 
 import org.smack.util.Holder;
 
+import de.michab.scream.Continuation;
+import de.michab.scream.RuntimeX;
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
-import de.michab.scream.Lambda.L;
+import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.util.Scut;
 
 /**
@@ -76,7 +78,7 @@ public class Cons
      * @param start The start index of the array to transform.
      * @throws IllegalArgumentException In case parameter {@code a} is an
      *         empty array.
-     * @see de.michab.scream.Cons#create(FirstClassObject[])
+     * @see de.michab.scream.fcos.Cons#create(FirstClassObject[])
      */
     private Cons( FirstClassObject[] a, int start )
     {

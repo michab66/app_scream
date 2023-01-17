@@ -7,8 +7,8 @@ package de.michab.scream.binding;
 
 import java.lang.reflect.Method;
 
-import de.michab.scream.Operation;
-import de.michab.scream.Procedure;
+import de.michab.scream.fcos.Operation;
+import de.michab.scream.fcos.Procedure;
 
 /**
  * Represents a default interface that is always added to the list of

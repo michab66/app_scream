@@ -17,6 +17,9 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.frontend.Token;
 
 public class RuntimeXTest extends ScreamBaseTest
@@ -445,15 +448,15 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void _29_invocationException1() throws Exception
     {
-        var what = "what";
-        var xhat = new Exception( what );
+        var executable = getClass().getMethods()[0];
+        var throwable = new Exception( "testException" );
 
         validateMessageAndType(
-                RuntimeX.mInvocationException( what, xhat ),
+                RuntimeX.mInvocationException( executable, throwable ),
                 Code.INVOCATION_EXCEPTION,
                 29,
-                what,
-                xhat.getMessage() );
+                executable,
+                throwable.toString() );
     }
     @Test
     public void _30_cannotAcessInstance1() throws Exception

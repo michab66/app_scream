@@ -12,6 +12,10 @@ import java.util.logging.Logger;
 
 import org.smack.util.Holder;
 
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Environment;
+import de.michab.scream.fcos.FirstClassObject;
+
 /**
  * public _x_... are externally visible primitives.
  * These always return an indirect thunk () -> ...

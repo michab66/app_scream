@@ -17,6 +17,11 @@ import java.util.function.Function;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 
 public class ScreamBaseTest

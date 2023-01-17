@@ -22,7 +22,7 @@
 (define (pair? obj)
   (and
     (not (null? obj))
-    ((typePredicateGenerator "de.michab.scream.Cons" #t) obj)))
+    ((typePredicateGenerator "de.michab.scream.fcos.Cons" #t) obj)))
 
 
 
@@ -30,7 +30,7 @@
 ;; (cons obj1 obj2)    procedure; r5rs 26
 ;;
 (define (cons obj1 obj2)
-  (make-object (de.michab.scream.Cons obj1 obj2)))
+  (make-object (de.michab.scream.fcos.Cons obj1 obj2)))
 
 
 

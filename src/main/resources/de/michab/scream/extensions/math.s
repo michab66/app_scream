@@ -18,7 +18,7 @@
 ;; (number? obj) procedure; r5rs 30
 ;;
 (define number?
-  (typePredicateGenerator "de.michab.scream.Number" #f))
+  (typePredicateGenerator "de.michab.scream.fcos.Number" #f))
 
 
 
@@ -30,7 +30,7 @@
 ;; automatic numeric type promotion that we don't have currently.
 ;;
 (define real?
-  (typePredicateGenerator "de.michab.scream.SchemeDouble" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeDouble" #t))
 
 
 
@@ -38,7 +38,7 @@
 ;; (integer? obj) procedure; r5rs 21
 ;;
 (define integer?
-  (typePredicateGenerator "de.michab.scream.SchemeInteger" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeInteger" #t))
 
 
 
@@ -96,7 +96,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Open a special closure holding the precomputed Number class reference for
 ;; better efficiency.
-(let ((numberClass (make-object de.michab.scream.Number)))
+(let ((numberClass (make-object de.michab.scream.fcos.Number)))
 
 ;;
 ;; (= n1 .. nn)

@@ -3,9 +3,11 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.fcos;
 
 import java.util.Arrays;
+
+import de.michab.scream.RuntimeX;
 
 /**
  * Represents the scheme integer data type.

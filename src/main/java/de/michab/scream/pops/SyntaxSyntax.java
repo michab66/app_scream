@@ -5,15 +5,15 @@
  */
 package de.michab.scream.pops;
 
-import de.michab.scream.Cons;
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
-import de.michab.scream.Environment;
-import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.Symbol;
-import de.michab.scream.Syntax;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Environment;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Symbol;
+import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Scut;
 
 /**

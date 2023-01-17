@@ -7,9 +7,9 @@ package de.michab.scream.util;
 
 import java.util.HashSet;
 
-import de.michab.scream.Cons;
-import de.michab.scream.FirstClassObject;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.FirstClassObject;
 
 /**
  * Scream utilities.

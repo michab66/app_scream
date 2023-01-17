@@ -11,10 +11,10 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.SchemeBoolean;
-import de.michab.scream.SchemeString;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException.Code;
+import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.SchemeString;
 
 /**
  * rsr7 6.7 Strings, p45
