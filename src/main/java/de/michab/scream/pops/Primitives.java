@@ -1,35 +1,39 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 2022 Michael G. Binz
+ * Copyright © 2022-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
+import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.Symbol;
-import de.michab.scream.RuntimeX;
 
 /**
+ * Implementations of the interpreter primitives.
+ *
  * public _x_... are externally visible primitives.
  * These always return an indirect thunk () -> ...
+ *
  * @author micbinz
  */
 public class Primitives
 {
     /**
+     * The if condition.
      *
-     * @param e Environment used for evaluating the test.
-     * @param test The test.  If the test is true, then the result
-     * of the test evaluation is passed to the true branch.  Otherwise
+     * @param e The environment used for evaluating the test.
+     * @param test The test.  If the test evaluates to true, then the result
+     * of the evaluation is passed to the true branch.  Otherwise
      * the false branch receives false.
-     * @param trueBranch Taken in case if a true test.
-     * @param falseBranch Taken in case of a false test.
-     * @return
+     * @param trueBranch Taken if test evaluates to true.
+     * @param falseBranch Taken if test evaluates to false.
+     * @return A thunk.
      * @throws RuntimeX
      */
     public static Thunk _if(
@@ -42,10 +46,10 @@ public class Primitives
         {
             return SchemeBoolean.isTrue( testResult ) ?
                     trueBranch.accept( testResult ) :
-                        falseBranch.accept( testResult );
+                    falseBranch.accept( testResult );
         };
 
-        return evalImpl( e, test, branch );
+        return FirstClassObject.evaluate( test, e, branch );
     }
 
     /**
@@ -177,6 +181,7 @@ public class Primitives
 
     /**
      * Evaluate a list of expressions and return the value of the final element.
+     *
      * @param e The environment for evaluation.
      * @param body A list of expressions.
      * @param previousResult The result of the previous expression.
@@ -201,11 +206,11 @@ public class Primitives
 
     /**
      * Evaluate a list of expressions and return the value of the final element.
+     *
      * @param e The environment for evaluation.
      * @param body A list of expressions.
-     * @param previousResult The result of the previous expression.
      * @param c The continuation receiving the result.
-     * @return The thunk.
+     * @return A thunk.
      * @throws RuntimeX
      */
     public static Thunk _x_begin(
@@ -227,8 +232,8 @@ public class Primitives
      * @param extended The environment receiving the bound values.
      * @param bindings The list of bindings to process.
      * Format is like {@code ((<variable1> <init1>) ...)}.
-     * @param A continuation that receives the extended environment.
-     * @return
+     * @param c A continuation that receives the extended environment.
+     * @return A thunk.
      * @throws RuntimeX
      */
     private static Thunk _bindLet(
@@ -384,7 +389,6 @@ public class Primitives
      *
      * @param e The environment for evaluation.
      * @param expressions The list of tests.
-     * @param previousResult The value of the previous test.
      * @param c The continuation.
      * @return A thunk.
      * @throws RuntimeX In case of an error.
@@ -421,14 +425,6 @@ public class Primitives
 
     private static Thunk evalImpl(
             Environment e,
-            FirstClassObject fco,
-            Cont<FirstClassObject> c ) throws RuntimeX
-    {
-        return fco.evaluate( e, c );
-    }
-
-    private static Thunk evalImpl(
-            Environment e,
             Cons result,
             Cons current,
             Cont<Cons> c ) throws RuntimeX
@@ -454,7 +450,7 @@ public class Primitives
      * @param l The list to be evaluated.
      * @param c The continuation receiving a newly allocated list holding
      * the evaluated elements.
-     * @return The thunk.
+     * @return A thunk.
      */
     public static Thunk _x_evalCons( Environment e, Cons l, Cont<Cons> c )
     {
@@ -473,7 +469,7 @@ public class Primitives
      * @param steps
      * @param commands
      * @param c
-     * @return The thunk.
+     * @return A thunk.
      * @throws RuntimeX
      */
     private static Thunk _iteration(
@@ -492,7 +488,7 @@ public class Primitives
                         c );
 
         Cont<Environment> restart =
-                ignore -> _iteration(
+                unused -> _iteration(
                         e,
                         test,
                         steps,
