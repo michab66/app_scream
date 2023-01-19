@@ -25,8 +25,7 @@ public class UrschleimTest extends ScreamBaseTest
     public void typeIntegerTest() throws Exception
     {
         FirstClassObject r = Continuation.toStack(
-                null,
-                i313::evaluate );
+                c -> i313.evaluate( null, c ) );
 
         assertEquals( "313", r.toString() );
     }
@@ -39,8 +38,7 @@ public class UrschleimTest extends ScreamBaseTest
         env.define( symbol, i313 );
 
         FirstClassObject r = Continuation.toStack(
-                env,
-                symbol::evaluate );
+                c-> symbol.evaluate( env, c ) );
 
         assertEquals( "313", r.toString() );
     }
@@ -52,9 +50,9 @@ public class UrschleimTest extends ScreamBaseTest
 
         try
         {
-            Continuation.toStack(
-                    new Environment(),
-                    symbol::evaluate );
+            @SuppressWarnings("unused")
+            FirstClassObject fco = Continuation.toStack(
+                    c -> symbol.evaluate( new Environment(), c ) );
             fail();
         }
         catch ( RuntimeX rx )
@@ -81,9 +79,8 @@ public class UrschleimTest extends ScreamBaseTest
                 new SchemeParser( "(xquote not-defined-yet)" ).getExpression();
         assertInstanceOf( Cons.class, opCall );
 
-        var r = Continuation.toStack(
-                se.getInteraction(),
-                opCall::evaluate );
+        FirstClassObject r = Continuation.toStack(
+                c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertNotNull(
                 r );
@@ -112,8 +109,7 @@ public class UrschleimTest extends ScreamBaseTest
         assertInstanceOf( Cons.class, opCall );
 
         FirstClassObject r = Continuation.toStack(
-                se.getInteraction(),
-                opCall::evaluate );
+                c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertNotNull(
                 r );
@@ -146,8 +142,8 @@ public class UrschleimTest extends ScreamBaseTest
         assertInstanceOf( Cons.class, opCall );
 
         FirstClassObject r = Continuation.toStack(
-                se.getInteraction(),
-                opCall::evaluate );
+
+                c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertEquals(
                 Cons.NIL,

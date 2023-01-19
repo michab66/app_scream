@@ -50,9 +50,8 @@ public class SyntaxBeginTest extends ScreamBaseTest
             """ ).getExpression();
 
         FirstClassObject r = Continuation.toStack(
-                env,
-                (e,c) -> Primitives._x_begin(
-                        e,
+                c -> Primitives._x_begin(
+                        env,
                         cons,
                         c ) );
 

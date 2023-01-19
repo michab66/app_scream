@@ -16,6 +16,7 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.FirstClassObject;
 
 public class QuoteTest extends ScreamBaseTest
 {
@@ -29,9 +30,8 @@ public class QuoteTest extends ScreamBaseTest
         var fco =
                 readSingleExpression( "(quote a)", Cons.class );
 
-        var result = Continuation.toStack(
-                e,
-                fco::evaluate );
+        FirstClassObject result = Continuation.toStack(
+                c -> fco.evaluate( e, c ) );
 
         assertEquals( s("a"), result );
     }

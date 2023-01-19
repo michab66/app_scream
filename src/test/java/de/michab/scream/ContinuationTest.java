@@ -27,10 +27,9 @@ public class ContinuationTest extends ScreamBaseTest
     @Test
     public void basic() throws Exception
     {
-        Continuation c = new Continuation();
         Continuation.thunkCount(0);
 
-        int result = c.toStack(
+        int result = Continuation.toStack(
                 cont -> add(3,4,cont) );
 
         assertEquals( 1, Continuation.thunkCount() );
@@ -40,10 +39,10 @@ public class ContinuationTest extends ScreamBaseTest
     @Test
     public void basic2() throws Exception
     {
-        Continuation c = new Continuation();
         Continuation.thunkCount(0);
 
-        int result = c.toStack( cont-> addd(3,4,cont) );
+        int result = Continuation.toStack(
+                cont-> addd(3,4,cont) );
 
         assertEquals( 2, Continuation.thunkCount() );
         assertEquals( 7, result );

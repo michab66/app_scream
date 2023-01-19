@@ -73,8 +73,7 @@ public class MathTest extends ScreamBaseTest
         assertInstanceOf( Cons.class, opCall );
 
         FirstClassObject r = Continuation.toStack(
-                se.getInteraction(),
-                opCall::evaluate );
+                c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertEqualq(
                 SchemeBoolean.T,
@@ -100,8 +99,7 @@ public class MathTest extends ScreamBaseTest
         assertInstanceOf( Cons.class, opCall );
 
         FirstClassObject r = Continuation.toStack(
-                se.getInteraction(),
-                opCall::evaluate );
+                c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertEqualq(
                 SchemeBoolean.T,

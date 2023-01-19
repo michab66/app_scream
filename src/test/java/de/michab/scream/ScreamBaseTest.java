@@ -103,8 +103,7 @@ public class ScreamBaseTest
 
         try {
             result = Continuation.toStack(
-                env,
-                opCall::evaluate );
+                c -> opCall.evaluate( env, c) );
         }
         catch ( RuntimeX e )
         {
