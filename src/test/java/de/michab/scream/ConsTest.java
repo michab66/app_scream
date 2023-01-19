@@ -183,8 +183,7 @@ public class ConsTest extends ScreamBaseTest
         Cons cons = readSingleExpression( "(+ 1 2)", Cons.class );
 
         var result =  Continuation.toStack(
-                env,
-                cons::evaluate );
+                c -> cons.evaluate( env, c ) );
 
         assertEqualq( ScreamBaseTest.i3, result );
     }
@@ -198,8 +197,7 @@ public class ConsTest extends ScreamBaseTest
         try
         {
             Continuation.toStack(
-                    env,
-                    cons::evaluate );
+                    c -> cons.evaluate( env, c ) );
             fail();
         }
         catch ( ScreamException e )
@@ -217,8 +215,7 @@ public class ConsTest extends ScreamBaseTest
         try
         {
             Continuation.toStack(
-                    env,
-                    cons::evaluate );
+                    c -> cons.evaluate( env, c ) );
             fail();
         }
         catch ( ScreamException e )

@@ -26,10 +26,7 @@ public class SyntaxTimeTest extends ScreamBaseTest
     {
         ScreamEvaluator se = scriptEngine();
 
-        var result = se.evalFco(
-                """
-                %time
-                """ );
+        var result = se.evalFco( "%time" );
         assertInstanceOf( Operation.class, result );
     }
 
@@ -48,9 +45,7 @@ public class SyntaxTimeTest extends ScreamBaseTest
     void time_1() throws Exception
     {
         var result = scriptEngine().evalFco(
-                """
-                (%time (+ 1 2))
-                """ );
+                "(%time (+ 1 2))" );
 
         validateResult( result );
     }
@@ -59,13 +54,10 @@ public class SyntaxTimeTest extends ScreamBaseTest
     void time_2() throws Exception
     {
         Cons cons = (Cons)parse(
-            """
-                (%time (+ 1 2))
-            """ );
+                "(%time (+ 1 2))" );
 
         FirstClassObject r = Continuation.toStack(
-                scriptEngine().getInteraction(),
-                cons::evaluate );
+                c -> cons.evaluate( scriptEngine().getInteraction(), c ) );
 
         validateResult( r );
     }

@@ -312,8 +312,7 @@ public class Scream implements ScriptEngineFactory
                     throws RuntimeX
     {
         return Continuation.toStack(
-                env,
-                (e,c) -> evalImpl( e, spl, sink, c ) );
+                c -> evalImpl( env, spl, sink, c ) );
     }
 
     /**

@@ -41,8 +41,7 @@ public class SyntaxLambdaTest extends ScreamBaseTest
                 Cons.class );
 
         FirstClassObject r = Continuation.toStack(
-                env,
-                opCall::evaluate );
+                c -> opCall.evaluate( env, c ) );
 
         assertEquals(
                 i3,

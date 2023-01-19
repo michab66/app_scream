@@ -44,8 +44,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
                 Cons.class );
 
         FirstClassObject r = Continuation.toStack(
-                scriptEngine().getInteraction(),
-                opCall::evaluate );
+                c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
 
         assertEquals(
                 s("composite"),
@@ -64,8 +63,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
                 Cons.class );
 
         FirstClassObject r = Continuation.toStack(
-                scriptEngine().getInteraction(),
-                opCall::evaluate );
+                c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
 
         assertEquals(
                 s("prime"),
@@ -89,8 +87,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
         try
         {
             Continuation.toStack(
-                    scriptEngine().getInteraction(),
-                    opCall::evaluate );
+                    c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
             fail();
         }
         catch ( RuntimeX rx )
@@ -117,8 +114,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
         try
         {
             Continuation.toStack(
-                    scriptEngine().getInteraction(),
-                    opCall::evaluate );
+                    c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
             fail();
         }
         catch ( RuntimeX rx )
@@ -147,8 +143,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
         try
         {
             Continuation.toStack(
-                    scriptEngine().getInteraction(),
-                    opCall::evaluate );
+                    c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
             fail();
         }
         catch ( RuntimeX rx )

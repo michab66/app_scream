@@ -1,24 +1,21 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 2022 Michael G. Binz
+ * Copyright © 2022-2023 Michael G. Binz
  */
 package de.michab.scream;
 
-import java.util.Objects;
 import java.util.function.Consumer;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.smack.util.Holder;
 
 import de.michab.scream.fcos.Cons;
-import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 
 /**
- * public _x_... are externally visible primitives.
- * These always return an indirect thunk () -> ...
+ * Continuation infrastructure.
+ *
  * @author micbinz
  */
 public class Continuation
@@ -26,27 +23,14 @@ public class Continuation
     private final static Logger LOG = Logger.getLogger(
             Continuation.class.getName() );
 
-    private Consumer<Exception> _errorHandler;
-
     private static int _thunkCount;
 
     /**
-     * Create a continuation with a default exception handler.
+     * Hide ctor.
      */
-    public Continuation()
+    private Continuation()
     {
-        _errorHandler = x ->
-            LOG.log( Level.SEVERE, "Default exception handler called.", x );
-    }
-
-    /**
-     * Create a continuation with a user-defined error handler.
-     *
-     * @param errorHandler The error handler called if an exception occurs.
-     */
-    public Continuation( Consumer<Exception> errorHandler )
-    {
-        _errorHandler = Objects.requireNonNull( errorHandler );
+        throw new AssertionError();
     }
 
     @FunctionalInterface
@@ -57,21 +41,6 @@ public class Continuation
     @FunctionalInterface
     public static interface Thunk {
         Thunk run() throws RuntimeX;
-    }
-
-    private void trampoline(Thunk thunk)
-    {
-        try
-        {
-            while (thunk != null) {
-                _thunkCount++;
-                thunk = thunk.run();
-            }
-        }
-        catch ( Exception e )
-        {
-            _errorHandler.accept( e );
-        }
     }
 
     private static void trampoline( Thunk t, Consumer<ScreamException> err )
@@ -107,7 +76,7 @@ public class Continuation
 
     @FunctionalInterface
     public interface ToStackOp {
-        Thunk call( Environment e, Cont<FirstClassObject> c )
+        Thunk call( Cont<FirstClassObject> c )
             throws RuntimeX;
     }
 
@@ -124,7 +93,7 @@ public class Continuation
      * @return The operation result.
      * @throws Exception in case of an error.
      */
-    public static FirstClassObject toStack( Environment e, ToStackOp op )
+    public static FirstClassObject toStack( ToStackOp op )
         throws RuntimeX
     {
         Holder<FirstClassObject> r =
@@ -133,7 +102,7 @@ public class Continuation
                 new Holder<>( null );
 
         Continuation.trampoline(
-                op.call( e,
+                op.call(
                         Continuation.endCall( s -> r.set( s ) ) ),
                 s -> error.set( s ) );
 
@@ -147,26 +116,5 @@ public class Continuation
     public interface ToStackOpx<T> {
         Thunk call( Cont<T> c )
             throws Exception;
-    }
-
-    /**
-     * Execute a continuation-based operation and return the result on the
-     * stack.
-     * <p>
-     * An example operation is {code Thunk doIt( Cont&lt;int&gt; ) throws Exception;}
-     *
-     * @param <T> The operation result type.
-     * @param op The operation to execute.
-     * @return The operation result.
-     * @throws Exception in case of an error.
-     */
-    public <T> T toStack( ToStackOpx<T> op )
-        throws Exception
-    {
-        Holder<T> r =
-                new Holder<T>();
-        trampoline(
-                op.call( Continuation.endCall( s -> r.set( s ) ) ) );
-        return r.get();
     }
 }

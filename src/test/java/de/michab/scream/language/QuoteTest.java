@@ -30,8 +30,7 @@ public class QuoteTest extends ScreamBaseTest
                 readSingleExpression( "(quote a)", Cons.class );
 
         var result = Continuation.toStack(
-                e,
-                fco::evaluate );
+                c -> fco.evaluate( e, c ) );
 
         assertEquals( s("a"), result );
     }
