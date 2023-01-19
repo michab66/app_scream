@@ -50,7 +50,8 @@ public class UrschleimTest extends ScreamBaseTest
 
         try
         {
-            Continuation.toStack(
+            @SuppressWarnings("unused")
+            FirstClassObject fco = Continuation.toStack(
                     c -> symbol.evaluate( new Environment(), c ) );
             fail();
         }
@@ -78,7 +79,7 @@ public class UrschleimTest extends ScreamBaseTest
                 new SchemeParser( "(xquote not-defined-yet)" ).getExpression();
         assertInstanceOf( Cons.class, opCall );
 
-        var r = Continuation.toStack(
+        FirstClassObject r = Continuation.toStack(
                 c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertNotNull(

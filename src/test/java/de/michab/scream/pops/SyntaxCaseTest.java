@@ -86,7 +86,8 @@ public class SyntaxCaseTest extends ScreamBaseTest
 
         try
         {
-            Continuation.toStack(
+            @SuppressWarnings("unused")
+            FirstClassObject fco = Continuation.toStack(
                     c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
             fail();
         }
@@ -113,7 +114,8 @@ public class SyntaxCaseTest extends ScreamBaseTest
 
         try
         {
-            Continuation.toStack(
+            @SuppressWarnings("unused")
+            FirstClassObject fco = Continuation.toStack(
                     c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
             fail();
         }
@@ -142,7 +144,8 @@ public class SyntaxCaseTest extends ScreamBaseTest
 
         try
         {
-            Continuation.toStack(
+            @SuppressWarnings("unused")
+            FirstClassObject fco = Continuation.toStack(
                     c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
             fail();
         }

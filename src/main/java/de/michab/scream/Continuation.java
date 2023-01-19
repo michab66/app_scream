@@ -9,9 +9,6 @@ import java.util.function.Consumer;
 
 import org.smack.util.Holder;
 
-import de.michab.scream.fcos.Cons;
-import de.michab.scream.fcos.FirstClassObject;
-
 /**
  * Continuation infrastructure.
  *
@@ -71,8 +68,8 @@ public class Continuation
     }
 
     @FunctionalInterface
-    public interface ToStackOp {
-        Thunk call( Cont<FirstClassObject> c )
+    public interface ToStackOp<T> {
+        Thunk call( Cont<T> c )
             throws RuntimeX;
     }
 
@@ -89,11 +86,12 @@ public class Continuation
      * @return The operation result.
      * @throws Exception in case of an error.
      */
-    public static FirstClassObject toStack( ToStackOp op )
+    public static <T> T toStack( ToStackOp<T> op )
+//    public static FirstClassObject toStack( ToStackOp op )
         throws RuntimeX
     {
-        Holder<FirstClassObject> r =
-                new Holder<FirstClassObject>( Cons.NIL );
+        Holder<T> r =
+                new Holder<T>();
         Holder<ScreamException> error =
                 new Holder<>( null );
 

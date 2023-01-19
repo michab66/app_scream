@@ -182,7 +182,7 @@ public class ConsTest extends ScreamBaseTest
         var env = se.getInteraction();
         Cons cons = readSingleExpression( "(+ 1 2)", Cons.class );
 
-        var result =  Continuation.toStack(
+        FirstClassObject result =  Continuation.toStack(
                 c -> cons.evaluate( env, c ) );
 
         assertEqualq( ScreamBaseTest.i3, result );
@@ -196,7 +196,8 @@ public class ConsTest extends ScreamBaseTest
         Cons cons = readSingleExpression( "(0 1 2)", Cons.class );
         try
         {
-            Continuation.toStack(
+            @SuppressWarnings("unused")
+            FirstClassObject fco = Continuation.toStack(
                     c -> cons.evaluate( env, c ) );
             fail();
         }
@@ -214,7 +215,8 @@ public class ConsTest extends ScreamBaseTest
         Cons cons = readSingleExpression( "(() 1 2)", Cons.class );
         try
         {
-            Continuation.toStack(
+            @SuppressWarnings("unused")
+            FirstClassObject fco = Continuation.toStack(
                     c -> cons.evaluate( env, c ) );
             fail();
         }
