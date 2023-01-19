@@ -6,7 +6,6 @@
 package de.michab.scream;
 
 import java.util.function.Consumer;
-import java.util.logging.Logger;
 
 import org.smack.util.Holder;
 
@@ -20,9 +19,6 @@ import de.michab.scream.fcos.FirstClassObject;
  */
 public class Continuation
 {
-    private final static Logger LOG = Logger.getLogger(
-            Continuation.class.getName() );
-
     private static int _thunkCount;
 
     /**
@@ -110,11 +106,5 @@ public class Continuation
             throw (RuntimeX)error.get();
 
         return r.get();
-    }
-
-    @FunctionalInterface
-    public interface ToStackOpx<T> {
-        Thunk call( Cont<T> c )
-            throws Exception;
     }
 }

@@ -8,11 +8,10 @@ package de.michab.scream.fcos;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.michab.scream.Continuation;
-import de.michab.scream.ConversionFailedX;
-import de.michab.scream.RuntimeX;
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
+import de.michab.scream.ConversionFailedX;
+import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.pops.Primitives;
