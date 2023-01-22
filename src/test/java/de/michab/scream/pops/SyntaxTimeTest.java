@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Continuation;
+import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Cons;
@@ -56,7 +56,7 @@ public class SyntaxTimeTest extends ScreamBaseTest
         Cons cons = (Cons)parse(
                 "(%time (+ 1 2))" );
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c -> cons.evaluate( scriptEngine().getInteraction(), c ) );
 
         validateResult( r );

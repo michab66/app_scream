@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -26,6 +26,7 @@ import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
+import de.michab.scream.Continuation.ToStackOp;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -304,6 +305,28 @@ public class Scream implements ScriptEngineFactory
                 c );
     }
 
+    @FunctionalInterface
+    public interface FcoOp {
+        Thunk call( Cont<FirstClassObject> c )
+            throws RuntimeX;
+    }
+    public static FirstClassObject toStack( FcoOp op )
+            throws RuntimeX
+    {
+        ToStackOp<FirstClassObject> tso2 = c -> op.call( c );
+
+        try
+        {
+            return Continuation.toStack( tso2 );
+        }
+        catch (Exception e) {
+            if ( RuntimeX.class.isAssignableFrom( e.getClass() ))
+                throw RuntimeX.class.cast( e );
+
+            throw RuntimeX.mInternalError( e );
+        }
+    }
+
     public static FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl,
@@ -311,7 +334,7 @@ public class Scream implements ScriptEngineFactory
             Writer sink )
                     throws RuntimeX
     {
-        return Continuation.toStack(
+        return toStack(
                 c -> evalImpl( env, spl, sink, c ) );
     }
 

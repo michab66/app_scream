@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -11,8 +11,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Continuation;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
@@ -43,7 +43,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
                 """,
                 Cons.class );
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
 
         assertEquals(
@@ -62,7 +62,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
                 """,
                 Cons.class );
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
 
         assertEquals(
@@ -86,8 +86,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
 
         try
         {
-            @SuppressWarnings("unused")
-            FirstClassObject fco = Continuation.toStack(
+            Scream.toStack(
                     c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
             fail();
         }
@@ -114,8 +113,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
 
         try
         {
-            @SuppressWarnings("unused")
-            FirstClassObject fco = Continuation.toStack(
+            Scream.toStack(
                     c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
             fail();
         }
@@ -144,8 +142,7 @@ public class SyntaxCaseTest extends ScreamBaseTest
 
         try
         {
-            @SuppressWarnings("unused")
-            FirstClassObject fco = Continuation.toStack(
+            Scream.toStack(
                     c -> opCall.evaluate( scriptEngine().getInteraction(), c ) );
             fail();
         }

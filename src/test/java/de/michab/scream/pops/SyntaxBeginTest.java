@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Continuation;
 import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
@@ -49,7 +48,7 @@ public class SyntaxBeginTest extends ScreamBaseTest
                  313)
             """ ).getExpression();
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c -> Primitives._x_begin(
                         env,
                         cons,

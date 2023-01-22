@@ -30,24 +30,52 @@ public class Continuation
     public static interface Cont<R> {
         Thunk accept(R result) throws RuntimeX;
     }
+    @FunctionalInterface
+    public static interface Cont2<R> {
+        Thunk accept(R result) throws Exception;
+    }
 
     @FunctionalInterface
     public static interface Thunk {
         Thunk run() throws RuntimeX;
     }
 
-    private static void trampoline( Thunk t, Consumer<ScreamException> err )
+    /**
+     *
+     * @param <X>
+     * @param t The thunk to execute.
+     * @param xCont The continuation to take in case of an exception.
+     * @param xClass The exception class that is to be sent to err.
+     * @throws Exception If an exception different from xClass happens or if
+     * xCont threw an exception.
+     */
+    private static <X extends Exception>
+    void trampoline(
+            Thunk t,
+            Cont2<X> xCont,
+            Class<X> xClass )
+                    throws Exception
     {
-        try
+        while ( t != null )
         {
-            while (t != null) {
-                _thunkCount++;
+            _thunkCount++;
+
+            try
+            {
                 t = t.run();
             }
-        }
-        catch ( RuntimeX e )
-        {
-            err.accept( e );
+            catch ( Exception e )
+            {
+                // If the exception is of type xClass ...
+                if ( xClass.isAssignableFrom( e.getClass() ) )
+                    // ... then the passed exception continuation is called.
+                    // If this in turn throws an exception then thunk processing
+                    // is terminated.
+                    t = xCont.accept( xClass.cast( e ) );
+                else
+                    // Otherwise terminate.
+                    throw e;
+            }
         }
     }
 
@@ -58,10 +86,19 @@ public class Continuation
         };
     }
 
+    /**
+     * @return  The current value of the thunk counter.
+     */
     public static int thunkCount()
     {
         return _thunkCount;
     }
+
+    /**
+     * Set the thunk counter.  Used in debugging.
+     *
+     * @param newValue The new value for the thunk counter.
+     */
     public static void thunkCount( int newValue )
     {
         _thunkCount = newValue;
@@ -70,7 +107,7 @@ public class Continuation
     @FunctionalInterface
     public interface ToStackOp<T> {
         Thunk call( Cont<T> c )
-            throws RuntimeX;
+            throws Exception;
     }
 
     /**
@@ -78,31 +115,56 @@ public class Continuation
      * stack.
      * <p>
      * An example operation is {code Thunk doIt( Cont&lt;int&gt; ) throws Exception;}
-     * <p>
-     * This needs to be generalized.
      *
-     * @param e The environment to use.
-     * @param op The operation to execute.
-     * @return The operation result.
-     * @throws Exception in case of an error.
+     * @param <T>
+     * @param <X>
+     * @param op
+     * @param exceptionHandler
+     * @param exceptionClass
+     * @return
+     * @throws Exception
      */
-    public static <T> T toStack( ToStackOp<T> op )
-//    public static FirstClassObject toStack( ToStackOp op )
-        throws RuntimeX
+    public static <T, X extends Exception>
+    T toStack(
+            ToStackOp<T> op,
+            Cont2<X> exceptionHandler,
+            Class<X> exceptionClass )
+        throws Exception
     {
-        Holder<T> r =
-                new Holder<T>();
-        Holder<ScreamException> error =
-                new Holder<>( null );
+        Holder<T> result =
+                new Holder<>();
 
-        Continuation.trampoline(
-                op.call(
-                        Continuation.endCall( s -> r.set( s ) ) ),
-                s -> error.set( s ) );
+        trampoline(
+                op.call( endCall( s -> result.set( s ) ) ),
+                exceptionHandler,
+                exceptionClass );
 
-        if ( error.get() != null )
-            throw (RuntimeX)error.get();
+        return result.get();
+    }
+    public static <T>
+    T toStack(
+            ToStackOp<T> op )
+        throws Exception
+    {
+        Holder<T> result =
+                new Holder<>();
+        Holder<Exception> exception =
+                new Holder<>();
 
-        return r.get();
+        Cont2<Exception> handler =
+                ae -> {
+                    exception.set( ae );
+                    return null;
+                };
+
+        trampoline(
+                op.call( endCall( s -> result.set( s ) ) ),
+                handler,
+                Exception.class );
+
+        if ( exception.get() != null )
+            throw exception.get();
+
+        return result.get();
     }
 }

@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.language;
 
@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Continuation;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException.Code;
@@ -30,7 +30,7 @@ public class QuoteTest extends ScreamBaseTest
         var fco =
                 readSingleExpression( "(quote a)", Cons.class );
 
-        FirstClassObject result = Continuation.toStack(
+        FirstClassObject result = Scream.toStack(
                 c -> fco.evaluate( e, c ) );
 
         assertEquals( s("a"), result );
