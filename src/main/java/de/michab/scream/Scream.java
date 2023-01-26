@@ -277,7 +277,7 @@ public class Scream implements ScriptEngineFactory
             SupplierX<FirstClassObject,RuntimeX> s,
             FirstClassObject previousResult,
             FirstClassObject newExpression,
-            Cont<FirstClassObject> c )
+            Cont_<FirstClassObject> c )
                     throws RuntimeX
     {
         if ( newExpression == Port.EOF )
@@ -294,7 +294,7 @@ public class Scream implements ScriptEngineFactory
             SupplierX<FirstClassObject,RuntimeX> s,
             // TODO
             Writer sink,
-            Cont<FirstClassObject> c )
+            Cont_<FirstClassObject> c )
                     throws RuntimeX
     {
         return evalImpl_(
@@ -307,13 +307,38 @@ public class Scream implements ScriptEngineFactory
 
     @FunctionalInterface
     public interface FcoOp {
-        Thunk call( Cont<FirstClassObject> c )
+        Thunk call( Cont_<FirstClassObject> c )
             throws RuntimeX;
     }
+
+    @FunctionalInterface
+    public static interface Cont_<R> {
+        Thunk accept(R result) throws RuntimeX;
+    }
+
+    private static Cont_<FirstClassObject> mapCont( Cont<FirstClassObject> cont )
+    {
+        return  c -> {
+            try
+            {
+                return cont.accept( c );
+            }
+            catch ( Exception e )
+            {
+                throw new InternalError();
+            }
+        };
+    }
+
+    private static ToStackOp<FirstClassObject> mapOp( FcoOp op )
+    {
+        return c -> op.call( mapCont( c )  );
+    }
+
     public static FirstClassObject toStack( FcoOp op )
             throws RuntimeX
     {
-        ToStackOp<FirstClassObject> tso2 = c -> op.call( c );
+        ToStackOp<FirstClassObject> tso2 = mapOp( op );
 
         try
         {
@@ -466,7 +491,7 @@ public class Scream implements ScriptEngineFactory
     static private Procedure loadProcedure = new Procedure( "load" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont_<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );

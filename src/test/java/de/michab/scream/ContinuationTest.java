@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.smack.util.Holder;
 
 import de.michab.scream.Continuation.Cont;
-import de.michab.scream.Continuation.Cont2;
 import de.michab.scream.Continuation.Thunk;
 
 public class ContinuationTest extends ScreamBaseTest
@@ -96,7 +95,7 @@ public class ContinuationTest extends ScreamBaseTest
         Holder<ArithmeticException> aeh =
                 new Holder<>();
 
-        Cont2<ArithmeticException> handler =
+        Cont<ArithmeticException> handler =
                 ae -> {
                     aeh.set( ae );
                     return null;

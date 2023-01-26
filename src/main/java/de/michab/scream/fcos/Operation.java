@@ -8,10 +8,10 @@ package de.michab.scream.fcos;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream.Cont_;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.pops.Primitives;
@@ -201,7 +201,7 @@ extends FirstClassObject
      * @return A thunk.
      * @throws RuntimeX
      */
-    private Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
+    private Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont_<Environment> c )
             throws RuntimeX
     {
         if ( argNames != Cons.NIL && argValues == Cons.NIL)
@@ -394,7 +394,7 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+    protected Thunk _executeImpl( Environment e, Cons args, Cont_<FirstClassObject> c )
             throws RuntimeX
     {
         checkArgumentCount( args );
@@ -421,12 +421,12 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    abstract protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+    abstract protected Thunk _execute( Environment e, Cons args, Cont_<FirstClassObject> c )
             throws RuntimeX;
 
     /**
      * Override if the compile environment is required.
-     * The default implementation forwards to {@link #_execute(Environment, Cons, Cont)}.
+     * The default implementation forwards to {@link #_execute(Environment, Cons, Cont_)}.
      *
      * @param compileEnv
      * @param e
@@ -435,7 +435,7 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    private Thunk _execute( Environment compileEnv, Environment e, Cons args, Cont<FirstClassObject> c )
+    private Thunk _execute( Environment compileEnv, Environment e, Cons args, Cont_<FirstClassObject> c )
             throws RuntimeX
     {
         return _execute( e, args, c );

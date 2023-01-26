@@ -5,9 +5,9 @@
  */
 package de.michab.scream.fcos;
 
-import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream.Cont_;
 import de.michab.scream.pops.Primitives;
 
 /**
@@ -36,7 +36,7 @@ public abstract class FirstClassObject
      * @return A thunk.
      * @throws RuntimeX In case the evaluation failed.
      */
-    public static Thunk evaluate( FirstClassObject fco, Environment env, Cont<FirstClassObject> c )
+    public static Thunk evaluate( FirstClassObject fco, Environment env, Cont_<FirstClassObject> c )
             throws RuntimeX
     {
         if ( fco == Cons.NIL )
@@ -57,7 +57,7 @@ public abstract class FirstClassObject
      */
     public Thunk evaluate(
         Environment e,
-        Cont<FirstClassObject> c )
+        Cont_<FirstClassObject> c )
             throws RuntimeX
     {
         return  () -> {

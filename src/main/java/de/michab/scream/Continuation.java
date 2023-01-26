@@ -27,17 +27,19 @@ public class Continuation
     }
 
     @FunctionalInterface
-    public static interface Cont<R> {
-        Thunk accept(R result) throws RuntimeX;
+    public interface ToStackOp<T> {
+        Thunk call( Cont<T> c )
+            throws Exception;
     }
+
     @FunctionalInterface
-    public static interface Cont2<R> {
+    public static interface Cont<R> {
         Thunk accept(R result) throws Exception;
     }
 
     @FunctionalInterface
     public static interface Thunk {
-        Thunk run() throws RuntimeX;
+        Thunk run() throws Exception;
     }
 
     /**
@@ -52,7 +54,7 @@ public class Continuation
     private static <X extends Exception>
     void trampoline(
             Thunk t,
-            Cont2<X> xCont,
+            Cont<X> xCont,
             Class<X> xClass )
                     throws Exception
     {
@@ -104,12 +106,6 @@ public class Continuation
         _thunkCount = newValue;
     }
 
-    @FunctionalInterface
-    public interface ToStackOp<T> {
-        Thunk call( Cont<T> c )
-            throws Exception;
-    }
-
     /**
      * Execute a continuation-based operation and return the result on the
      * stack.
@@ -127,7 +123,7 @@ public class Continuation
     public static <T, X extends Exception>
     T toStack(
             ToStackOp<T> op,
-            Cont2<X> exceptionHandler,
+            Cont<X> exceptionHandler,
             Class<X> exceptionClass )
         throws Exception
     {
@@ -151,7 +147,7 @@ public class Continuation
         Holder<Exception> exception =
                 new Holder<>();
 
-        Cont2<Exception> handler =
+        Cont<Exception> handler =
                 ae -> {
                     exception.set( ae );
                     return null;

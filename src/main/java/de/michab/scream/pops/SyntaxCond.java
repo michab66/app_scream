@@ -5,9 +5,9 @@
  */
 package de.michab.scream.pops;
 
-import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream.Cont_;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -28,7 +28,7 @@ public class SyntaxCond extends Syntax
 
     @Override
     protected Thunk _executeImpl( Environment e, Cons args,
-            Cont<FirstClassObject> c ) throws RuntimeX
+            Cont_<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
@@ -59,11 +59,11 @@ public class SyntaxCond extends Syntax
     private static Thunk _clause(
             Environment e,
             Cons clause,
-            Cont<FirstClassObject> trueBranch,
+            Cont_<FirstClassObject> c,
             Thunk falseBranch)
                     throws RuntimeX
     {
-        Cont<FirstClassObject> next = s -> {
+        Cont_<FirstClassObject> next = s -> {
             if ( ! SchemeBoolean.isTrue( s ) )
                 return falseBranch;
 
@@ -73,9 +73,9 @@ public class SyntaxCond extends Syntax
             // <expression>s, then the value of the <test> is returned as
             // the result.
             if ( Cons.NIL == afterTest )
-                return trueBranch.accept( s );
+                return c.accept( s );
 
-            return Primitives._x_begin( e, (Cons)clause.getCdr(), trueBranch );
+            return Primitives._x_begin( e, (Cons)clause.getCdr(), c );
         };
 
         return Primitives._x_eval(
@@ -87,7 +87,7 @@ public class SyntaxCond extends Syntax
     private static Thunk _cond(
             Environment e,
             Cons clauses,
-            Cont<FirstClassObject> c) throws RuntimeX
+            Cont_<FirstClassObject> c) throws RuntimeX
     {
         if ( Cons.NIL == clauses )
             return c.accept( Cons.NIL );

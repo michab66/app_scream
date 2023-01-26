@@ -5,14 +5,14 @@
  */
 package de.michab.scream.pops;
 
-import de.michab.scream.Continuation.Cont;
 import de.michab.scream.Continuation.Thunk;
+import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream.Cont_;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
-import de.michab.scream.RuntimeX;
 import de.michab.scream.util.Scut;
 
 /**
@@ -103,7 +103,7 @@ public class SyntaxDo extends Syntax
 
     @Override
     protected Thunk _executeImpl( Environment e, Cons args,
-            Cont<FirstClassObject> c ) throws RuntimeX
+            Cont_<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
