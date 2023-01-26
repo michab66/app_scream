@@ -311,6 +311,11 @@ public class Scream implements ScriptEngineFactory
             throws RuntimeX;
     }
 
+    /**
+     * A Scheme continuation.
+     *
+     * @param <R> The type accepted.
+     */
     @FunctionalInterface
     public static interface Scc<R> {
         Thunk accept(R result) throws RuntimeX;
