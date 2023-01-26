@@ -7,7 +7,7 @@ package de.michab.scream.pops;
 
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont_;
+import de.michab.scream.Scream.Scc;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -90,7 +90,7 @@ public abstract class SyntaxLet
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
-                Cont_<FirstClassObject> c ) throws RuntimeX
+                Scc<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -118,7 +118,7 @@ public abstract class SyntaxLet
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
-                Cont_<FirstClassObject> c ) throws RuntimeX
+                Scc<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -146,7 +146,7 @@ public abstract class SyntaxLet
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
-                Cont_<FirstClassObject> c ) throws RuntimeX
+                Scc<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
 

@@ -277,7 +277,7 @@ public class Scream implements ScriptEngineFactory
             SupplierX<FirstClassObject,RuntimeX> s,
             FirstClassObject previousResult,
             FirstClassObject newExpression,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
         if ( newExpression == Port.EOF )
@@ -294,7 +294,7 @@ public class Scream implements ScriptEngineFactory
             SupplierX<FirstClassObject,RuntimeX> s,
             // TODO
             Writer sink,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
         return evalImpl_(
@@ -307,16 +307,16 @@ public class Scream implements ScriptEngineFactory
 
     @FunctionalInterface
     public interface FcoOp {
-        Thunk call( Cont_<FirstClassObject> c )
+        Thunk call( Scc<FirstClassObject> c )
             throws RuntimeX;
     }
 
     @FunctionalInterface
-    public static interface Cont_<R> {
+    public static interface Scc<R> {
         Thunk accept(R result) throws RuntimeX;
     }
 
-    private static Cont_<FirstClassObject> mapCont( Cont<FirstClassObject> cont )
+    private static Scc<FirstClassObject> mapCont( Cont<FirstClassObject> cont )
     {
         return  c -> {
             try
@@ -491,7 +491,7 @@ public class Scream implements ScriptEngineFactory
     static private Procedure loadProcedure = new Procedure( "load" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont_<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );

@@ -7,7 +7,7 @@ package de.michab.scream.fcos;
 
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont_;
+import de.michab.scream.Scream.Scc;
 
 /**
  * Followed the scheme spec in naming this class.  An alternate name would be
@@ -64,7 +64,7 @@ public class Syntax
 
     @Override
     protected final Thunk _execute( Environment e, Cons args,
-            Cont_<FirstClassObject> c ) throws RuntimeX
+            Scc<FirstClassObject> c ) throws RuntimeX
     {
         return _executeImpl( e, args, c );
     }

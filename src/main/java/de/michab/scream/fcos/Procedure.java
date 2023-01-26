@@ -9,7 +9,7 @@ import org.smack.util.JavaUtil;
 
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont_;
+import de.michab.scream.Scream.Scc;
 import de.michab.scream.pops.Primitives;
 
 /**
@@ -79,7 +79,7 @@ public class Procedure
 
     /**
      * Evaluates the arguments in the received environment and passes on to
-     * {@link #_executeImpl(Environment, Cons, Cont_)} for execution of the
+     * {@link #_executeImpl(Environment, Cons, Scc)} for execution of the
      * _body in the procedure's closure.
      *
      * @param e
@@ -89,11 +89,11 @@ public class Procedure
      * @throws RuntimeX
      */
     @Override
-    protected final Thunk _execute( Environment e, Cons args, Cont_<FirstClassObject> c )
+    protected final Thunk _execute( Environment e, Cons args, Scc<FirstClassObject> c )
             throws RuntimeX
     {
         // Execute in our _closure.
-        Cont_<Cons> cc = evaluated -> _executeImpl(
+        Scc<Cons> cc = evaluated -> _executeImpl(
                 _closure,
                 evaluated,
                 c );

@@ -7,7 +7,7 @@ package de.michab.scream.pops;
 
 import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont_;
+import de.michab.scream.Scream.Scc;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -39,10 +39,10 @@ public class Primitives
     public static Thunk _if(
             Environment e,
             FirstClassObject test,
-            Cont_<FirstClassObject> trueBranch,
-            Cont_<FirstClassObject> falseBranch ) throws RuntimeX
+            Scc<FirstClassObject> trueBranch,
+            Scc<FirstClassObject> falseBranch ) throws RuntimeX
     {
-        Cont_<FirstClassObject> branch = testResult ->
+        Scc<FirstClassObject> branch = testResult ->
         {
             return SchemeBoolean.isTrue( testResult ) ?
                     trueBranch.accept( testResult ) :
@@ -66,7 +66,7 @@ public class Primitives
             Environment e,
             Cons expressions,
             FirstClassObject previousResult,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
         if ( expressions == Cons.NIL )
@@ -74,7 +74,7 @@ public class Primitives
         if ( ! SchemeBoolean.isTrue( previousResult ) )
             return () -> c.accept( previousResult );
 
-        Cont_<FirstClassObject> next =
+        Scc<FirstClassObject> next =
                 (fco) -> _and( e, (Cons)expressions.getCdr(), fco, c);
 
         return Primitives._x_eval(
@@ -96,7 +96,7 @@ public class Primitives
     public static Thunk _x_and(
             Environment e,
             Cons expressions,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
         return () -> _and(
@@ -119,10 +119,10 @@ public class Primitives
             Environment e,
             Symbol s,
             FirstClassObject o,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
-        Cont_<FirstClassObject> next = v -> {
+        Scc<FirstClassObject> next = v -> {
             e.assign( s, v );
             return c.accept( Cons.NIL );
         };
@@ -143,7 +143,7 @@ public class Primitives
             Environment e,
             Symbol symbol,
             FirstClassObject value,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
         return () -> {
@@ -165,13 +165,13 @@ public class Primitives
             Environment e,
             Cons symbols,
             FirstClassObject o,
-            Cont_<Environment> c )
+            Scc<Environment> c )
                     throws RuntimeX
     {
         if ( symbols == Cons.NIL )
             return c.accept( e );
 
-        Cont_<FirstClassObject> next = v -> {
+        Scc<FirstClassObject> next = v -> {
             e.define( (Symbol)symbols.getCar(), v );
             return _define( e, (Cons)symbols.getCdr(), o, c );
         };
@@ -193,12 +193,12 @@ public class Primitives
             Environment e,
             Cons body,
             FirstClassObject previousResult,
-            Cont_<FirstClassObject> c ) throws RuntimeX
+            Scc<FirstClassObject> c ) throws RuntimeX
     {
         if ( body == Cons.NIL )
             return c.accept( previousResult );
 
-        Cont_<FirstClassObject> next =
+        Scc<FirstClassObject> next =
                 (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
 
         return Primitives._x_eval( e, body.getCar(), next );
@@ -216,7 +216,7 @@ public class Primitives
     public static Thunk _x_begin(
             Environment e,
             Cons body,
-            Cont_<FirstClassObject> c ) throws RuntimeX
+            Scc<FirstClassObject> c ) throws RuntimeX
     {
         return () -> _begin(
                 e,
@@ -240,7 +240,7 @@ public class Primitives
             Environment e,
             Environment extended,
             Cons bindings,
-            Cont_<Environment> c )
+            Scc<Environment> c )
                     throws RuntimeX
     {
         if ( bindings == Cons.NIL )
@@ -250,7 +250,7 @@ public class Primitives
         Symbol variable = (Symbol)bindingElement.listRef(0);
         FirstClassObject init = bindingElement.listRef(1);
 
-        Cont_<FirstClassObject> evalResult = fco -> {
+        Scc<FirstClassObject> evalResult = fco -> {
             extended.define( variable, fco );
             return _bindLet( e, extended, (Cons)bindings.getCdr(), c );
         };
@@ -262,9 +262,9 @@ public class Primitives
             Environment e,
             Cons bindings,
             Cons body,
-            Cont_<FirstClassObject> c ) throws RuntimeX
+            Scc<FirstClassObject> c ) throws RuntimeX
     {
-        Cont_<Environment> begin =
+        Scc<Environment> begin =
                 ext -> _x_begin(
                         ext,
                         body,
@@ -281,9 +281,9 @@ public class Primitives
             Environment e,
             Cons bindings,
             Cons body,
-            Cont_<FirstClassObject> c ) throws RuntimeX
+            Scc<FirstClassObject> c ) throws RuntimeX
     {
-        Cont_<Environment> begin =
+        Scc<Environment> begin =
                 ext -> _x_begin(
                         ext,
                         body,
@@ -313,16 +313,16 @@ public class Primitives
             Cons bindings,
             Cons body,
             Cons symbols,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
-        Cont_<Environment> begin =
+        Scc<Environment> begin =
                 env -> _x_begin(
                         env,
                         body,
                         c );
 
-        Cont_<Environment> bind =
+        Scc<Environment> bind =
                 env -> _bindLet(
                         env,
                         env,
@@ -347,7 +347,7 @@ public class Primitives
     public static Thunk _x_eval(
             Environment e,
             FirstClassObject o,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
         return () -> FirstClassObject.evaluate( o, e, c );
@@ -367,7 +367,7 @@ public class Primitives
             Environment e,
             Cons expressions,
             FirstClassObject previousResult,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
         if ( expressions == Cons.NIL )
@@ -375,7 +375,7 @@ public class Primitives
         if ( SchemeBoolean.isTrue( previousResult ) )
             return () -> c.accept( previousResult );
 
-        Cont_<FirstClassObject> next =
+        Scc<FirstClassObject> next =
                 (fco) -> _or( e, (Cons)expressions.getCdr(), fco, c);
 
         return Primitives._x_eval(
@@ -396,7 +396,7 @@ public class Primitives
     public static Thunk _x_or(
             Environment e,
             Cons expressions,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
         return () -> _or(
@@ -409,7 +409,7 @@ public class Primitives
     public static Thunk _x_quote(
             Environment e,
             FirstClassObject quote,
-            Cont_<FirstClassObject> c) throws RuntimeX
+            Scc<FirstClassObject> c) throws RuntimeX
     {
         return () -> c.accept( quote );
     }
@@ -417,7 +417,7 @@ public class Primitives
     public static Thunk _x_resolve(
             Environment e,
             Symbol o,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
                     throws RuntimeX
     {
         return () -> c.accept( e.get( o ) );
@@ -427,12 +427,12 @@ public class Primitives
             Environment e,
             Cons result,
             Cons current,
-            Cont_<Cons> c ) throws RuntimeX
+            Scc<Cons> c ) throws RuntimeX
     {
         if ( Cons.NIL == current )
             return c.accept( Cons.reverse( result ) );
 
-        Cont_<FirstClassObject> set = fco -> evalImpl(
+        Scc<FirstClassObject> set = fco -> evalImpl(
                     e,
                     new Cons( fco, result ),
                     (Cons)current.getCdr(), c );
@@ -452,7 +452,7 @@ public class Primitives
      * the evaluated elements.
      * @return A thunk.
      */
-    public static Thunk _x_evalCons( Environment e, Cons l, Cont_<Cons> c )
+    public static Thunk _x_evalCons( Environment e, Cons l, Scc<Cons> c )
     {
         return () -> evalImpl(
                 e,
@@ -477,17 +477,17 @@ public class Primitives
             Cons test,
             Cons steps,
             Cons commands,
-            Cont_<FirstClassObject> c
+            Scc<FirstClassObject> c
             ) throws RuntimeX
     {
-        Cont_<FirstClassObject> finish =
+        Scc<FirstClassObject> finish =
                 trueValue -> _begin(
                         e,
                         (Cons)test.getCdr(),
                         trueValue,
                         c );
 
-        Cont_<Environment> restart =
+        Scc<Environment> restart =
                 unused -> _iteration(
                         e,
                         test,
@@ -495,7 +495,7 @@ public class Primitives
                         commands,
                         c );
 
-        Cont_<FirstClassObject> loopInit =
+        Scc<FirstClassObject> loopInit =
                 unused -> _bindLet(
                         e,
                         e,
@@ -503,7 +503,7 @@ public class Primitives
                         restart );
 
         // Process the command list.
-        Cont_<FirstClassObject> loopPerform =
+        Scc<FirstClassObject> loopPerform =
                 falseValue -> _begin(
                         e,
                         commands,
@@ -522,9 +522,9 @@ public class Primitives
             Cons steps,
             Cons test,
             Cons commands,
-            Cont_<FirstClassObject> c )
+            Scc<FirstClassObject> c )
     {
-        Cont_<Environment> iteration =
+        Scc<Environment> iteration =
                 ext -> _iteration(
                         ext,
                         test,
