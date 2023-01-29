@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -24,8 +24,6 @@ import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
-import de.michab.scream.Continuation.Cont;
-import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -35,6 +33,9 @@ import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation;
+import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Continuation.ToStackOp;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
 import de.michab.scream.util.Scut;
@@ -304,6 +305,58 @@ public class Scream implements ScriptEngineFactory
                 c );
     }
 
+    @FunctionalInterface
+    public interface FcoOp {
+        Thunk call( Cont<FirstClassObject> c )
+            throws RuntimeX;
+    }
+
+    /**
+     * A Scheme continuation.
+     *
+     * @param <R> The type accepted.
+     */
+    @FunctionalInterface
+    public static interface Cont<R> {
+        Thunk accept(R result) throws RuntimeX;
+    }
+
+    private static Cont<FirstClassObject> mapCont( de.michab.scream.util.Continuation.Cont<FirstClassObject> cont )
+    {
+        return  c -> {
+            try
+            {
+                return cont.accept( c );
+            }
+            catch ( Exception e )
+            {
+                throw new InternalError();
+            }
+        };
+    }
+
+    private static ToStackOp<FirstClassObject> mapOp( FcoOp op )
+    {
+        return c -> op.call( mapCont( c )  );
+    }
+
+    public static FirstClassObject toStack( FcoOp op )
+            throws RuntimeX
+    {
+        ToStackOp<FirstClassObject> tso2 = mapOp( op );
+
+        try
+        {
+            return Continuation.toStack( tso2 );
+        }
+        catch (Exception e) {
+            if ( RuntimeX.class.isAssignableFrom( e.getClass() ))
+                throw RuntimeX.class.cast( e );
+
+            throw RuntimeX.mInternalError( e );
+        }
+    }
+
     public static FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl,
@@ -311,7 +364,7 @@ public class Scream implements ScriptEngineFactory
             Writer sink )
                     throws RuntimeX
     {
-        return Continuation.toStack(
+        return toStack(
                 c -> evalImpl( env, spl, sink, c ) );
     }
 

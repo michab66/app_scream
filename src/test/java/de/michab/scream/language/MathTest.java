@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.language;
 
@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Continuation;
+import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Cons;
@@ -72,7 +72,7 @@ public class MathTest extends ScreamBaseTest
                 code );
         assertInstanceOf( Cons.class, opCall );
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertEqualq(
@@ -98,7 +98,7 @@ public class MathTest extends ScreamBaseTest
                 code );
         assertInstanceOf( Cons.class, opCall );
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertEqualq(

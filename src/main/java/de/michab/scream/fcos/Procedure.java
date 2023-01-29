@@ -7,10 +7,10 @@ package de.michab.scream.fcos;
 
 import org.smack.util.JavaUtil;
 
-import de.michab.scream.Continuation.Cont;
-import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation.Thunk;
 
 /**
  * Represents a scheme procedure.

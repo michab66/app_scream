@@ -5,9 +5,8 @@
  */
 package de.michab.scream.pops;
 
-import de.michab.scream.Continuation.Cont;
-import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -15,6 +14,7 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Scut;
+import de.michab.scream.util.Continuation.Thunk;
 
 /**
  * {@code (%syntax <signature>) exp1 ... )}

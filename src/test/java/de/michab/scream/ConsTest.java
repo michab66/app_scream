@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -182,7 +182,7 @@ public class ConsTest extends ScreamBaseTest
         var env = se.getInteraction();
         Cons cons = readSingleExpression( "(+ 1 2)", Cons.class );
 
-        FirstClassObject result =  Continuation.toStack(
+        FirstClassObject result =  Scream.toStack(
                 c -> cons.evaluate( env, c ) );
 
         assertEqualq( ScreamBaseTest.i3, result );
@@ -196,8 +196,7 @@ public class ConsTest extends ScreamBaseTest
         Cons cons = readSingleExpression( "(0 1 2)", Cons.class );
         try
         {
-            @SuppressWarnings("unused")
-            FirstClassObject fco = Continuation.toStack(
+            Scream.toStack(
                     c -> cons.evaluate( env, c ) );
             fail();
         }
@@ -215,8 +214,7 @@ public class ConsTest extends ScreamBaseTest
         Cons cons = readSingleExpression( "(() 1 2)", Cons.class );
         try
         {
-            @SuppressWarnings("unused")
-            FirstClassObject fco = Continuation.toStack(
+            Scream.toStack(
                     c -> cons.evaluate( env, c ) );
             fail();
         }

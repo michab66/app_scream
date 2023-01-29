@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -102,7 +102,7 @@ public class ScreamBaseTest
                 null;
 
         try {
-            result = Continuation.toStack(
+            result = Scream.toStack(
                 c -> opCall.evaluate( env, c) );
         }
         catch ( RuntimeX e )

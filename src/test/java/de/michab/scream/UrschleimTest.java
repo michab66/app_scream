@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 2022 Michael G. Binz
+ * Copyright © 2022-2023 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -24,7 +24,7 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     public void typeIntegerTest() throws Exception
     {
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c -> i313.evaluate( null, c ) );
 
         assertEquals( "313", r.toString() );
@@ -37,7 +37,7 @@ public class UrschleimTest extends ScreamBaseTest
         var env = new Environment();
         env.define( symbol, i313 );
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c-> symbol.evaluate( env, c ) );
 
         assertEquals( "313", r.toString() );
@@ -50,8 +50,7 @@ public class UrschleimTest extends ScreamBaseTest
 
         try
         {
-            @SuppressWarnings("unused")
-            FirstClassObject fco = Continuation.toStack(
+            Scream.toStack(
                     c -> symbol.evaluate( new Environment(), c ) );
             fail();
         }
@@ -79,7 +78,7 @@ public class UrschleimTest extends ScreamBaseTest
                 new SchemeParser( "(xquote not-defined-yet)" ).getExpression();
         assertInstanceOf( Cons.class, opCall );
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertNotNull(
@@ -108,7 +107,7 @@ public class UrschleimTest extends ScreamBaseTest
                 new SchemeParser( "(add2 311)" ).getExpression();
         assertInstanceOf( Cons.class, opCall );
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
                 c -> opCall.evaluate( se.getInteraction(), c ) );
 
         assertNotNull(
@@ -141,7 +140,7 @@ public class UrschleimTest extends ScreamBaseTest
                 new SchemeParser( "(set! threethirteen 313)" ).getExpression();
         assertInstanceOf( Cons.class, opCall );
 
-        FirstClassObject r = Continuation.toStack(
+        FirstClassObject r = Scream.toStack(
 
                 c -> opCall.evaluate( se.getInteraction(), c ) );
 
