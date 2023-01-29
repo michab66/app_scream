@@ -47,7 +47,7 @@ public class Continuation
      * @param <X>
      * @param t The thunk to execute.
      * @param xCont The continuation to take in case of an exception.
-     * @param xClass The exception class that is to be sent to err.
+     * @param xClass The exception class that is to be forwarded to xCont.
      * @throws Exception If an exception different from xClass happens or if
      * xCont threw an exception.
      */
@@ -89,7 +89,7 @@ public class Continuation
     }
 
     /**
-     * @return  The current value of the thunk counter.
+     * @return The current value of the thunk counter.
      */
     public static int thunkCount()
     {
@@ -107,17 +107,15 @@ public class Continuation
     }
 
     /**
-     * Execute a continuation-based operation and return the result on the
-     * stack.
-     * <p>
-     * An example operation is {code Thunk doIt( Cont&lt;int&gt; ) throws Exception;}
+     * Execute a continuation-based operation with an exception handler and
+     * return the result on the stack.
      *
-     * @param <T>
-     * @param <X>
-     * @param op
-     * @param exceptionHandler
-     * @param exceptionClass
-     * @return
+     * @param <T> The result type.
+     * @param <X> The type of the exception that is handled.
+     * @param op The operation to execute.
+     * @param exceptionHandler The exception handler.
+     * @param exceptionClass The type of the exception that is handled.
+     * @return The result of the passed operation.
      * @throws Exception
      */
     public static <T, X extends Exception>
@@ -137,6 +135,16 @@ public class Continuation
 
         return result.get();
     }
+
+    /**
+     * Execute a continuation-based operation and
+     * return the result on the stack.
+     *
+     * @param <T> The result type.
+     * @param op The operation to execute.
+     * @return The result of the passed operation.
+     * @throws Exception
+     */
     public static <T>
     T toStack(
             ToStackOp<T> op )
