@@ -11,7 +11,7 @@ import java.util.HashSet;
 import org.smack.util.Holder;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Scc;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
@@ -406,7 +406,7 @@ public class Cons
             Environment e,
             FirstClassObject  op,
             Cons args,
-            Scc<FirstClassObject> c )
+            Cont<FirstClassObject> c )
         throws RuntimeX
     {
         try

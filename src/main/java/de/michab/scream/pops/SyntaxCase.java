@@ -8,7 +8,7 @@ package de.michab.scream.pops;
 import java.util.HashSet;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Scc;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -70,7 +70,7 @@ public class SyntaxCase extends Syntax
 
     @Override
     protected Thunk _executeImpl( Environment e, Cons args,
-            Scc<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
@@ -113,7 +113,7 @@ public class SyntaxCase extends Syntax
             Environment e,
             FirstClassObject key,
             Cons clauses,
-            Scc<FirstClassObject> c) throws RuntimeX
+            Cont<FirstClassObject> c) throws RuntimeX
     {
         if ( Cons.NIL == clauses )
             return c.accept( Cons.NIL );
@@ -147,12 +147,12 @@ public class SyntaxCase extends Syntax
             Environment e,
             FirstClassObject key,
             Cons clauses,
-            Scc<FirstClassObject> c) throws RuntimeX
+            Cont<FirstClassObject> c) throws RuntimeX
     {
         if ( Cons.NIL == clauses )
             return c.accept( Cons.NIL );
 
-        Scc<FirstClassObject> next = (fco) -> _caseImpl(
+        Cont<FirstClassObject> next = (fco) -> _caseImpl(
                 e,
                 fco,
                 clauses,

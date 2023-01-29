@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.lang.reflect.Executable;
 import java.util.Objects;
 
-import de.michab.scream.Scream.Scc;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -109,7 +109,7 @@ extends ScreamException
     static private Procedure errorProcedure = new Procedure( "error" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, Integer.MAX_VALUE, args );

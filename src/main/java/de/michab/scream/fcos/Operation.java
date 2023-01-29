@@ -10,7 +10,7 @@ import java.util.Set;
 
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Scc;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.pops.Primitives;
@@ -201,7 +201,7 @@ extends FirstClassObject
      * @return A thunk.
      * @throws RuntimeX
      */
-    private Thunk _bind( Environment e, Cons argNames, Cons argValues, Scc<Environment> c )
+    private Thunk _bind( Environment e, Cons argNames, Cons argValues, Cont<Environment> c )
             throws RuntimeX
     {
         if ( argNames != Cons.NIL && argValues == Cons.NIL)
@@ -394,7 +394,7 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
+    protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         checkArgumentCount( args );
@@ -421,12 +421,12 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    abstract protected Thunk _execute( Environment e, Cons args, Scc<FirstClassObject> c )
+    abstract protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX;
 
     /**
      * Override if the compile environment is required.
-     * The default implementation forwards to {@link #_execute(Environment, Cons, Scc)}.
+     * The default implementation forwards to {@link #_execute(Environment, Cons, Cont)}.
      *
      * @param compileEnv
      * @param e
@@ -435,7 +435,7 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    private Thunk _execute( Environment compileEnv, Environment e, Cons args, Scc<FirstClassObject> c )
+    private Thunk _execute( Environment compileEnv, Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         return _execute( e, args, c );

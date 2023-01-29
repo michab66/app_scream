@@ -6,7 +6,7 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Scc;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -41,7 +41,7 @@ public class SyntaxIf extends Syntax
             Environment e,
             Cons cond,
             Cons positive,
-            Scc<FirstClassObject> c)
+            Cont<FirstClassObject> c)
             throws RuntimeX
     {
         var ccond =
@@ -50,9 +50,9 @@ public class SyntaxIf extends Syntax
                 positive.getCar();
 
         return () -> {
-            Scc<FirstClassObject> pos =
+            Cont<FirstClassObject> pos =
                     fco -> Primitives._x_eval( e, cpositive, c );
-            Scc<FirstClassObject> neg =
+            Cont<FirstClassObject> neg =
                     falseObject -> c.accept( falseObject );
 
             return Primitives._if(
@@ -68,7 +68,7 @@ public class SyntaxIf extends Syntax
             Cons cond,
             Cons positive,
             Cons negative,
-            Scc<FirstClassObject> c)
+            Cont<FirstClassObject> c)
             throws RuntimeX
     {
         var ccond = cond.getCar();
@@ -76,9 +76,9 @@ public class SyntaxIf extends Syntax
         var cnegative = negative.getCar();
 
         return () -> {
-            Scc<FirstClassObject> pos =
+            Cont<FirstClassObject> pos =
                     fco -> Primitives._x_eval( e, cpositive, c );
-            Scc<FirstClassObject> neg =
+            Cont<FirstClassObject> neg =
                     fco -> Primitives._x_eval( e, cnegative, c );
 
             return Primitives._if(
@@ -91,7 +91,7 @@ public class SyntaxIf extends Syntax
 
     @Override
     protected Thunk _executeImpl( Environment e, Cons args,
-            Scc<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         long argsLen =
                 checkArgumentCount( 2, 3, args );

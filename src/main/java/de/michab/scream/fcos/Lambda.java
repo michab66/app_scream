@@ -6,7 +6,7 @@
 package de.michab.scream.fcos;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Scc;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
@@ -18,7 +18,7 @@ public class Lambda extends FirstClassObject
 {
     @FunctionalInterface
     public static interface L {
-        Thunk accept(Environment e, Scc<FirstClassObject> c) throws RuntimeX;
+        Thunk accept(Environment e, Cont<FirstClassObject> c) throws RuntimeX;
     }
 
     /**
@@ -51,7 +51,7 @@ public class Lambda extends FirstClassObject
     }
 
     @Override
-    public Thunk evaluate( Environment e, Scc<FirstClassObject> c )
+    public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         return _l.accept( e, c );

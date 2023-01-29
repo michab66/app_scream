@@ -34,13 +34,12 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation;
+import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Continuation.ToStackOp;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.SupplierX;
-import de.michab.scream.util.Continuation.Cont;
-import de.michab.scream.util.Continuation.Thunk;
-import de.michab.scream.util.Continuation.ToStackOp;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between
@@ -278,7 +277,7 @@ public class Scream implements ScriptEngineFactory
             SupplierX<FirstClassObject,RuntimeX> s,
             FirstClassObject previousResult,
             FirstClassObject newExpression,
-            Scc<FirstClassObject> c )
+            Cont<FirstClassObject> c )
                     throws RuntimeX
     {
         if ( newExpression == Port.EOF )
@@ -295,7 +294,7 @@ public class Scream implements ScriptEngineFactory
             SupplierX<FirstClassObject,RuntimeX> s,
             // TODO
             Writer sink,
-            Scc<FirstClassObject> c )
+            Cont<FirstClassObject> c )
                     throws RuntimeX
     {
         return evalImpl_(
@@ -308,7 +307,7 @@ public class Scream implements ScriptEngineFactory
 
     @FunctionalInterface
     public interface FcoOp {
-        Thunk call( Scc<FirstClassObject> c )
+        Thunk call( Cont<FirstClassObject> c )
             throws RuntimeX;
     }
 
@@ -318,11 +317,11 @@ public class Scream implements ScriptEngineFactory
      * @param <R> The type accepted.
      */
     @FunctionalInterface
-    public static interface Scc<R> {
+    public static interface Cont<R> {
         Thunk accept(R result) throws RuntimeX;
     }
 
-    private static Scc<FirstClassObject> mapCont( Cont<FirstClassObject> cont )
+    private static Cont<FirstClassObject> mapCont( de.michab.scream.util.Continuation.Cont<FirstClassObject> cont )
     {
         return  c -> {
             try
@@ -497,7 +496,7 @@ public class Scream implements ScriptEngineFactory
     static private Procedure loadProcedure = new Procedure( "load" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );

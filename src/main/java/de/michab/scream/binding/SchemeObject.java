@@ -18,7 +18,7 @@ import org.smack.util.JavaUtil;
 
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Scc;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -133,7 +133,7 @@ public class SchemeObject
     private static Thunk createObject(
             String className,
             FirstClassObject[] ctorArgs,
-            Scc<FirstClassObject> c )
+            Cont<FirstClassObject> c )
                     throws RuntimeX
     {
         JavaClassAdapter classAdapter = null;
@@ -221,7 +221,7 @@ public class SchemeObject
 
     @Override
     protected Thunk _executeImpl( Environment e, Cons args,
-            Scc<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         long argsLen =
                 checkArgumentCount( 1, 2, args );
@@ -532,7 +532,7 @@ public class SchemeObject
             Environment env,
             String methodName,
             Cons list,
-            Scc<FirstClassObject> c )
+            Cont<FirstClassObject> c )
                     throws RuntimeX
     {
         Executable methodRef = null;
@@ -599,7 +599,7 @@ public class SchemeObject
     private Thunk processInvocation(
             Environment env,
             Cons list,
-            Scc<FirstClassObject> c )
+            Cont<FirstClassObject> c )
                     throws RuntimeX
     {
         LOG.warning( Continuation.thunkCount() + " " + list );
@@ -628,7 +628,7 @@ public class SchemeObject
      * @return The attribute's value.
      * @throws RuntimeX In case the attribute could not be read.
      */
-    private Thunk processAttributeGet( Symbol attribute, Scc<FirstClassObject> c )
+    private Thunk processAttributeGet( Symbol attribute, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         LOG.warning( attribute.toString() );
@@ -658,7 +658,7 @@ public class SchemeObject
     private Thunk processAttributeSet(
             Symbol attribute,
             FirstClassObject value,
-            Scc<FirstClassObject> c )
+            Cont<FirstClassObject> c )
                     throws RuntimeX
     {
         LOG.warning( attribute + " = " + value );
@@ -737,7 +737,7 @@ public class SchemeObject
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
-                Scc<FirstClassObject> c ) throws RuntimeX
+                Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 1, args );
 
@@ -774,7 +774,7 @@ public class SchemeObject
     static private Procedure wrapObjectProcedure = new Procedure( "object" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -796,7 +796,7 @@ public class SchemeObject
     static private Procedure objectPredicateProcedure = new Procedure( "object?" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );

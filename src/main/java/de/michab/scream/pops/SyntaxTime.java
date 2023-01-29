@@ -8,7 +8,7 @@ package de.michab.scream.pops;
 import org.smack.util.TimeProbe;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Scc;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -41,7 +41,7 @@ public class SyntaxTime extends Syntax
     private Thunk finish(
             TimeProbe tp,
             FirstClassObject evalResult,
-            Scc<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         var result = new Cons(
                 SchemeInteger.createObject( tp.stop().duration() ),
@@ -52,7 +52,7 @@ public class SyntaxTime extends Syntax
 
     @Override
     protected Thunk _executeImpl( Environment e, Cons args,
-            Scc<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 1, args );
 

@@ -6,7 +6,7 @@
 package de.michab.scream.fcos;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Scc;
+import de.michab.scream.Scream.Cont;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
@@ -104,7 +104,7 @@ extends FirstClassObject
                 Environment e,
                 Cons list,
                 long listLength,
-                Scc<FirstClassObject> c ) throws RuntimeX;
+                Cont<FirstClassObject> c ) throws RuntimeX;
     }
 
     /**
@@ -117,7 +117,7 @@ extends FirstClassObject
     public abstract Number add( FirstClassObject other )
             throws RuntimeX;
 
-    private static Thunk _add( Environment e, Number total, Cons rest, Scc<FirstClassObject> c )
+    private static Thunk _add( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( rest == Cons.NIL )
@@ -137,7 +137,7 @@ extends FirstClassObject
             Environment e,
             Cons list,
             long listLength,
-            Scc<FirstClassObject> c )
+            Cont<FirstClassObject> c )
     {
         var zero = SchemeInteger.createObject( 0 );
 
@@ -161,7 +161,7 @@ extends FirstClassObject
     public abstract Number subtract( FirstClassObject other )
             throws RuntimeX;
 
-    private static Thunk _subtract( Environment e, Number total, Cons rest, Scc<FirstClassObject> c )
+    private static Thunk _subtract( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( rest == Cons.NIL )
@@ -180,7 +180,7 @@ extends FirstClassObject
             Environment e,
             Cons list,
             long listLength,
-            Scc<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         if ( listLength == 1 )
             return () -> _subtract(
@@ -205,7 +205,7 @@ extends FirstClassObject
     public abstract Number multiply( FirstClassObject other )
             throws RuntimeX;
 
-    private static Thunk _multiply( Environment e, Number total, Cons rest, Scc<FirstClassObject> c )
+    private static Thunk _multiply( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( rest == Cons.NIL )
@@ -224,7 +224,7 @@ extends FirstClassObject
             Environment e,
             Cons list,
             long listLength,
-            Scc<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         var one = SchemeInteger.createObject( 1 );
 
@@ -247,7 +247,7 @@ extends FirstClassObject
     public abstract Number divide( FirstClassObject other )
             throws RuntimeX;
 
-    private static Thunk _divide( Environment e, Number total, Cons rest, Scc<FirstClassObject> c )
+    private static Thunk _divide( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         if ( rest == Cons.NIL )
@@ -272,7 +272,7 @@ extends FirstClassObject
             Environment e,
             Cons list,
             long listLength,
-            Scc<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c ) throws RuntimeX
     {
         if ( listLength == 1 )
             return () -> _divide(
@@ -376,7 +376,7 @@ extends FirstClassObject
             Environment e,
             Cons args,
             long argsLength,
-            Scc<FirstClassObject> c )
+            Cont<FirstClassObject> c )
     {
 
         return Primitives._x_evalCons(
@@ -395,7 +395,7 @@ extends FirstClassObject
     static private Procedure addProc = new Procedure( "+" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
@@ -417,7 +417,7 @@ extends FirstClassObject
     static private Procedure subtractProc = new Procedure( "-" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
@@ -437,7 +437,7 @@ extends FirstClassObject
     static private Procedure multiplyProc = new Procedure( "*" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
@@ -458,7 +458,7 @@ extends FirstClassObject
     static private Procedure divideProc = new Procedure( "/" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Scc<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
