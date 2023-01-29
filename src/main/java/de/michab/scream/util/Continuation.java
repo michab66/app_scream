@@ -3,7 +3,7 @@
  *
  * Copyright © 2022-2023 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.util;
 
 import java.util.function.Consumer;
 

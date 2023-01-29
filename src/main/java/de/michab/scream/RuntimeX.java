@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.lang.reflect.Executable;
 import java.util.Objects;
 
-import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.Scream.Scc;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -17,6 +16,7 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.frontend.Token;
+import de.michab.scream.util.Continuation.Thunk;
 
 /**
  * An exception to be thrown at run-time of a Scheme program.  This type of

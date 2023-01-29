@@ -5,13 +5,13 @@
  */
 package de.michab.scream.pops;
 
-import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Scc;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Syntax;
+import de.michab.scream.util.Continuation.Thunk;
 
 /**
  * (begin exp1 exp2 ...) library syntax; r7rs 17

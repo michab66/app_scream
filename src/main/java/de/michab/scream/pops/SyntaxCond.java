@@ -5,7 +5,6 @@
  */
 package de.michab.scream.pops;
 
-import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Scc;
 import de.michab.scream.ScreamException.Code;
@@ -16,6 +15,7 @@ import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Scut;
+import de.michab.scream.util.Continuation.Thunk;
 
 public class SyntaxCond extends Syntax
 {

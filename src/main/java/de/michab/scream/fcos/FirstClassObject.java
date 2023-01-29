@@ -5,10 +5,10 @@
  */
 package de.michab.scream.fcos;
 
-import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Scc;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation.Thunk;
 
 /**
  * The base class for all Scheme first-class objects.  A first class object is

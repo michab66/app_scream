@@ -8,13 +8,13 @@ package de.michab.scream.fcos;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.michab.scream.Continuation.Thunk;
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Scc;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation.Thunk;
 
 /**
  * Represents an abstract operation.  Is the base class for macros

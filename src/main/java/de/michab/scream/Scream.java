@@ -24,9 +24,6 @@ import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
-import de.michab.scream.Continuation.Cont;
-import de.michab.scream.Continuation.Thunk;
-import de.michab.scream.Continuation.ToStackOp;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -36,10 +33,14 @@ import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.SupplierX;
+import de.michab.scream.util.Continuation.Cont;
+import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Continuation.ToStackOp;
 
 /**
  * Facade to the Scheme interpreter.  This class is the only connection between

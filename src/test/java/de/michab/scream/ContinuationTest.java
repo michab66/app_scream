@@ -12,8 +12,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smack.util.Holder;
 
-import de.michab.scream.Continuation.Cont;
-import de.michab.scream.Continuation.Thunk;
+import de.michab.scream.util.Continuation;
+import de.michab.scream.util.Continuation.Cont;
+import de.michab.scream.util.Continuation.Thunk;
 
 public class ContinuationTest extends ScreamBaseTest
 {
