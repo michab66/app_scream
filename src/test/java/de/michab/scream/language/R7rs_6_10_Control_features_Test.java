@@ -70,7 +70,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
             """
             (define list-length
               (lambda (obj)
-                (call-with-current-continuation
+                (call/cc
                   (lambda (return)
                     (letrec ((r
                               (lambda (obj)

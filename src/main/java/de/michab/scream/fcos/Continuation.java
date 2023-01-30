@@ -10,6 +10,12 @@ import de.michab.scream.Scream.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
+/**
+ * The continuation-type that is passed as an exit procedure into the
+ * procedure received by {@code call-with-current-continuation}.
+ *
+ * @author micbinz
+ */
 public class Continuation extends Procedure
 {
     private final Cont<FirstClassObject> _cont;
@@ -69,7 +75,9 @@ public class Continuation extends Procedure
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
     {
-        tle.setPrimitive( callccProc.setClosure( tle ) );
+        var ccc = callccProc.setClosure( tle );
+        tle.setPrimitive( ccc );
+        tle.define( Symbol.createObject( "call/cc" ), ccc );
 
         return tle;
     }
