@@ -20,6 +20,106 @@ import de.michab.scream.fcos.SchemeBoolean;
 public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
 {
     /**
+     * p50
+     */
+    @Test
+    public void procedureq_1() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (procedure? car)
+            """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p50
+     */
+    @Test
+    public void procedureq_2() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (procedure? 'car)
+            """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p50
+     */
+    @Test
+    public void procedureq_3() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (procedure? (lambda(x) (* x x)))
+            """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p50
+     */
+    @Test
+    public void procedureq_4() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (procedure? '(lambda(x) (* x x)))
+            """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * p50
+     */
+    @Test
+    public void procedureq_5() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+            """
+            (call-with-current-continuation procedure?)
+            """ );
+        assertEquals( SchemeBoolean.T, result );
+    }
+
+    /**
+     * p50
+     */
+    @Test
+    public void apply_1() throws Exception
+    {
+        var se = scriptEngine();
+
+        var result = se.evalFco(
+            """
+            (apply + (list 3 4))
+            """ );
+        assertEquals( i(7), result );
+    }
+
+    /**
+     * p51
+     */
+    @Test
+    public void apply_2() throws Exception
+    {
+        var se = scriptEngine();
+
+        var result = se.evalFco(
+            """
+            (define compose
+              (lambda (f g)
+                (lambda args
+                  (f (apply g args)))))
+            ; The original example uses sqrt.
+            ((compose - *) 12 75)
+            """ );
+        assertEquals( i(-900), result );
+    }
+
+    /**
      * p52
      */
     @Test

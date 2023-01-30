@@ -524,6 +524,14 @@ extends ScreamException
                 Code.METHOD_NOT_FOUND,
                 name );
     }
+    //    METHOD_NOT_FOUND_1 = \
+    //    27 : Method not found: {0}
+    public static RuntimeX mMethodNotFound( String name, Cons arguments )
+    {
+        return new RuntimeX(
+                Code.METHOD_NOT_FOUND,
+                name + FirstClassObject.toString( arguments ) );
+    }
 
     //    ILLEGAL_ACCESS_1 = \
     //    28 : No access to {0}.

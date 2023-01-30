@@ -16,7 +16,7 @@
 
 
 ;;
-;; (apply proc arg1 ... args)  procedure; r5rs 32
+;; (apply proc arg1 ... args)  procedure; r7rs 50
 ;;
 ;; Proc must be a procedure and args must be a list. Calls proc with the
 ;; elements of the list (append (list arg1 ...) args) as the actual arguments.

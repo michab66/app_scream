@@ -8,6 +8,7 @@ package de.michab.scream.fcos;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream;
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Thunk;
@@ -103,5 +104,17 @@ public class Procedure
                 e,
                 args,
                 cc );
+    }
+
+    /**
+     * Called from the (apply ...) operation defined in procedure.s.
+     *
+     * @param arguments The passed arguments.
+     * @return The result of the procedure application.
+     * @throws RuntimeX
+     */
+    public FirstClassObject apply( Cons arguments ) throws RuntimeX
+    {
+        return Scream.toStack( c -> _execute( _closure, arguments, c ) );
     }
 }

@@ -34,8 +34,8 @@ import de.michab.scream.fcos.Syntax;
 import de.michab.scream.fcos.Vector;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 /**
  * An instance of this class boxes an entity from the Java object system,
@@ -564,8 +564,7 @@ public class SchemeObject
                 }
             }
 
-            throw new RuntimeX( Code.METHOD_NOT_FOUND,
-                    Cons.create( list ) );
+            throw RuntimeX.mMethodNotFound( methodName, list );
         }
         catch ( InvocationTargetException e )
         {
