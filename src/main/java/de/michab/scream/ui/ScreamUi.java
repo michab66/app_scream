@@ -15,7 +15,6 @@ import javax.script.ScriptEngine;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -27,12 +26,12 @@ import org.smack.application.ApplicationInfo;
 import org.smack.swing.application.SingleFrameApplication;
 import org.smack.swing.swingx.JXConsole;
 import org.smack.swing.swingx.JXMultiSplitPane;
-import org.smack.swing.swingx.JXSplitPane;
 import org.smack.swing.swingx.JXTextArea;
 import org.smack.swing.swingx.MultiSplitLayout;
 import org.smack.swing.swingx.MultiSplitLayout.Divider;
 import org.smack.swing.swingx.MultiSplitLayout.Leaf;
 import org.smack.swing.swingx.MultiSplitLayout.Split;
+import org.smack.util.JavaUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
 
@@ -98,6 +97,7 @@ public class ScreamUi extends SingleFrameApplication
                 return;
 
             performExec( selected );
+            src.setSelectionStart( src.getSelectionEnd() );
         }
     }
 
@@ -131,56 +131,46 @@ public class ScreamUi extends SingleFrameApplication
 
         _console = new JXConsole();
 
-        Component component;
+        Component component = JavaUtil.make( () -> {
+            // https://stackoverflow.com/questions/8660687/how-to-use-multisplitlayout-in-swingx
 
-        if ( false )
-        {
-            var spHorizontal = new JXSplitPane( 0.5 );
-            spHorizontal.setLeftComponent( _textArea );
-            spHorizontal.setRightComponent( _console );
+            Split row = JavaUtil.make( () -> {
+                var left = new Leaf("left");
+                left.setWeight( .8 );
+                var right = new Leaf( "right" );
+                right.setWeight( .2 );
 
-            var sp = new JXSplitPane( 0.5 );
-            sp.setOrientation( JXSplitPane.VERTICAL_SPLIT );
-            sp.setTopComponent( ioTabs );
-            sp.setBottomComponent( spHorizontal );
+                return new Split(
+                        left,
+                        new Divider(),
+                        right );
+            });
 
-            component = sp;
-        }
-        else
-        {
-            Split column1 = new Split();
-            column1.setRowLayout(false);
+            Split column = JavaUtil.make( () -> {
+                var bottom = new Leaf( "bottom" );
+                bottom.setWeight( .5 );
+                row.setWeight( .5 );
 
-            Split row = new Split();
+                var result = new Split(
+                        row,
+                        new Divider(),
+                        bottom );
+                result.setRowLayout( false );
 
-            Split column2 = new Split();
-            column2.setRowLayout(false);
-
-            column2.setChildren(new Leaf("middle.top"), new Divider(), new Leaf(
-                "middle"), new Divider(), new Leaf("middle.bottom"));
-
-            row.setChildren(new Leaf("left"), new Divider(), column2,
-                new Divider(), new Leaf("right"));
-
-            column1.setChildren(row, new Divider(), new Leaf("bottom"));
+                return result;
+            });
 
             _textArea.setText( "Welcome..." );
-            // Once the layout is done, the code is easy
-            JXMultiSplitPane msp = new JXMultiSplitPane();
-            MultiSplitLayout layout = new MultiSplitLayout(column1);
-            msp.setLayout(layout);
-//          msp.add(new JButton("bottom"), "bottom");
-            msp.add( ioTabs, "bottom");
-//            msp.add(new JButton("left"), "left");
-            msp.add( new JScrollPane( _textArea ), "left");
-//            msp.add(new JButton("right"), "right");
-            msp.add( _console, "right");
-            msp.add(new JButton("middle.bottom"), "middle.bottom");
-            msp.add(new JButton("middle"), "middle");
-            msp.add(new JButton("middle.top"), "middle.top");
 
-            component = msp;
-        }
+            JXMultiSplitPane msp = new JXMultiSplitPane(
+                    new MultiSplitLayout( column ) );
+
+            msp.add( ioTabs, "bottom");
+            msp.add( new JScrollPane( _textArea ), "left");
+            msp.add( _console, "right");
+
+            return msp;
+        } );
 
         var view = getMainView();
 
