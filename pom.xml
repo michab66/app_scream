@@ -26,17 +26,10 @@
     </repositories>
 
     <dependencies>
-<!--        <dependency>
-            <groupId>micbinz</groupId>
-            <artifactId>smack_old</artifactId>
-            <version>11.69</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/dev_smack-69.jar</systemPath>
-        </dependency> -->
         <dependency>
             <groupId>micbinz</groupId>
-            <artifactId>smack</artifactId>
-            <version>11.406</version>
+            <artifactId>smack_swing</artifactId>
+            <version>11.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
