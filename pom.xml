@@ -71,7 +71,7 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>libs/</classpathPrefix>
                             <mainClass>
-                                de.michab.scream.SchemeInterpreter
+                                de.michab.scream.ui.ScreamUi
                             </mainClass>
                         </manifest>
                     </archive>

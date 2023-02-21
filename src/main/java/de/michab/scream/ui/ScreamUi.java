@@ -9,6 +9,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.PrintStream;
 import java.io.Writer;
 
 import javax.script.ScriptEngine;
@@ -26,7 +27,6 @@ import org.smack.application.ApplicationInfo;
 import org.smack.swing.application.SingleFrameApplication;
 import org.smack.swing.swingx.JXConsole;
 import org.smack.swing.swingx.JXMultiSplitPane;
-import org.smack.swing.swingx.JXTextArea;
 import org.smack.swing.swingx.MultiSplitLayout;
 import org.smack.swing.swingx.MultiSplitLayout.Divider;
 import org.smack.swing.swingx.MultiSplitLayout.Leaf;
@@ -38,18 +38,25 @@ import org.smack.util.StringUtil;
 import de.michab.scream.Scream;
 import de.michab.scream.fcos.Cons;
 
+/**
+ * scream's user interface.
+ *
+ * @author micbinz
+ */
 public class ScreamUi extends SingleFrameApplication
 {
-    private JToolBar _toolbar = new JToolBar();
-
-    private ScriptEngine _scream = new Scream().getScriptEngine();
-
-
-    private JTextArea _textArea = new JTextArea();
-    private JTextArea _textArea2 = new JXTextArea( "mic" );
-
-
-    private JXConsole _console;
+    private JToolBar _toolbar =
+            new JToolBar();
+    private ScriptEngine _scream =
+            new Scream().getScriptEngine();
+    private final JTextArea _textArea =
+            new JTextArea();
+    private final JXConsole _console =
+            new JXConsole();
+    private final JXConsole _stderr =
+            new JXConsole();
+    private final JXConsole _stdoin =
+            new JXConsole();
 
     private void performExec( String text )
     {
@@ -73,14 +80,13 @@ public class ScreamUi extends SingleFrameApplication
             try
             {
                 _console.getOut().write( e.getMessage().getBytes() );
+                _console.getOut().write( StringUtil.EOL.getBytes() );
             }
             catch ( IOException e1 )
             {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+                throw new InternalError( "unexpected" );
             }
         }
-
     }
 
     private class CommitAction extends AbstractAction {
@@ -101,9 +107,11 @@ public class ScreamUi extends SingleFrameApplication
         }
     }
 
-    public void handleQuit()
+    @Override
+    protected void initialize( String[] args )
     {
-        System.out.println( "Quit called." );
+        System.setErr( new PrintStream(_stderr.getOut() ) );
+        System.err.print( "@console" + StringUtil.EOL );
     }
 
     @Override
@@ -120,16 +128,12 @@ public class ScreamUi extends SingleFrameApplication
                 COMMIT_ACTION,
                 new CommitAction());
 
-        JXConsole stderr = new JXConsole();
-        stderr.setName( "std::err" );
-        JXConsole stdoin = new JXConsole();
-        stdoin.setName( "std::in::out" );
+        _stderr.setName( "std::err" );
+        _stdoin.setName( "std::in::out" );
 
         JTabbedPane ioTabs = new JTabbedPane();
-        ioTabs.add( stdoin, 0 );
-        ioTabs.add( stderr, 1 );
-
-        _console = new JXConsole();
+        ioTabs.add( _stdoin, 0 );
+        ioTabs.add( _stderr, 1 );
 
         Component component = JavaUtil.make( () -> {
             // https://stackoverflow.com/questions/8660687/how-to-use-multisplitlayout-in-swingx
@@ -159,8 +163,6 @@ public class ScreamUi extends SingleFrameApplication
 
                 return result;
             });
-
-            _textArea.setText( "Welcome..." );
 
             JXMultiSplitPane msp = new JXMultiSplitPane(
                     new MultiSplitLayout( column ) );
