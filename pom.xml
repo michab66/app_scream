@@ -26,22 +26,16 @@
     </repositories>
 
     <dependencies>
-<!--        <dependency>
-            <groupId>micbinz</groupId>
-            <artifactId>smack_old</artifactId>
-            <version>11.69</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/lib/dev_smack-69.jar</systemPath>
-        </dependency> -->
         <dependency>
             <groupId>micbinz</groupId>
-            <artifactId>smack</artifactId>
-            <version>11.406</version>
+            <artifactId>smack_swing</artifactId>
+            <version>11.5-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -76,14 +70,29 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <classpathPrefix>libs/</classpathPrefix>
+                            <classpathPrefix>lib/</classpathPrefix>
                             <mainClass>
-                                de.michab.scream.SchemeInterpreter
+                                de.michab.scream.ui.ScreamUi
                             </mainClass>
                         </manifest>
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>install</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <outputDirectory>${project.build.directory}/lib</outputDirectory>
+                  <includeScope>compile</includeScope>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
         </plugins>
         <pluginManagement>
         	<plugins>

@@ -576,8 +576,7 @@ public class Scream implements ScriptEngineFactory
 
     @Override
     public String getEngineVersion() {
-        // TODO Auto-generated method stub
-        return null;
+        return "b17.r7rs";
     }
 
     @Override
