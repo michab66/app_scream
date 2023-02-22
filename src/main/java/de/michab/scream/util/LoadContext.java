@@ -1,8 +1,9 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 2022 Michael G. Binz
+ * Copyright © 2022-2023 Michael G. Binz
  */
+
 package de.michab.scream.util;
 
 import java.io.File;
@@ -12,7 +13,18 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-// https://flylib.com/books/en/1.134.1/jarurlconnection.html
+/**
+ * Support for file loading.  Implements the necessary logic to load files from
+ * the filesystem, inside a jar file or from the internet.  Supports loading of
+ * several files that are rooted to a single source.  That means if the first
+ * file is rooted in a jar file then follow-up files with a relative name are
+ * loaded from the same source.
+ * <p>
+ * See // https://flylib.com/books/en/1.134.1/jarurlconnection.html for the
+ * basic idea.
+ *
+ * @author micbinz
+ */
 public class LoadContext
 {
     private final String _prefix;
@@ -48,8 +60,8 @@ public class LoadContext
         this( nonThrowingUrl( filename ) );
     }
 
-    public LoadContext( URL filename ) {
-
+    public LoadContext( URL filename )
+    {
         if ( FILE_PROTOCOL.equals( filename.getProtocol() ) )
         {
             _prefix = FILE_PROTOCOL + ":";
@@ -100,7 +112,7 @@ public class LoadContext
         return new LoadContext(
                 prev._prefix,
                 f,
-                _isFile );
+                prev._isFile );
     }
 
     public InputStream getStream() throws IOException
@@ -123,5 +135,14 @@ public class LoadContext
     public String toString()
     {
         return toUrl().toExternalForm();
+    }
+
+    /**
+     * @return {@code true} if this represents a file, otherwise
+     * this is an URL.
+     */
+    public boolean isFile()
+    {
+        return _isFile;
     }
 }

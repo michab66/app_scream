@@ -82,13 +82,15 @@
             <artifactId>maven-dependency-plugin</artifactId>
             <executions>
               <execution>
-                <phase>install</phase>
+                <phase>package</phase>
                 <goals>
                   <goal>copy-dependencies</goal>
                 </goals>
+                <inherited>false</inherited>
                 <configuration>
                   <outputDirectory>${project.build.directory}/lib</outputDirectory>
                   <includeScope>compile</includeScope>
+                  <useBaseVersion>false</useBaseVersion>
                 </configuration>
               </execution>
             </executions>
