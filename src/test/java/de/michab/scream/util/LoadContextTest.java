@@ -26,6 +26,7 @@ public class LoadContextTest
                 new File( "/com/elharo/io/StreamCopier.class" ),
                 lc.getFile() );
     }
+
     @Test
     public void urlFile() throws Exception
     {
@@ -62,6 +63,7 @@ public class LoadContextTest
                 "/de/michab/scream/extensions/a.s";
         LoadContext lca = new LoadContext( a );
         assertTrue( lca.isAbsolute() );
+        assertTrue( lca.isFile() );
 
         String b =
                 "b.s";
@@ -69,19 +71,19 @@ public class LoadContextTest
         assertFalse( lcb.isAbsolute() );
 
         LoadContext lcc = lcb.relate( lca );
-        var file = lcc.getFile();
+        assertTrue( lcc.isFile() );
         assertEquals(
                 new File( "/de/michab/scream/extensions/b.s" ),
-                file );
+                lcc.getFile() );
 
         LoadContext lcd = new LoadContext( "/tmp/313.so" );
         assertTrue( lcd.isAbsolute() );
 
         LoadContext lcf = lcd.relate( lcc );
-        file = lcf.getFile();
+        assertTrue( lcf.isFile() );
         assertEquals(
                 new File("/tmp/313.so"),
-                file );
+                lcf.getFile() );
     }
 
     @Test
@@ -91,26 +93,29 @@ public class LoadContextTest
                 "file:/de/michab/scream/extensions/a.s";
         LoadContext lca = new LoadContext( a );
         assertTrue( lca.isAbsolute() );
+        assertTrue( lca.isFile() );
+
         String b =
                 "b.s";
         LoadContext lcb = new LoadContext( b );
         assertFalse( lcb.isAbsolute() );
 
         LoadContext lcc = lcb.relate( lca );
-        var file = lcc.getFile();
-        assertTrue( lca.isAbsolute() );
+        assertTrue( lcc.isAbsolute() );
+        assertTrue( lcc.isFile() );
         assertEquals(
                 new File( "/de/michab/scream/extensions/b.s" ),
-                file );
+                lcc.getFile() );
     }
 
     @Test
-    public void relativeJar() throws Exception
+    public void relativeJarHttp() throws Exception
     {
         URL a = new URL(
                 "jar:http://www.oreilly.com/javaio.jar!/com/elharo/io/A.class");
         LoadContext lca = new LoadContext( a );
         assertTrue( lca.isAbsolute() );
+        assertFalse( lca.isFile() );
 
         String b =
                 "B.class";
@@ -118,12 +123,42 @@ public class LoadContextTest
         assertFalse( lcb.isAbsolute() );
 
         LoadContext lcbr = lcb.relate( lca );
-        var file = lcbr.getFile();
+        assertFalse( lcbr.isFile() );
         assertEquals(
                 new File( "/com/elharo/io/B.class" ),
-                file );
+                lcbr.getFile() );
         assertEquals(
                 "jar:http://www.oreilly.com/javaio.jar!/com/elharo/io/B.class",
                 lcbr.toString() );
     }
+
+    @Test
+    public void relativeJarFile() throws Exception
+    {
+        URL a = new URL(
+                "jar:file:/Users/micbinz/git/github/app_scream/target/app_scream-0.0.1-SNAPSHOT.jar!/de/michab/scream/extensions/common-init.s");
+        LoadContext lca = new LoadContext( a );
+        assertTrue( lca.isAbsolute() );
+        assertFalse( lca.isFile() );
+
+        String b =
+                "basic.s";
+        LoadContext lcb = new LoadContext( b );
+        assertFalse( lcb.isAbsolute() );
+
+        LoadContext lcbr = lcb.relate( lca );
+        assertFalse( lcbr.isFile() );
+        assertEquals(
+                new File( "/de/michab/scream/extensions/basic.s" ),
+                lcbr.getFile() );
+        assertEquals(
+                "jar:file:/Users/micbinz/git/github/app_scream/target/app_scream-0.0.1-SNAPSHOT.jar!/de/michab/scream/extensions/basic.s",
+                lcbr.toString() );
+    }
+
+//    WARNUNG: stack.peek()= isFile=false
+//    Feb. 22, 2023 8:52:17 PM de.michab.scream.Scream load
+//    WARNUNG: current=jar:file:/Users/micbinz/git/github/app_scream/target/app_scream-0.0.1-SNAPSHOT.jar!/de/michab/scream/extensions/basic.s isFile=true
+//    Feb
+
 }
