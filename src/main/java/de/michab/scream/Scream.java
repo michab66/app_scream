@@ -84,12 +84,6 @@ public class Scream implements ScriptEngineFactory
 //    private final static PrintWriter _errorWriter = new PrintWriter( System.err );
 
     /**
-     * The symbol being bound to an object reference of the interpreter itself.
-     */
-    public final static Symbol ANCHOR_SYMBOL =
-            Symbol.createObject( "%%interpreter%%" );
-
-    /**
      * Symbol receives an error id when an error occurred.
      */
 //    private final static Symbol ERROR_ID =
