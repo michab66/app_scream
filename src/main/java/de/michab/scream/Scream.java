@@ -12,7 +12,6 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -75,8 +74,8 @@ public class Scream implements ScriptEngineFactory
     private final static Logger LOG =
             Logger.getLogger( Scream.class.getName() );
 
-    private final static ThreadLocal<Stack<LoadContext>> loadStack =
-            ThreadLocal.withInitial( Stack<LoadContext>::new );
+//    private final static ThreadLocal<Stack<LoadContext>> loadStack =
+//            ThreadLocal.withInitial( Stack<LoadContext>::new );
 
     /**
      * @see de.michab.scream.Scream#getErrorPort
@@ -444,20 +443,7 @@ public class Scream implements ScriptEngineFactory
     private static FirstClassObject load( LoadContext current, Environment e )
             throws RuntimeX
     {
-        var stack = loadStack.get();
-
-        if ( stack.isEmpty() )
-            ;
-        else if ( current.isAbsolute() )
-            ;
-        else if ( ! stack.peek().hasParent() )
-            ;
-        else
-            current = current.relate( stack.peek() );
-
-        stack.push( current );
-
-        try ( var reader  = new InputStreamReader( current.getStream() ) )
+        try ( var reader  = LoadContext.getReader( current ) )
         {
             SchemeParser parser =
                     new SchemeParser( reader );
@@ -467,10 +453,6 @@ public class Scream implements ScriptEngineFactory
         catch ( IOException ioe )
         {
             throw RuntimeX.mIoError( ioe );
-        }
-        finally
-        {
-            stack.pop();
         }
     }
 

@@ -10,8 +10,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Stack;
 
 /**
  * Support for file loading.  Implements the necessary logic to load files from
@@ -98,12 +101,12 @@ public class LoadContext
         return _file.getPath().startsWith( File.separator );
     }
 
-    public boolean hasParent()
+    private boolean hasParent()
     {
         return _file.getParent() != null;
     }
 
-    public LoadContext relate( LoadContext prev )
+    LoadContext relate( LoadContext prev )
     {
         var f = isAbsolute() ?
                 getFile() :
@@ -115,7 +118,7 @@ public class LoadContext
                 prev._isFile );
     }
 
-    public InputStream getStream() throws IOException
+    private InputStream getStream() throws IOException
     {
         if ( _isFile )
             return new FileInputStream( _file );
@@ -144,5 +147,35 @@ public class LoadContext
     public boolean isFile()
     {
         return _isFile;
+    }
+
+    private final static ThreadLocal<Stack<LoadContext>> loadStack =
+            ThreadLocal.withInitial( Stack<LoadContext>::new );
+
+
+    public static Reader getReader( LoadContext current )
+            throws IOException
+    {
+        var stack = loadStack.get();
+
+        if ( stack.isEmpty() )
+            ;
+        else if ( current.isAbsolute() )
+            ;
+        else if ( ! stack.peek().hasParent() )
+            ;
+        else
+            current = current.relate( stack.peek() );
+
+        stack.push( current );
+
+        return new InputStreamReader( current.getStream() ) {
+            @Override
+            public void close() throws IOException
+            {
+                stack.pop();
+                super.close();
+            }
+        };
     }
 }
