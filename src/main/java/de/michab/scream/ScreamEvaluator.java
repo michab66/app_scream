@@ -54,7 +54,8 @@ public final class ScreamEvaluator implements ScriptEngine
      */
     ScreamEvaluator(
             Scream interpreter,
-            Environment tle )
+            Environment tle,
+            String[] extensions)
     {
         _factory =
                 interpreter;
@@ -63,6 +64,9 @@ public final class ScreamEvaluator implements ScriptEngine
         _interaction.define(
                 ANCHOR_SYMBOL,
                 new SchemeObject( this ) );
+        Scream.addExtensions(
+                _interaction,
+                extensions );
     }
 
     public Environment getInteraction()
