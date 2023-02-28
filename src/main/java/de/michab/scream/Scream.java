@@ -205,7 +205,8 @@ public class Scream implements ScriptEngineFactory
 
     /**
      * Loads all classes defined in the kernel.integrateClasses property and
-     * invokes the following method signature on the class:<br>
+     * invokes the following method signature on the class:
+     * <p>
      *  {@code public static Environment extendTopLevelEnvironment( Environment tle )}<br>
      *
      * @param tle The top level environment to contain the new bindings.
@@ -370,7 +371,7 @@ public class Scream implements ScriptEngineFactory
      * @param env The environment used for evaluating the extensions.
      * @param fileNames The files to load.
      */
-    private static void addExtensions(
+    static void addExtensions(
             Environment env,
             String[] fileNames )
     {
@@ -617,13 +618,10 @@ public class Scream implements ScriptEngineFactory
         var tle = new Environment(
                 _topLevelEnvironment );
 
-        addExtensions(
-                tle,
-                schemeInstanceExtensions );
-
         return new ScreamEvaluator(
                 this,
-                tle );
+                tle,
+                schemeInstanceExtensions );
     }
 
     /**

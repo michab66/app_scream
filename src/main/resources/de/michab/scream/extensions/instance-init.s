@@ -10,9 +10,16 @@
 (define (interaction-environment)
   (%%interpreter%% (getTopLevelEnvironment)))
 
-(define micbinz 313)
-
-(load "i-test.s")
+;;
+;; (load string), library procedure, r7rs 59
+;;
+;; Note that this overrides the (load ...)-procedure defined in
+;; Scream.java.  The override loads always into the interaction
+;; environment.
+;; TODO fix to support the parameters described in the spec.
+;;
+(define (load string)
+  (%%interpreter%% (load string)))
 
 ;;
 ;; Returns the next character available from the input port, without updating
@@ -165,21 +172,6 @@
           (error "TOO_MANY_ARGUMENTS" 2)))))
 
   (write-char #\newline the-port)))
-
-
-
-;;
-;; (load string),      library procedure, r5rs 37
-;;
-;; Filename should be a string naming an existing file containing Scheme source
-;; code. The load procedure reads expressions and definitions from the file and
-;; evaluates them sequentially. It is unspecified whether the results of the
-;; expressions are printed. The load procedure does not affect the values
-;; returned by current-input-port and current-output-port. Load returns an
-;; unspecified value.
-;;
-(define (load string)
-  (%%interpreter%% (load string)))
 
 
 (define (eof? symbol)
