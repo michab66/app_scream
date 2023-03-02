@@ -5,6 +5,8 @@
  */
 package de.michab.scream.fcos;
 
+import java.util.Objects;
+
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.pops.Primitives;
@@ -381,5 +383,29 @@ public abstract class FirstClassObject
     protected final int id()
     {
         return _id;
+    }
+
+    /**
+     * Check if the passed fco is of a certain type.
+     * <p>
+     * A null object results in true for the Cons.class.
+     *
+     * @param <T> Class type, must extend {@link FirstClassObject}.
+     * @param type The target type.
+     * @param fco The object to test.
+     * @return true if the object is of the requested type.
+     */
+    public static <T extends FirstClassObject>
+    boolean is( Class<T> type, FirstClassObject fco )
+    {
+        Objects.requireNonNull( type );
+
+        if ( type.equals( Cons.class ) && fco == Cons.NIL )
+            return true;
+
+        if ( fco == null )
+            return false;
+
+        return type.isAssignableFrom( fco.getClass() );
     }
 }

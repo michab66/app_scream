@@ -123,6 +123,22 @@ public class R7rs_4_1_4_Pocedures_Test extends ScreamBaseTest
      * p13
      */
     @Test
+    public void lambda_6() throws Exception
+    {
+        var expected = readSingleExpression( "(5 6)", Cons.class );
+        var result = scriptEngine().evalFco(
+            """
+            ((lambda (x y . z) z)
+             3 4 5 6)
+            """ );
+
+        assertEqualq( expected, result );
+    }
+
+    /**
+     * p13
+     */
+    @Test
     public void lambda_x_1() throws Exception
     {
         try
@@ -139,19 +155,39 @@ public class R7rs_4_1_4_Pocedures_Test extends ScreamBaseTest
     }
 
     /**
-     * p13
+     * Test lambda empty parameter list.
+     *
+     * r7rs 4.1.4 p13
      */
     @Test
-    public void lambda_6() throws Exception
+    public void lambda_x_2() throws Exception
     {
-        var expected = readSingleExpression( "(5 6)", Cons.class );
         var result = scriptEngine().evalFco(
-            """
-            ((lambda (x y . z) z)
-             3 4 5 6)
-            """ );
-
-        assertEqualq( expected, result );
+                """
+                ((lambda () 121))
+                """ );
+            assertEquals( i(121), result );
     }
 
+    /**
+     * Test lambda parameter list.
+     *
+     * r7rs 4.1.4 p13
+     */
+    @Test
+    public void lambda_x_3() throws Exception
+    {
+        try
+        {
+            scriptEngine().evalFco(
+                """
+                ((lambda "kong" 121))
+                """ );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.INVALID_FORMALS, rx.getCode() );
+        }
+    }
 }

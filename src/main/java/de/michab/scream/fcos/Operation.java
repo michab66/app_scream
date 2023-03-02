@@ -352,26 +352,24 @@ extends FirstClassObject
             throw new ConversionFailedX( received, formal, position );
         }
     }
-    static final protected void checkArgument(
-            int position,
-            FirstClassObject received,
-            Class<?> ... alternatives
-            )
+    /**
+     * Checks if the passed formals represent a valid argument list.
+     * <p>
+     * {@code r7rs 4.1.4 p13}
+     *
+     * @param formals The formals to check.
+     * @throws RuntimeX If formals represent no valid argument list.
+     */
+    static final protected void checkFormals(
+            FirstClassObject formals )
                     throws RuntimeX
     {
-        if ( received == Cons.NIL )
-            // TODO better error message for multiple alternatives.
-            throw new ConversionFailedX( received, alternatives[0], position );
+        if ( FirstClassObject.is( Symbol.class, formals ) )
+            return;
+        if ( FirstClassObject.is( Cons.class, formals ) )
+            return;
 
-        var actual = received.getClass();
-
-        for ( var c : alternatives )
-        {
-            if ( c.isAssignableFrom( actual ) )
-                return;
-        }
-        // TODO better error message for multiple alternatives.
-        throw new ConversionFailedX( received, alternatives[0], position );
+        throw RuntimeX.mInvalidFormals( formals );
     }
 
     /**
