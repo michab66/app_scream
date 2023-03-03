@@ -34,16 +34,20 @@ public abstract class Port
     private final Type _type;
 
     /**
-     * Create an output port.  The name that is passed is used for generating
-     * correct file references in case of errors.
+     * Create a textual port.
      *
-     * @param name A name to use for this port.
-     * @param out A writer that output gets written to.
+     * @param name The port's name.
      */
     public Port( String name )
     {
         this( name, Type.Textual );
     }
+    /**
+     * Create a typed port.
+     *
+     * @param name The port's name.
+     * @param type The port's type.
+     */
     public Port( String name, Type type )
     {
         _name = name;
@@ -55,13 +59,22 @@ public abstract class Port
         return _name;
     }
 
-    Type type()
+    public Type type()
     {
         return _type;
     }
 
     /**
-     * Tests if a port is closed.
+     * @return {@code true} if this is a binary port.
+     */
+    // Called from Scheme.  TODO check if we can call type().
+    public boolean isBinary()
+    {
+        return _type == Type.Binary;
+    }
+
+    /**
+     * Tests if the port is closed.
      *
      * @return {@code true} if the port is closed, {@code false} if the
      * port is open.
@@ -69,7 +82,7 @@ public abstract class Port
     public abstract boolean isClosed();
 
     /**
-     * Closes this port.  This is also done from the finalizer.
+     * Closes the port.  This is also done from the finalizer.
      */
     @Override
     public abstract void close();

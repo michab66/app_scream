@@ -23,7 +23,7 @@ import de.michab.scream.fcos.Operation;
  *
  * @author MICBINZ
  */
-public class R7rs_4_1_4_Pocedures_Test extends ScreamBaseTest
+public class R7rs_4_1_4_Procedures_Test extends ScreamBaseTest
 {
     /**
      * p13

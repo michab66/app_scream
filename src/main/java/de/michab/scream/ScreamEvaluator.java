@@ -7,6 +7,9 @@ package de.michab.scream;
 
 import java.io.Reader;
 import java.io.StringReader;
+import java.io.Writer;
+import java.util.Objects;
+import java.util.Stack;
 import java.util.logging.Logger;
 
 import javax.script.Bindings;
@@ -19,6 +22,9 @@ import de.michab.scream.binding.SchemeObject;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.PortIn;
+import de.michab.scream.fcos.PortOut;
 import de.michab.scream.fcos.Symbol;
 
 /**
@@ -38,14 +44,17 @@ public final class ScreamEvaluator implements ScriptEngine
      * The symbol being bound to an object reference of the interpreter itself.
      */
     public final static Symbol ANCHOR_SYMBOL =
-            Symbol.createObject( "%%interpreter%%" );
+            Symbol.createObject( "scream::evaluator" );
 
     /**
      * This interpreter's top level environment.
      */
     private final Environment _interaction;
 
+    private final Stack<ScriptContext> _context = new Stack<>();
+
     private final Scream _factory;
+
 
     /**
      * Create a SchemeEvaluator.
@@ -57,6 +66,8 @@ public final class ScreamEvaluator implements ScriptEngine
             Environment tle,
             String[] extensions)
     {
+        _context.push(  new SchemeContext() );
+
         _factory =
                 interpreter;
         _interaction =
@@ -67,6 +78,42 @@ public final class ScreamEvaluator implements ScriptEngine
         Scream.addExtensions(
                 _interaction,
                 extensions );
+    }
+
+    /**
+     * Get the standard input port for this interpreter instance.
+     *
+     * @return This interpreter's standard in.
+     */
+    public Port getInPort()
+    {
+        return new PortIn(
+                "stdin",
+                _context.peek().getReader() );
+    }
+
+    /**
+     * Get the standard output port for this interpreter instance.
+     *
+     * @return This interpreter's standard out.
+     */
+    public Port getOutPort()
+    {
+        return new PortOut(
+                "stdout",
+                _context.peek().getWriter() );
+    }
+
+    /**
+     * Get the standard error port for this interpreter instance.
+     *
+     * @return This interpreter's standard error port.
+     */
+    public Port getErrorPort()
+    {
+        return new PortOut(
+                "stderr",
+                _context.peek().getErrorWriter() );
     }
 
     public Environment getInteraction()
@@ -88,15 +135,30 @@ public final class ScreamEvaluator implements ScriptEngine
     }
 
     @Override
-    public Object eval(String script, ScriptContext context) throws ScriptException {
-        // TODO Auto-generated method stub
-        return null;
+    public Object eval(String script, ScriptContext context) throws ScriptException
+    {
+        try
+        {
+            _context.push( context );
+            return eval( script );
+        }
+        finally
+        {
+            _context.pop();
+        }
     }
 
     @Override
     public Object eval(Reader reader, ScriptContext context) throws ScriptException {
-        // TODO Auto-generated method stub
-        return null;
+        try
+        {
+            _context.push( context );
+            return eval( reader );
+        }
+        finally
+        {
+            _context.pop();
+        }
     }
 
     @Override
@@ -133,7 +195,7 @@ public final class ScreamEvaluator implements ScriptEngine
             return Scream.evalImpl(
                     _interaction,
                     new SchemeReader( reader)::getExpression,
-                    _context.getWriter() );
+                    _context.peek().getWriter() );
     }
 
     /**
@@ -189,18 +251,26 @@ public final class ScreamEvaluator implements ScriptEngine
         return null;
     }
 
-    private ScriptContext _context = new SchemeContext();
-
     @Override
     public ScriptContext getContext()
     {
-        return _context;
+        return _context.peek();
     }
 
     @Override
-    public void setContext(ScriptContext context)
+    public void setContext( ScriptContext context )
     {
-        _context = context;
+        Objects.requireNonNull( context );
+
+        if ( null == context.getErrorWriter() )
+            context.setErrorWriter( Writer.nullWriter() );
+        if ( null == context.getReader() )
+            context.setReader( Reader.nullReader() );
+        if ( null == context.getWriter() )
+            context.setErrorWriter( Writer.nullWriter() );
+
+        _context.clear();
+        _context.push( context );
     }
 
     @Override

@@ -79,6 +79,7 @@ public class ScreamUi extends SingleFrameApplication
         {
             try
             {
+                e.printStackTrace();
                 _console.getOut().write( e.getMessage().getBytes() );
                 _console.getOut().write( StringUtil.EOL.getBytes() );
             }

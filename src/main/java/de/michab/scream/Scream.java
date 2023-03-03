@@ -170,40 +170,6 @@ public class Scream implements ScriptEngineFactory
     }
 
     /**
-     * Get the standard input port for this interpreter instance.
-     *
-     * @return This interpreter's standard in.
-     */
-    public Port getInPort()
-    {
-        return null; //_inPort;
-    }
-
-    /**
-     * Get the standard output port for this interpreter instance.
-     *
-     * @return This interpreter's standard out.
-     */
-    public Port getOutPort()
-    {
-        return null; //_outPort;
-    }
-
-    /**
-     * Get the common error port for the system.  This is normally a reference to
-     * the System.err stream.  To redefine the error port the initialize() method
-     * has to be called before any other operation on the SchemeInterpreter
-     * class.
-     *
-     * @return This interpreter's standard error port.
-     * @see de.michab.scream.Scream#initialise
-     */
-    static public Port getErrorPort()
-    {
-        return null; //_errorPort;
-    }
-
-    /**
      * Loads all classes defined in the kernel.integrateClasses property and
      * invokes the following method signature on the class:
      * <p>
