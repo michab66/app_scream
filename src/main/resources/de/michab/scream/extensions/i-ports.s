@@ -5,27 +5,42 @@
 ;
 
 ;;
-;; Get a reference to the default input port a.k.a. as standard in.
+;; r7rs 6.13.1 p56 
 ;;
-(define (current-input-port) (%%interpreter%% (getInPort)))
+(define input-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortIn" #t))
+(define output-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
+(define (binary-port? port)
+  (if (port? port)
+    ((object port) (isBinary))
+    #f))
+(define (textual-port? port)
+  (not (binary-port? port)))
+(define port?
+  (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
 
 ;;
 ;; r7rs 6.13.1 p56 
-;; Get a reference to the default output port a.k.a. as standard out.
 ;;
-(define (current-output-port) (%%interpreter%% (getOutPort)))
+(define current-input-port
+  (let ((port (scream::evaluator (getInPort))))
+    (lambda () port)))
+(define current-output-port
+  (let ((port (scream::evaluator (getOutPort))))
+    (lambda () port)))
+(define current-error-port
+  (let ((port (scream::evaluator (getErrorPort))))
+    (lambda () port)))
 
 ;;
 ;; Takes a string naming an existing file and returns an input port capable of
 ;; delivering characters from the file. If the file cannot be opened, an error
-;; is signalled.
+;; is signaled.
 ;;
 (define (open-input-file filename)
   (let ((in ((make-object de.michab.scream.fcos.Port) Input)))
    (make-object (de.michab.scream.fcos.Port filename in))))
-
-
-
 ;;
 ;; Closes the file associated with port, rendering the port incapable of
 ;; delivering characters. This routine has no effect if the file has already
@@ -35,8 +50,6 @@
   (if (not (input-port? port))
     (error "EXPECTED_INPUT_PORT"))
   ((object port) (close)))
-
-
 
 ;;
 ;; Takes a string naming an output file to be created and returns an output
@@ -94,32 +107,6 @@
 
 
 
-;;
-;; Should be hidden in a closure.  No user access allowed.
-;; (%port? obj) procedure; r5rs 29
-;;
-(define port?
-  (typePredicateGenerator "de.michab.scream.fcos.Port" #t))
-
-
-
-;;
-;; Returns #t if obj is an input port, otherwise returns #f.
-;;
-(define (input-port? port)
-  (if (port? port)
-    ((object port) (isInputPort))
-    #f))
-
-
-
-;;
-;; Returns #t if obj is an output port, otherwise returns #f.
-;;
-(define (output-port? port)
-  (if (port? port)
-    ((object port) (isOutputPort))
-    #f))
 
 
 
