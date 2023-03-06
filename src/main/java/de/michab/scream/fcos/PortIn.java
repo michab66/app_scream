@@ -64,6 +64,11 @@ public class PortIn
         super( name );
         _inPort = in;
     }
+    public PortIn( String name, Reader in, boolean finalize )
+    {
+        super( name, finalize );
+        _inPort = in;
+    }
 
     /**
      * Create a named port.  The passed name is used for opening the file.

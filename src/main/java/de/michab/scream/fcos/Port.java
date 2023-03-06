@@ -34,14 +34,47 @@ public abstract class Port
     private final Type _type;
 
     /**
+     * If {@code true} then the port is finalized.
+     */
+    private final boolean _finalize;
+
+    /**
      * Create a textual port.
      *
      * @param name The port's name.
      */
     public Port( String name )
     {
-        this( name, Type.Textual );
+        this( name, Type.Textual, true );
     }
+
+    /**
+     * Create a textual port.
+     *
+     * @param name The port's name.
+     * @param finalize If true, then the port is finalized.  If false then
+     * finalization is skipped.  For system in/out/err this should be false.
+     */
+    public Port( String name, boolean finalize )
+    {
+        this( name, Type.Textual, finalize );
+    }
+
+    /**
+     * Create a typed port.
+     *
+     * @param name The port's name.
+     * @param type The port's type.
+     * @param finalize If true, then the port is finalized.  If false then
+     * finalization is skipped.  For system in/out/err this should be false.
+     */
+    public Port( String name, Type type, boolean finalize )
+    {
+        _name = name;
+        _type = type;
+        _finalize = finalize;
+    }
+
     /**
      * Create a typed port.
      *
@@ -50,8 +83,7 @@ public abstract class Port
      */
     public Port( String name, Type type )
     {
-        _name = name;
-        _type = type;
+        this( name, type, true );
     }
 
     String name()
@@ -98,6 +130,8 @@ public abstract class Port
             throws
             Throwable
     {
+        if ( !_finalize )
+            return;
         close();
         // Chain finalisers.
         super.finalize();
