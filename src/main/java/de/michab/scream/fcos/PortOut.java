@@ -43,6 +43,11 @@ public class PortOut
         super( name );
         _outPort = out;
     }
+    public PortOut( String name, Writer out, boolean finalize )
+    {
+        super( name, finalize );
+        _outPort = out;
+    }
 
     /**
      * Create a named port.  The passed name is used for opening the file.

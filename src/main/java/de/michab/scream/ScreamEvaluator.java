@@ -89,7 +89,8 @@ public final class ScreamEvaluator implements ScriptEngine
     {
         return new PortIn(
                 "stdin",
-                _context.peek().getReader() );
+                _context.peek().getReader(),
+                false );
     }
 
     /**
@@ -101,7 +102,8 @@ public final class ScreamEvaluator implements ScriptEngine
     {
         return new PortOut(
                 "stdout",
-                _context.peek().getWriter() );
+                _context.peek().getWriter(),
+                false );
     }
 
     /**
@@ -113,7 +115,8 @@ public final class ScreamEvaluator implements ScriptEngine
     {
         return new PortOut(
                 "stderr",
-                _context.peek().getErrorWriter() );
+                _context.peek().getErrorWriter(),
+                false );
     }
 
     public Environment getInteraction()
