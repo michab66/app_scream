@@ -19,7 +19,6 @@ import org.smack.util.JavaUtil;
 import de.michab.scream.ConversionFailedX;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -88,8 +87,6 @@ public class SchemeObject
      */
     private SchemeObject( java.lang.Object object, JavaClassAdapter adapter )
     {
-        // Create operations with the symbolic name according to the implementing
-        // class.
         super( adapter.adapterFor().getName() );
 
         if ( object == null )
@@ -199,7 +196,7 @@ public class SchemeObject
             else
                 what = "";
 
-            throw new RuntimeX( Code.CREATION_FAILED,
+            throw RuntimeX.mCreationFailed(
                     what + " " + className );
         }
         catch ( IllegalAccessException e )
@@ -325,7 +322,7 @@ public class SchemeObject
         {
             Object result = null;
 
-            // First we check the special case:  A NIL is converted to java 'null'.
+            // First we check the special case:  A NIL is converted to Java 'null'.
             if ( actual == Cons.NIL )
                 result = null;
 
@@ -554,7 +551,7 @@ public class SchemeObject
                         // object.  Since the VM in this case simply throws a NPE we have
                         // to check for this condition manually.
                         if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
-                            throw new RuntimeX( Code.CANT_ACCESS_INSTANCE );
+                            throw RuntimeX.mCannotAccessInstance();
                         // Store the method reference for the exception handler.
                         methodRef = method;
                         // Do the actual call.
@@ -577,14 +574,12 @@ public class SchemeObject
             // instance method on a java.lang.Class object.  In that case the illegal
             // argument is the first argument to invoke, that is on the one hand non
             // null, but on the other hand simply the wrong reference.
-            throw new RuntimeX( Code.ILLEGAL_ARGUMENT,
-                    methodName );
+            throw RuntimeX.mIllegalArgument( methodName );
         }
         catch ( IllegalAccessException e )
         {
-            throw new RuntimeX( Code.ILLEGAL_ACCESS, methodName );
+            throw RuntimeX.mIllegalAccess( methodName );
         }
-
     }
 
     /**
@@ -601,7 +596,7 @@ public class SchemeObject
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        LOG.warning( Continuation.thunkCount() + " " + list );
+        LOG.info( Continuation.thunkCount() + " " + list );
 
         var symbol = Scut.as(
                 Symbol.class, list.getCar() );
@@ -630,7 +625,7 @@ public class SchemeObject
     private Thunk processAttributeGet( Symbol attribute, Cont<FirstClassObject> c )
             throws RuntimeX
     {
-        LOG.warning( attribute.toString() );
+        LOG.info( attribute.toString() );
 
         try
         {
@@ -640,7 +635,7 @@ public class SchemeObject
         }
         catch ( IllegalAccessException e )
         {
-            throw new RuntimeX( Code.ILLEGAL_ACCESS, attribute );
+            throw RuntimeX.mIllegalAccess( attribute.toString() );
         }
     }
 
@@ -660,7 +655,7 @@ public class SchemeObject
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        LOG.warning( attribute + " = " + value );
+        LOG.info( attribute + " = " + value );
 
         try
         {
@@ -675,7 +670,7 @@ public class SchemeObject
         }
         catch ( IllegalAccessException e )
         {
-            throw new RuntimeX( Code.ILLEGAL_ACCESS, attribute );
+            throw RuntimeX.mIllegalAccess( attribute.toString() );
         }
     }
 
