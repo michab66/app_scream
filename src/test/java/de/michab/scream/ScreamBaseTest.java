@@ -126,7 +126,7 @@ public class ScreamBaseTest
         return result;
     }
 
-    protected void _contTest(
+    protected void expectFco(
             String expression,
             FirstClassObject expected )
                     throws RuntimeX
@@ -137,7 +137,7 @@ public class ScreamBaseTest
                 fco );
         assertInstanceOf(
                 expected.getClass(), fco );
-        assertEquals(
+        assertEqualq(
                 expected,
                 fco );
     }

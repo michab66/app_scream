@@ -43,7 +43,7 @@ public class CondTest extends ScreamBaseTest
     @Test
     public void _condTest2() throws Exception
     {
-        _contTest(
+        expectFco(
                 """
                 (cond ((> 2 3) 'greater)
                       ((+ 2 3)))
