@@ -37,7 +37,7 @@ public class IfTest extends ScreamBaseTest
     @Test
     public void _ifTest() throws Exception
     {
-        _contTest(
+        expectFco(
                 """
                 (if #t 313 0)
                 """,

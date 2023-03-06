@@ -123,7 +123,7 @@ public class UrschleimTest extends ScreamBaseTest
     @Test
     public void syntaxQuoteTest() throws Exception
     {
-        _contTest(
+        expectFco(
                 "'lumumba'",
                 s("lumumba") );
     }

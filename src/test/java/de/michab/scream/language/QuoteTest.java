@@ -39,25 +39,13 @@ public class QuoteTest extends ScreamBaseTest
     @Test
     public void quoteTest_1() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-
-        var result = se.evalFco(
-                """
-                (quote a)
-                """ );
-        assertEquals( s("a"), result );
+        expectFco( "(quote a)", s("a") );
     }
 
     @Test
     public void quoteTest_1_5() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-
-        var result = se.evalFco(
-                """
-                ' a
-                """ );
-        assertEquals( s("a"), result );
+        expectFco( "'a", s("a") );
     }
 
     @Test
@@ -99,17 +87,12 @@ public class QuoteTest extends ScreamBaseTest
     }
 
     @Test
-    public void _quoteTest() throws Exception
+    public void quoteListTest() throws Exception
     {
-        _contTest(
+        expectFco(
                 """
-                (quote micbinz)
+                '(1 2 . 3)
                 """,
-                s( "micbinz" ) );
-        _contTest(
-                """
-                'micbinz
-                """,
-                s( "micbinz" ) );
+                parse( "(1 2 . 3)" ) );
     }
 }
