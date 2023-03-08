@@ -32,6 +32,12 @@ public class SchemeIntegerTest extends ScreamBaseTest
     }
 
     @Test
+    public void constantness() throws Exception
+    {
+        assertTrue( FirstClassObject.isConstant( i1 ) );
+    }
+
+    @Test
     public void toJava() throws Exception
     {
         ScreamBaseTest.toJava_(

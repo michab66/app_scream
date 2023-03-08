@@ -24,7 +24,8 @@ import de.michab.scream.util.Continuation.Thunk;
 public abstract class FirstClassObject
 {
     /**
-     *
+     * Marks an fco as constant.  Constant objects cannot be modified.
+     * Non-modifieable objects are by default constant.
      */
     private boolean _isConstant;
 
@@ -299,6 +300,19 @@ public abstract class FirstClassObject
     }
 
     /**
+     * Mark a {@code FirstClassObject} as constant. Handles NIL values.
+     *
+     * @param fco The {@code FirstClassObject} to modify.
+     */
+    public static <T extends FirstClassObject>
+    T setConstant( T fco )
+    {
+        if ( Cons.NIL != fco )
+            fco.setConstant( true );
+        return fco;
+    }
+
+    /**
      * Can be used to mark a {@code FirstClassObject} as constant.  Note
      * that it is not possible to switch from constant to variable, only the
      * state change from variable to constant is allowed.
@@ -325,7 +339,7 @@ public abstract class FirstClassObject
      * @param fco The {@code FirstClassObject} to test.
      * @return Whether this should be seen as a constant.
      */
-    static boolean isConstant( FirstClassObject fco )
+    public static boolean isConstant( FirstClassObject fco )
     {
         return fco == Cons.NIL || fco.isConstant();
     }

@@ -7,6 +7,7 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -20,6 +21,14 @@ import de.michab.scream.fcos.FirstClassObject;
 
 public class QuoteTest extends ScreamBaseTest
 {
+    @Test
+    public void constantness() throws Exception
+    {
+        assertTrue( scriptEngine().evalFco( "(quote a)" ).isConstant() );
+        assertTrue( scriptEngine().evalFco( "'(quote a)" ).isConstant() );
+        assertTrue( scriptEngine().evalFco( "'#(vector a)" ).isConstant() );
+    }
+
     @Test
     public void quoteTest_0() throws Exception
     {

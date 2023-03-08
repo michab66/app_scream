@@ -25,6 +25,14 @@ public class SchemeDoubleTest
     private Double ZERO = 0.0d;
 
     @Test
+    public void constantness() throws Exception
+    {
+        assertTrue(
+                FirstClassObject.isConstant(
+                        SchemeDouble.createObject( ZERO ) ) );
+    }
+
+    @Test
     public void toJava() throws Exception
     {
         ScreamBaseTest.toJava_(

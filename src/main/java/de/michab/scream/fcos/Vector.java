@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -24,8 +24,6 @@ import de.michab.scream.ScreamException.Code;
 public class Vector
     extends FirstClassObject
 {
-    // TODO It is not clear how the constantness is handled for a vector.
-
     /**
      * The name of the type as used by error reporting.
      *
@@ -34,9 +32,9 @@ public class Vector
     public static final String TYPE_NAME = "vector";
 
     /**
-     * The java array that holds the vector elements.
+     * The array that holds the vector elements.
      */
-    private FirstClassObject[] _theArray;
+    private final FirstClassObject[] _theArray;
 
     /**
      * Create an array of the specified size.  The array slots are initialized
@@ -61,7 +59,7 @@ public class Vector
     public Vector( long size, FirstClassObject initialiser )
     {
         _theArray = new FirstClassObject[ (int)size ];
-        fill( initialiser );
+        Arrays.fill( _theArray, initialiser );
     }
 
     /**
@@ -104,6 +102,9 @@ public class Vector
     public void set( long idx, FirstClassObject so )
         throws RuntimeX
     {
+        if ( isConstant() )
+            throw RuntimeX.mCannotModifyConstant( this );
+
         try
         {
             _theArray[ (int)idx ] = so;
@@ -147,9 +148,13 @@ public class Vector
      * Fill all vector slots with the passed value.  The value is not copied.
      *
      * @param filler The value to be used for filling the vector.
+     * @throws RuntimeX
      */
-    public void fill( FirstClassObject filler )
+    public void fill( FirstClassObject filler ) throws RuntimeX
     {
+        if ( isConstant() )
+            throw RuntimeX.mCannotModifyConstant( this );
+
         Arrays.fill( _theArray, filler );
     }
 

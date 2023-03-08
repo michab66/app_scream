@@ -21,6 +21,23 @@ import de.michab.scream.frontend.SchemeParser;
 public class ConsTest extends ScreamBaseTest
 {
     @Test
+    public void constantNil() throws Exception
+    {
+        Cons c = Cons.NIL;
+
+        assertTrue( FirstClassObject.isConstant( c ) );
+    }
+
+    @Test
+    public void constantGeneral() throws Exception
+    {
+        var c = parse( "(3 1 3)" );
+        assertFalse( FirstClassObject.isConstant( c ) );
+        c = FirstClassObject.setConstant( c );
+        assertTrue( FirstClassObject.isConstant( c ) );
+    }
+
+    @Test
     public void basic() throws Exception
     {
         var one = i1;

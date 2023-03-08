@@ -14,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.SchemeDouble;
@@ -21,6 +22,42 @@ import de.michab.scream.fcos.SchemeString;
 
 public class SchemeStringTest
 {
+    @Test
+    public void constantness() throws Exception
+    {
+        SchemeString s = new SchemeString( "Motörhead" );
+        assertTrue( s.isConstant() );
+        assertFalse( s.copy().isConstant() );
+    }
+    @Test
+    public void constantness2() throws Exception
+    {
+        SchemeString s = new SchemeString( "Motörhead" );
+        try
+        {
+            s.fill( 'x' );
+            fail();
+        }
+        catch ( RuntimeX e )
+        {
+            assertEquals( Code.CANT_MODIFY_CONSTANT, e.getCode() );
+        }
+    }
+    @Test
+    public void constantness3() throws Exception
+    {
+        SchemeString s = new SchemeString( "Motörhead" );
+        try
+        {
+            s.setCharAt( 0, 'x' );
+            fail();
+        }
+        catch ( RuntimeX e )
+        {
+            assertEquals( Code.CANT_MODIFY_CONSTANT, e.getCode() );
+        }
+    }
+
     @Test
     public void toJava() throws Exception
     {
