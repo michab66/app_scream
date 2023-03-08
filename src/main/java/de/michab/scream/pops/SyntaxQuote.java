@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -35,7 +35,7 @@ public class SyntaxQuote extends Syntax
 
         return Primitives._x_quote(
                         e,
-                        quoted,
+                        FirstClassObject.setConstant( quoted ),
                         c );
     }
 

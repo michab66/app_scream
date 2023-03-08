@@ -32,6 +32,7 @@ public class FirstClassObjectTest extends ScreamBaseTest
         assertEquals( 313L, i.asLong() );
     }
 
+    @Test
     public void is() throws Exception
     {
         assertTrue( FirstClassObject.is( Cons.class, Cons.NIL ) );

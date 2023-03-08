@@ -6,6 +6,7 @@
 package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -13,6 +14,12 @@ import de.michab.scream.fcos.Symbol;
 
 public class SymbolTest extends ScreamBaseTest
 {
+    @Test
+    public void constantness() throws Exception
+    {
+        assertTrue( s1.isConstant() );
+    }
+
     @Test
     public void toJava() throws Exception
     {

@@ -137,4 +137,40 @@ public class VectorTest extends ScreamBaseTest
                 """ );
         assertEquals( SchemeBoolean.T, result );
     }
+
+    @Test
+    public void cannotModifyConst1() throws Exception
+    {
+        Vector v = (Vector)scriptEngine().evalFco(
+                """
+                '#(1 2 3)
+                """ );
+        try
+        {
+            v.fill( i1 );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.CANT_MODIFY_CONSTANT, rx.getCode() );
+        }
+    }
+
+    @Test
+    public void cannotModifyConst2() throws Exception
+    {
+        Vector v = (Vector)scriptEngine().evalFco(
+                """
+                '#(1 2 3)
+                """ );
+        try
+        {
+            v.set( 0, i1 );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.CANT_MODIFY_CONSTANT, rx.getCode() );
+        }
+    }
 }

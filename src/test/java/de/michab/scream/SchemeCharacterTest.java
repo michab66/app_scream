@@ -11,11 +11,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.SchemeCharacter;
 
 public class SchemeCharacterTest
 {
     private final Character bang = '!';
+
+
+    @Test
+    public void constantness() throws Exception
+    {
+        assertTrue(
+                FirstClassObject.isConstant(
+                        SchemeCharacter.createObject( bang ) ) );
+    }
 
     @Test
     public void toJava() throws Exception
