@@ -173,7 +173,7 @@ public class Scream implements ScriptEngineFactory
      * Loads all classes defined in the kernel.integrateClasses property and
      * invokes the following method signature on the class:
      * <p>
-     *  {@code public static Environment extendTopLevelEnvironment( Environment tle )}<br>
+     *  {@code public static Environment extendTopLevelEnvironment( Environment tle )}
      *
      * @param tle The top level environment to contain the new bindings.
      */
@@ -502,8 +502,10 @@ public class Scream implements ScriptEngineFactory
      * @param tle A reference to the system private top level environment.
      * @return A reference to the environment including the additional entries
      *        defined by this class.
+     * @throws RuntimeX
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
 //        tle.setPrimitive( evalProcedure );
         tle.setPrimitive( loadProcedure.setClosure( tle ) );
@@ -584,10 +586,16 @@ public class Scream implements ScriptEngineFactory
         var tle = new Environment(
                 _topLevelEnvironment );
 
+        try {
         return new ScreamEvaluator(
                 this,
                 tle,
                 schemeInstanceExtensions );
+        }
+        catch ( RuntimeX rx )
+        {
+            throw new InternalError( rx );
+        }
     }
 
     /**
@@ -601,5 +609,12 @@ public class Scream implements ScriptEngineFactory
      *
      * @see de.michab.scream.Scream#_localTle
      */
-    private final static Environment _topLevelEnvironment = createTle();
+    private final static Environment _topLevelEnvironment =
+            FirstClassObject.setConstant( createTle() );
+
+//    private Environment createNullEnvironment()
+//    {
+//        Environment result = new Environment().
+//
+//    }
 }

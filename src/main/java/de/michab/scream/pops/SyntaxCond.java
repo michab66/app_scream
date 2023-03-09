@@ -14,8 +14,8 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 public class SyntaxCond extends Syntax
 {
@@ -111,6 +111,7 @@ public class SyntaxCond extends Syntax
      * @return The extended environment.
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxCond() );
 

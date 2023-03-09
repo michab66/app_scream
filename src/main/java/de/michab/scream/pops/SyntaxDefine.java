@@ -14,8 +14,8 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 /**
  * (define <variable> <expression>) syntax; r5rs 16
@@ -93,6 +93,7 @@ public class SyntaxDefine extends Syntax
      * @return The extended environment.
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxDefine() );
 

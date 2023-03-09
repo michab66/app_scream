@@ -12,8 +12,8 @@ import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 /**
  * (set! <variable> <expression>) syntax; r7rs 14
@@ -50,6 +50,7 @@ public final class SyntaxAssign extends Syntax
      * @return The extended environment.
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxAssign() );
 

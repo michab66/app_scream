@@ -12,8 +12,8 @@ import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 /**
  * <code>
@@ -137,6 +137,7 @@ public class SyntaxDo extends Syntax
      * @return The extended environment.
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxDo() );
 

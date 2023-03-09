@@ -133,10 +133,15 @@ public final class Environment
      *
      * @param symbol The symbol to bind.
      * @param value The value to bind.
+     * @return The environment.
+     * @throws RuntimeX If the environment is constant.
      * @see #assign(Symbol, FirstClassObject)
      */
-    public Environment define( Symbol symbol, FirstClassObject value )
+    public Environment define( Symbol symbol, FirstClassObject value ) throws RuntimeX
     {
+        if ( isConstant() )
+            throw RuntimeX.mCannotModifyConstant( this );
+
         _symbolMap.put( symbol, value );
         return this;
     }
@@ -147,12 +152,20 @@ public final class Environment
      * able to remove temporary bound symbols.
      *
      * @param symbol The symbol to undefine.
+     * @throws RuntimeX
      */
     public synchronized void unset( Symbol symbol )
+            throws RuntimeX
     {
         if ( _symbolMap.containsKey( symbol ) )
+        {
+            if ( isConstant() )
+                throw RuntimeX.mCannotModifyConstant( symbol );
+
             _symbolMap.remove( symbol );
-        else if ( _parent != null )
+        }
+
+        if ( _parent != null )
             _parent.unset( symbol );
     }
 
@@ -206,11 +219,17 @@ public final class Environment
             throws RuntimeX
     {
         if ( _symbolMap.containsKey( symbol ) )
+        {
+            if ( isConstant() )
+                throw RuntimeX.mCannotModifyConstant( this );
+
             return define( symbol, value );
-        else if ( _parent != null )
+        }
+
+        if ( _parent != null )
             return _parent.assign( symbol, value  );
-        else
-            throw RuntimeX.mSymbolNotAssignable( symbol );
+
+        throw RuntimeX.mSymbolNotAssignable( symbol );
     }
 
     /**
@@ -225,10 +244,10 @@ public final class Environment
     {
         if ( _symbolMap.containsKey( symbol ) )
             return _symbolMap.get( symbol );
-        else if ( _parent != null )
+        if ( _parent != null )
             return _parent.get( symbol );
-        else
-            throw RuntimeX.mSymbolNotDefined( symbol );
+
+        throw RuntimeX.mSymbolNotDefined( symbol );
     }
 
     /**
@@ -238,11 +257,13 @@ public final class Environment
      * is defined for unnamed operations.
      *
      * @param op A reference to the primitive operation to set.
+     * @throws RuntimeX
      * @see Operation#DEFAULT_NAME
      * @exception IllegalArgumentException Is thrown when the operation's name is
      *            the default name.
      */
     public void setPrimitive( Operation op )
+            throws RuntimeX
     {
         Symbol name = op.getName();
 

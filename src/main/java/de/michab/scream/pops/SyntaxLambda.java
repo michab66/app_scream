@@ -42,6 +42,7 @@ public final class SyntaxLambda extends Syntax
      * @return The extended environment.
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxLambda() );
 

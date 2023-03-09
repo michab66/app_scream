@@ -881,8 +881,10 @@ public class SchemeObject
      * @param tle The environment to extend with additional operations.
      * @return The extended environment.  This is identical to the enivonment
      *         passed in.
+     * @throws RuntimeX
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( objectPredicateProcedure );
         tle.setPrimitive( wrapObjectProcedure );
