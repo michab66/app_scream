@@ -32,6 +32,20 @@ import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.SyntaxAnd;
+import de.michab.scream.pops.SyntaxAssign;
+import de.michab.scream.pops.SyntaxBegin;
+import de.michab.scream.pops.SyntaxCase;
+import de.michab.scream.pops.SyntaxCond;
+import de.michab.scream.pops.SyntaxDefine;
+import de.michab.scream.pops.SyntaxDo;
+import de.michab.scream.pops.SyntaxIf;
+import de.michab.scream.pops.SyntaxLambda;
+import de.michab.scream.pops.SyntaxLet;
+import de.michab.scream.pops.SyntaxOr;
+import de.michab.scream.pops.SyntaxQuote;
+import de.michab.scream.pops.SyntaxSyntax;
+import de.michab.scream.pops.SyntaxTime;
 import de.michab.scream.util.Continuation;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Continuation.ToStackOp;
@@ -179,8 +193,7 @@ public class Scream implements ScriptEngineFactory
      */
     private static Environment createTle()
     {
-        var result =
-                new Environment();
+        var result = createNullEnvironment().extend( "tle-common" );
 
         for ( var crtClassName : integrateClasses )
         {
@@ -612,9 +625,43 @@ public class Scream implements ScriptEngineFactory
     private final static Environment _topLevelEnvironment =
             FirstClassObject.setConstant( createTle() );
 
-//    private Environment createNullEnvironment()
-//    {
-//        Environment result = new Environment().
-//
-//    }
+    /**
+     * Creates the {@code null-environment}.
+     * <p>
+     * {@code r7rs 6.12 p55}
+     *
+     * @return the immutable {@code null-environment}.
+     */
+    private static Environment createNullEnvironment()
+    {
+        Environment result = new Environment( "null" );
+
+        try
+        {
+            SyntaxAnd.extendNullEnvironment( result );
+            SyntaxAssign.extendNullEnvironment( result );
+            SyntaxBegin.extendNullEnvironment( result );
+            SyntaxCase.extendNullEnvironment( result );
+            SyntaxCond.extendNullEnvironment( result );
+            SyntaxDefine.extendNullEnvironment( result );
+            SyntaxDo.extendNullEnvironment( result );
+            SyntaxIf.extendNullEnvironment( result );
+            SyntaxLambda.extendNullEnvironment( result );
+            SyntaxLet.extendNullEnvironment( result );
+            SyntaxOr.extendNullEnvironment( result );
+            SyntaxQuote.extendNullEnvironment( result );
+            SyntaxSyntax.extendNullEnvironment( result );
+            SyntaxTime.extendNullEnvironment( result );
+
+            result.define(
+                    Symbol.createObject( "scream:null-environment" ),
+                    result );
+
+            return FirstClassObject.setConstant( result );
+        }
+        catch ( Exception e )
+        {
+            throw new InternalError( e );
+        }
+    }
 }

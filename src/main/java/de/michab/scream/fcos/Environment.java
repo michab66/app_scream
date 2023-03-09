@@ -60,12 +60,14 @@ public final class Environment
     /**
      * Create an empty environment without a parent.  Useful as a starting
      * point for creating a top level environment, i.e. an environment that holds
-     * the system-defined bindings.<br>
-     * The created environment has the name 'top-level'.
+     * the system-defined bindings.
+     *
+     * @param name A name for the environment.
+     * @return An environment.
      */
-    public Environment()
+    public Environment( String name )
     {
-        this( Symbol.createObject( "top-level" ), null );
+        this( Symbol.createObject( name ), null );
     }
 
     /**
@@ -73,6 +75,7 @@ public final class Environment
      *
      * @param p The Environment to copy.
      */
+    @Deprecated
     public Environment( Environment p )
     {
         _name =
@@ -107,12 +110,16 @@ public final class Environment
     /**
      * Create a nested Environment with a symbolic name.
      *
-     * @param name The name for the new Environment.
+     * @param name The name of the new Environment.
      * @return A nested environment.
      */
     public Environment extend( Symbol name )
     {
         return new Environment( name, this );
+    }
+    public Environment extend( String name )
+    {
+        return extend( Symbol.createObject( name ) );
     }
 
     /**

@@ -34,7 +34,7 @@ public class UrschleimTest extends ScreamBaseTest
     public void typeSymbolTest() throws Exception
     {
         var symbol = s( "car" );
-        var env = new Environment();
+        var env = new Environment(getClass().getSimpleName());
         env.define( symbol, i313 );
 
         FirstClassObject r = Scream.toStack(
@@ -51,7 +51,7 @@ public class UrschleimTest extends ScreamBaseTest
         try
         {
             Scream.toStack(
-                    c -> symbol.evaluate( new Environment(), c ) );
+                    c -> symbol.evaluate( new Environment(getClass().getSimpleName()), c ) );
             fail();
         }
         catch ( RuntimeX rx )

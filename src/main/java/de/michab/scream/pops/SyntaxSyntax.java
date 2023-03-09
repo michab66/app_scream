@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -17,8 +17,7 @@ import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
 /**
- * {@code (%syntax <signature>) exp1 ... )}
- * <br>
+ * {@code (%syntax <signature>) exp1 ... )}<br>
  * {@code (%syntax (xquote value) value)} <br>
  * {@code (%syntax (xquote . rest) rest)}
  * <p>
@@ -68,12 +67,11 @@ public class SyntaxSyntax extends Syntax
     /**
      * Base operations setup.
      *
-     * @param tle A reference to the top level environment to be extended.
+     * @param tle A reference to the environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
             throws RuntimeX
-
     {
         tle.setPrimitive( new SyntaxSyntax() );
 

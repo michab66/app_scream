@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 2022 Michael G. Binz
+ * Copyright © 2022-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -19,7 +19,9 @@ import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
 /**
- * (case <key> <clause1> <clause2> ...) syntax; r7rs 15
+ * {@code (case <key> <clause₁> <clause₂> ...)} syntax
+ * <p>
+ * {@code r7rs 4.2.1 p15}
  */
 public class SyntaxCase extends Syntax
 {
@@ -167,10 +169,10 @@ public class SyntaxCase extends Syntax
     /**
      * Base operations setup.
      *
-     * @param tle A reference to the top level environment to be extended.
+     * @param tle A reference to the environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
             throws RuntimeX
     {
         tle.setPrimitive( new SyntaxCase() );

@@ -15,20 +15,10 @@ import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
 /**
- * r7rs 4.1.5
- *
- * <code>
- * (if <test> <consequent> <alternate>)<br>
- * (if <test> <consequent>)<br>
- * </code><br>
- * Syntax: <Test>, <consequent>, and <alternate> may be arbitrary
- * expressions.<br>
- * Semantics: An if expression is evaluated as follows:  First, <test> is
- * evaluated. If it yields a true value, then
- * <consequent> is evaluated and its value(s) is(are) returned. Otherwise
- * <alternate> is evaluated and its value(s) is(are) returned. If <test>
- * yields a false value and no <alternate> is specified, then the result of
- * the expression is unspecified.
+ * {@code (if <test> <consequent> <alternate>)} syntax<br>
+ * {@code (if <test> <consequent>)} syntax
+ * <p>
+ * {@code r7rs 4.1.5 p13}
  */
 public class SyntaxIf extends Syntax
 {
@@ -121,10 +111,10 @@ public class SyntaxIf extends Syntax
     /**
      * Base operations setup.
      *
-     * @param tle A reference to the top level environment to be extended.
+     * @param tle A reference to the environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
             throws RuntimeX
     {
         tle.setPrimitive( new SyntaxIf() );

@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -17,7 +17,11 @@ import de.michab.scream.util.Scut;
 import de.michab.scream.util.Scut.ConsumerX;
 
 /**
- *
+ * {code (let <bindings> <body>)} syntax<br>
+ * {code (let* <bindings> <body>)} syntax<br>
+ * {code (letrec <bindings> <body>)} syntax<br>
+ * <p>
+ * {code r7rs 4.2.2 16}
  */
 public abstract class SyntaxLet
     extends Syntax
@@ -169,10 +173,10 @@ public abstract class SyntaxLet
     /**
      * Base operations setup.
      *
-     * @param tle A reference to the top level environment to be extended.
+     * @param tle A reference to the environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
             throws RuntimeX
     {
         tle.setPrimitive( letAsteriskSyntax );
