@@ -3,15 +3,14 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.fcos;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.fcos.Cons;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.ScreamBaseTest;
 
 public class SchemeBooleanTest extends ScreamBaseTest
 {

@@ -3,7 +3,7 @@
  *
  * Copyright © 1998-2023 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.fcos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -13,9 +13,12 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX;
+import de.michab.scream.Scream;
+import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.ScreamEvaluator;
+import de.michab.scream.ScreamException;
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.fcos.Cons;
-import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.frontend.SchemeParser;
 
 public class ConsTest extends ScreamBaseTest
