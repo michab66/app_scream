@@ -72,8 +72,10 @@ public class Continuation extends Procedure
      *
      * @param tle The toplevel-environment to extend.
      * @return The extended environment.
+     * @throws RuntimeX
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
         var ccc = callccProc.setClosure( tle );
         tle.setPrimitive( ccc );

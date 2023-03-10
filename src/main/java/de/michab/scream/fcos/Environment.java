@@ -60,27 +60,14 @@ public final class Environment
     /**
      * Create an empty environment without a parent.  Useful as a starting
      * point for creating a top level environment, i.e. an environment that holds
-     * the system-defined bindings.<br>
-     * The created environment has the name 'top-level'.
-     */
-    public Environment()
-    {
-        this( Symbol.createObject( "top-level" ), null );
-    }
-
-    /**
-     * Copy constructor.  Used to clone the top level environment.
+     * the system-defined bindings.
      *
-     * @param p The Environment to copy.
+     * @param name A name for the environment.
+     * @return An environment.
      */
-    public Environment( Environment p )
+    public Environment( String name )
     {
-        _name =
-                p._name;
-        _parent =
-                p._parent;
-        _symbolMap.putAll(
-                p._symbolMap );
+        this( Symbol.createObject( name ), null );
     }
 
     /**
@@ -107,12 +94,16 @@ public final class Environment
     /**
      * Create a nested Environment with a symbolic name.
      *
-     * @param name The name for the new Environment.
+     * @param name The name of the new Environment.
      * @return A nested environment.
      */
     public Environment extend( Symbol name )
     {
         return new Environment( name, this );
+    }
+    public Environment extend( String name )
+    {
+        return extend( Symbol.createObject( name ) );
     }
 
     /**
@@ -133,10 +124,15 @@ public final class Environment
      *
      * @param symbol The symbol to bind.
      * @param value The value to bind.
+     * @return The environment.
+     * @throws RuntimeX If the environment is constant.
      * @see #assign(Symbol, FirstClassObject)
      */
-    public Environment define( Symbol symbol, FirstClassObject value )
+    public Environment define( Symbol symbol, FirstClassObject value ) throws RuntimeX
     {
+        if ( isConstant() )
+            throw RuntimeX.mCannotModifyConstant( this );
+
         _symbolMap.put( symbol, value );
         return this;
     }
@@ -147,12 +143,20 @@ public final class Environment
      * able to remove temporary bound symbols.
      *
      * @param symbol The symbol to undefine.
+     * @throws RuntimeX
      */
     public synchronized void unset( Symbol symbol )
+            throws RuntimeX
     {
         if ( _symbolMap.containsKey( symbol ) )
+        {
+            if ( isConstant() )
+                throw RuntimeX.mCannotModifyConstant( symbol );
+
             _symbolMap.remove( symbol );
-        else if ( _parent != null )
+        }
+
+        if ( _parent != null )
             _parent.unset( symbol );
     }
 
@@ -206,11 +210,17 @@ public final class Environment
             throws RuntimeX
     {
         if ( _symbolMap.containsKey( symbol ) )
+        {
+            if ( isConstant() )
+                throw RuntimeX.mCannotModifyConstant( this );
+
             return define( symbol, value );
-        else if ( _parent != null )
+        }
+
+        if ( _parent != null )
             return _parent.assign( symbol, value  );
-        else
-            throw RuntimeX.mSymbolNotAssignable( symbol );
+
+        throw RuntimeX.mSymbolNotAssignable( symbol );
     }
 
     /**
@@ -225,10 +235,10 @@ public final class Environment
     {
         if ( _symbolMap.containsKey( symbol ) )
             return _symbolMap.get( symbol );
-        else if ( _parent != null )
+        if ( _parent != null )
             return _parent.get( symbol );
-        else
-            throw RuntimeX.mSymbolNotDefined( symbol );
+
+        throw RuntimeX.mSymbolNotDefined( symbol );
     }
 
     /**
@@ -238,11 +248,13 @@ public final class Environment
      * is defined for unnamed operations.
      *
      * @param op A reference to the primitive operation to set.
+     * @throws RuntimeX
      * @see Operation#DEFAULT_NAME
      * @exception IllegalArgumentException Is thrown when the operation's name is
      *            the default name.
      */
     public void setPrimitive( Operation op )
+            throws RuntimeX
     {
         Symbol name = op.getName();
 

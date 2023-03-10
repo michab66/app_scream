@@ -1,26 +1,27 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 /**
- * (define <variable> <expression>) syntax; r5rs 16
- * (define (<variable> <formals>) <body>) syntax; r5rs 16
- * (define (<variable> . <formal>) <body>) syntax; r5rs 16
+ * {code (define <variable> <expression>)} syntax<br>
+ * {code (define (<variable> <formals>) <body>)} syntax<br>
+ * {code (define (<variable> . <formal>) <body>)} syntax<br>
+ * <p>
+ * {@code r7rs 5.3 p25 }
  */
 public class SyntaxDefine extends Syntax
 {
@@ -41,7 +42,7 @@ public class SyntaxDefine extends Syntax
                 Cons.class,
                 args.getCdr(),
                 s-> {
-                    throw new RuntimeX( Code.SYNTAX_ERROR );
+                    throw RuntimeX.mSyntaxError();
                 } );
 
         if ( variableSlot instanceof Symbol ) {
@@ -63,13 +64,13 @@ public class SyntaxDefine extends Syntax
                 Cons.class,
                 variableSlot,
                 s-> {
-                    throw new RuntimeX( Code.SYNTAX_ERROR );
+                    throw RuntimeX.mSyntaxError();
                 } );
         Symbol name = Scut.as(
                 Symbol.class,
                 signature.listRef( 0 ),
                 s -> {
-                    throw new RuntimeX( Code.DEFINE_ERROR );
+                    throw RuntimeX.mDefineError();
                 } );
         FirstClassObject parameterList =
                 signature.getCdr();
@@ -89,10 +90,11 @@ public class SyntaxDefine extends Syntax
     /**
      * Base operations setup.
      *
-     * @param tle A reference to the top level environment to be extended.
+     * @param tle A reference to the environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxDefine() );
 

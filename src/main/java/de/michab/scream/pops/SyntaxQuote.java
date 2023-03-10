@@ -14,9 +14,9 @@ import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
- * Switch off evaluation for the single passed argument.
- *
- * (quote <datum>) syntax; r5rs 8
+ * {@code (quote <datum>)} syntax
+ * <p>
+ * {@code r7rs 4.1.2 p12}
  */
 public class SyntaxQuote extends Syntax
 {
@@ -42,10 +42,11 @@ public class SyntaxQuote extends Syntax
     /**
      * Base operations setup.
      *
-     * @param tle A reference to the top level environment to be extended.
+     * @param tle A reference to the environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxQuote() );
 

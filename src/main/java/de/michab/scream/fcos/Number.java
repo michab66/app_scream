@@ -8,8 +8,8 @@ package de.michab.scream.fcos;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.pops.Primitives;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 /**
  * The base class for Scream's numeric types.
@@ -479,6 +479,7 @@ extends FirstClassObject
      * @return The extended environment.
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( addProc );
         tle.setPrimitive( subtractProc );

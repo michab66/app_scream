@@ -158,8 +158,10 @@ extends ScreamException
      * Scream classes.
      *
      * @param tle The top-level environment to be extended.
+     * @throws RuntimeX
      */
     static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
         // Add our local definitions.
         tle.setPrimitive( errorProcedure );

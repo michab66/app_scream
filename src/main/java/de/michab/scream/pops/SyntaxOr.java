@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -14,13 +14,9 @@ import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
- * (or <test1> ... ) syntax; r7rs p15
- *
- * The test expressions are evaluated from left to right, and the value of
- * the first expression that evaluates to a true value (see section 6.3.1) is
- * returned. Any remaining expressions are not evaluated. If all expressions
- * evaluate to false values, the value of the last expression is returned. If
- * there are no expressions then #f is returned.
+ * {@code (or <test₁> ... )} syntax
+ * <p>
+ * {@code r7rs 4.2.1 p15}
  */
 public class SyntaxOr extends Syntax
 {
@@ -44,10 +40,11 @@ public class SyntaxOr extends Syntax
     /**
      * Base operations setup.
      *
-     * @param tle A reference to the top level environment to be extended.
+     * @param tle A reference to the environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxOr() );
 

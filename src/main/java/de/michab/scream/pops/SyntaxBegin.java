@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -14,7 +14,9 @@ import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
- * (begin exp1 exp2 ...) library syntax; r7rs 17
+ * {@code (begin exp₁ exp₂ ...)} library syntax
+ * <p>
+ * {@code r7rs 4.2.3 p17}
  */
 public class SyntaxBegin extends Syntax
 {
@@ -37,7 +39,8 @@ public class SyntaxBegin extends Syntax
      * @param tle A reference to the top level environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxBegin() );
 

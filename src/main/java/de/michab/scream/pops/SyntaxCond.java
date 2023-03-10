@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -14,9 +14,14 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
+/**
+ * {@code (cond <clause₁> <clause₂> ...)} syntax
+ * <p>
+ * {@code r7rs 4.2.1}
+ */
 public class SyntaxCond extends Syntax
 {
     static Symbol ELSE = Symbol.createObject( "else" );
@@ -107,10 +112,11 @@ public class SyntaxCond extends Syntax
     /**
      * Base operations setup.
      *
-     * @param tle A reference to the top level environment to be extended.
+     * @param tle A reference to the environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxCond() );
 

@@ -27,11 +27,25 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
-import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
+import de.michab.scream.fcos.Syntax;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.SyntaxAnd;
+import de.michab.scream.pops.SyntaxAssign;
+import de.michab.scream.pops.SyntaxBegin;
+import de.michab.scream.pops.SyntaxCase;
+import de.michab.scream.pops.SyntaxCond;
+import de.michab.scream.pops.SyntaxDefine;
+import de.michab.scream.pops.SyntaxDo;
+import de.michab.scream.pops.SyntaxIf;
+import de.michab.scream.pops.SyntaxLambda;
+import de.michab.scream.pops.SyntaxLet;
+import de.michab.scream.pops.SyntaxOr;
+import de.michab.scream.pops.SyntaxQuote;
+import de.michab.scream.pops.SyntaxSyntax;
+import de.michab.scream.pops.SyntaxTime;
 import de.michab.scream.util.Continuation;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Continuation.ToStackOp;
@@ -173,14 +187,13 @@ public class Scream implements ScriptEngineFactory
      * Loads all classes defined in the kernel.integrateClasses property and
      * invokes the following method signature on the class:
      * <p>
-     *  {@code public static Environment extendTopLevelEnvironment( Environment tle )}<br>
+     *  {@code public static Environment extendTopLevelEnvironment( Environment tle )}
      *
      * @param tle The top level environment to contain the new bindings.
      */
     private static Environment createTle()
     {
-        var result =
-                new Environment();
+        var result = createNullEnvironment().extend( "tle-common" );
 
         for ( var crtClassName : integrateClasses )
         {
@@ -395,16 +408,15 @@ public class Scream implements ScriptEngineFactory
     }
 
     /**
-     * Loads the scheme source file in the port into the passed environment.  The
-     * port is closed before the file's contents is evaluated.
+     * Load a Scheme source file.
      *
-     * @param filename The name of the file to load.
+     * @param file The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    private static FirstClassObject load( LoadContext current, Environment e )
+    private static FirstClassObject load( LoadContext file, Environment e )
             throws RuntimeX
     {
-        try ( var reader  = LoadContext.getReader( current ) )
+        try ( var reader  = LoadContext.getReader( file ) )
         {
             SchemeParser parser =
                     new SchemeParser( reader );
@@ -432,11 +444,12 @@ public class Scream implements ScriptEngineFactory
     }
 
     /**
+     * TODO rework to 4.1.7 include; see #119
      * (load <expression>)
      *
      * Currently the environment arguments are not supported.
      */
-    static private Procedure loadProcedure = new Procedure( "load" )
+    static private Syntax loadProcedure = new Syntax( "load" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -502,11 +515,13 @@ public class Scream implements ScriptEngineFactory
      * @param tle A reference to the system private top level environment.
      * @return A reference to the environment including the additional entries
      *        defined by this class.
+     * @throws RuntimeX
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
+            throws RuntimeX
     {
 //        tle.setPrimitive( evalProcedure );
-        tle.setPrimitive( loadProcedure.setClosure( tle ) );
+        tle.setPrimitive( loadProcedure );
 //        tle.setPrimitive( tleProcedure );
 
         return tle;
@@ -580,14 +595,18 @@ public class Scream implements ScriptEngineFactory
     @Override
     public ScriptEngine getScriptEngine()
     {
-        // Create the interaction environment.
-        var tle = new Environment(
-                _topLevelEnvironment );
+        JavaUtil.Assert( _topLevelEnvironment.isConstant() );
 
-        return new ScreamEvaluator(
-                this,
-                tle,
-                schemeInstanceExtensions );
+        try {
+            return new ScreamEvaluator(
+                    this,
+                    _topLevelEnvironment,
+                    schemeInstanceExtensions );
+        }
+        catch ( RuntimeX rx )
+        {
+            throw new InternalError( rx );
+        }
     }
 
     /**
@@ -601,5 +620,46 @@ public class Scream implements ScriptEngineFactory
      *
      * @see de.michab.scream.Scream#_localTle
      */
-    private final static Environment _topLevelEnvironment = createTle();
+    private final static Environment _topLevelEnvironment =
+            FirstClassObject.setConstant( createTle() );
+
+    /**
+     * Creates the {@code null-environment}.
+     * <p>
+     * {@code r7rs 6.12 p55}
+     *
+     * @return the immutable {@code null-environment}.
+     */
+    private static Environment createNullEnvironment()
+    {
+        Environment result = new Environment( "null" );
+
+        try
+        {
+            SyntaxAnd.extendNullEnvironment( result );
+            SyntaxAssign.extendNullEnvironment( result );
+            SyntaxBegin.extendNullEnvironment( result );
+            SyntaxCase.extendNullEnvironment( result );
+            SyntaxCond.extendNullEnvironment( result );
+            SyntaxDefine.extendNullEnvironment( result );
+            SyntaxDo.extendNullEnvironment( result );
+            SyntaxIf.extendNullEnvironment( result );
+            SyntaxLambda.extendNullEnvironment( result );
+            SyntaxLet.extendNullEnvironment( result );
+            SyntaxOr.extendNullEnvironment( result );
+            SyntaxQuote.extendNullEnvironment( result );
+            SyntaxSyntax.extendNullEnvironment( result );
+            SyntaxTime.extendNullEnvironment( result );
+
+            result.define(
+                    Symbol.createObject( "scream:null-environment" ),
+                    result );
+
+            return FirstClassObject.setConstant( result );
+        }
+        catch ( Exception e )
+        {
+            throw new InternalError( e );
+        }
+    }
 }

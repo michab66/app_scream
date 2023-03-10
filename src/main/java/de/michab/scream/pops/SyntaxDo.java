@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/michab/dev_smack
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -12,44 +12,17 @@ import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 /**
- * <code>
- * (do ((<variable1> <init1> <step1>)
+ * {@code
+ * (do ((<variable₁> <init₁> <step₁>)
  *      ... )
  *     (<test> <expression> ... )
- *     command ... )
- * </code><br>
- * Do is an iteration construct. It specifies a set of variables to be bound,
- * how they are to be initialized at the start, and how they are to be
- * updated on each iteration. When a termination condition is met, the loop
- * exits after evaluating the <code>expression</code>s.<br>
- * Do expressions are evaluated as follows: The <code>init</code> expressions
- * are evaluated (in some unspecifed order), the <code>variable</code>s are
- * bound to fresh locations, the results of the <code>init</code> expressions
- * are stored in the bindings of the <code>variable</code>s, and then the
- * iteration phase begins.<br>
- * Each iteration begins by evaluating <code>test</code>; if the result is
- * false (see section 6.3.1), then the <code>command</code> expressions are
- * evaluated in order for effect, the <code>step</code> expressions are
- * evaluated in some unspecified order, the <code>variable</code>s are bound
- * to fresh locations, the results of the <code>step</code>s are stored in
- * the bindings of the <code>variable</code>s, and the next iteration
- * begins.<br>
- * If <code>test</code> evaluates to a true value, then the
- * <code>expression</code>s are evaluated from left to right and the value(s)
- * of the last <code>expression<code> is(are) returned. If no
- * <code>expression<code>s are present, then the value of the do expression
- * is unspecified.<br>
- * The region of the binding of a <code>variable</code> consists of the
- * entire do expression except for the <code>init<code>s. It is an error for
- * a <code>variable<code> to appear more than once in the list of do
- * variables.<br>
- * A <code>step<code> may be omitted, in which case the effect is the same as
- * if <code>(<variable> <init> <variable>)</code> had been written instead of
- * <code>(<variable> <init>)</code>.
+ *     command ... )} syntax
+ * <p>
+ * {@code r7rs 4.2.4 p18}
  */
 public class SyntaxDo extends Syntax
 {
@@ -133,10 +106,11 @@ public class SyntaxDo extends Syntax
     /**
      * Base operations setup.
      *
-     * @param tle A reference to the top level environment to be extended.
+     * @param tle A reference to the environment to be extended.
      * @return The extended environment.
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendNullEnvironment( Environment tle )
+            throws RuntimeX
     {
         tle.setPrimitive( new SyntaxDo() );
 
