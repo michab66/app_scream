@@ -43,13 +43,22 @@ public final class ScreamEvaluator implements ScriptEngine
     /**
      * The symbol being bound to an object reference of the interpreter itself.
      */
-    public final static Symbol ANCHOR_SYMBOL =
+    private final static Symbol ANCHOR_SYMBOL =
             Symbol.createObject( "scream::evaluator" );
 
     /**
-     * This interpreter's top level environment.
+     * The interaction environment.
+     * <p>
+     * {@code r7rs 6.12 p55}
      */
     private final Environment _interaction;
+
+    /**
+     * The scheme-report environment.
+     * <p>
+     * {@code r7rs 6.12 p55}
+     */
+    private final Environment _schemeReport;
 
     private final Stack<ScriptContext> _context = new Stack<>();
 
@@ -71,14 +80,25 @@ public final class ScreamEvaluator implements ScriptEngine
 
         _factory =
                 interpreter;
-        _interaction =
-                tle;
-        _interaction.define(
+        _schemeReport =
+                tle.extend( "tle-interpreter" );
+        _schemeReport.define(
+                Symbol.createObject( "scream:tle-interpreter" ),
+                _schemeReport );
+        _schemeReport.define(
                 ANCHOR_SYMBOL,
                 new SchemeObject( this ) );
         Scream.addExtensions(
-                _interaction,
+                _schemeReport,
                 extensions );
+        FirstClassObject.setConstant(
+                _schemeReport );
+        _interaction = _schemeReport.extend(
+                "interaction" );
+
+        _interaction.define(
+                Symbol.createObject( "scream:interaction" ),
+                _interaction );
     }
 
     /**
@@ -120,7 +140,22 @@ public final class ScreamEvaluator implements ScriptEngine
                 false );
     }
 
+    /**
+     * {@code r7rs 6.12 p55}
+     *
+     * @return the scheme-interaction-environment.
+     */
     public Environment getInteraction()
+    {
+        return _interaction;
+    }
+
+    /**
+     * {@code r7rs 6.12 p55}
+     *
+     * @return the scheme-report-environment.
+     */
+    public Environment getSchemeReport()
     {
         return _interaction;
     }

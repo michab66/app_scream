@@ -27,9 +27,9 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
-import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
+import de.michab.scream.fcos.Syntax;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.pops.SyntaxAnd;
@@ -408,16 +408,15 @@ public class Scream implements ScriptEngineFactory
     }
 
     /**
-     * Loads the scheme source file in the port into the passed environment.  The
-     * port is closed before the file's contents is evaluated.
+     * Load a Scheme source file.
      *
-     * @param filename The name of the file to load.
+     * @param file The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    private static FirstClassObject load( LoadContext current, Environment e )
+    private static FirstClassObject load( LoadContext file, Environment e )
             throws RuntimeX
     {
-        try ( var reader  = LoadContext.getReader( current ) )
+        try ( var reader  = LoadContext.getReader( file ) )
         {
             SchemeParser parser =
                     new SchemeParser( reader );
@@ -445,11 +444,12 @@ public class Scream implements ScriptEngineFactory
     }
 
     /**
+     * TODO rework to 4.1.7 include; see #119
      * (load <expression>)
      *
      * Currently the environment arguments are not supported.
      */
-    static private Procedure loadProcedure = new Procedure( "load" )
+    static private Syntax loadProcedure = new Syntax( "load" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -521,7 +521,7 @@ public class Scream implements ScriptEngineFactory
             throws RuntimeX
     {
 //        tle.setPrimitive( evalProcedure );
-        tle.setPrimitive( loadProcedure.setClosure( tle ) );
+        tle.setPrimitive( loadProcedure );
 //        tle.setPrimitive( tleProcedure );
 
         return tle;
@@ -595,15 +595,13 @@ public class Scream implements ScriptEngineFactory
     @Override
     public ScriptEngine getScriptEngine()
     {
-        // Create the interaction environment.
-        var tle = new Environment(
-                _topLevelEnvironment );
+        JavaUtil.Assert( _topLevelEnvironment.isConstant() );
 
         try {
-        return new ScreamEvaluator(
-                this,
-                tle,
-                schemeInstanceExtensions );
+            return new ScreamEvaluator(
+                    this,
+                    _topLevelEnvironment,
+                    schemeInstanceExtensions );
         }
         catch ( RuntimeX rx )
         {

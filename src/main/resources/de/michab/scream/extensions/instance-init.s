@@ -18,7 +18,7 @@
 ;; environment.
 ;; TODO fix to support the parameters described in the spec.
 ;;
-(define (load string)
-  (scream::evaluator (load string)))
+;(define (load string)
+;  (scream::evaluator (load string)))
 
 (load "i-ports.s")

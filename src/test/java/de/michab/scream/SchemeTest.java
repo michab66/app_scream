@@ -132,22 +132,8 @@ public class SchemeTest extends ScreamBaseTest
     }
 
     @Test
-    public void partitionTest2() throws Exception
+    public void lockedOperation() throws Exception
     {
-        Scream si = new Scream();
-        ScreamEvaluator se1 = (ScreamEvaluator)si.getScriptEngine();
-        ScreamEvaluator se2 = (ScreamEvaluator)si.getScriptEngine();
-
-        var result = se1.evalFco( "(+ 1 1)" );
-        assertEquals( i2, result );
-        result = se1.evalFco(
-                """
-                (set! + (lambda (a b) 313))
-                """ );
-        result = se1.evalFco( "(+ 1 1)" );
-        assertEquals( i313, result );
-
-        result = se2.evalFco( "(+ 1 1)" );
-        assertEquals( i2, result );
+        expectError( "(set! + 0)", Code.CANT_MODIFY_CONSTANT );
     }
 }

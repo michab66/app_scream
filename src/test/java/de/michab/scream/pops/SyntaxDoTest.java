@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Operation;
 
 public class SyntaxDoTest extends ScreamBaseTest
@@ -25,5 +26,11 @@ public class SyntaxDoTest extends ScreamBaseTest
                 do
                 """ );
         assertInstanceOf( Operation.class, result );
+    }
+
+    @Test
+    public void isLocked() throws Exception
+    {
+        expectError( "(set! do 'it)", Code.CANT_MODIFY_CONSTANT );
     }
 }

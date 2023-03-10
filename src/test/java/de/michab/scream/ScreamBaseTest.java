@@ -159,7 +159,14 @@ public class ScreamBaseTest
                 eq.apply( fco ) );
     }
 
-    protected void _contTest(
+    /**
+     * Evaluate the passed expression and expect an error.
+     *
+     * @param expression The expression to evaluate.
+     * @param expected The expected error.
+     * @throws RuntimeX
+     */
+    protected void expectError(
             String expression,
             Code expected )
                     throws RuntimeX
