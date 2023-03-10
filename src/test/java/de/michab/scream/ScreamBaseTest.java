@@ -38,7 +38,7 @@ public class ScreamBaseTest
     public final static Symbol s4 = s( "four" );
     public final static Symbol s313 = s( "threethirteen" );
 
-    static <S extends FirstClassObject,J>
+    public static <S extends FirstClassObject,J>
     void toJava_( Class<S> sc, Class<J> jc, J testObject, Function<J, S> factory) throws RuntimeX
     {
         S so = factory.apply( testObject );

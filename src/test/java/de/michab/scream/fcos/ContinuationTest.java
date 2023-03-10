@@ -3,7 +3,7 @@
  *
  * Copyright © 1998-2023 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.fcos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smack.util.Holder;
 
+import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.util.Continuation;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
