@@ -64,7 +64,7 @@ public class SchemeTest extends ScreamBaseTest
     }
 
     @Test
-    public void loadTest() throws Exception
+    public void includeTest() throws Exception
     {
         var tp = Files.createTempFile( getClass().getSimpleName(), ".tmp" );
         File tf = tp.toFile();
@@ -80,7 +80,7 @@ public class SchemeTest extends ScreamBaseTest
 
         ScreamEvaluator se = scriptEngine();
 
-        se.evalFco( String.format( "(load \"%s\")", tf.toString() ) );
+        se.evalFco( String.format( "(include \"%s\")", tf.toString() ) );
 
         var one = se.evalFco( "one" );
         var two = se.evalFco( "two" );
@@ -90,14 +90,14 @@ public class SchemeTest extends ScreamBaseTest
     }
 
     @Test
-    public void loadNonExistingTest() throws Exception
+    public void includeNonExistingTest() throws Exception
     {
         var se = scriptEngine();
 
         var nonExistingName = UUID.randomUUID().toString();
         try
         {
-            se.eval( String.format( "(load \"%s\")", nonExistingName ) );
+            se.eval( String.format( "(include \"%s\")", nonExistingName ) );
             fail();
         }
         catch ( Exception e )

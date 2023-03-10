@@ -25,6 +25,7 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.PortIn;
 import de.michab.scream.fcos.PortOut;
+import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 
 /**
@@ -167,7 +168,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    public void load( String filename )
+    public void load( SchemeString filename )
             throws RuntimeX
     {
         Scream.load( filename, _interaction );
