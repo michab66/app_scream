@@ -49,19 +49,14 @@ import de.michab.scream.pops.SyntaxTime;
 import de.michab.scream.util.Continuation;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Continuation.ToStackOp;
+import de.michab.scream.util.FunctionX;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.LogUtil;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.SupplierX;
 
 /**
- * Facade to the Scheme interpreter.  This class is the only connection between
- * a client and a scripting engine.  The actual connection between those two
- * entities is represented by a reader/writer pair, i.e. the primary interface
- * into the interpreter is stream based.</br>
- * The top level environment of each instance of this class contains a binding
- * %%interpreter%% that refers to the instance and allows access from
- * inside Scream.
+ * Facade to the Scheme interpreter.
  *
  * @author Michael G. Binz
  */
@@ -88,27 +83,6 @@ public class Scream implements ScriptEngineFactory
     private final static Logger LOG =
             Logger.getLogger( Scream.class.getName() );
 
-//    private final static ThreadLocal<Stack<LoadContext>> loadStack =
-//            ThreadLocal.withInitial( Stack<LoadContext>::new );
-
-    /**
-     * @see de.michab.scream.Scream#getErrorPort
-     * @see de.michab.scream.Scream#_errorPort
-     */
-//    private final static PrintWriter _errorWriter = new PrintWriter( System.err );
-
-    /**
-     * Symbol receives an error id when an error occurred.
-     */
-//    private final static Symbol ERROR_ID =
-//            Symbol.createObject( "%error-id" );
-
-    /**
-     * Symbol receives the actual exception when an error occurred.
-     */
-//    private final static Symbol ERROR_OBJ =
-//            Symbol.createObject( "%error-object" );
-
     /**
      * Symbol is bound to an error stream.  Available in static initialization.
      */
@@ -119,7 +93,6 @@ public class Scream implements ScriptEngineFactory
      * This is the relative path to our extensions package.
      */
     private final static String EXTENSION_POSITION = "extensions/";
-//    private final static String schemeTestPosition = "test/";
 
     /**
      * Property key: specifies additional classes the kernel should load on
@@ -389,10 +362,10 @@ public class Scream implements ScriptEngineFactory
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    public static FirstClassObject load( String filename, Environment environment )
+    public static FirstClassObject load( SchemeString filename, Environment environment )
             throws RuntimeX
     {
-        return load( new LoadContext( filename ), environment );
+        return load( new LoadContext( filename.getValue() ), environment );
     }
 
     /**
@@ -444,26 +417,92 @@ public class Scream implements ScriptEngineFactory
     }
 
     /**
-     * TODO rework to 4.1.7 include; see #119
-     * (load <expression>)
+     * Apply an operation on a list of arguments.
      *
-     * Currently the environment arguments are not supported.
+     * @param elementType The target type for the list elements.
+     * @param operation The operation to apply.
+     * @param e The environment for evaluation.
+     * @param args The argument list.
+     * @param previousResult The result of the previous application.
+     * @param c The continuation receiving the result.
+     * @return A thunk.
+     * @throws RuntimeX
      */
-    static private Syntax loadProcedure = new Syntax( "load" )
+    private static <T extends FirstClassObject>
+    Thunk _apply(
+            Class<T> elementType,
+            FunctionX<T, FirstClassObject, RuntimeX> operation,
+            Environment e,
+            Cons args,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c ) throws RuntimeX
+    {
+        if ( args == Cons.NIL )
+            return c.accept( previousResult );
+
+
+        Cont<FirstClassObject> next =
+                (fco) -> _apply(
+                        elementType,
+                        operation,
+                        e,
+                        Scut.as( Cons.class, args.getCdr() ),
+                        fco,
+                        c );
+
+        return Primitives._x_eval(
+                e,
+                operation.apply( Scut.as( elementType, args.getCar() ) ),
+                next );
+    }
+
+    /**
+     * Apply an operation on a list of arguments.
+     *
+     * @param elementType The target type for the list elements.
+     * @param operation The operation to apply.
+     * @param e The environment for evaluation.
+     * @param args The argument list.
+     * @param c The continuation receiving the result.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
+    public static <T extends FirstClassObject>
+    Thunk _x_apply(
+            Class<T> elementType,
+            FunctionX<T, FirstClassObject, RuntimeX> operation,
+            Environment e,
+            Cons args,
+            Cont<FirstClassObject> c ) throws RuntimeX
+    {
+        return () -> _apply(
+                elementType,
+                operation,
+                e,
+                args,
+                Cons.NIL,
+                c );
+    }
+
+    /**
+     * {@code (include <string₁> <string₂> ...)}
+     * <p>
+     * {@code r7rs 4.1.7 p14} syntax
+     */
+    static private Syntax includeProcedure = new Syntax( "include" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
-            checkArgumentCount( 1, args );
+            checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
-            var string = Scut.as(
+            return _x_apply(
                     SchemeString.class,
-                    args.getCar() );
-
-            return c.accept( load(
-                    string.getValue(),
-                    e ) );
+                    s -> { return load( s, e ); },
+                    e,
+                    args,
+                    c );
         }
     };
 
@@ -521,7 +560,6 @@ public class Scream implements ScriptEngineFactory
             throws RuntimeX
     {
 //        tle.setPrimitive( evalProcedure );
-        tle.setPrimitive( loadProcedure );
 //        tle.setPrimitive( tleProcedure );
 
         return tle;
@@ -650,6 +688,8 @@ public class Scream implements ScriptEngineFactory
             SyntaxQuote.extendNullEnvironment( result );
             SyntaxSyntax.extendNullEnvironment( result );
             SyntaxTime.extendNullEnvironment( result );
+
+            result.setPrimitive( includeProcedure );
 
             result.define(
                     Symbol.createObject( "scream:null-environment" ),

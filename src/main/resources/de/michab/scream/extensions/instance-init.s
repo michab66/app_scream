@@ -21,4 +21,4 @@
 ;(define (load string)
 ;  (scream::evaluator (load string)))
 
-(load "i-ports.s")
+(include "i-ports.s")
