@@ -71,22 +71,6 @@ public final class Environment
     }
 
     /**
-     * Copy constructor.  Used to clone the top level environment.
-     *
-     * @param p The Environment to copy.
-     */
-    @Deprecated
-    public Environment( Environment p )
-    {
-        _name =
-                p._name;
-        _parent =
-                p._parent;
-        _symbolMap.putAll(
-                p._symbolMap );
-    }
-
-    /**
      * Construct a new Environment with the given parent environment.
      *
      * @param name A symbolic name tied to the environment.  Used for marking an
