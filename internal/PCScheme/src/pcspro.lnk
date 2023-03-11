@@ -1,8 +1,0 @@
-sc+schemed+sinterp+smain+support+PROINTRP+sstring+smemory+block+
-sgcmark+sgcsweep+sbigmem+sexec+shash+sstack+sarith+sutil+
-serror+PROIO+PROREAD+PROIOSUP+PROSPRIN+PROSREAD+PROWIN+PRO2REAL+PROCIOSP+
-sprintf+sdebug+sdump+scannum+strace+serrmsg+sbigmath+scar_cdr+svars+saprop+
-sprop+msdos+sreset+sfasl+sreify+senv+get_path+sobjhash+asm_link+slink+alink+
-PROBID+strmlnrs+srch_str+squish+srelocat+freesp++flo2hex+
-PROSMMU
-
