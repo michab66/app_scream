@@ -1,6 +1,0 @@
-(fast-load (%system-file-name "pboot.fsl"))
-(compile-file "tutorial.scm" "tutorial.so")
-(compile-file "frame.scm" "frame.so")
-(pcs-compile-file "demstart.scm" "demstart.so")
-(exit)
-
