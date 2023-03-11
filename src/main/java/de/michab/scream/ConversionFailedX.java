@@ -1,9 +1,7 @@
-/* $Id: ConversionFailedX.java 209 2009-11-24 09:14:44Z Michael $
+/*
+ * Scream @ https://github.com/urschleim/scream
  *
- * Scream kernel.
- *
- * Released under Gnu Public License
- * Copyright (c) 1998-2000 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream;
 
