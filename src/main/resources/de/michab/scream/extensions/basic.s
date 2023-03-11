@@ -1,4 +1,4 @@
-; Scream @ https://github.com/michab/dev_smack
+; Scream @ https://github.com/urschleim/scream
 ;
 ; Copyright © 1998-2022 Michael G. Binz
 

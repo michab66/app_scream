@@ -1,3 +1,8 @@
+/*
+ * Scream @ https://github.com/urschleim/scream
+ *
+ * Copyright © 1998-2023 Michael G. Binz
+ */
 package de.michab.scream.binding;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
