@@ -7,6 +7,11 @@ package de.michab.scream.fcos;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import org.smack.util.CachedHolder;
+import org.smack.util.JavaUtil;
+import org.smack.util.StringUtil;
 
 import de.michab.scream.RuntimeX;
 
@@ -15,16 +20,9 @@ import de.michab.scream.RuntimeX;
  * holds a set of symbol-value relations called bindings.  Environments can be
  * extended with sub environments.
  *
- * Symbol resolution checks first in the environment for the symbol and after
- * that recursively on the parent environments up to the top-level-environment
- * or TLE which is without a parent.
- *
- * Environments can be named, i.e. on extension time a symbol naming the new
- * environment can be given.  If no name is given, e.g. by calling the version
- * of {@code extend()} without parameters then the name of the parent
- * environment is inherited.  The top-level-environment has a symbolic name of
- * 'top-level'.  Naming environments is used in Scream to place the name of the
- * procedure that created the environment for error reporting.
+ * Symbol resolution checks first in the current environment for the symbol and
+ * after that recursively on the parent environments up to the
+ * top-level-environment which has no parent.
  *
  * @author Michael G. Binz
  */
@@ -45,14 +43,12 @@ public final class Environment
     private final Symbol _name;
 
     /**
-     * A reference to our parent environment.
-     *
-     * @label parent
+     * A reference to the parent environment.
      */
     private final Environment _parent;
 
     /**
-     * The hash table to which we delegate our map responsibilities.
+     * The hash table holding the environment's entries.
      */
     private final HashMap<Symbol, FirstClassObject> _symbolMap =
             new HashMap<>();
@@ -71,7 +67,7 @@ public final class Environment
     }
 
     /**
-     * Construct a new Environment with the given parent environment.
+     * Construct an Environment with the given parent environment.
      *
      * @param name A symbolic name tied to the environment.  Used for marking an
      *             Environment instance with the name of the procedure that
@@ -80,15 +76,12 @@ public final class Environment
      */
     private Environment( Symbol name, Environment parent )
     {
-        // Note that this will fail if a null parent is passed and the name is
-        // also null.  But we are in private context here, the default ctor takes
-        // care for initialising the base environment's name.
-        if ( name == null )
-            _name = parent.getName();
-        else
-            _name = name;
-
-        _parent = parent;
+        JavaUtil.Assert(
+                StringUtil.hasContent( name.toString() ) );
+        _name = Objects.requireNonNull(
+                name );
+        _parent =
+                parent;
     }
 
     /**
@@ -107,11 +100,7 @@ public final class Environment
     }
 
     /**
-     * Return this environment's symbolic name.  The name is inherited, i.e. if
-     * no name was given the parent environment's name will be returned.
-     *
-     * @return The environment's symbolic name.
-     * @see Environment#extend( Symbol name )
+     * @return The environment's name.
      */
     public Symbol getName()
     {
@@ -264,25 +253,6 @@ public final class Environment
         define( name, op );
     }
 
-//    /**
-//     * (evaluate <expression>)
-//     *
-//     * Currently the environment arguments are not supported.
-//     */
-//    static private Procedure evaluateProcedure = new Procedure( "evaluate" )
-//    {
-//        private Class<?>[] formalArglist = new Class[]{ FirstClassObject.class };
-//
-//        @Override
-//        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
-//                throws RuntimeX
-//        {
-//            checkArguments( formalArglist, args );
-//
-//            return evaluate( args[0], parent );
-//        }
-//    };
-//
     /**
      * Environment operations setup.
      *
@@ -302,17 +272,32 @@ public final class Environment
         return _symbolMap;
     }
 
+    private String parentNames()
+    {
+        if ( _parent == null )
+        {
+            return String.format( "/%s(%d)",
+                    _name.toString(),
+                    id() );
+        }
+        else
+        {
+            return  String.format( "%s/%s(%d)",
+                _parent._parentNames.get(),
+                _name.toString(),
+                id() );
+        }
+    }
+
+    private CachedHolder<String> _parentNames =
+            new CachedHolder<String>( this::parentNames );
+
     @Override
     public String toString()
     {
         StringBuilder name =
-                new StringBuilder( "<Environment " );
-
-        if ( _name == null )
-            name.append( "anonymous" );
-        else
-            name.append( _name );
-
+                new StringBuilder( "<Environment:" );
+        name.append( _parentNames.get() );
         name.append( ">" );
 
         return name.toString();
