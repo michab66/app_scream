@@ -68,12 +68,6 @@ public class Lambda extends FirstClassObject
                 _info );
     }
 
-    @Override
-    public Object toJava() throws RuntimeX
-    {
-        return Void.TYPE;
-    }
-
     public Lambda setInfo( Cons c )
     {
         _info = c;

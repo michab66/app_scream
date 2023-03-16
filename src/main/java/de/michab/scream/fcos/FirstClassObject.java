@@ -226,7 +226,10 @@ public abstract class FirstClassObject
      * @return The corresponding object from the Java type system.
      * @throws RuntimeX
      */
-    public abstract Object toJava() throws RuntimeX;
+    public Object toJava() throws RuntimeX
+    {
+        return toString();
+    }
 
     /**
      * Get the symbolic typename.  Handles NIL references.

@@ -27,6 +27,7 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
@@ -507,46 +508,30 @@ public class Scream implements ScriptEngineFactory
     };
 
     /**
-     * (eval <expression>)
-     *
-     * Currently the environment arguments are not supported.
+     * {@code (eval exp-or-def environment-specifier)}
+     * <p>
+     * {code r7rs 6.1.2 p55} eval library procedure
      */
-//    static private Procedure evalProcedure = new Procedure( "eval" )
-//    {
-//        private Class<?>[] formalArglist =
-//                new Class[]{ FirstClassObject.class, Environment.class };
-//
-//        @Override
-//        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
-//                throws RuntimeX
-//        {
-//            checkArguments( formalArglist, args );
-//
-//            // Do it.
-//            return evaluate( args[0], (Environment)args[1] );
-//        }
-//    };
+    static private Procedure evalProcedure = new Procedure( "eval" )
+    {
+        @Override
+        protected Thunk _executeImpl(
+                Environment e,
+                Cons args,
+                Cont<FirstClassObject> c )
+            throws RuntimeX
+        {
+            checkArgumentCount( 2, args );
 
-    /**
-     * (scheme-report-environment)
-     *
-     * Currently the environment arguments are not supported.
-     */
-//    static private Procedure tleProcedure = new Procedure( "scheme-report-environment" )
-//    {
-//        private Class<?>[] formalArglist =
-//                new Class[]{ SchemeInteger.class };
-//
-//        @Override
-//        public FirstClassObject apply( Environment parent, FirstClassObject[] args )
-//                throws RuntimeX
-//        {
-//            checkArguments( formalArglist, args );
-//
-//            // Do it.
-//            return _topLevelEnvironment;
-//        }
-//    };
+            var expOrDef =
+                    args.listRef( 0 );
+            Environment environment = Scut.as(
+                    Environment.class,
+                    args.listRef( 1 ) );
+
+            return expOrDef.evaluate( environment, c );
+        }
+    };
 
     /**
      * Environment operations setup.
@@ -559,8 +544,7 @@ public class Scream implements ScriptEngineFactory
     public static Environment extendTopLevelEnvironment( Environment tle )
             throws RuntimeX
     {
-//        tle.setPrimitive( evalProcedure );
-//        tle.setPrimitive( tleProcedure );
+        tle.setPrimitive( evalProcedure );
 
         return tle;
     }
