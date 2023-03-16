@@ -373,18 +373,6 @@ extends FirstClassObject
     }
 
     /**
-     * Conversion of Operation instances into Java objects return constantly
-     * {@code null}.
-     *
-     * @return Always {@code null}.
-     */
-    @Override
-    public Object toJava()
-    {
-        return null;
-    }
-
-    /**
      * Holds the function implementation.  Override in Java-implemented Operations.
      * @param e
      * @param args

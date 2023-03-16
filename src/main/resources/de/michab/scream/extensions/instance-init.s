@@ -5,12 +5,6 @@
 ;
 
 ;;
-;; Access the environment user expressions are evaluated in.
-;;
-(define (interaction-environment)
-  (scream::evaluator (getTopLevelEnvironment)))
-
-;;
 ;; (load string), library procedure, r7rs 59
 ;;
 ;; Note that this overrides the (load ...)-procedure defined in
@@ -22,3 +16,4 @@
 ;  (scream::evaluator (load string)))
 
 (include "i-ports.s")
+(include "i-environment.s")
