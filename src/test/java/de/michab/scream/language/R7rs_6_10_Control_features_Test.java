@@ -25,11 +25,9 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void procedureq_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (procedure? car)
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco(
+                "(procedure? car)",
+                SchemeBoolean.T );
     }
 
     /**
@@ -38,11 +36,9 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void procedureq_2() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (procedure? 'car)
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco(
+                "(procedure? 'car)",
+                SchemeBoolean.F );
     }
 
     /**
@@ -183,5 +179,16 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
             (list-length '(a b . c))
             """ );
         assertEquals( SchemeBoolean.F, result );
+    }
+
+    /**
+     * Leave computation.
+     */
+    @Test
+    public void schemeCallcc() throws Exception
+    {
+        expectFco(
+                "(call-with-current-continuation (lambda (k) (* 5 (k 4))))",
+                i4 );
     }
 }
