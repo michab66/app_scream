@@ -14,8 +14,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.function.Function;
 
-import org.smack.util.JavaUtil;
-
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
@@ -85,8 +83,6 @@ public class ScreamBaseTest
             Code expectedError
             ) throws RuntimeX
     {
-        JavaUtil.Assert( expected != null || expectedError != null );
-
         ScreamEvaluator se = (ScreamEvaluator)new Scream().getScriptEngine();
 
         FirstClassObject opCall =
@@ -126,6 +122,13 @@ public class ScreamBaseTest
         return result;
     }
 
+    /**
+     * Evaluate an expression and check whether the result is
+     * (equal? ...) to a given value.
+     *
+     * @param expression The expression.
+     * @param expected The expected result.  This may be Cons.NIL.
+     */
     protected void expectFco(
             String expression,
             FirstClassObject expected )
@@ -133,10 +136,6 @@ public class ScreamBaseTest
     {
         var fco = _contTestImpl( expression, expected, null );
 
-        assertNotNull(
-                fco );
-        assertInstanceOf(
-                expected.getClass(), fco );
         assertEqualq(
                 expected,
                 fco );
