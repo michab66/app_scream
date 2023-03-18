@@ -1,12 +1,6 @@
-; $Id: cons.s 8 2008-09-14 14:23:20Z binzm $
+; Scream @ https://github.com/urschleim/scream
 ;
-; Scream / Runtime
-;
-; Comments contain text from R5RS
-; Released under Gnu Public License
-; Copyright (c) 1998-2000 Michael G. Binz
-
-
+; Copyright © 1998-2023 Michael G. Binz
 
 ;;
 ;; (null? obj)      library procedure; r5rs 26
@@ -166,32 +160,46 @@
   )
 )
 
-
-
 ;;
-;; (append list ...) library procedure; r5rs 27
+;; (append list ...) procedure; r7rs 42
 ;;
-(define (append list . other-lists)
-  ;;
-  ;; TODO: The body below is not needed.  This is an iteration expression.
-  (do
-    ;; Init
-    ((lists-to-be-appended (reverse (cons list other-lists))))
-
-    ;; Test
-    ((= 1 (length lists-to-be-appended)) (car lists-to-be-appended))
-
-    ;; Body
-    (set! lists-to-be-appended
-      (if (null? (cadr lists-to-be-appended))
-        (cons
-          (car lists-to-be-appended)
-          (cddr lists-to-be-appended))
-        (cons
-          ((object (cadr lists-to-be-appended)) (append (car lists-to-be-appended)))
-          (cddr lists-to-be-appended))))))
-
-
+(define (append . list)
+  ; Remove a leading empty list element from the arguments.
+  ; This strategy is from Chez-Scheme.
+  (if (and (not (null? list)) (null? (car list)))
+    (set! list (cdr list)))
+    
+  (cond
+    ; No argument -> empty list.
+    ((null? list) '())
+    ; One argument -> return unmodified.
+    ((eq? 1 (length list)) (car list))
+    (else
+      (begin
+        ; Ensure that o is a pair.
+        (define (assert-cons o position)
+          (if (pair? o)
+            o
+            (error "TYPE_ERROR"
+              %type-cons
+              (%typename o)
+              position)))
+        ; Implement the actual append.
+        (define (append-impl position list)
+          (let ((current (car list)) (rest (cdr list)))
+            (if (null? rest)
+              current
+              ; Calls fco.Cons#append
+              ((object (assert-cons current position))
+                (append (append-impl (+ position 1) rest)))
+            ) ; if
+          ) ; let
+        ) ; define
+        (append-impl 1 list)
+      ) ; begin
+    ) ; else
+  ) ; cond
+) ; define
 
 ;;
 ;; (list-tail list k) library procedure; r5rs 27

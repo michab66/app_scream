@@ -401,13 +401,9 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void schemeAppend_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (equal?
-                    '(x y)
-                    (append '(x) '(y)))
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco(
+                "(append '(x) '(y))",
+                parse( "(x y)" ) );
     }
 
     /**
@@ -416,13 +412,9 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void schemeAppend_2() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (equal?
-                    '(a b c d)
-                    (append '(a) '(b c d)))
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco(
+                "(append '(a) '(b c d))",
+                parse( "(a b c d)" ));
     }
 
     /**
@@ -431,14 +423,9 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void schemeAppend_3() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (equal?
-                    '(a (b) (c))
-                    (append '(a (b)) '((c)))
-            )
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco(
+                "(append '(a (b)) '((c)))",
+                parse( "(a (b) (c))" ));
     }
 
     /**
@@ -447,14 +434,9 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void schemeAppend_4() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (equal?
-                    '(a b c . d)
-                    (append '(a b) '(c . d))
-            )
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco(
+                "(append '(a b) '(c . d))",
+                parse( "(a b c . d)" ));
     }
 
     /**
@@ -463,14 +445,81 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void schemeAppend_5() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (equal?
-                    'a
-                    (append '() 'a)
-            )
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco(
+                "(append '() 'a)",
+                s( "a" ));
+    }
+
+    /**
+     * p42
+     * If there are no arguments, the empty list is returned.
+     */
+    @Test
+    public void schemeAppend_x1() throws Exception
+    {
+        expectFco(
+                "(append)",
+                Cons.NIL );
+    }
+
+    /**
+     * p42
+     * If there is exactly one argument, it is returned.
+     */
+    @Test
+    public void schemeAppend_oneArgument() throws Exception
+    {
+        expectFco(
+                "(append 'a)",
+                s("a") );
+        expectFco(
+                "(append 1)",
+                i( 1 ) );
+        expectFco(
+                "(append '())",
+                Cons.NIL );
+    }
+
+    /**
+     * p42
+     * Append different types.
+     */
+    @Test
+    public void schemeAppend_variousCdrs() throws Exception
+    {
+        expectFco(
+                "(append '(a) 1)",
+                parse( "(a . 1)" ) );
+        expectFco(
+                "(append '(a) 'b)",
+                parse( "(a . b)" ) );
+    }
+
+    /**
+     * p42
+     * In-line with Chez-Scheme.
+     */
+    @Test
+    public void schemeAppend_trailingNil() throws Exception
+    {
+        expectFco(
+                "(append '() '(1) 2)",
+                parse( "(1 . 2)" ) );
+        expectFco(
+                "(append '() '(1) '(2) 3)",
+                parse( "(1 2 . 3)" ) );
+    }
+
+    /**
+     * p42
+     * In-line with Chez-Scheme.
+     */
+    @Test
+    public void schemeAppend_trailingNilError() throws Exception
+    {
+        expectError(
+                "(append '() 1 2)",
+                Code.TYPE_ERROR );
     }
 
     /**

@@ -19,7 +19,6 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
 import de.michab.scream.binding.SchemeObject;
-import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
@@ -211,10 +210,10 @@ public final class ScreamEvaluator implements ScriptEngine
     {
         try
         {
-            var result = evalFco( reader );
-            if ( result == Cons.NIL )
-                return null;
-            return result.toJava();
+            return FirstClassObject.toString( evalFco( reader ) );
+//            if ( result == Cons.NIL )
+//                return null;
+//            return result.toJava();
         }
         catch ( ScreamException e )
         {

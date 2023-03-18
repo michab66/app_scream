@@ -13,8 +13,8 @@ import org.smack.util.Holder;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Lambda.L;
-import de.michab.scream.util.Scut;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 /**
  * Represents a list cell.  A list cell consists of two references called car
@@ -176,7 +176,7 @@ public class Cons
 
     /**
      * Returns a new copy of this list with tail appended.  Note that tail isn't
-     * copied (see r5rs 27).
+     * copied (see r7rs 42).
      *
      * @param tail The list to append.
      * @return The concatenated list.
@@ -189,16 +189,16 @@ public class Cons
             throw RuntimeX.mExpectedProperList();
 
         // Copy the list (but not the contents).
-        Cons thisCopy = Cons.create( asArray() );
+        Cons result = Cons.create( asArray() );
         // Create a work pointer.
-        Cons thisPointer = thisCopy;
+        Cons thisPointer = result;
         // Seek to the end...
         while ( thisPointer._cdr != NIL )
             thisPointer = (Cons)thisPointer._cdr;
         // ...and append the tail.
         thisPointer._cdr = tail;
 
-        return thisCopy;
+        return result;
     }
 
     /**
