@@ -6,12 +6,10 @@
 package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException.Code;
 
@@ -23,67 +21,45 @@ public class LetTest extends ScreamBaseTest
     @Test
     public void letTest_1() throws Exception
     {
-        try
-        {
-            // x is not defined in second init in
-            // difference to let*.
-            scriptEngine().evalFco(
+        var rx = expectError(
                 """
+            ; x is not defined in second init in
+            ; difference to let*.
                 (let
                 ((x 2) (y x))
                 y)
-                """ );
-            fail();
-        }
-        catch ( RuntimeX rx )
-        {
-            assertEquals( Code.SYMBOL_NOT_DEFINED, rx.getCode() );
-            assertEquals( s("x"), rx.getArgument( 0 ) );
-        }
+                """,
+                Code.SYMBOL_NOT_DEFINED );
+        assertEquals( s("x"), rx.getArgument( 0 ) );
     }
 
     @Test
     public void letTest_2() throws Exception
     {
-        try
-        {
-            // Evaluation of y must fail.
-            scriptEngine().evalFco(
+        var rx = expectError(
                 """
+            ; Evaluation of y must fail.
                 (let
                 ((x 2) (z 3))
                 y)
-                """ );
-            fail();
-        }
-        catch ( RuntimeX rx )
-        {
-            assertEquals( Code.SYMBOL_NOT_DEFINED, rx.getCode() );
+                """,
+                Code.SYMBOL_NOT_DEFINED);
             assertEquals( s("y"), rx.getArgument( 0 ) );
-        }
     }
 
     @Test
     @Disabled
     public void letTest_3() throws Exception
     {
-        try
-        {
-            // r7rsb: It is an error for a <variable> to
-            // appear more than once in the list of variables being bound.
-            scriptEngine().evalFco(
+        var rx = expectError(
                 """
+            ; r7rs: It is an error for a <variable> to
+            ; appear more than once in the list of variables being bound.
                 (let
                 ((x 2) (x 3))
                 8)
-                """ );
-            fail();
-        }
-        catch ( RuntimeX rx )
-        {
-            assertEquals( Code.DUPLICATE_ELEMENT, rx.getCode() );
+                """,
+                Code.DUPLICATE_ELEMENT );
             assertEquals( s("x"), rx.getArgument( 0 ) );
-        }
     }
-
 }

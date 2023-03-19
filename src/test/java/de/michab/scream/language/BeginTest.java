@@ -5,12 +5,9 @@
  */
 package de.michab.scream.language;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Cons;
 
 public class BeginTest extends ScreamBaseTest
@@ -18,39 +15,7 @@ public class BeginTest extends ScreamBaseTest
     @Test
     public void beginTest_1() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-
-        var result = se.evalFco(
-                """
-                (begin
-                  (define seq '(1))
-                  (set! seq (append seq '(2)))
-                  (set! seq (append seq '(3)))
-                  seq
-                )
-                """ );
-        assertEquals( "(1 2 3)", result.toString() );
-    }
-
-    @Test
-    public void beginTest_2() throws Exception
-    {
-        ScreamEvaluator se = scriptEngine();
-
-        var result = se.evalFco(
-                """
-                (begin)
-                """ );
-        assertEquals( Cons.NIL, result );
-    }
-
-    @Test
-    public void _beginTest() throws Exception
-    {
-        var expected =
-                readSingleExpression( "(1 2 3)", Cons.class );
-
-        _contTest(
+        expectFco(
                 """
                 (begin
                   (define seq '(1))
@@ -59,7 +24,31 @@ public class BeginTest extends ScreamBaseTest
                   seq
                 )
                 """,
-                expected,
-                expected::equal);
+                "(1 2 3)" );
+    }
+
+    @Test
+    public void beginTest_2() throws Exception
+    {
+        expectFco(
+                """
+                (begin)
+                """,
+                Cons.NIL );
+    }
+
+    @Test
+    public void _beginTest() throws Exception
+    {
+        expectFco(
+                """
+                (begin
+                  (define seq '(1))
+                  (set! seq (append seq '(2)))
+                  (set! seq (append seq '(3)))
+                  seq
+                )
+                """,
+                "(1 2 3)" );
     }
 }

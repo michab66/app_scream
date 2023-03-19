@@ -7,6 +7,7 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
@@ -119,7 +120,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p52
      */
     @Test
-    public void callWithCurrentContinuation_1() throws Exception
+    public void call_cc__r7rs_1() throws Exception
     {
         var result = scriptEngine().evalFco(
             """
@@ -135,7 +136,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     }
 
     @Test
-    public void callWithCurrentContinuation_2() throws Exception
+    public void call_cc__r7rs_2() throws Exception
     {
         var se = scriptEngine();
 
@@ -158,7 +159,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     }
 
     @Test
-    public void callWithCurrentContinuation_3() throws Exception
+    public void call_cc__r7rs_3() throws Exception
     {
         var se = scriptEngine();
 
@@ -182,13 +183,71 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     }
 
     /**
-     * Leave computation.
+     * Leave a pending computation.
      */
     @Test
-    public void schemeCallcc() throws Exception
+    public void call_cc__cancel() throws Exception
     {
         expectFco(
                 "(call-with-current-continuation (lambda (k) (* 5 (k 4))))",
                 i4 );
+    }
+
+    /**
+     * Restart computation.
+     */
+    @Test
+    public void call_cc_restart() throws Exception
+    {
+        var se = scriptEngine();
+
+        var result = se.evalFco(
+"""
+        (define return #f)
+
+        (+ 1 (call-with-current-continuation
+                (lambda (cont)
+                    ; Catch the continuation in the free,
+                    ; top-level variable.
+                    (set! return cont)
+                    1)))
+
+        ; Restart the continuation several times.
+        (return 310)
+        (return 311)
+        (return 312)
+""" );
+        assertEqualq( i(313), result );
+    }
+
+    /**
+     * Restart computation.
+     */
+    @Test
+    @Disabled
+    public void call_cc_restart_2() throws Exception
+    {
+        var se = scriptEngine();
+
+        var result = se.evalFco(
+"""
+        (define return #f)
+
+        (+ 1 (call-with-current-continuation
+                (lambda (cont)
+                    (set! return cont)
+                    1)))
+
+        (return 312)
+"""  );
+
+        assertEquals( i(313), result );
+        // This fails and receives NIL.
+
+        // The problem is that the top-level call/cc above receives
+        // on re-call of the scream engine a new, but different
+        // top-level continuation compared to the previous call.
+
+        assertEqualq( i1, se.evalFco( "(return 0)" ) );
     }
 }

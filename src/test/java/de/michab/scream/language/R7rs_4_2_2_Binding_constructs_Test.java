@@ -5,8 +5,6 @@
  */
 package de.michab.scream.language;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
@@ -25,12 +23,12 @@ public class R7rs_4_2_2_Binding_constructs_Test extends ScreamBaseTest
     @Test
     public void let_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (let ((x 2) (y 3))
               (+ x y))
-            """ );
-        assertEquals( i(5), result );
+            """,
+            i(5) );
     }
 
     /**
@@ -39,14 +37,14 @@ public class R7rs_4_2_2_Binding_constructs_Test extends ScreamBaseTest
     @Test
     public void let_2() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (let ((x 2) (y 3))
               (let ((x 7)
                     (z (+ x y)))
                     (* z x)))
-            """ );
-        assertEquals( i(35), result );
+            """,
+            i(35) );
     }
 
     /**
@@ -55,14 +53,14 @@ public class R7rs_4_2_2_Binding_constructs_Test extends ScreamBaseTest
     @Test
     public void letAsterisk_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (let ((x 2) (y 3))
               (let* ((x 7)
                     (z (+ x y)))
                     (* z x)))
-            """ );
-        assertEquals( i(70), result );
+            """,
+            i(70) );
     }
 
     /**
@@ -71,7 +69,7 @@ public class R7rs_4_2_2_Binding_constructs_Test extends ScreamBaseTest
     @Test
     public void letrec_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (letrec ((even?
                       (lambda (n)
@@ -84,8 +82,7 @@ public class R7rs_4_2_2_Binding_constructs_Test extends ScreamBaseTest
                             #f
                             (even? (- n 1))))))
              (even? 88))
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+            """,
+            SchemeBoolean.T );
     }
-
 }
