@@ -5,8 +5,6 @@
  */
 package de.michab.scream.language;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
@@ -24,16 +22,14 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
     @Test
     public void do_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (do ((vec (make-vector 5))
                  (i 0 (+ i 1)))
                 ((= i 5) vec)
               (vector-set! vec i i))
-            """ );
-        assertEqualq(
-                parse("#(0 1 2 3 4)"),
-                result );
+            """,
+            "#(0 1 2 3 4)" );
     }
 
     /**
@@ -42,16 +38,14 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
     @Test
     public void do_1x() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (do ((vec (make-vector 7))
                  (i 0 (+ i 1)))
                 ((= i (vector-length vec)) vec)
               (vector-set! vec i i))
-            """ );
-        assertEqualq(
-                parse("#(0 1 2 3 4 5 6)"),
-                result );
+            """,
+            "#(0 1 2 3 4 5 6)" );
     }
 
     /**
@@ -60,14 +54,13 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
     @Test
     public void do_2() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (let ((x '(1 3 5 7 9)))
               (do ((x x (cdr x))
                    (sum 0 (+ sum (car x))))
                   ((null? x) sum)))
-                        """ );
-        assertEquals( i(25), result );
+            """,
+            i(25) );
     }
-
 }

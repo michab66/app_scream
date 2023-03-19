@@ -403,7 +403,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     {
         expectFco(
                 "(append '(x) '(y))",
-                parse( "(x y)" ) );
+                "(x y)" );
     }
 
     /**
@@ -414,7 +414,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     {
         expectFco(
                 "(append '(a) '(b c d))",
-                parse( "(a b c d)" ));
+                "(a b c d)" );
     }
 
     /**
@@ -425,7 +425,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     {
         expectFco(
                 "(append '(a (b)) '((c)))",
-                parse( "(a (b) (c))" ));
+                "(a (b) (c))" );
     }
 
     /**
@@ -436,7 +436,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     {
         expectFco(
                 "(append '(a b) '(c . d))",
-                parse( "(a b c . d)" ));
+                "(a b c . d)" );
     }
 
     /**
@@ -489,10 +489,10 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     {
         expectFco(
                 "(append '(a) 1)",
-                parse( "(a . 1)" ) );
+                "(a . 1)" );
         expectFco(
                 "(append '(a) 'b)",
-                parse( "(a . b)" ) );
+                "(a . b)" );
     }
 
     /**
@@ -504,10 +504,10 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     {
         expectFco(
                 "(append '() '(1) 2)",
-                parse( "(1 . 2)" ) );
+                "(1 . 2)" );
         expectFco(
                 "(append '() '(1) '(2) 3)",
-                parse( "(1 2 . 3)" ) );
+                "(1 2 . 3)" );
     }
 
     /**
@@ -671,10 +671,11 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void memq_1() throws Exception
     {
-        var result = scriptEngine().evalFco( """
+        expectFco(
+                """
                 (memq 'a '(a b c))
-                """ );
-        assertEqualq( parse( "(a b c)" ), result );
+                """,
+                "(a b c)" );
     }
 
     /**

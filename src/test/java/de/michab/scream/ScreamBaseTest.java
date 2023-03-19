@@ -8,8 +8,6 @@ package de.michab.scream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.function.Function;
@@ -19,6 +17,7 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 
@@ -77,100 +76,64 @@ public class ScreamBaseTest
         return fco;
     }
 
-    private FirstClassObject _contTestImpl(
-            String expression,
-            FirstClassObject expected,
-            Code expectedError
-            ) throws RuntimeX
+    /**
+     * Evaluate a script and check whether the result is
+     * (equal? ...) to a given value.
+     *
+     * @param script The script to execute.
+     * @param expected The expected result.  This may be Cons.NIL.
+     * @return The script engine used in the test.
+     */
+    protected ScreamEvaluator expectFco(
+            String script,
+            FirstClassObject expected )
+                    throws RuntimeX
     {
-        ScreamEvaluator se = (ScreamEvaluator)new Scream().getScriptEngine();
-
-        FirstClassObject opCall =
-                new SchemeParser( expression ).getExpression();
-
-        assertInstanceOf( Cons.class, opCall );
-
-        var env = se.getInteraction();
-
-        FirstClassObject result =
-                null;
-        RuntimeX error =
-                null;
-
-        try {
-            result = Scream.toStack(
-                c -> opCall.evaluate( env, c) );
-        }
-        catch ( RuntimeX e )
-        {
-            error = e;
-        }
-
-        if ( expectedError != null )
-        {
-            assertNotNull( error );
-            assertEquals( expectedError, error.getCode() );
-            assertNull( result );
-            return Cons.NIL;
-        }
-
-        if ( error != null )
-        {
-            fail( error.getMessage() );
-        }
-
+        var result = scriptEngine();
+        assertEqualq(
+                expected,
+                result.evalFco( script ) );
         return result;
     }
 
     /**
-     * Evaluate an expression and check whether the result is
+     * Evaluate a script and check whether the result is
      * (equal? ...) to a given value.
      *
-     * @param expression The expression.
-     * @param expected The expected result.  This may be Cons.NIL.
+     * @param script The script to execute.
+     * @param expected The expected result as Scheme definition.
+     * @return The script engine used in the test.
      */
-    protected void expectFco(
-            String expression,
-            FirstClassObject expected )
+    protected ScreamEvaluator expectFco(
+            String script,
+            String expected )
                     throws RuntimeX
     {
-        var fco = _contTestImpl( expression, expected, null );
-
-        assertEqualq(
-                expected,
-                fco );
-    }
-
-    protected void _contTest(
-            String expression,
-            FirstClassObject expected,
-            Function<FirstClassObject, Boolean> eq
-            )
-                    throws RuntimeX
-    {
-        var fco = _contTestImpl( expression, expected, null );
-
-        assertNotNull(
-                fco );
-        assertInstanceOf(
-                expected.getClass(), fco );
-        assertTrue(
-                eq.apply( fco ) );
+        return expectFco( script, parse(expected) );
     }
 
     /**
      * Evaluate the passed expression and expect an error.
      *
      * @param expression The expression to evaluate.
-     * @param expected The expected error.
-     * @throws RuntimeX
+     * @param expected The expected error code.
+     * @return The exception that was thrown.
      */
-    protected void expectError(
+    protected RuntimeX expectError(
             String expression,
             Code expected )
-                    throws RuntimeX
     {
-        _contTestImpl( expression, null, expected );
+        try
+        {
+            scriptEngine().evalFco( expression );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( expected, rx.getCode() );
+            return rx;
+        }
+        throw new InternalError( "Unexpected." );
     }
 
     protected void assertEqualq( FirstClassObject expected, FirstClassObject actual )
@@ -197,7 +160,10 @@ public class ScreamBaseTest
     {
         return Symbol.createObject( name );
     }
-
+    public static SchemeString str( String name )
+    {
+        return new SchemeString( name );
+    }
     public static SchemeInteger i( long v )
     {
         return SchemeInteger.createObject( v );

@@ -22,16 +22,14 @@ public class R7rs_5_3_2_Internal_definitions_Test extends ScreamBaseTest
     @Test
     public void internal_definitions_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
-"""
-(let ((x 5))
- (define foo (lambda (y) (bar x y)))
- (define bar (lambda (a b) (+ (* a b) a)))
- (foo (+ x 3)))
-""" );
-        assertEqualq(
-                i(45),
-                result );
+        expectFco(
+        """
+        (let ((x 5))
+         (define foo (lambda (y) (bar x y)))
+         (define bar (lambda (a b) (+ (* a b) a)))
+         (foo (+ x 3)))
+        """,
+        i(45) );
     }
 
 }

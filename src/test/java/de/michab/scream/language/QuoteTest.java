@@ -6,12 +6,10 @@
 package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
@@ -60,39 +58,21 @@ public class QuoteTest extends ScreamBaseTest
     @Test
     public void quoteTest_2() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-
-        try
-        {
-            se.evalFco(
+        expectError(
                 """
                 (quote)
-                """ );
-        }
-        catch ( RuntimeX rx )
-        {
-            assertNotNull( rx.getMessage() );
-            assertEquals( Code.WRONG_NUMBER_OF_ARGUMENTS, rx.getCode() );
-        }
+                """,
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
 
     @Test
     public void quoteTest_3() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-
-        try
-        {
-            se.evalFco(
+        expectError(
                 """
                 (quote 8 'q)
-                """ );
-        }
-        catch ( RuntimeX rx )
-        {
-            assertNotNull( rx.getMessage() );
-            assertEquals( Code.WRONG_NUMBER_OF_ARGUMENTS, rx.getCode() );
-        }
+                """,
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
 
     @Test
@@ -102,6 +82,6 @@ public class QuoteTest extends ScreamBaseTest
                 """
                 '(1 2 . 3)
                 """,
-                parse( "(1 2 . 3)" ) );
+                "(1 2 . 3)" );
     }
 }

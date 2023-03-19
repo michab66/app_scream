@@ -7,7 +7,6 @@ package de.michab.scream;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.Writer;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
@@ -239,8 +238,6 @@ public class Scream implements ScriptEngineFactory
     public static Thunk evalImpl(
             Environment e,
             SupplierX<FirstClassObject,RuntimeX> s,
-            // TODO
-            Writer sink,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
@@ -306,13 +303,11 @@ public class Scream implements ScriptEngineFactory
 
     public static FirstClassObject evalImpl(
             Environment env,
-            SupplierX<FirstClassObject,RuntimeX> spl,
-            // TODO
-            Writer sink )
+            SupplierX<FirstClassObject,RuntimeX> spl )
                     throws RuntimeX
     {
         return toStack(
-                c -> evalImpl( env, spl, sink, c ) );
+                c -> evalImpl( env, spl, c ) );
     }
 
     /**
@@ -395,7 +390,7 @@ public class Scream implements ScriptEngineFactory
             SchemeParser parser =
                     new SchemeParser( reader );
 
-            return evalImpl( e, parser::getExpression, null );
+            return evalImpl( e, parser::getExpression );
         }
         catch ( IOException ioe )
         {

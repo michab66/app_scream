@@ -21,6 +21,35 @@ import de.michab.scream.fcos.SchemeBoolean;
  */
 public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
 {
+    @Test
+    public void ifTest() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (if #t 313 0)
+                """ );
+        assertEquals( i313, result );
+    }
+
+    @Test
+    public void ifTestNoElse() throws Exception
+    {
+        var result = scriptEngine().evalFco(
+                """
+                (if #f 313)
+                """ );
+        assertEquals( SchemeBoolean.F, result );
+    }
+
+    @Test
+    public void _ifTest() throws Exception
+    {
+        expectFco(
+                """
+                (if #t 313 0)
+                """,
+                i313 );
+    }
     /**
      * p14
      */
