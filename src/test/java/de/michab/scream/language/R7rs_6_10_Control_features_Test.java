@@ -7,7 +7,6 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
@@ -224,7 +223,6 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * Restart computation.
      */
     @Test
-    @Disabled
     public void call_cc_restart_2() throws Exception
     {
         var se = scriptEngine();
@@ -242,12 +240,9 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
 """  );
 
         assertEquals( i(313), result );
-        // This fails and receives NIL.
-
-        // The problem is that the top-level call/cc above receives
-        // on re-call of the scream engine a new, but different
-        // top-level continuation compared to the previous call.
-
-        assertEqualq( i1, se.evalFco( "(return 0)" ) );
+        assertEqualq( i(1), se.evalFco( "(return 0)" ) );
+        assertEqualq( i(2), se.evalFco( "(return 1)" ) );
+        assertEqualq( i(3), se.evalFco( "(return 2)" ) );
+        assertEqualq( i(121), se.evalFco( "(return 120)" ) );
     }
 }
