@@ -7,6 +7,7 @@ package de.michab.scream.fcos;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -241,6 +242,37 @@ public class ConsTest extends ScreamBaseTest
         catch ( ScreamException e )
         {
             assertEquals( Code.CALLED_NON_PROCEDURAL, e.getCode() );
+        }
+    }
+
+    @Test
+    public void iterate() throws Exception
+    {
+        Cons cons = (Cons)parse( "(0 1 2 3 4 5 6 7 8 9)" );
+
+        int count = 0;
+        for ( var c : cons )
+        {
+            assertInstanceOf( SchemeInteger.class, c );
+            SchemeInteger si = (SchemeInteger)c;
+            assertEqualq( i(count++), si );
+        }
+    }
+
+    /**
+     * The last element of an improper list is skipped.
+     */
+    @Test
+    public void iterateNonProper() throws Exception
+    {
+        Cons cons = (Cons)parse( "(0 1 2 3 4 5 6 7 8 9 . 313)" );
+
+        int count = 0;
+        for ( var c : cons )
+        {
+            assertInstanceOf( SchemeInteger.class, c );
+            SchemeInteger si = (SchemeInteger)c;
+            assertEqualq( i(count++), si );
         }
     }
 }
