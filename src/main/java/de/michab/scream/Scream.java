@@ -321,7 +321,7 @@ public class Scream implements ScriptEngineFactory
         }
     }
 
-    public static FirstClassObject evalImpl(
+    static FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl,
             Holder<FirstClassObject> result,
