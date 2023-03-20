@@ -334,7 +334,9 @@ public class Scream implements ScriptEngineFactory
                 result,
                 exception );
     }
-    public static FirstClassObject evalImpl(
+
+    @Deprecated
+    private static FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl )
                     throws RuntimeX
