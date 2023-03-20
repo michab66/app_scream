@@ -44,10 +44,10 @@ public class SyntaxDo extends Syntax
         Cons inits = Cons.NIL;
         Cons steps = Cons.NIL;
 
-        while ( variables != Cons.NIL )
+        for ( var c : variables )
         {
             var variableDef =
-                    Scut.as( Cons.class, variables.getCar() );
+                    Scut.as( Cons.class, c );
             checkArgumentCount( 2, 3, variableDef );
 
             Symbol variable =
@@ -67,8 +67,6 @@ public class SyntaxDo extends Syntax
                                 variable,
                                 variableDef.listRef( 2 )), steps );
             }
-
-            variables = (Cons)variables.getCdr();
         }
 
         return new Cons( inits, steps );

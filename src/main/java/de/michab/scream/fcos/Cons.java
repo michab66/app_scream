@@ -7,6 +7,8 @@
 package de.michab.scream.fcos;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
 
 import org.smack.util.Holder;
 
@@ -29,6 +31,7 @@ import de.michab.scream.util.Scut;
  */
 public class Cons
     extends FirstClassObject
+    implements Iterable<FirstClassObject>
 {
     /**
      * The name of the type as used by error reporting.
@@ -505,8 +508,8 @@ public class Cons
 
     /**
      * @param lengthOut The list length.  Valid in all cases.
-     * @return An array of booleans, index 0 denotes circularity, index 1 is
-     * true element if the list is proper.
+     * @return An array of booleans, index 0 is {@ true} if the list is
+     * circular, index 1 is {@ true} if the list is proper.
      */
     private boolean[] consAttributes( Holder<Long> lengthOut )
     {
@@ -669,5 +672,44 @@ public class Cons
         super.setConstant( what );
         setConstant( _car, what );
         setConstant( _cdr, what );
+    }
+
+    private static class Iterator_ implements java.util.Iterator<FirstClassObject>
+    {
+        private Cons _current;
+
+        public Iterator_( Cons current )
+        {
+            _current = Objects.requireNonNull( current );
+        }
+
+        @Override
+        public boolean hasNext()
+        {
+            return _current != Cons.NIL;
+        }
+
+        @Override
+        public FirstClassObject next()
+        {
+            var result = _current._car;
+
+            try
+            {
+                _current = (Cons)_current._cdr;
+            }
+            catch ( ClassCastException e )
+            {
+                _current = Cons.NIL;
+            }
+
+            return result;
+        }
+    }
+
+    @Override
+    public Iterator<FirstClassObject> iterator()
+    {
+        return new Iterator_( this );
     }
 }

@@ -53,18 +53,18 @@ public abstract class SyntaxLet
 
         Cons result = Cons.NIL;
 
-        while ( bindings != Cons.NIL )
+        for ( var c : bindings )
         {
             // Car is a list.
-            var c = Scut.as(
+            var binding = Scut.as(
                     Cons.class,
-                    bindings.getCar(),
+                    c,
                     s-> {
                         throw RuntimeX.mBadBinding( getName(), originalBindings );
                     });
             // Of length 2.
             Scut.checkProperLength(
-                    c,
+                    binding,
                     2,
                     2,
                     ic,
@@ -72,14 +72,12 @@ public abstract class SyntaxLet
             // First element is symbol.
             var symbol = Scut.as(
                     Symbol.class,
-                    c.getCar(),
+                    binding.getCar(),
                     s -> {
-                        throw RuntimeX.mBadBinding( getName(), c );
+                        throw RuntimeX.mBadBinding( getName(), binding );
                     } );
 
             result = new Cons( symbol, result );
-
-            bindings = (Cons)bindings.getCdr();
         }
 
         return result;
