@@ -145,6 +145,7 @@ public class Continuation
      * @return The result of the passed operation.
      * @throws Exception
      */
+    @Deprecated
     public static <T>
     T toStack(
             ToStackOp<T> op )
@@ -155,6 +156,27 @@ public class Continuation
         Holder<Exception> exception =
                 new Holder<>();
 
+        return toStack( op, result, exception );
+    }
+
+    /**
+     * Execute a continuation-based operation and return the result
+     * on the stack.
+     *
+     * @param <T> The result type.
+     * @param op The operation to execute.
+     * @param result A preallocated holder.
+     * @param exception A preallocated holder.
+     * @return The result of the passed operation.
+     * @throws Exception
+     */
+    public static <T>
+    T toStack(
+            ToStackOp<T> op,
+            Holder<T> result,
+            Holder<Exception> exception)
+        throws Exception
+    {
         Cont<Exception> handler =
                 ae -> {
                     exception.set( ae );

@@ -18,6 +18,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
+import org.smack.util.Holder;
+
 import de.michab.scream.binding.SchemeObject;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -167,7 +169,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    public void load( SchemeString filename )
+    private void load( SchemeString filename )
             throws RuntimeX
     {
         Scream.load( filename, _interaction );
@@ -222,6 +224,20 @@ public final class ScreamEvaluator implements ScriptEngine
     }
 
     /**
+     * A holder used in continuation processing.  This has to be defined here
+     * since in case of top-level continuations it gets captured in a lambda
+     * that may be restarted.
+     * <p>
+     * See the test de.michab.scream.language.R7rs_6_10_Control_features_Test.call_cc_restart_2()
+     */
+    Holder<FirstClassObject> _result = new Holder<>();
+
+    /**
+     * @see #_result
+     */
+    Holder<Exception> _exception = new Holder<>();
+
+    /**
      * Evaluates the expressions read from the passed Reader in the Scream
      * type system.
      *
@@ -233,7 +249,9 @@ public final class ScreamEvaluator implements ScriptEngine
     {
             return Scream.evalImpl(
                     _interaction,
-                    new SchemeReader( reader)::getExpression );
+                    new SchemeReader( reader )::getExpression,
+                    _result,
+                    _exception );
     }
 
     /**

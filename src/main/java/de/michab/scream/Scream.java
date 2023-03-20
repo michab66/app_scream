@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 
+import org.smack.util.Holder;
 import org.smack.util.JavaUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
@@ -284,7 +285,8 @@ public class Scream implements ScriptEngineFactory
         return c -> op.call( mapCont( c )  );
     }
 
-    public static FirstClassObject toStack( FcoOp op )
+    @Deprecated
+    private static FirstClassObject toStack( FcoOp op )
             throws RuntimeX
     {
         ToStackOp<FirstClassObject> tso2 = mapOp( op );
@@ -300,8 +302,41 @@ public class Scream implements ScriptEngineFactory
             throw RuntimeX.mInternalError( e );
         }
     }
+    public static FirstClassObject toStack( FcoOp op,
+            Holder<FirstClassObject> result,
+            Holder<Exception> exception)
+            throws RuntimeX
+    {
+        ToStackOp<FirstClassObject> tso2 = mapOp( op );
 
-    public static FirstClassObject evalImpl(
+        try
+        {
+            return Continuation.toStack( tso2, result, exception );
+        }
+        catch (Exception e) {
+            if ( RuntimeX.class.isAssignableFrom( e.getClass() ))
+                throw RuntimeX.class.cast( e );
+
+            throw RuntimeX.mInternalError( e );
+        }
+    }
+
+    static FirstClassObject evalImpl(
+            Environment env,
+            SupplierX<FirstClassObject,RuntimeX> spl,
+            Holder<FirstClassObject> result,
+            Holder<Exception> exception)
+
+                    throws RuntimeX
+    {
+        return toStack(
+                c -> evalImpl( env, spl, c ),
+                result,
+                exception );
+    }
+
+    @Deprecated
+    private static FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl )
                     throws RuntimeX

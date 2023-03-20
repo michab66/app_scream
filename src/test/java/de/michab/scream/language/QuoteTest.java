@@ -5,17 +5,12 @@
  */
 package de.michab.scream.language;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.fcos.Cons;
-import de.michab.scream.fcos.FirstClassObject;
 
 public class QuoteTest extends ScreamBaseTest
 {
@@ -30,17 +25,7 @@ public class QuoteTest extends ScreamBaseTest
     @Test
     public void quoteTest_0() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-
-        var e = se.getInteraction();
-
-        var fco =
-                readSingleExpression( "(quote a)", Cons.class );
-
-        FirstClassObject result = Scream.toStack(
-                c -> fco.evaluate( e, c ) );
-
-        assertEquals( s("a"), result );
+        expectFco( "(quote a)", s("a") );
     }
 
     @Test

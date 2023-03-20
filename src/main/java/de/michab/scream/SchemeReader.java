@@ -76,7 +76,7 @@ public class SchemeReader
      *
      * @param in
      */
-    public void push( Reader in )
+    private void push( Reader in )
     {
       // TODO:  The passed readers are never closed.
         _parseStack.push( new SchemeParser( in ) );

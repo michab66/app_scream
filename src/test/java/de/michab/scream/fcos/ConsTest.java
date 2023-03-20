@@ -15,9 +15,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.ScreamException;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
@@ -199,50 +197,19 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void eval() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-        var env = se.getInteraction();
-        Cons cons = readSingleExpression( "(+ 1 2)", Cons.class );
-
-        FirstClassObject result =  Scream.toStack(
-                c -> cons.evaluate( env, c ) );
-
-        assertEqualq( ScreamBaseTest.i3, result );
+        expectFco( "(+ 1 2)", i3 );
     }
 
     @Test
     public void evalErr() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-        var env = se.getInteraction();
-        Cons cons = readSingleExpression( "(0 1 2)", Cons.class );
-        try
-        {
-            Scream.toStack(
-                    c -> cons.evaluate( env, c ) );
-            fail();
-        }
-        catch ( ScreamException e )
-        {
-            assertEquals( Code.CALLED_NON_PROCEDURAL, e.getCode() );
-        }
+        expectError( "(0 1 2)", Code.CALLED_NON_PROCEDURAL );
     }
 
     @Test
     public void evalErrNil() throws Exception
     {
-        ScreamEvaluator se = scriptEngine();
-        var env = se.getInteraction();
-        Cons cons = readSingleExpression( "(() 1 2)", Cons.class );
-        try
-        {
-            Scream.toStack(
-                    c -> cons.evaluate( env, c ) );
-            fail();
-        }
-        catch ( ScreamException e )
-        {
-            assertEquals( Code.CALLED_NON_PROCEDURAL, e.getCode() );
-        }
+        expectError( "(() 1 2)", Code.CALLED_NON_PROCEDURAL );
     }
 
     @Test

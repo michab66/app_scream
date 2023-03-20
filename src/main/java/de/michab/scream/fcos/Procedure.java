@@ -5,6 +5,7 @@
  */
 package de.michab.scream.fcos;
 
+import org.smack.util.Holder;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
@@ -106,6 +107,9 @@ public class Procedure
                 cc );
     }
 
+    Holder<FirstClassObject> _result = new Holder<>();
+    Holder<Exception> _exception = new Holder<>();
+
     /**
      * Called from the (apply ...) operation defined in procedure.s.
      *
@@ -115,6 +119,9 @@ public class Procedure
      */
     public FirstClassObject apply( Cons arguments ) throws RuntimeX
     {
-        return Scream.toStack( c -> _execute( _closure, arguments, c ) );
+        return Scream.toStack(
+                c -> _execute( _closure, arguments, c ),
+                _result,
+                _exception );
     }
 }

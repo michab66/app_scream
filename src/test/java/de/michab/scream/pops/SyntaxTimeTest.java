@@ -11,7 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.Scream;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Cons;
@@ -49,17 +48,4 @@ public class SyntaxTimeTest extends ScreamBaseTest
 
         validateResult( result );
     }
-
-    @Test
-    void time_2() throws Exception
-    {
-        Cons cons = (Cons)parse(
-                "(%time (+ 1 2))" );
-
-        FirstClassObject r = Scream.toStack(
-                c -> cons.evaluate( scriptEngine().getInteraction(), c ) );
-
-        validateResult( r );
-    }
-
 }

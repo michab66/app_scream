@@ -13,7 +13,7 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Operation;
 
-public class SyntaxLambdaTest extends ScreamBaseTest
+public class R7rs_4_2_3_SequencingTest extends ScreamBaseTest
 {
     @Test
     public void exists() throws Exception
@@ -22,16 +22,8 @@ public class SyntaxLambdaTest extends ScreamBaseTest
 
         var result = se.evalFco(
                 """
-                lambda
+                begin
                 """ );
         assertInstanceOf( Operation.class, result );
-    }
-
-    @Test
-    public void syntaxLambdaTest() throws Exception
-    {
-        expectFco(
-                "((lambda (x y) (+ x y)) 1 2)",
-                i3 );
     }
 }
