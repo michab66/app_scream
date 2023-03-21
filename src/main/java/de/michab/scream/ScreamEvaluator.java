@@ -28,6 +28,7 @@ import de.michab.scream.fcos.PortIn;
 import de.michab.scream.fcos.PortOut;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
+import de.michab.scream.util.Continuation2;
 
 /**
  * Contains a Scheme top level read-eval-print loop.  A SchemeEvaluator reads
@@ -236,6 +237,8 @@ public final class ScreamEvaluator implements ScriptEngine
      * @see #_result
      */
     Holder<Exception> _exception = new Holder<>();
+    Continuation2 continuation = new Continuation2();
+
 
     /**
      * Evaluates the expressions read from the passed Reader in the Scream
