@@ -87,7 +87,7 @@ public final class ScreamEvaluator implements ScriptEngine
     ScreamEvaluator(
             Scream interpreter,
             Environment tle,
-            String[] extensions)
+            String extensions)
         throws RuntimeX
     {
         _context.push(  new SchemeContext() );

@@ -23,9 +23,11 @@ import org.smack.util.ServiceManager;
 import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
+import de.michab.scream.binding.SchemeObject;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeString;
@@ -96,54 +98,21 @@ public class Scream implements ScriptEngineFactory
     private final static String EXTENSION_POSITION = "extensions/";
 
     /**
-     * Property key: specifies additional classes the kernel should load on
-     * startup.
-     * {@code kernel.integrateClasses = fooExtension bar baz}
+     * The name of the file that holds the Scheme-implemented parts of the
+     * engine common to all script engine instance.
      */
-    @Resource
-    private static String[] integrateClasses;
+    private static String schemeExtensions = "common-init.s";
 
     /**
-     * Property key: specifies additional scheme files the kernel should load on
-     * startup.  These have to be located in a special subpackage 'extensions'.
-     *
-     * Sample: {@code kernel.schemeExtensions = math.s common.s patch.s}
-     *
-     * @see de.michab.scream.Scream#kernelSchemeInstanceExtensionsP
+     * The name of the file that holds the Scheme-implemented parts that are
+     * specific for each script engine.
      */
-    @Resource
-    private static String[] schemeExtensions;
-
-    /**
-     * Property key: specifies scheme files containing regression tests.  These
-     * have to be located in a special subpackage 'tests'.
-     *
-     * Sample: {@code kernel.regression = tmath.s}
-     */
-    @Resource
-    private static String[] regression;
-
-    /**
-     * Property key: specifies additional scheme files the kernel should load
-     * for each interpreter instance.  In general these contain function
-     * definitions that depend on a reference to the individual interpreter
-     * instance, accessible via the symbol ANCHOR_SYMBOL also defined in this
-     * class.  The extension definition files have to be located in a special
-     * subpackage 'extensions'.
-     *
-     * Sample: {@code kernel.schemeExtensions = math.s common.s patch.s}
-     */
-    @Resource
-    private static String[] schemeInstanceExtensions;
+    private static final String schemeInstanceExtensions = "instance-init.s";
 
     @Resource
-    private static String shell;
-
-    /**
-     * This is the name of the method that is looked up on the classes that are
-     * added via the "kernel.integrateClasses" property.
-     */
-    private final static String INIT_NAME = "extendTopLevelEnvironment";
+    private static String engineName;
+    @Resource
+    private static String engineVersion;
 
     /**
      * Creates an instance of an working Scheme interpreter.
@@ -155,68 +124,6 @@ public class Scream implements ScriptEngineFactory
     {
         ServiceManager.getApplicationService( ResourceManager.class )
             .injectResources( Scream.class );
-    }
-
-    /**
-     * Loads all classes defined in the kernel.integrateClasses property and
-     * invokes the following method signature on the class:
-     * <p>
-     *  {@code public static Environment extendTopLevelEnvironment( Environment tle )}
-     *
-     * @param tle The top level environment to contain the new bindings.
-     */
-    private static Environment createTle()
-    {
-        var result = createNullEnvironment().extend( "tle-common" );
-
-        for ( var crtClassName : integrateClasses )
-        {
-            LOG.info( "Initializing: " + crtClassName );
-
-            try
-            {
-                Class<?> clazz = Class.forName( crtClassName );
-                java.lang.reflect.Method init = clazz.getDeclaredMethod(
-                        INIT_NAME,
-                        new Class[]{ result.getClass() } );
-                init.invoke( null, new Object[]{ result } );
-            }
-            catch ( ClassNotFoundException e )
-            {
-                LOG.log(
-                        Level.WARNING,
-                        "Class for initialization not found: ''{0}''",
-                        crtClassName );
-            }
-            catch ( NoSuchMethodException e )
-            {
-                LOG.fine(
-                        "No init needed for class '" +
-                                crtClassName +
-                        "'." );
-            }
-            catch ( IllegalAccessException e )
-            {
-                LOG.log(
-                        Level.WARNING,
-                        "Operation ''{0}#" + INIT_NAME + "()'' is not accessible.",
-                        crtClassName );
-            }
-            catch ( java.lang.reflect.InvocationTargetException e )
-            {
-                LOG.log(
-                        Level.WARNING,
-                        "Init threw exception.",
-                        e.getCause() );
-            }
-        }
-
-        // Load extensions defined in scheme source files.
-        addExtensions(
-                result,
-                schemeExtensions );
-
-        return result;
     }
 
     private static Thunk evalImpl_(
@@ -356,34 +263,31 @@ public class Scream implements ScriptEngineFactory
      */
     static void addExtensions(
             Environment env,
-            String[] fileNames )
+            String filename )
     {
-        for ( var c : fileNames )
+        // The getResourceAsStream in the next line addresses resources relative
+        // to the classes package.  So here we create a name like
+        // extensions/foo.s.
+        String crtFileName = EXTENSION_POSITION + filename;
+
+        // Try to get a stream on the file...
+        var url = Scream.class.getResource( crtFileName );
+
+        JavaUtil.Assert(
+                url != null,
+                "File for processing not found: '%s'",
+                crtFileName );
+
+        try
         {
-            // The getResourceAsStream in the next line addresses resources relative
-            // to the classes package.  So here we create a name like
-            // extensions/foo.s.
-            String crtFileName = EXTENSION_POSITION + c;
-
-            // Try to get a stream on the file...
-            var url = Scream.class.getResource( crtFileName );
-
-            JavaUtil.Assert(
-                    url != null,
-                    "File for processing not found: '%s'",
-                    crtFileName );
-
-            try
-            {
-                load( url, env );
-            }
-            catch ( RuntimeX e )
-            {
-                LOG.log(
-                        Level.SEVERE,
-                        e.getMessage() );
-                throw new InternalError( e );
-            }
+            load( url, env );
+        }
+        catch ( RuntimeX e )
+        {
+            LOG.log(
+                    Level.SEVERE,
+                    e.getMessage() );
+            throw new InternalError( e );
         }
     }
 
@@ -583,12 +487,12 @@ public class Scream implements ScriptEngineFactory
 
     @Override
     public String getEngineName() {
-        return "Scream";
+        return engineName;
     }
 
     @Override
     public String getEngineVersion() {
-        return "b17.r7rs";
+        return engineVersion;
     }
 
     @Override
@@ -676,6 +580,45 @@ public class Scream implements ScriptEngineFactory
      */
     private final static Environment _topLevelEnvironment =
             FirstClassObject.setConstant( createTle() );
+
+    /**
+     * Loads all classes defined in the kernel.integrateClasses property and
+     * invokes the following method signature on the class:
+     * <p>
+     *  {@code public static Environment extendTopLevelEnvironment( Environment tle )}
+     *
+     * @param tle The top level environment to contain the new bindings.
+     */
+    private static Environment createTle()
+    {
+        var result = createNullEnvironment().extend( "tle-common" );
+
+        try
+        {
+            RuntimeX.extendTopLevelEnvironment( result );
+            extendTopLevelEnvironment( result );
+            de.michab.scream.fcos.Continuation.extendTopLevelEnvironment( result );
+            Number.extendTopLevelEnvironment( result );
+            Port.extendTopLevelEnvironment( result );
+            Environment.extendTopLevelEnvironment( result );
+            SchemeObject.extendTopLevelEnvironment( result );
+        }
+        catch ( Exception e )
+        {
+            LOG.log(
+                    Level.SEVERE,
+                    "Init threw exception.",
+                    e.getCause() );
+            throw new InternalError( e );
+        }
+
+        // Load extensions defined in scheme source files.
+        addExtensions(
+                result,
+                schemeExtensions );
+
+        return result;
+    }
 
     /**
      * Creates the {@code null-environment}.
