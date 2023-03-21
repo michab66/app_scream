@@ -113,6 +113,14 @@ public class Scream implements ScriptEngineFactory
     private static String engineName;
     @Resource
     private static String engineVersion;
+    @Resource
+    private static String[] extensions;
+    @Resource
+    private static String[] names;
+    @Resource
+    private static String languageName;
+    @Resource
+    private static String languageVersion;
 
     /**
      * Creates an instance of an working Scheme interpreter.
@@ -497,7 +505,7 @@ public class Scream implements ScriptEngineFactory
 
     @Override
     public List<String> getExtensions() {
-        return Collections.emptyList();
+        return Arrays.asList( extensions );
     }
 
     @Override
@@ -505,25 +513,19 @@ public class Scream implements ScriptEngineFactory
         return Collections.emptyList();
     }
 
-    private static final List<String> _names =
-            Collections.unmodifiableList(
-                        Arrays.asList( "scheme", "scream" ) );
-
     @Override
     public List<String> getNames() {
-        return _names;
+        return Arrays.asList( names );
     }
 
     @Override
     public String getLanguageName() {
-        // TODO Auto-generated method stub
-        return null;
+        return languageName;
     }
 
     @Override
     public String getLanguageVersion() {
-        // TODO Auto-generated method stub
-        return null;
+        return languageVersion;
     }
 
     @Override
