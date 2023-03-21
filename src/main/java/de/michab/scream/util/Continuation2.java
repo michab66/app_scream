@@ -21,18 +21,14 @@ public class Continuation2<T, X extends Exception>
     private final Class<X> _exceptionClass;
 
     /**
-     * A holder used in continuation processing.  This has to be defined here
-     * since in case of top-level continuations it gets captured in a lambda
-     * that may be restarted.
-     * <p>
-     * See the test de.michab.scream.language.R7rs_6_10_Control_features_Test.call_cc_restart_2()
+     * Will receive the result for all continuation invocations.
      */
     private final Holder<T> _result = new Holder<>();
 
     /**
-     * @see #_result
+     * Will receive the exception for all continuation invocations.
      */
-    private final Holder<Exception> _exception = new Holder<>();
+    private final Holder<X> _exception = new Holder<>();
 
     /**
      * Hide ctor.
@@ -69,7 +65,7 @@ public class Continuation2<T, X extends Exception>
      */
     private void trampoline(
             Thunk t,
-            Cont<Exception> xCont,
+            Cont<X> xCont,
             Class<X> xClass )
                     throws Exception
     {
@@ -136,7 +132,7 @@ public class Continuation2<T, X extends Exception>
     public
     T toStack(
             ToStackOp<T> op,
-            Cont<Exception> exceptionHandler,
+            Cont<X> exceptionHandler,
             Class<X> exceptionClass )
         throws Exception
     {
@@ -161,7 +157,7 @@ public class Continuation2<T, X extends Exception>
     T toStack( ToStackOp<T> op )
         throws Exception
     {
-        Cont<Exception> handler =
+        Cont<X> handler =
                 ae -> {
                     _exception.set( ae );
                     return null;

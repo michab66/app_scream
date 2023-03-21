@@ -393,6 +393,7 @@ public class Scream implements ScriptEngineFactory
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
+    @Deprecated
     public static FirstClassObject load( SchemeString filename, Environment environment )
             throws RuntimeX
     {
@@ -417,6 +418,7 @@ public class Scream implements ScriptEngineFactory
      * @param file The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
+    @Deprecated
     private static FirstClassObject load( LoadContext file, Environment e )
             throws RuntimeX
     {
@@ -434,7 +436,7 @@ public class Scream implements ScriptEngineFactory
     }
 
     /**
-     * Entry point.
+     * Entry point. Rarely used.
      */
     public static void main( String[] argv ) throws Exception
     {

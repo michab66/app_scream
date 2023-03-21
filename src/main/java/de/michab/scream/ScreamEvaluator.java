@@ -5,6 +5,7 @@
  */
 package de.michab.scream;
 
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
@@ -20,7 +21,10 @@ import javax.script.ScriptException;
 
 import org.smack.util.Holder;
 
+import de.michab.scream.Scream.Cont;
+import de.michab.scream.Scream.FcoOp;
 import de.michab.scream.binding.SchemeObject;
+import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
@@ -28,7 +32,14 @@ import de.michab.scream.fcos.PortIn;
 import de.michab.scream.fcos.PortOut;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
+import de.michab.scream.frontend.SchemeParser;
+import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation;
+import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Continuation.ToStackOp;
 import de.michab.scream.util.Continuation2;
+import de.michab.scream.util.LoadContext;
+import de.michab.scream.util.SupplierX;
 
 /**
  * Contains a Scheme top level read-eval-print loop.  A SchemeEvaluator reads
@@ -237,8 +248,11 @@ public final class ScreamEvaluator implements ScriptEngine
      * @see #_result
      */
     Holder<Exception> _exception = new Holder<>();
-    Continuation2 continuation = new Continuation2();
 
+    /**
+     *
+     */
+    Continuation2<FirstClassObject,RuntimeX> continuation = new Continuation2( Runtime.class );
 
     /**
      * Evaluates the expressions read from the passed Reader in the Scream
@@ -337,4 +351,119 @@ public final class ScreamEvaluator implements ScriptEngine
     {
         return _factory;
     }
+
+///////////////////// Experimental.
+
+    private static Thunk evalImpl_(
+            Environment e,
+            SupplierX<FirstClassObject,RuntimeX> s,
+            FirstClassObject previousResult,
+            FirstClassObject newExpression,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        if ( newExpression == Port.EOF )
+            return c.accept( previousResult );
+
+        return Primitives._x_eval(
+                e,
+                newExpression,
+                fco -> evalImpl_( e, s, fco, s.get(), c ) );
+    }
+
+    private static Cont<FirstClassObject> mapCont( de.michab.scream.util.Continuation.Cont<FirstClassObject> cont )
+    {
+        return  c -> {
+            try
+            {
+                return cont.accept( c );
+            }
+            catch ( Exception e )
+            {
+                throw new InternalError();
+            }
+        };
+    }
+
+    private static ToStackOp<FirstClassObject> mapOp( FcoOp op )
+    {
+        return c -> op.call( mapCont( c )  );
+    }
+
+    @Deprecated
+    private static FirstClassObject toStack( FcoOp op )
+            throws RuntimeX
+    {
+        ToStackOp<FirstClassObject> tso2 = mapOp( op );
+
+        try
+        {
+            return Continuation.toStack( tso2 );
+        }
+        catch (Exception e) {
+            if ( RuntimeX.class.isAssignableFrom( e.getClass() ))
+                throw RuntimeX.class.cast( e );
+
+            throw RuntimeX.mInternalError( e );
+        }
+    }
+    public static Thunk evalImpl(
+            Environment e,
+            SupplierX<FirstClassObject,RuntimeX> s,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        return evalImpl_(
+                e,
+                s,
+                Cons.NIL,
+                s.get(),
+                c );
+    }
+
+    @Deprecated
+    private static FirstClassObject evalImpl(
+            Environment env,
+            SupplierX<FirstClassObject,RuntimeX> spl )
+                    throws RuntimeX
+    {
+        return toStack(
+                c -> evalImpl( env, spl, c ) );
+    }
+
+    /**
+     * Load a Scheme source file.
+     *
+     * @param file The name of the file to load.
+     * @throws RuntimeX In case of errors.
+     */
+    private static FirstClassObject load( LoadContext file, Environment e )
+            throws RuntimeX
+    {
+        try ( var reader  = LoadContext.getReader( file ) )
+        {
+            SchemeParser parser =
+                    new SchemeParser( reader );
+
+            return evalImpl( e, parser::getExpression );
+        }
+        catch ( IOException ioe )
+        {
+            throw RuntimeX.mIoError( ioe );
+        }
+    }
+
+    /**
+     * Loads a Scheme source file into the passed environment.
+     *
+     * @param filename The name of the file to load.
+     * @throws RuntimeX In case of errors.
+     */
+    public static FirstClassObject load( SchemeString filename, Environment environment )
+            throws RuntimeX
+    {
+        return load( new LoadContext( filename.getValue() ), environment );
+    }
+
+
 }
