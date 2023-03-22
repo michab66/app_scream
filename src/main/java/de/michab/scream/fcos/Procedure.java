@@ -9,8 +9,8 @@ import org.smack.util.Holder;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream;
 import de.michab.scream.Scream.Cont;
+import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Thunk;
 
@@ -119,7 +119,7 @@ public class Procedure
      */
     public FirstClassObject apply( Cons arguments ) throws RuntimeX
     {
-        return Scream.toStack(
+        return ScreamEvaluator.toStack(
                 c -> _execute( _closure, arguments, c ),
                 _result,
                 _exception );
