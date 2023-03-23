@@ -33,12 +33,6 @@ extends FirstClassObject
     public static final String TYPE_NAME = Operation.class.getSimpleName();
 
     /**
-     * The array representation of an empty argument list.
-     */
-    static final protected FirstClassObject[] _emptyArgArray =
-            new FirstClassObject[0];
-
-    /**
      * A default name used in the no-argument constructor.
      */
     static final Symbol DEFAULT_NAME =
