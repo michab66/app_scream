@@ -106,52 +106,55 @@ extends ScreamException
      * Scream specific {@code (error ...)} procedure.  Interrupts the
      * current computation with a runtime error.
      */
-    static private Procedure errorProcedure = new Procedure( "error" )
+    static private Procedure errorProcedure( Environment e )
     {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
+        return new Procedure( "error" )
         {
-            checkArgumentCount( 1, Integer.MAX_VALUE, args );
-            checkArgument( 1, SchemeString.class, args.listRef( 0 ) );
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                    throws RuntimeX
+            {
+                checkArgumentCount( 1, Integer.MAX_VALUE, args );
+                checkArgument( 1, SchemeString.class, args.listRef( 0 ) );
 
-            // Yes, the first argument is definitely a SchemeString.
-            String message = createReadable( args.listRef( 0 ) );
+                // Yes, the first argument is definitely a SchemeString.
+                String message = createReadable( args.listRef( 0 ) );
 
-            // Transform the remaining arguments in error arguments.
-            Object[] arguments = new Object[ (int)(args.length() -1) ];
-            for ( int i = (int)(args.length()-1) ; i > 0 ; i-- )
-                arguments[i-1] = createReadable( args.listRef( i ) );
+                // Transform the remaining arguments in error arguments.
+                Object[] arguments = new Object[ (int)(args.length() -1) ];
+                for ( int i = (int)(args.length()-1) ; i > 0 ; i-- )
+                    arguments[i-1] = createReadable( args.listRef( i ) );
 
-            // We must have been called by a scheme-defined procedure.  Get its name
-            // and report that as the operation in error.
-            RuntimeX result = new RuntimeX( message, arguments );
+                // We must have been called by a scheme-defined procedure.  Get its name
+                // and report that as the operation in error.
+                RuntimeX result = new RuntimeX( message, arguments );
 
-            // TODO: This is a temporary workaround.
-            // Remove as soon as the apply call chain is removed.
-            if ( e != null )
-                result.setOperationName( e.getName() );
-            throw result;
-        }
+                // TODO: This is a temporary workaround.
+                // Remove as soon as the apply call chain is removed.
+                if ( e != null )
+                    result.setOperationName( e.getName() );
+                throw result;
+            }
 
-        /**
-         * Makes a human readable string from a FirstClassObject.  That means for
-         * a real scheme string that the double quotes are removed -- gnah instead
-         * of "gnah" -- and that for all other cases the FCO.stringize is called,
-         * handling with grace even NIL.
-         */
-        private String createReadable( FirstClassObject o )
-        {
-            String result;
+            /**
+             * Makes a human readable string from a FirstClassObject.  That means for
+             * a real scheme string that the double quotes are removed -- gnah instead
+             * of "gnah" -- and that for all other cases the FCO.stringize is called,
+             * handling with grace even NIL.
+             */
+            private String createReadable( FirstClassObject o )
+            {
+                String result;
 
-            if ( o instanceof SchemeString )
-                result = ((SchemeString)o).getValue();
-            else
-                result = FirstClassObject.toString( o );
+                if ( o instanceof SchemeString )
+                    result = ((SchemeString)o).getValue();
+                else
+                    result = FirstClassObject.toString( o );
 
-            return result;
-        }
-    };
+                return result;
+            }
+        }.setClosure( e );
+    }
 
     /**
      * This is just a standard extendTopLevelEnvironment method as on other
@@ -163,8 +166,7 @@ extends ScreamException
     static Environment extendTopLevelEnvironment( Environment tle )
             throws RuntimeX
     {
-        // Add our local definitions.
-        tle.setPrimitive( errorProcedure );
+        tle.setPrimitive( errorProcedure( tle ) );
         //        tle.setPrimitive( errorCatchSyntax );
         return tle;
     }

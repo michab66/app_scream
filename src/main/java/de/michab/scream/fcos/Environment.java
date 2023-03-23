@@ -253,19 +253,6 @@ public final class Environment
         define( name, op );
     }
 
-    /**
-     * Environment operations setup.
-     *
-     * @param tle A reference to the system private top level environment.
-     * @return A reference to the environment including the additional entries
-     *        defined by this class.
-     */
-    public static Environment extendTopLevelEnvironment( Environment tle )
-    {
-        //tle.setPrimitive( evaluateProcedure );
-        return tle;
-    }
-
     @Override
     public Object toJava()
     {

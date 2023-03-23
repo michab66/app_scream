@@ -4,6 +4,8 @@
 ; Copyright © 1998-2023 Michael G. Binz
 ;
 
+(define EOF 'EOF)
+
 ;;
 ;; r7rs 6.13.1 p56 
 ;;

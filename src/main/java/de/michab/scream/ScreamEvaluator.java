@@ -699,7 +699,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * <p>
      * {@code r7rs 4.1.7 p14} syntax
      */
-    static private Syntax includeProcedure = new Syntax( "include" )
+    static private Syntax includeSyntax = new Syntax( "include" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -721,26 +721,29 @@ public final class ScreamEvaluator implements ScriptEngine
      * <p>
      * {code r7rs 6.1.2 p55} eval library procedure
      */
-    static private Procedure evalProcedure = new Procedure( "eval" )
+    static private Procedure evalProcedure( Environment e )
     {
-        @Override
-        protected Thunk _executeImpl(
-                Environment e,
-                Cons args,
-                Cont<FirstClassObject> c )
-            throws RuntimeX
+        return new Procedure( "eval" )
         {
-            checkArgumentCount( 2, args );
+            @Override
+            protected Thunk _executeImpl(
+                    Environment e,
+                    Cons args,
+                    Cont<FirstClassObject> c )
+                            throws RuntimeX
+            {
+                checkArgumentCount( 2, args );
 
-            var expOrDef =
-                    args.listRef( 0 );
-            Environment environment = Scut.as(
-                    Environment.class,
-                    args.listRef( 1 ) );
+                var expOrDef =
+                        args.listRef( 0 );
+                Environment environment = Scut.as(
+                        Environment.class,
+                        args.listRef( 1 ) );
 
-            return expOrDef.evaluate( environment, c );
-        }
-    };
+                return expOrDef.evaluate( environment, c );
+            }
+        }.setClosure( e );
+    }
 
     /**
      * Environment operations setup.
@@ -750,10 +753,10 @@ public final class ScreamEvaluator implements ScriptEngine
      *        defined by this class.
      * @throws RuntimeX
      */
-    public static Environment extendTopLevelEnvironment( Environment tle )
+    private static Environment extendTopLevelEnvironment( Environment tle )
             throws RuntimeX
     {
-        tle.setPrimitive( evalProcedure );
+        tle.setPrimitive( evalProcedure( tle ) );
 
         return tle;
     }
@@ -769,18 +772,13 @@ public final class ScreamEvaluator implements ScriptEngine
      *
      * @see de.michab.scream.Scream#_localTle
      */
-    private final static Environment _topLevelEnvironment =
-            FirstClassObject.setConstant( createTle() );
+    private final Environment _topLevelEnvironment =
+            createTle();
 
     /**
-     * Loads all classes defined in the kernel.integrateClasses property and
-     * invokes the following method signature on the class:
-     * <p>
-     *  {@code public static Environment extendTopLevelEnvironment( Environment tle )}
-     *
-     * @param tle The top level environment to contain the new bindings.
+     * @return The newly allocated top level environment.
      */
-    private static Environment createTle()
+    private Environment createTle()
     {
         var result = createNullEnvironment().extend( "tle-common" );
 
@@ -790,8 +788,6 @@ public final class ScreamEvaluator implements ScriptEngine
             extendTopLevelEnvironment( result );
             de.michab.scream.fcos.Continuation.extendTopLevelEnvironment( result );
             Number.extendTopLevelEnvironment( result );
-            Port.extendTopLevelEnvironment( result );
-            Environment.extendTopLevelEnvironment( result );
             SchemeObject.extendTopLevelEnvironment( result );
         }
         catch ( Exception e )
@@ -808,7 +804,7 @@ public final class ScreamEvaluator implements ScriptEngine
                 result,
                 schemeExtensions );
 
-        return result;
+        return FirstClassObject.setConstant( result );
     }
 
     /**
@@ -818,7 +814,7 @@ public final class ScreamEvaluator implements ScriptEngine
      *
      * @return the immutable {@code null-environment}.
      */
-    private static Environment createNullEnvironment()
+    private Environment createNullEnvironment()
     {
         Environment result = new Environment( "null" );
 
@@ -833,13 +829,15 @@ public final class ScreamEvaluator implements ScriptEngine
             SyntaxDo.extendNullEnvironment( result );
             SyntaxIf.extendNullEnvironment( result );
             SyntaxLambda.extendNullEnvironment( result );
-            SyntaxLet.extendNullEnvironment( result );
+            result.setPrimitive( SyntaxLet.letAsteriskSyntax );
+            result.setPrimitive( SyntaxLet.letSyntax );
+            result.setPrimitive( SyntaxLet.letrecSyntax );
             SyntaxOr.extendNullEnvironment( result );
             SyntaxQuote.extendNullEnvironment( result );
             SyntaxSyntax.extendNullEnvironment( result );
             SyntaxTime.extendNullEnvironment( result );
 
-            result.setPrimitive( includeProcedure );
+            result.setPrimitive( includeSyntax );
 
             result.define(
                     Symbol.createObject( "scream:null-environment" ),

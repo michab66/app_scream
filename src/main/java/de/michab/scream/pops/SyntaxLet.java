@@ -88,7 +88,7 @@ public abstract class SyntaxLet
      * where bindings is ((variable1 init1) ...) and body is a sequence of
      * expressions.
      */
-    static private Syntax letSyntax = new SyntaxLet( "let" )
+    static public final Syntax letSyntax = new SyntaxLet( "let" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
@@ -116,7 +116,7 @@ public abstract class SyntaxLet
      * where bindings is ((variable1 init1) ...) and body is a sequence of
      * expressions.
      */
-    static private Syntax letAsteriskSyntax = new SyntaxLet( "let*" )
+    static public final Syntax letAsteriskSyntax = new SyntaxLet( "let*" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
@@ -144,7 +144,7 @@ public abstract class SyntaxLet
      * where bindings is ((variable1 init1) ...) and body is a sequence of
      * expressions.
      */
-    static private Syntax letrecSyntax = new SyntaxLet( "letrec" )
+    static public final Syntax letrecSyntax = new SyntaxLet( "letrec" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
@@ -167,20 +167,4 @@ public abstract class SyntaxLet
                     c);
         }
     };
-
-    /**
-     * Base operations setup.
-     *
-     * @param tle A reference to the environment to be extended.
-     * @return The extended environment.
-     */
-    public static Environment extendNullEnvironment( Environment tle )
-            throws RuntimeX
-    {
-        tle.setPrimitive( letAsteriskSyntax );
-        tle.setPrimitive( letSyntax );
-        tle.setPrimitive( letrecSyntax );
-
-        return tle;
-    }
 }

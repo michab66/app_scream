@@ -5,8 +5,6 @@
  */
 package de.michab.scream.fcos;
 
-import de.michab.scream.RuntimeX;
-
 /**
  * Represents a scheme port object.  Ports represent input and output devices.
  * To Scheme, an input port is a Scheme object that can deliver characters
@@ -147,19 +145,4 @@ public abstract class Port
      */
     @Override
     public abstract Object toJava();
-
-    /**
-     * Extends the passed environment with the procedures logically associated
-     * with this class.
-     *
-     * @param tle The environment to extend.
-     * @return The passed environment after extension.
-     */
-    public static Environment extendTopLevelEnvironment( Environment tle )
-        throws RuntimeX
-    {
-        tle.define( EOF, EOF );
-
-        return tle;
-    }
 }

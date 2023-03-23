@@ -762,40 +762,46 @@ public class SchemeObject
     /**
      * (object obj) -- Wraps the passed first class object with a scheme object.
      */
-    static private Procedure wrapObjectProcedure = new Procedure( "object" )
+    static private Procedure wrapObjectProcedure( Environment e )
     {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
+        return new Procedure( "object" )
         {
-            checkArgumentCount( 1, args );
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                    throws RuntimeX
+            {
+                checkArgumentCount( 1, args );
 
-            var a0 = args.getCar();
+                var a0 = args.getCar();
 
-            // If the passed object is already a SchemeObject...
-            if ( a0 == Cons.NIL || a0 instanceof SchemeObject )
-                // ...then just return this one.
-                return c.accept( a0 );
+                // If the passed object is already a SchemeObject...
+                if ( a0 == Cons.NIL || a0 instanceof SchemeObject )
+                    // ...then just return this one.
+                    return c.accept( a0 );
 
-            return c.accept( new SchemeObject( a0 ) );
-        }
-    };
+                return c.accept( new SchemeObject( a0 ) );
+            }
+        }.setClosure( e );
+    }
 
     /**
      * (object? obj)
      */
-    static private Procedure objectPredicateProcedure = new Procedure( "object?" )
+    static private Procedure objectPredicateProcedure( Environment e )
     {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
+        return new Procedure( "object?" )
         {
-            checkArgumentCount( 1, args );
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                    throws RuntimeX
+            {
+                checkArgumentCount( 1, args );
 
-            return () -> c.accept(
-                    SchemeBoolean.createObject( args.getCar() instanceof SchemeObject ) );
-        }
-    };
+                return () -> c.accept(
+                        SchemeBoolean.createObject( args.getCar() instanceof SchemeObject ) );
+            }
+        }.setClosure( e );
+    }
 
 //    /**
 //     * (describe-object obj) -> #f
@@ -883,8 +889,8 @@ public class SchemeObject
     public static Environment extendTopLevelEnvironment( Environment tle )
             throws RuntimeX
     {
-        tle.setPrimitive( objectPredicateProcedure );
-        tle.setPrimitive( wrapObjectProcedure );
+        tle.setPrimitive( objectPredicateProcedure(tle) );
+        tle.setPrimitive( wrapObjectProcedure( tle ) );
         tle.setPrimitive( constructObjectSyntax );
 //        tle.setPrimitive( describeObjectProcedure );
 //        tle.setPrimitive( catchExceptionSyntax );
