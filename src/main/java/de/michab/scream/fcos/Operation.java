@@ -86,8 +86,7 @@ extends FirstClassObject
      */
     protected Operation( FirstClassObject
             formalArguments,
-            Cons body,
-            Environment compileEnv )
+            Cons body )
                     throws RuntimeX
     {
         _name = DEFAULT_NAME;

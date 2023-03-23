@@ -54,12 +54,12 @@ public class Syntax
      * @param body
      * @throws RuntimeX
      */
-    public Syntax( Environment e,
+    public Syntax(
             FirstClassObject args,
             Cons body  )
                     throws RuntimeX
     {
-        super( args, body, e );
+        super( args, body );
     }
 
     @Override

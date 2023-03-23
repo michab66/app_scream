@@ -75,7 +75,7 @@ public class Procedure
             Cons body  )
                     throws RuntimeX
     {
-        super( args, body, e );
+        super( args, body );
         _closure = e;
     }
 
