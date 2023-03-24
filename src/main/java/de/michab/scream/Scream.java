@@ -69,6 +69,10 @@ public class Scream implements ScriptEngineFactory
             .injectResources( Scream.class );
     }
 
+    /**
+     * {@code Thunk call( Scream.Cont<FirstClassObject> c )
+     *      throws RuntimeX; }
+     */
     @FunctionalInterface
     public interface FcoOp {
         Thunk call( Cont<FirstClassObject> c )
@@ -77,7 +81,8 @@ public class Scream implements ScriptEngineFactory
 
     /**
      * A Scheme continuation.
-     *
+     * <p>
+     * {@code Thunk accept(R result) throws RuntimeX;}
      * @param <R> The type accepted.
      */
     @FunctionalInterface

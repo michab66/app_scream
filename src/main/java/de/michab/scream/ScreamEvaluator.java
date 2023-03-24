@@ -274,7 +274,7 @@ public final class ScreamEvaluator implements ScriptEngine
                 c );
     }
 
-    private static Cont<FirstClassObject> mapCont( de.michab.scream.util.Continuation.Cont<FirstClassObject> cont )
+    private static Cont<FirstClassObject> mapCont( Continuation.Cont<FirstClassObject> cont )
     {
         return  c -> {
             try
@@ -283,7 +283,7 @@ public final class ScreamEvaluator implements ScriptEngine
             }
             catch ( Exception e )
             {
-                throw new InternalError();
+                throw new InternalError( "mapCont", e );
             }
         };
     }
