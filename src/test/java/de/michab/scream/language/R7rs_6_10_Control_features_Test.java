@@ -7,10 +7,10 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.SchemeBoolean;
 
 /**
@@ -119,38 +119,35 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void apply_1() throws Exception
     {
-        var se = scriptEngine();
-
-        var result = se.evalFco(
-            """
-            (apply + 10 '(2 1))
-            """ );
-        assertEquals( i(13), result );
+        expectFco(
+                "(apply + 10 '(2 1))",
+                i(13) );
     }
 
     @Test
     public void apply_2() throws Exception
     {
-        var se = scriptEngine();
-
-        var result = se.evalFco(
-            """
-            (apply + 300 10 '(2 1))
-            """ );
-        assertEquals( i313, result );
+        expectFco(
+                "(apply + 300 10 '(2 1))",
+                i313 );
     }
 
     @Test
-    @Disabled
     public void apply_err_2() throws Exception
     {
-        var se = scriptEngine();
+        // Last argument wrong.
+        expectError(
+                "(apply + 300 10 3)",
+                Code.TYPE_ERROR );
+    }
 
-        var result = se.evalFco(
-            """
-            (apply + 300 10 3)
-            """ );
-        assertEquals( i313, result );
+    @Test
+    public void apply_err_3() throws Exception
+    {
+        // Not a procedure.
+        expectError(
+                "(apply 1 300 10 '(2 1))",
+                Code.TYPE_ERROR );
     }
 
     /**
