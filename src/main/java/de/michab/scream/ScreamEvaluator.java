@@ -534,7 +534,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @param env The environment used for evaluating the extensions.
      * @param fileNames The files to load.
      */
-    static void addExtensions(
+    private void addExtensions(
             Environment env,
             String filename )
     {
@@ -571,7 +571,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @throws RuntimeX In case of errors.
      */
     @Deprecated
-    public static FirstClassObject load( SchemeString filename, Environment environment )
+    private static FirstClassObject load( SchemeString filename, Environment environment )
             throws RuntimeX
     {
         return load( new LoadContext( filename.getValue() ), environment );
@@ -583,7 +583,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @param filename The URL of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    public static FirstClassObject load( URL filename, Environment environment )
+    private static FirstClassObject load( URL filename, Environment environment )
             throws RuntimeX
     {
         return load( new LoadContext( filename ), environment );
@@ -771,32 +771,13 @@ public final class ScreamEvaluator implements ScriptEngine
     }
 
     /**
-     * Environment operations setup.
-     *
-     * @param tle A reference to the system private top level environment.
-     * @return A reference to the environment including the additional entries
-     *        defined by this class.
-     * @throws RuntimeX
-     */
-    private static Environment extendTopLevelEnvironment( Environment tle )
-            throws RuntimeX
-    {
-        tle.setPrimitive( evalProcedure( tle ) );
-        tle.setPrimitive( applyProcedure( tle ) );
-
-        return tle;
-    }
-
-    /**
      * A reference to the top level environment.  This is a single common
-     * instance holding all the core scheme definitions.  This instance is shared
-     * between all interpreter instances and represents the root in the
-     * environment hierarchy.
-     *
-     * Assignment of values to symbols bound in this environment will take place
-     * for all SchemeInterpreter instances.
-     *
-     * @see de.michab.scream.Scream#_localTle
+     * instance holding all the core scheme definitions.  This instance is
+     * shared between all interpreter instances and represents the root in
+     * the environment hierarchy.
+     * <p>
+     * Assignment of values to symbols bound in this environment will take
+     * place for all SchemeInterpreter instances.
      */
     private final Environment _topLevelEnvironment =
             createTle();
@@ -811,7 +792,8 @@ public final class ScreamEvaluator implements ScriptEngine
         try
         {
             RuntimeX.extendTopLevelEnvironment( result );
-            extendTopLevelEnvironment( result );
+            result.setPrimitive( evalProcedure( result ) );
+            result.setPrimitive( applyProcedure( result ) );
             de.michab.scream.fcos.Continuation.extendTopLevelEnvironment( result );
             Number.extendTopLevelEnvironment( result );
             SchemeObject.extendTopLevelEnvironment( result );
