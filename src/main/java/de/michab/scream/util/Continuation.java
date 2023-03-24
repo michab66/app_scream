@@ -14,16 +14,28 @@ import org.smack.util.Holder;
  *
  * @author micbinz
  */
-public class Continuation
+public class Continuation<T, X extends Exception>
 {
-    private static int _thunkCount;
+    private int _thunkCount;
+
+    private final Class<X> _exceptionClass;
+
+    /**
+     * Will receive the result for all continuation invocations.
+     */
+    private final Holder<T> _result = new Holder<>();
+
+    /**
+     * Will receive the exception for all continuation invocations.
+     */
+    private final Holder<X> _exception = new Holder<>();
 
     /**
      * Hide ctor.
      */
-    private Continuation()
+    public Continuation( Class<X>  exceptionClass )
     {
-        throw new AssertionError();
+        _exceptionClass = exceptionClass;
     }
 
     @FunctionalInterface
@@ -51,8 +63,7 @@ public class Continuation
      * @throws Exception If an exception different from xClass happens or if
      * xCont threw an exception.
      */
-    private static <X extends Exception>
-    void trampoline(
+    private void trampoline(
             Thunk t,
             Cont<X> xCont,
             Class<X> xClass )
@@ -81,7 +92,7 @@ public class Continuation
         }
     }
 
-    private static <T> Cont<T> endCall(Consumer<T> call) {
+    private Cont<T> endCall(Consumer<T> call) {
         return r -> {
             call.accept(r);
             return null;
@@ -91,7 +102,7 @@ public class Continuation
     /**
      * @return The current value of the thunk counter.
      */
-    public static int thunkCount()
+    public int thunkCount()
     {
         return _thunkCount;
     }
@@ -101,7 +112,7 @@ public class Continuation
      *
      * @param newValue The new value for the thunk counter.
      */
-    public static void thunkCount( int newValue )
+    public void thunkCount( int newValue )
     {
         _thunkCount = newValue;
     }
@@ -118,22 +129,19 @@ public class Continuation
      * @return The result of the passed operation.
      * @throws Exception
      */
-    public static <T, X extends Exception>
+    public
     T toStack(
             ToStackOp<T> op,
             Cont<X> exceptionHandler,
             Class<X> exceptionClass )
         throws Exception
     {
-        Holder<T> result =
-                new Holder<>();
-
         trampoline(
-                op.call( endCall( s -> result.set( s ) ) ),
+                op.call( endCall( s -> _result.set( s ) ) ),
                 exceptionHandler,
                 exceptionClass );
 
-        return result.get();
+        return _result.get();
     }
 
     /**
@@ -145,52 +153,24 @@ public class Continuation
      * @return The result of the passed operation.
      * @throws Exception
      */
-    @Deprecated
-    public static <T>
-    T toStack(
-            ToStackOp<T> op )
+    public
+    T toStack( ToStackOp<T> op )
         throws Exception
     {
-        Holder<T> result =
-                new Holder<>();
-        Holder<Exception> exception =
-                new Holder<>();
-
-        return toStack( op, result, exception );
-    }
-
-    /**
-     * Execute a continuation-based operation and return the result
-     * on the stack.
-     *
-     * @param <T> The result type.
-     * @param op The operation to execute.
-     * @param result A preallocated holder.
-     * @param exception A preallocated holder.
-     * @return The result of the passed operation.
-     * @throws Exception
-     */
-    public static <T>
-    T toStack(
-            ToStackOp<T> op,
-            Holder<T> result,
-            Holder<Exception> exception)
-        throws Exception
-    {
-        Cont<Exception> handler =
+        Cont<X> handler =
                 ae -> {
-                    exception.set( ae );
+                    _exception.set( ae );
                     return null;
                 };
 
         trampoline(
-                op.call( endCall( s -> result.set( s ) ) ),
+                op.call( endCall( s -> _result.set( s ) ) ),
                 handler,
-                Exception.class );
+                _exceptionClass );
 
-        if ( exception.get() != null )
-            throw exception.get();
+        if ( _exception.get() != null )
+            throw _exception.get();
 
-        return result.get();
+        return _result.get();
     }
 }

@@ -39,31 +39,40 @@ public class ContinuationTest extends ScreamBaseTest
     @Test
     public void basic() throws Exception
     {
-        Continuation.thunkCount(0);
+        Continuation<Integer, Exception> continuation =
+                new Continuation<>( Exception.class );
 
-        int result = Continuation.toStack(
+        continuation.thunkCount(0);
+
+        int result = continuation.toStack(
                 cont -> add(3,4,cont) );
 
-        assertEquals( 1, Continuation.thunkCount() );
+        assertEquals( 1, continuation.thunkCount() );
         assertEquals( 7, result );
     }
 
     @Test
     public void basic2() throws Exception
     {
-        Continuation.thunkCount(0);
+        Continuation<Integer, Exception> continuation =
+                new Continuation<>( Exception.class );
 
-        int result = Continuation.toStack(
+        continuation.thunkCount(0);
+
+        int result = continuation.toStack(
                 cont-> addd(3,4,cont) );
 
-        assertEquals( 2, Continuation.thunkCount() );
+        assertEquals( 2, continuation.thunkCount() );
         assertEquals( 7, result );
     }
 
     @Test
     public void testSuccess() throws Exception
     {
-        int result = Continuation.toStack(
+        Continuation<Integer, Exception> continuation =
+                new Continuation<>( Exception.class );
+
+        int result = continuation.toStack(
                 cont-> add(3,4,cont),
                 null,
                 Exception.class );
@@ -74,10 +83,12 @@ public class ContinuationTest extends ScreamBaseTest
     @Test
     public void testException()
     {
+        Continuation<Integer, Exception> continuation =
+                new Continuation<>( Exception.class );
         try
         {
             @SuppressWarnings("unused")
-            int result = Continuation.toStack(
+            int result = continuation.toStack(
                     cont-> addx(3,4,cont) );
             fail();
         }
@@ -94,6 +105,9 @@ public class ContinuationTest extends ScreamBaseTest
     @Test
     public void testException2() throws Exception
     {
+        Continuation<Integer, ArithmeticException> continuation =
+                new Continuation<>( ArithmeticException.class );
+
         Holder<ArithmeticException> aeh =
                 new Holder<>();
 
@@ -103,13 +117,11 @@ public class ContinuationTest extends ScreamBaseTest
                     return null;
                 };
 
-        int result = Continuation.toStack(
+        int result = continuation.toStack(
                 cont-> addx(3,4,cont),
                 handler,
                 ArithmeticException.class );
 
         assertEquals( 7, result );
     }
-
-
 }

@@ -6,7 +6,6 @@
 package de.michab.scream;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
@@ -22,7 +21,6 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 
-import org.smack.util.Holder;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.Scream.Cont;
@@ -58,16 +56,13 @@ import de.michab.scream.pops.SyntaxTime;
 import de.michab.scream.util.Continuation;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Continuation.ToStackOp;
-import de.michab.scream.util.Continuation2;
 import de.michab.scream.util.FunctionX;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.SupplierX;
 
 /**
- * Contains a Scheme top level read-eval-print loop.  A SchemeEvaluator reads
- * scheme expressions from a SchemeReader and writes the results of the
- * evaluation to its sink.
+ * The scream scipt engine.
  *
  * @author Michael Binz
  */
@@ -76,6 +71,29 @@ public final class ScreamEvaluator implements ScriptEngine
     @SuppressWarnings("unused")
     private static Logger LOG =
             Logger.getLogger( ScreamEvaluator.class.getName() );
+
+    /**
+     * The continuation processor.
+     */
+    private final Continuation<FirstClassObject,RuntimeX> continuation =
+            new Continuation<>( RuntimeX.class );
+
+    /**
+     * The relative path to our extensions package.
+     */
+    private final static String EXTENSION_POSITION = "extensions/";
+
+    /**
+     * The name of the file that holds the Scheme-implemented parts of the
+     * engine common to all script engine instance.
+     */
+    private static final String schemeExtensions = "common-init.s";
+
+    /**
+     * The name of the file that holds the Scheme-implemented parts that are
+     * specific for each script engine.
+     */
+    private static final String schemeInstanceExtensions = "instance-init.s";
 
     /**
      * The symbol being bound to an object reference of the interpreter itself.
@@ -198,74 +216,6 @@ public final class ScreamEvaluator implements ScriptEngine
         return _interaction;
     }
 
-    @Override
-    public Object eval(String script, ScriptContext context) throws ScriptException
-    {
-        try
-        {
-            _context.push( context );
-            return eval( script );
-        }
-        finally
-        {
-            _context.pop();
-        }
-    }
-
-    @Override
-    public Object eval(Reader reader, ScriptContext context) throws ScriptException {
-        try
-        {
-            _context.push( context );
-            return eval( reader );
-        }
-        finally
-        {
-            _context.pop();
-        }
-    }
-
-    @Override
-    public Object eval(String script) throws ScriptException {
-        return eval( new StringReader( script ) );
-    }
-
-    @Override
-    public Object eval(Reader reader) throws ScriptException
-    {
-        try
-        {
-            return FirstClassObject.toString( evalFco( reader ) );
-//            if ( result == Cons.NIL )
-//                return null;
-//            return result.toJava();
-        }
-        catch ( ScreamException e )
-        {
-            throw new ScriptException( e );
-        }
-    }
-
-    /**
-     * A holder used in continuation processing.  This has to be defined here
-     * since in case of top-level continuations it gets captured in a lambda
-     * that may be restarted.
-     * <p>
-     * See the test de.michab.scream.language.R7rs_6_10_Control_features_Test.call_cc_restart_2()
-     */
-    Holder<FirstClassObject> _result = new Holder<>();
-
-    /**
-     * @see #_result
-     */
-    Holder<Exception> _exception = new Holder<>();
-
-    /**
-     *
-     */
-    private Continuation2<FirstClassObject,RuntimeX> continuation =
-            new Continuation2<>( RuntimeX.class );
-
     /**
      * Evaluates the expressions read from the passed Reader in the Scream
      * type system.
@@ -276,11 +226,9 @@ public final class ScreamEvaluator implements ScriptEngine
      */
     public FirstClassObject evalFco(Reader reader) throws RuntimeX
     {
-            return evalImpl(
-                    _interaction,
-                    new SchemeReader( reader )::getExpression,
-                    _result,
-                    _exception );
+        return evalImpl(
+                _interaction,
+                new SchemeReader( reader )::getExpression );
     }
 
     /**
@@ -294,96 +242,6 @@ public final class ScreamEvaluator implements ScriptEngine
     public FirstClassObject evalFco(String script) throws RuntimeX {
         return evalFco( new StringReader( script ) );
     }
-
-    @Override
-    public Object eval(String script, Bindings n) throws ScriptException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Object eval(Reader reader, Bindings n) throws ScriptException {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void put(String key, Object value) {
-        // TODO Auto-generated method stub
-    }
-
-    @Override
-    public Object get(String key) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Bindings getBindings(int scope) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public void setBindings(Bindings bindings, int scope) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public Bindings createBindings() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public ScriptContext getContext()
-    {
-        return _context.peek();
-    }
-
-    @Override
-    public void setContext( ScriptContext context )
-    {
-        Objects.requireNonNull( context );
-
-        if ( null == context.getErrorWriter() )
-            context.setErrorWriter( Writer.nullWriter() );
-        if ( null == context.getReader() )
-            context.setReader( Reader.nullReader() );
-        if ( null == context.getWriter() )
-            context.setErrorWriter( Writer.nullWriter() );
-
-        _context.clear();
-        _context.push( context );
-    }
-
-    @Override
-    public ScriptEngineFactory getFactory()
-    {
-        return _factory;
-    }
-
-
-//////////////////
-
-
-    /**
-     * This is the relative path to our extensions package.
-     */
-    private final static String EXTENSION_POSITION = "extensions/";
-
-    /**
-     * The name of the file that holds the Scheme-implemented parts of the
-     * engine common to all script engine instance.
-     */
-    private static final String schemeExtensions = "common-init.s";
-
-    /**
-     * The name of the file that holds the Scheme-implemented parts that are
-     * specific for each script engine.
-     */
-    private static final String schemeInstanceExtensions = "instance-init.s";
 
     private static Thunk evalImpl_(
             Environment e,
@@ -416,22 +274,6 @@ public final class ScreamEvaluator implements ScriptEngine
                 c );
     }
 
-//    @FunctionalInterface
-//    public interface FcoOp {
-//        Thunk call( Cont<FirstClassObject> c )
-//            throws RuntimeX;
-//    }
-//
-//    /**
-//     * A Scheme continuation.
-//     *
-//     * @param <R> The type accepted.
-//     */
-//    @FunctionalInterface
-//    public static interface Cont<R> {
-//        Thunk accept(R result) throws RuntimeX;
-//    }
-
     private static Cont<FirstClassObject> mapCont( de.michab.scream.util.Continuation.Cont<FirstClassObject> cont )
     {
         return  c -> {
@@ -451,7 +293,6 @@ public final class ScreamEvaluator implements ScriptEngine
         return c -> op.call( mapCont( c )  );
     }
 
-    @Deprecated
     private FirstClassObject toStack( FcoOp op )
             throws RuntimeX
     {
@@ -459,26 +300,7 @@ public final class ScreamEvaluator implements ScriptEngine
 
         try
         {
-            return Continuation.toStack( tso2 );
-        }
-        catch (Exception e) {
-            if ( RuntimeX.class.isAssignableFrom( e.getClass() ))
-                throw RuntimeX.class.cast( e );
-
-            throw RuntimeX.mInternalError( e );
-        }
-    }
-    public  FirstClassObject toStack( FcoOp op,
-            Holder<FirstClassObject> result,
-            Holder<Exception> exception)
-            throws RuntimeX
-    {
-        ToStackOp<FirstClassObject> tso2 = mapOp( op );
-
-        try
-        {
-//            return continuation.toStack( tso2 );
-            return Continuation.toStack( tso2, result, exception );
+            return continuation.toStack( tso2 );
         }
         catch (Exception e) {
             if ( RuntimeX.class.isAssignableFrom( e.getClass() ))
@@ -488,21 +310,6 @@ public final class ScreamEvaluator implements ScriptEngine
         }
     }
 
-    private FirstClassObject evalImpl(
-            Environment env,
-            SupplierX<FirstClassObject,RuntimeX> spl,
-            Holder<FirstClassObject> result,
-            Holder<Exception> exception)
-
-                    throws RuntimeX
-    {
-        return toStack(
-                c -> evalImpl( env, spl, c ),
-                result,
-                exception );
-    }
-
-    @Deprecated
     private FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl )
@@ -525,9 +332,6 @@ public final class ScreamEvaluator implements ScriptEngine
             Environment env,
             String filename )
     {
-        // The getResourceAsStream in the next line addresses resources relative
-        // to the classes package.  So here we create a name like
-        // extensions/foo.s.
         String crtFileName = EXTENSION_POSITION + filename;
 
         // Try to get a stream on the file...
@@ -557,7 +361,6 @@ public final class ScreamEvaluator implements ScriptEngine
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    @Deprecated
     private  FirstClassObject load( SchemeString filename, Environment environment )
             throws RuntimeX
     {
@@ -582,7 +385,6 @@ public final class ScreamEvaluator implements ScriptEngine
      * @param file The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    @Deprecated
     private FirstClassObject load( LoadContext file, Environment e )
             throws RuntimeX
     {
@@ -597,20 +399,6 @@ public final class ScreamEvaluator implements ScriptEngine
         {
             throw RuntimeX.mIoError( ioe );
         }
-    }
-
-    /**
-     * Entry point. Rarely used.
-     */
-    public static void main( String[] argv ) throws Exception
-    {
-        Thread.currentThread().setName( "screamMain" );
-
-        var interpreter = new Scream();
-
-        var engine = interpreter.getScriptEngine();
-
-        engine.eval( new InputStreamReader( System.in ) );
     }
 
     /**
@@ -844,5 +632,126 @@ public final class ScreamEvaluator implements ScriptEngine
         {
             throw new InternalError( e );
         }
+    }
+
+    //
+    // ScriptEngine operations.
+    //
+
+    @Override
+    public Object eval(String script, ScriptContext context) throws ScriptException
+    {
+        try
+        {
+            _context.push( context );
+            return eval( script );
+        }
+        finally
+        {
+            _context.pop();
+        }
+    }
+
+    @Override
+    public Object eval(Reader reader, ScriptContext context) throws ScriptException {
+        try
+        {
+            _context.push( context );
+            return eval( reader );
+        }
+        finally
+        {
+            _context.pop();
+        }
+    }
+
+    @Override
+    public Object eval(String script) throws ScriptException {
+        return eval( new StringReader( script ) );
+    }
+
+    @Override
+    public Object eval(Reader reader) throws ScriptException
+    {
+        try
+        {
+            return FirstClassObject.toString( evalFco( reader ) );
+//            if ( result == Cons.NIL )
+//                return null;
+//            return result.toJava();
+        }
+        catch ( ScreamException e )
+        {
+            throw new ScriptException( e );
+        }
+    }
+
+    @Override
+    public Object eval(String script, Bindings n) throws ScriptException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Object eval(Reader reader, Bindings n) throws ScriptException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void put(String key, Object value) {
+        // TODO Auto-generated method stub
+    }
+
+    @Override
+    public Object get(String key) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Bindings getBindings(int scope) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void setBindings(Bindings bindings, int scope) {
+        // TODO Auto-generated method stub
+
+    }
+
+    @Override
+    public Bindings createBindings() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public ScriptContext getContext()
+    {
+        return _context.peek();
+    }
+
+    @Override
+    public void setContext( ScriptContext context )
+    {
+        Objects.requireNonNull( context );
+
+        if ( null == context.getErrorWriter() )
+            context.setErrorWriter( Writer.nullWriter() );
+        if ( null == context.getReader() )
+            context.setReader( Reader.nullReader() );
+        if ( null == context.getWriter() )
+            context.setErrorWriter( Writer.nullWriter() );
+
+        _context.clear();
+        _context.push( context );
+    }
+
+    @Override
+    public ScriptEngineFactory getFactory()
+    {
+        return _factory;
     }
 }
