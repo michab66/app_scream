@@ -24,7 +24,6 @@ import javax.script.ScriptException;
 
 import org.smack.util.Holder;
 import org.smack.util.JavaUtil;
-import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.Scream.FcoOp;
@@ -386,19 +385,6 @@ public final class ScreamEvaluator implements ScriptEngine
      */
     private static final String schemeInstanceExtensions = "instance-init.s";
 
-    @Resource
-    private static String engineName;
-    @Resource
-    private static String engineVersion;
-    @Resource
-    private static String[] extensions;
-    @Resource
-    private static String[] names;
-    @Resource
-    private static String languageName;
-    @Resource
-    private static String languageVersion;
-
     private static Thunk evalImpl_(
             Environment e,
             SupplierX<FirstClassObject,RuntimeX> s,
@@ -466,7 +452,7 @@ public final class ScreamEvaluator implements ScriptEngine
     }
 
     @Deprecated
-    private static FirstClassObject toStack( FcoOp op )
+    private FirstClassObject toStack( FcoOp op )
             throws RuntimeX
     {
         ToStackOp<FirstClassObject> tso2 = mapOp( op );
@@ -482,7 +468,7 @@ public final class ScreamEvaluator implements ScriptEngine
             throw RuntimeX.mInternalError( e );
         }
     }
-    public static FirstClassObject toStack( FcoOp op,
+    public  FirstClassObject toStack( FcoOp op,
             Holder<FirstClassObject> result,
             Holder<Exception> exception)
             throws RuntimeX
@@ -491,6 +477,7 @@ public final class ScreamEvaluator implements ScriptEngine
 
         try
         {
+//            return continuation.toStack( tso2 );
             return Continuation.toStack( tso2, result, exception );
         }
         catch (Exception e) {
@@ -501,7 +488,7 @@ public final class ScreamEvaluator implements ScriptEngine
         }
     }
 
-    static FirstClassObject evalImpl(
+    private FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl,
             Holder<FirstClassObject> result,
@@ -516,7 +503,7 @@ public final class ScreamEvaluator implements ScriptEngine
     }
 
     @Deprecated
-    private static FirstClassObject evalImpl(
+    private FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl )
                     throws RuntimeX
@@ -571,7 +558,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @throws RuntimeX In case of errors.
      */
     @Deprecated
-    private static FirstClassObject load( SchemeString filename, Environment environment )
+    private  FirstClassObject load( SchemeString filename, Environment environment )
             throws RuntimeX
     {
         return load( new LoadContext( filename.getValue() ), environment );
@@ -583,7 +570,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @param filename The URL of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    private static FirstClassObject load( URL filename, Environment environment )
+    private FirstClassObject load( URL filename, Environment environment )
             throws RuntimeX
     {
         return load( new LoadContext( filename ), environment );
@@ -596,7 +583,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @throws RuntimeX In case of errors.
      */
     @Deprecated
-    private static FirstClassObject load( LoadContext file, Environment e )
+    private FirstClassObject load( LoadContext file, Environment e )
             throws RuntimeX
     {
         try ( var reader  = LoadContext.getReader( file ) )
@@ -677,7 +664,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @return A thunk.
      * @throws RuntimeX
      */
-    public static <T extends FirstClassObject>
+    private static <T extends FirstClassObject>
     Thunk _x_apply(
             Class<T> elementType,
             FunctionX<T, FirstClassObject, RuntimeX> operation,
@@ -699,7 +686,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * <p>
      * {@code r7rs 4.1.7 p14} syntax
      */
-    static private Syntax includeSyntax = new Syntax( "include" )
+    private Syntax includeSyntax = new Syntax( "include" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
