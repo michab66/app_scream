@@ -34,29 +34,31 @@ public class Continuation extends Procedure
     /**
      * (call-with-current-continuation ...
      */
-    static private Procedure callccProc =
-            new Procedure( "call-with-current-continuation" )
+    static private Procedure callccProc( Environment e )
     {
-        @Override
-        protected Thunk _executeImpl(
-                Environment e,
-                Cons args,
-                Cont<FirstClassObject> c )
-            throws RuntimeX
+        return new Procedure( "call-with-current-continuation" )
         {
-            checkArgumentCount( 1, args );
+            @Override
+            protected Thunk _executeImpl(
+                    Environment e,
+                    Cons args,
+                    Cont<FirstClassObject> c )
+                            throws RuntimeX
+            {
+                checkArgumentCount( 1, args );
 
-            var proc = Scut.as(
-                    Procedure.class,
-                    args.getCar() );
+                var proc = Scut.as(
+                        Procedure.class,
+                        args.getCar() );
 
-            return proc._execute(
-                    e,
-                    Cons.create(
-                            new Continuation( c ) ),
-                    c );
-        }
-    };
+                return proc._execute(
+                        e,
+                        Cons.create(
+                                new Continuation( c ) ),
+                        c );
+            }
+        }.setClosure( e );
+    }
 
     @Override
     protected Thunk _executeImpl( Environment e, Cons args,
@@ -77,7 +79,7 @@ public class Continuation extends Procedure
     public static Environment extendTopLevelEnvironment( Environment tle )
             throws RuntimeX
     {
-        var ccc = callccProc.setClosure( tle );
+        var ccc = callccProc( tle );
         tle.setPrimitive( ccc );
         tle.define( Symbol.createObject( "call/cc" ), ccc );
 

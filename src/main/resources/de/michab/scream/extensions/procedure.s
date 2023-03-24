@@ -14,46 +14,19 @@
   (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
 
 
-
 ;;
 ;; (apply proc arg1 ... args)  procedure; r7rs 50
 ;;
 ;; Proc must be a procedure and args must be a list. Calls proc with the
 ;; elements of the list (append (list arg1 ...) args) as the actual arguments.
 ;;
-(define (apply proc second . rest)
-
-  (if (not (procedure? proc))
-    (error "TYPE_ERROR" %type-procedure (%typename proc) 1))
-
-  (if (null? rest)
-    ; If rest is empty, this must be the standard case, where apply
-    ; is called with just a procedure and an argument list for this
-    ; procedure.
-    (if (not (list? second))
-      (error "TYPE_ERROR" %type-cons (%typename second) 2)
-      ((object proc) (apply second)))
-
-    ; This handles the case of the esoteric apply as defined in r5rs.
-    (let* (
-         ; Create a single argument list.
-         (argument-list (cons second rest))
-         ; Get a reference to the element before the last in the list.
-         (before-end (list-tail argument-list (- (length argument-list) 2)))
-         ; Get a reference to the last element
-         (the-end (cdr before-end)))
-      ; First check the type of the last arg which must be a list.
-      (if (not (list? (car the-end)))
-        (error "TYPE_ERROR"
-               %type-cons
-               (%typename (car the-end))
-               (+ 1 (length argument-list))))
-      ; Recompose the tail of the arguments...
-      (set-cdr! before-end (car the-end))
-      ; ...and apply the procedure on the resulting list.
-      ((object proc) (apply argument-list)))))
-
-
+(define (apply op . list)
+  (define (make-argument-list list)
+    (let ((first (car list)) (rest (cdr list)))
+      (if (null? rest)
+        first
+        (cons first (make-argument-list rest)))))
+  (scream:apply op (make-argument-list list)))
 
 ;;
 ;; A simplified version of the map procedure.  Only able to handle a single

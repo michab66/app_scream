@@ -392,85 +392,95 @@ extends FirstClassObject
     /**
      * (+ ...
      */
-    static private Procedure addProc = new Procedure( "+" )
+    static private Procedure addProc( Environment e )
     {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
+        return new Procedure( "+" )
+
         {
-            var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                    throws RuntimeX
+            {
+                var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-            return doArithmetic(
-                    Number::_x_add,
-                    e,
-                    args,
-                    len,
-                    c );
-        }
-    };
-
-
+                return doArithmetic(
+                        Number::_x_add,
+                        e,
+                        args,
+                        len,
+                        c );
+            }
+        }.setClosure( e );
+    }
 
     /**
      * (- ...
      */
-    static private Procedure subtractProc = new Procedure( "-" )
+    static private Procedure subtractProc( Environment e )
     {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
+        return new Procedure( "-" )
         {
-            var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                    throws RuntimeX
+            {
+                var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
-            return doArithmetic(
-                    Number::_x_subtract,
-                    e,
-                    args,
-                    len,
-                    c );
-        }
-    };
+                return doArithmetic(
+                        Number::_x_subtract,
+                        e,
+                        args,
+                        len,
+                        c );
+            }
+        }.setClosure( e );
+    }
 
     /**
      * (* ...
      */
-    static private Procedure multiplyProc = new Procedure( "*" )
+    static private Procedure multiplyProc( Environment e )
     {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
+        return new Procedure( "*" )
         {
-            var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                    throws RuntimeX
+            {
+                var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-            return doArithmetic(
-                    Number::_x_multiply,
-                    e,
-                    args,
-                    len,
-                    c );
-        }
+                return doArithmetic(
+                        Number::_x_multiply,
+                        e,
+                        args,
+                        len,
+                        c );
+            }
 
-    };
+        }.setClosure( e );
+    }
 
     /**
      * (/ ...
      */
-    static private Procedure divideProc = new Procedure( "/" )
-    {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
+    static private Procedure divideProc( Environment e ) {
+        return new Procedure( "/" )
         {
-            var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                    throws RuntimeX
+            {
+                var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
-            return doArithmetic(
-                    Number::_x_divide,
-                    e,
-                    args,
-                    len,
-                    c );
-        }
-    };
+                return doArithmetic(
+                        Number::_x_divide,
+                        e,
+                        args,
+                        len,
+                        c );
+            }
+        }.setClosure( e );
+    }
 
     /**
      * Number operations setup.
@@ -481,10 +491,10 @@ extends FirstClassObject
     public static Environment extendTopLevelEnvironment( Environment tle )
             throws RuntimeX
     {
-        tle.setPrimitive( addProc );
-        tle.setPrimitive( subtractProc );
-        tle.setPrimitive( multiplyProc );
-        tle.setPrimitive( divideProc );
+        tle.setPrimitive( addProc( tle ) );
+        tle.setPrimitive( subtractProc( tle ) );
+        tle.setPrimitive( multiplyProc( tle ) );
+        tle.setPrimitive( divideProc( tle ) );
 
         return tle;
     }

@@ -57,7 +57,6 @@ public class SyntaxSyntax extends Syntax
 
         return () -> {
             var value = new Syntax(
-                    e,
                     parameterList,
                     body ).setName( name );
             return Primitives._x_define( e, name, value, c );

@@ -13,6 +13,7 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.Scut;
 
 /**
  * Implementations of the interpreter primitives.
@@ -435,7 +436,8 @@ public class Primitives
         Cont<FirstClassObject> set = fco -> evalImpl(
                     e,
                     new Cons( fco, result ),
-                    (Cons)current.getCdr(), c );
+                    Scut.as( Cons.class, current.getCdr() ),
+                    c );
 
         return FirstClassObject.evaluate(
                 current.getCar(),
