@@ -5,12 +5,10 @@
  */
 package de.michab.scream.fcos;
 
-import org.smack.util.Holder;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
-import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Thunk;
 
@@ -107,21 +105,9 @@ public class Procedure
                 cc );
     }
 
-    Holder<FirstClassObject> _result = new Holder<>();
-    Holder<Exception> _exception = new Holder<>();
-
-    /**
-     * Called from the (apply ...) operation defined in procedure.s.
-     *
-     * @param arguments The passed arguments.
-     * @return The result of the procedure application.
-     * @throws RuntimeX
-     */
-    public FirstClassObject apply( Cons arguments ) throws RuntimeX
+    public final Thunk apply( Environment e, Cons args, Cont<FirstClassObject> c  )
+            throws RuntimeX
     {
-        return ScreamEvaluator.toStack(
-                c -> _execute( _closure, arguments, c ),
-                _result,
-                _exception );
+        return _execute( e, args, c );
     }
 }

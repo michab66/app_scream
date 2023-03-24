@@ -7,6 +7,7 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
@@ -84,7 +85,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p50
      */
     @Test
-    public void apply_1() throws Exception
+    public void apply_r7rs_1() throws Exception
     {
         var se = scriptEngine();
 
@@ -99,7 +100,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p51
      */
     @Test
-    public void apply_2() throws Exception
+    public void apply_r7rs_2() throws Exception
     {
         var se = scriptEngine();
 
@@ -113,6 +114,43 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
             ((compose - *) 12 75)
             """ );
         assertEquals( i(-900), result );
+    }
+
+    @Test
+    public void apply_1() throws Exception
+    {
+        var se = scriptEngine();
+
+        var result = se.evalFco(
+            """
+            (apply + 10 '(2 1))
+            """ );
+        assertEquals( i(13), result );
+    }
+
+    @Test
+    public void apply_2() throws Exception
+    {
+        var se = scriptEngine();
+
+        var result = se.evalFco(
+            """
+            (apply + 300 10 '(2 1))
+            """ );
+        assertEquals( i313, result );
+    }
+
+    @Test
+    @Disabled
+    public void apply_err_2() throws Exception
+    {
+        var se = scriptEngine();
+
+        var result = se.evalFco(
+            """
+            (apply + 300 10 3)
+            """ );
+        assertEquals( i313, result );
     }
 
     /**

@@ -405,7 +405,7 @@ public class Cons
         return assx( obj, Comparison.Equal );
     }
 
-    private static Thunk performInvocation(
+    private Thunk performInvocation(
             Environment e,
             FirstClassObject  op,
             Cons args,

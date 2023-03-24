@@ -745,6 +745,31 @@ public final class ScreamEvaluator implements ScriptEngine
         }.setClosure( e );
     }
 
+    static private Procedure applyProcedure( Environment e )
+    {
+        return new Procedure( "scream:apply" )
+        {
+            @Override
+            protected Thunk _executeImpl(
+                    Environment e,
+                    Cons args,
+                    Cont<FirstClassObject> c )
+                            throws RuntimeX
+            {
+                checkArgumentCount( 2, args );
+
+                Procedure proc = Scut.as(
+                        Procedure.class,
+                        args.listRef( 0 ) );
+                var list = Scut.as(
+                        Cons.class,
+                        args.listRef( 1 ) );
+
+                return proc.apply( e, list, c );
+            }
+        }.setClosure( e );
+    }
+
     /**
      * Environment operations setup.
      *
@@ -757,6 +782,7 @@ public final class ScreamEvaluator implements ScriptEngine
             throws RuntimeX
     {
         tle.setPrimitive( evalProcedure( tle ) );
+        tle.setPrimitive( applyProcedure( tle ) );
 
         return tle;
     }
