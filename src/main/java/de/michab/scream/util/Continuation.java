@@ -157,6 +157,9 @@ public class Continuation<T, X extends Exception>
     T toStack( ToStackOp<T> op )
         throws Exception
     {
+        _exception.set( null );
+        _result.set( null );
+
         Cont<X> handler =
                 ae -> {
                     _exception.set( ae );
