@@ -172,8 +172,5 @@
   ((make-object de.michab.scream.fcos.SchemeInteger) TYPE_NAME))
 (define %type-real
   ((make-object de.michab.scream.fcos.SchemeDouble) TYPE_NAME))
-(define %type-bool
-  ((make-object de.michab.scream.fcos.SchemeBoolean) TYPE_NAME))
 (define %type-port
   ((make-object de.michab.scream.fcos.Port) TYPE_NAME))
-
