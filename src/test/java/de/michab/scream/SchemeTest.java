@@ -136,4 +136,26 @@ public class SchemeTest extends ScreamBaseTest
     {
         expectError( "(set! + 0)", Code.CANT_MODIFY_CONSTANT );
     }
+
+    /**
+     * https://github.com/urschleim/scream/issues/155
+     */
+    @Test
+    public void hangAfterError() throws Exception
+    {
+        var se = scriptEngine();
+
+        try
+        {
+            se.evalFco( "(cons 1 2 3)" ) ;
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.WRONG_NUMBER_OF_ARGUMENTS, rx.getCode() );
+        }
+
+        // With #155 the next line threw the above exception again.
+        assertEqualq( i1, se.evalFco( "(+ 0 1)" ) );
+    }
 }
