@@ -38,7 +38,7 @@ public class BeginTest extends ScreamBaseTest
     }
 
     @Test
-    public void _beginTest() throws Exception
+    public void beginTest_3() throws Exception
     {
         expectFco(
                 """
@@ -50,5 +50,17 @@ public class BeginTest extends ScreamBaseTest
                 )
                 """,
                 "(1 2 3)" );
+    }
+
+    @Test
+    public void chez_beginTest_4() throws Exception
+    {
+        expectFco(
+                """
+                (begin
+                  (define donald 313))
+                donald
+                """,
+                i313 );
     }
 }

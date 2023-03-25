@@ -474,7 +474,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * <p>
      * {@code r7rs 4.1.7 p14} syntax
      */
-    private Syntax includeSyntax = new Syntax( "include" )
+    private final Syntax includeSyntax = new Syntax( "include" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -519,6 +519,29 @@ public final class ScreamEvaluator implements ScriptEngine
             }
         }.setClosure( e );
     }
+
+    /**
+     * {@code (scream:eval <expression>)}
+     * <p>
+     * Evaluate an expression in the current environment.
+     */
+    private final Syntax evalSyntax = new Syntax( "scream:eval" )
+    {
+        @Override
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                throws RuntimeX
+        {
+            checkArgumentCount( 1, args );
+
+            // (2) Evaluates the quoted expression.
+            Cont<FirstClassObject> second = fco -> {
+                return Primitives._x_eval( e, fco, c );
+            };
+
+            // (1) Evaluate the quote expression.
+            return Primitives._x_eval( e, args.getCar(), second );
+        }
+    };
 
     static private Procedure applyProcedure( Environment e )
     {
@@ -620,6 +643,7 @@ public final class ScreamEvaluator implements ScriptEngine
             SyntaxSyntax.extendNullEnvironment( result );
             SyntaxTime.extendNullEnvironment( result );
 
+            result.setPrimitive( evalSyntax );
             result.setPrimitive( includeSyntax );
 
             result.define(

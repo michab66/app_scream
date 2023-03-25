@@ -1,27 +1,13 @@
-; $Id: quasiquote.s 8 2008-09-14 14:23:20Z binzm $
+; Scream @ https://github.com/urschleim/scream
 ;
-; Scream / Runtime
+; Copyright © 1998-2022 Michael G. Binz
 ;
-; Released under Gnu Public License
-; Copyright (c) 2002 Michael G. Binz
-;
-; The implementation of quasiquote and related stuff.  See R5RS 4.2.6, p. 13
-; Note that replacement of
-;  ` -> quasiqoute
-;  , -> unquote
-;  ,@ -> unquote-splicing
-; is done in the scanner.
-;
-; 1282
-
 
 ;
 ; A stub giving a message if unquote is used outside an quasiquote expression.
 ;
 (%syntax (unquote . rest)
   (error "ONLY_IN_QUASIQUOTE_CONTEXT"))
-
-
 
 ;
 ; A stub giving a message if unquote-splicing is used outside an quasiquote
@@ -30,10 +16,8 @@
 (%syntax (unquote-splicing . rest)
   (error "ONLY_IN_QUASIQUOTE_CONTEXT"))
 
-
-
 ;;
-;; Quasiquote definition.  See R5RS 4.2.6 p.13
+;; Quasiquote definition. r7rs 4.2.8 p20
 ;;
 (%syntax (quasiquote template)
   (letrec (
@@ -64,11 +48,11 @@
 
           ((qq-application? argument)
            (cond ((eq? 'unquote (car argument))
-                   (evaluate (cadr argument)))
+                   (scream:eval (cadr argument)))
                  ((eq? 'quote (car argument))
                    (cons 'quote (qq-list (cdr argument) lvl)))
                  ((eq? 'unquote-splicing (car argument))
-                   (evaluate (cadr argument)))))
+                   (scream:eval (cadr argument)))))
 
           ((qq-application? (car argument))
             ; ...check for the special symbols 'unqoute and 'unqoute-splicing
@@ -82,7 +66,7 @@
                     (if (eqv? lvl 1)
                       ; If this was unquote, eval the argument and construct
                       ; a new list element from the result.
-                      (cons (evaluate (cadar argument))
+                      (cons (scream:eval (cadar argument))
                             (qq-list (cdr argument) lvl))
                       (cons (cons 'unquote (qq-list (cdar argument) (- lvl 1)))
                             (qq-list (cdr argument) lvl))))
@@ -95,7 +79,7 @@
                     (if (eqv? lvl 1)
                       ; For unqoute-splicing, the evaluation is expected to
                       ; return a list that is spliced into the original list.
-                      (append (evaluate (cadar argument))
+                      (append (scream:eval (cadar argument))
                               (qq-list (cdr argument) lvl))
                       (cons   (cons 'unquote-splicing
                                     (qq-list (cdar argument) (- lvl 1)))
