@@ -7,10 +7,12 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.SchemeBoolean;
 
 public class MathTest extends ScreamBaseTest
@@ -49,5 +51,12 @@ public class MathTest extends ScreamBaseTest
     public void _equalsCompile2() throws Exception
     {
         expectFco( "(define i 121)(= i 121)", SchemeBoolean.T );
+    }
+
+    @Test
+    @Disabled( "https://github.com/urschleim/scream/issues/157" )
+    public void addition_err_1() throws Exception
+    {
+        expectError( "(+ 1 'i)", Code.TYPE_ERROR );
     }
 }
