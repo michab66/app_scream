@@ -5,12 +5,10 @@
  */
 package de.michab.scream.language;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.SchemeBoolean;
 
 /**
@@ -21,199 +19,159 @@ import de.michab.scream.fcos.SchemeBoolean;
 public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
 {
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void basic_1() throws Exception
+    public void r7rs_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            #t
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco( "#t", SchemeBoolean.T );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void basic_2() throws Exception
+    public void r7rs_2() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            #f
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco( "#f", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void basic_3() throws Exception
+    public void r7rs_3() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            '#f
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco( "'#f", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void not_1() throws Exception
+    public void r7rs_not_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (not #t)
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco( "(not #t)", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void not_2() throws Exception
+    public void r7rs_not_2() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (not 3)
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco( "(not 3)", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void not_3() throws Exception
+    public void r7rs_not_3() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (not (list 3))
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco( "(not (list 3))", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void not_4() throws Exception
+    public void r7rs_not_4() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (not #f)
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco( "(not #f)", SchemeBoolean.T );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void not_5() throws Exception
+    public void r7rs_not_5() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (not '())
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco( "(not '())", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void not_5b() throws Exception
+    public void r7rs_not_6() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (not ())
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco( "(not (list))", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void not_6() throws Exception
+    public void r7rs_not_7() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (not (list))
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco( "(not 'nil)", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void not_7() throws Exception
+    public void r7rs_booleanq_1() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (not 'nil)
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco( "(boolean? #f)", SchemeBoolean.T );
+        expectFco( "(boolean? #t)", SchemeBoolean.T );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void booleanq_1() throws Exception
+    public void r7rs_booleanq_2() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (boolean? #f)
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco( "(boolean? 0)", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void booleanq_2() throws Exception
+    public void r7rs_booleanq_3() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (boolean? 0)
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectFco(  "(boolean? '())", SchemeBoolean.F );
     }
 
     /**
-     * p13
+     * r7rs 6.3 p40
      */
     @Test
-    public void booleanq_3() throws Exception
+    public void r7rs_boolean_eq_4() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (boolean? '())
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+        expectError( "(boolean=?)", Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
 
-    /**
-     * p13
-     */
     @Test
-    @Disabled( "not implemented" )
-    public void boolean_eq_3() throws Exception
+    public void boolean_eq_5() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (boolean=? #t #t #t)
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+        expectFco( "(boolean=? #t)", SchemeBoolean.T );
     }
 
+    @Test
+    public void boolean_eq_6() throws Exception
+    {
+        expectFco( "(boolean=? #t #t #t #t #t #t #t #t)", SchemeBoolean.T );
+    }
+
+    @Test
+    public void boolean_eq_7() throws Exception
+    {
+        expectFco( "(boolean=? #f #f #f #f #f #f)", SchemeBoolean.T );
+    }
+
+    @Test
+    public void boolean_eq_8() throws Exception
+    {
+        expectFco( "(boolean=? #t #t #f #t #t #t)", SchemeBoolean.F );
+    }
+
+    @Test
+    public void boolean_eq_9() throws Exception
+    {
+        expectError( "(boolean=? #t #t #t #t #t 1)", Code.TYPE_ERROR );
+    }
 }
