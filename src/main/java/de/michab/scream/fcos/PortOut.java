@@ -142,7 +142,7 @@ public class PortOut
         try
         {
             _outPort.write( s );
-            _outPort.write( ' ' );
+
             if ( flush )
                 _outPort.flush();
         }
@@ -189,7 +189,7 @@ public class PortOut
         else if ( o instanceof SchemeCharacter )
             write( "" + ((SchemeCharacter)o).asCharacter(), true );
         else
-            write( o );
+            write( o, true );
     }
 
     /**
