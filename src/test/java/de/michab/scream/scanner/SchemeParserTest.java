@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException;
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.Vector;
@@ -129,7 +130,7 @@ public class SchemeParserTest
         catch( RuntimeX e )
         {
             // Unexpected end of input.
-            assertEquals( 37, e.getId() );
+            assertEquals( Code.PARSE_EXPECTED, e.getId() );
         }
     }
 }

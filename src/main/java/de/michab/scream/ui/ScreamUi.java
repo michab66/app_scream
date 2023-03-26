@@ -111,8 +111,16 @@ public class ScreamUi extends SingleFrameApplication
     @Override
     protected void initialize( String[] args )
     {
+        {
+            var c = _scream.getContext();
+            c.setWriter( new OutputStreamWriter( _stdoin.getOut() ) );
+            _scream.setContext( c );
+        }
+
         System.setErr( new PrintStream(_stderr.getOut() ) );
-        System.err.print( "@console" + StringUtil.EOL );
+        System.err.print( "@console:err" + StringUtil.EOL );
+        System.setOut( new PrintStream(_stdoin.getOut() ) );
+        System.out.print( "@console:in-out" + StringUtil.EOL );
     }
 
     @Override

@@ -4,10 +4,18 @@
 ; Copyright © 1998-2023 Michael G. Binz
 ;
 
-(define EOF 'EOF)
-
 ;;
 ;; r7rs 6.13.1 p56 
+;;
+
+(define EOF 'EOF)
+
+;; TODO call-with-port
+;; TODO call-with-input-file
+;; TODO call-with-output-file
+
+;;
+;; p56
 ;;
 (define input-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortIn" #t))
@@ -22,18 +30,26 @@
 (define port?
   (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
 
+;; input-port-open
+;; output-port-open
+
 ;;
-;; r7rs 6.13.1 p56 
+;; p56 
 ;;
-(define current-input-port
-  (let ((port (scream::evaluator (getInPort))))
-    (lambda () port)))
-(define current-output-port
-  (let ((port (scream::evaluator (getOutPort))))
-    (lambda () port)))
-(define current-error-port
-  (let ((port (scream::evaluator (getErrorPort))))
-    (lambda () port)))
+;; Note that these values are not cacheable since the output
+;; port may be set individually for each invocation.
+
+(define (current-input-port)
+  (scream::evaluator (getInPort)))
+
+(define (current-output-port)
+  (scream::evaluator (getOutPort)))
+
+(define (current-error-port)
+  (scream::evaluator (getErrorPort)))
+
+;; with-input-from-file
+;; with-output-to-file
 
 ;;
 ;; Takes a string naming an existing file and returns an input port capable of
@@ -54,16 +70,10 @@
   ((object port) (close)))
 
 ;;
-;; Takes a string naming an output file to be created and returns an output
-;; port capable of writing characters to a new file by that name.  If the
-;; file cannot be opened, an error is signalled.  If a file with the given name
-;; already exists, the effect is unspecified.
+;; p56
 ;;
 (define (open-output-file filename)
-  (let ((out ((make-object de.michab.scream.fcos.Port) Output)))
-   (make-object (de.michab.scream.fcos.Port filename out))))
-
-
+   (make-object (de.michab.scream.fcos.PortOut filename)))
 
 ;;
 ;; Closes the file associated with port, rendering the port incapable of
@@ -74,43 +84,6 @@
   (if (not (output-port? port))
     (error "EXPECTED_OUTPUT_PORT"))
   ((object port) (close)))
-
-
-
-;;
-;; Writes a representation of obj to the given port. Strings that appear in the
-;; written representation are not enclosed in doublequotes, and no characters
-;; are escaped within those strings.  Character objects appear in the
-;; representation as if written by write-char instead of by write.
-;; Display returns an unspecified value.  The port argument may be omitted, in
-;; which case it defaults to the value returned by current-output-port.
-;;
-(define (display subject . arg-list)
-  (let (
-    ; If a single optional argument is given assign this to the port.  If no
-    ; optional argument is given assign the current output port to the port.
-    ; If more than one optional argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-output-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 2)))))
-
-    ; Check if what we assigned above is really an output port.
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (output-port? the-port))
-      (error "EXPECTED_OUTPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (display subject))))
-
-
-
-
-
 
 ;;
 ;; (read)       library procedure, r5rs 36
@@ -157,8 +130,6 @@
     ; Finally do the actual read.
     ((object the-port) (read))))
 
-
-
 ;;
 ;; Returns the next character available from the input port, updating the port
 ;; to point to the following character. If no more characters are available, an
@@ -186,8 +157,6 @@
     ; Finally do the actual read.
     ((object the-port) (readCharacter))))
 
-
-
 ;;
 ;; Returns the next character available from the input port, without updating
 ;; the port to point to the following character.  If no more characters are
@@ -214,8 +183,6 @@
       (error "EXPECTED_INPUT_PORT"))
     ; Finally do the actual read.
     ((object the-port) (peekCharacter))))
-
-
 
 ;;
 ;; Returns #t if a character is ready on the input port and returns #f
@@ -245,102 +212,7 @@
     ; Finally do the actual read.
     ((object the-port) (charReady))))
 
-
-
-;;
-;; (write obj),      library procedure, r5rs 36
-;; (write obj port), library procedure, r5rs 36
-;;
-;; Writes a written representation of obj to the given port. Strings that
-;; appear in the written representation are enclosed in doublequotes, and
-;; within those strings backslash and doublequote characters are escaped by
-;; backslashes.
-;; Character objects are written using the #\ notation. Write returns an
-;; unspecified value. The port argument may be omitted, in which case it
-;; defaults to the value returned by current-output-port.
-;;
-(define (write subject . arg-list)
-  (let (
-    ; If a single optional argument is given assign this to the port.  If no
-    ; optional argument is given assign the current output port to the port.
-    ; If more than one optional argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-output-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 2)))))
-
-    ; Check if what we assigned above is really an output port.
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (output-port? the-port))
-      (error "EXPECTED_OUTPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (write subject))))
-
-
-
-;;
-;; Writes the character char (not an external representation of the character)
-;; to the given port and returns an unspecified value. The port argument may be
-;; omitted, in which case it defaults to the value returned by
-;; current-output-port.
-;;
-(define (write-char char . arg-list)
-  (let (
-    ; If a single optional argument is given assign this to the port.  If no
-    ; optional argument is given assign the current output port to the port.
-    ; If more than one optional argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-output-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 2)))))
-
-    ; Check if what we assigned above is really an output port.
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (output-port? the-port))
-      (error "EXPECTED_OUTPUT_PORT"))
-    (if (not (char? char))
-      (error "TYPE_ERROR" %type-char (%typename char) 1))
-    ; Finally do the actual write.
-    ((object the-port) (writeCharacter char))))
-
-
-
-;;
-;; (newline)
-;; (newline port)
-;;
-;; Writes an end of line to port. Exactly how this is done differs from one
-;; operating system to another. Returns an unspecified value. The port argument
-;; may be omitted, in which case it defaults to the value returned by
-;; current-output-port.
-;;
-(define (newline . opt-port)
-  (let (
-    ; If a single optional argument is given assign this to the port.  If no
-    ; optional argument is given assign the current output port to the port.
-    ; If more than one optional argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length opt-port))
-          (current-output-port))
-        ((= 1 (length opt-port))
-          (car opt-port))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 2)))))
-
-  (write-char #\newline the-port)))
-
-
-
 (define (eof? symbol)
     (eqv? symbol 'EOF))
+
+(include "i-ports-output.s")

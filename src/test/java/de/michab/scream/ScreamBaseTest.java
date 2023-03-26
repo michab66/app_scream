@@ -10,6 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.function.Function;
 
 import de.michab.scream.ScreamException.Code;
@@ -171,5 +173,10 @@ public class ScreamBaseTest
     protected static Cons c( FirstClassObject ... fcos )
     {
         return Cons.create( fcos );
+    }
+
+    protected File tmpFile( Class<?> caller ) throws IOException
+    {
+        return File.createTempFile( caller.getSimpleName(), ".tmp" );
     }
 }

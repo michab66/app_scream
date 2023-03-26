@@ -20,6 +20,7 @@ import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
+import javax.script.SimpleScriptContext;
 
 import org.smack.util.JavaUtil;
 
@@ -132,7 +133,7 @@ public final class ScreamEvaluator implements ScriptEngine
             Scream interpreter )
         throws RuntimeX
     {
-        _context.push(  new SchemeContext() );
+        _context.push( new SimpleScriptContext() );
 
         _factory =
                 interpreter;
@@ -260,7 +261,7 @@ public final class ScreamEvaluator implements ScriptEngine
                 fco -> evalImpl_( e, s, fco, s.get(), c ) );
     }
 
-    public static Thunk evalImpl(
+    private static Thunk evalImpl(
             Environment e,
             SupplierX<FirstClassObject,RuntimeX> s,
             Cont<FirstClassObject> c )
