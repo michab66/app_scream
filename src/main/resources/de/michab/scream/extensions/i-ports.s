@@ -8,17 +8,55 @@
 ;; r7rs 6.13.1 p56 
 ;;
 
+;;
+;; Scream definitions
+;;
+
+;; The eof object.  To be reworked #78.
 (define EOF 'EOF)
 
-;; TODO call-with-port
+;; Output port type name.
+(define scream:type-output-port
+  ((make-object de.michab.scream.fcos.PortOut) TYPE_NAME))
+
+;; Input port type name.
+(define scream:type-input-port
+  ((make-object de.michab.scream.fcos.PortIn) TYPE_NAME))
+
+;; Predicates for the port implementation types.
+(define scream:input-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortIn" #t))
+(define scream:binary-input-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortInBinary" #t))
+(define scream:output-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
+(define scream:binary-output-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
+
+
+;;
+;; r7rs definitions.
+;;
+
+;;
+;; call-with-port
+;;
+(define (call-with-port port proc)
+  ((let ((result (proc port)))
+    (close-port port)
+    result)))
+
 ;; TODO call-with-input-file
 ;; TODO call-with-output-file
 
 ;;
-;; p56
+;; input-port?
 ;;
-(define input-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortIn" #t))
+(define (input-port? port)
+  (or
+    (scream:input-port? port) 
+    (scream:binary-input-port? port)))
+    
 (define output-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
 (define (binary-port? port)
@@ -30,8 +68,8 @@
 (define port?
   (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
 
-;; input-port-open
-;; output-port-open
+;; todo input-port-open
+;; todo output-port-open
 
 ;;
 ;; p56 
@@ -52,22 +90,13 @@
 ;; with-output-to-file
 
 ;;
-;; Takes a string naming an existing file and returns an input port capable of
-;; delivering characters from the file. If the file cannot be opened, an error
-;; is signaled.
+;; p56
 ;;
 (define (open-input-file filename)
   (let ((in ((make-object de.michab.scream.fcos.Port) Input)))
    (make-object (de.michab.scream.fcos.Port filename in))))
-;;
-;; Closes the file associated with port, rendering the port incapable of
-;; delivering characters. This routine has no effect if the file has already
-;; been closed. The value returned is unspecifed.
-;;
-(define (close-input-port port)
-  (if (not (input-port? port))
-    (error "EXPECTED_INPUT_PORT"))
-  ((object port) (close)))
+
+;; TODO open-binary-input-file
 
 ;;
 ;; p56
@@ -75,15 +104,39 @@
 (define (open-output-file filename)
    (make-object (de.michab.scream.fcos.PortOut filename)))
 
+;; TODO open-output-file
+
 ;;
-;; Closes the file associated with port, rendering the port incapable of
-;; accepting characters.  This routine has no effect if the file has already
-;; been closed.  The value returned is unspecified.
+;; p56
+;;
+(define (close-port port)
+  (if (not (port? port))
+    (error "EXPECTED_PORT"))
+  ((object port) (close)))
+
+;;
+;; p56
+;;
+(define (close-input-port port)
+  (if (not (input-port? port))
+    (error "EXPECTED_INPUT_PORT"))
+  (close-port port))
+
+;;
+;; p56
 ;;
 (define (close-output-port port)
   (if (not (output-port? port))
     (error "EXPECTED_OUTPUT_PORT"))
-  ((object port) (close)))
+  (close-port port))
+
+;; todo open-input-string
+;; todo open-output-string
+;; todo get-output-string
+;; todo open-input-bytevector
+;; todo open-output-bytevector
+;; todo get-output-bytevector
+;;;  input ...
 
 ;;
 ;; (read)       library procedure, r5rs 36

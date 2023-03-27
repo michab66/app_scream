@@ -163,12 +163,12 @@ public final class ScreamEvaluator implements ScriptEngine
      *
      * @return This interpreter's standard in.
      */
-    public Port getInPort()
+    public PortIn getInPort()
     {
-        return new PortIn(
-                "stdin",
-                _context.peek().getReader(),
-                false );
+        return FirstClassObject.setConstant(
+                new PortIn(
+                        "stdin",
+                        _context.peek().getReader() ) );
     }
 
     /**
@@ -176,12 +176,12 @@ public final class ScreamEvaluator implements ScriptEngine
      *
      * @return This interpreter's standard out.
      */
-    public Port getOutPort()
+    public PortOut getOutPort()
     {
-        return new PortOut(
-                "stdout",
-                _context.peek().getWriter(),
-                false );
+        return FirstClassObject.setConstant(
+                new PortOut(
+                        "stdout",
+                        _context.peek().getWriter() ) );
     }
 
     /**
@@ -189,12 +189,12 @@ public final class ScreamEvaluator implements ScriptEngine
      *
      * @return This interpreter's standard error port.
      */
-    public Port getErrorPort()
+    public PortOut getErrorPort()
     {
-        return new PortOut(
-                "stderr",
-                _context.peek().getErrorWriter(),
-                false );
+        return FirstClassObject.setConstant(
+                new PortOut(
+                        "stderr",
+                        _context.peek().getErrorWriter() ) );
     }
 
     /**

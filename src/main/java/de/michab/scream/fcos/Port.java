@@ -5,23 +5,29 @@
  */
 package de.michab.scream.fcos;
 
+import java.io.Closeable;
+import java.io.IOException;
+
+import org.smack.util.JavaUtil;
+
+import de.michab.scream.RuntimeX;
+
 /**
- * Represents a scheme port object.  Ports represent input and output devices.
- * To Scheme, an input port is a Scheme object that can deliver characters
- * upon command, while an output port is a Scheme object that can accept
- * characters.
+ * A port.  A port can be set to constant to prevent it
+ * from being closed.  This can be used for the standard
+ * stdin/stderr/stdout streams.
+ *
  * <p>
  * See 'r7rs, 6.13 Input and output' for details.
  *
  * @author Michael Binz
  */
-public abstract class Port
+public abstract class Port<T extends Closeable>
     extends
         FirstClassObject
     implements
         AutoCloseable
 {
-    protected enum Type{ Binary, Textual };
     public static final String TYPE_NAME = "port";
 
     /**
@@ -31,78 +37,21 @@ public abstract class Port
 
     private final String _name;
 
-    private final Type _type;
+    protected T _file;
 
     /**
-     * If {@code true} then the port is finalized.
-     */
-    private final boolean _finalize;
-
-    /**
-     * Create a textual port.
+     * Create a port.
      *
      * @param name The port's name.
      */
-    public Port( String name )
-    {
-        this( name, Type.Textual, true );
-    }
-
-    /**
-     * Create a textual port.
-     *
-     * @param name The port's name.
-     * @param finalize If true, then the port is finalized.  If false then
-     * finalization is skipped.  For system in/out/err this should be false.
-     */
-    public Port( String name, boolean finalize )
-    {
-        this( name, Type.Textual, finalize );
-    }
-
-    /**
-     * Create a typed port.
-     *
-     * @param name The port's name.
-     * @param type The port's type.
-     * @param finalize If true, then the port is finalized.  If false then
-     * finalization is skipped.  For system in/out/err this should be false.
-     */
-    public Port( String name, Type type, boolean finalize )
+    protected Port( String name )
     {
         _name = name;
-        _type = type;
-        _finalize = finalize;
     }
 
-    /**
-     * Create a typed port.
-     *
-     * @param name The port's name.
-     * @param type The port's type.
-     */
-    public Port( String name, Type type )
-    {
-        this( name, type, true );
-    }
-
-    String name()
+    public String name()
     {
         return _name;
-    }
-
-    public Type type()
-    {
-        return _type;
-    }
-
-    /**
-     * @return {@code true} if this is a binary port.
-     */
-    // Called from Scheme.  TODO check if we can call type().
-    public boolean isBinary()
-    {
-        return _type == Type.Binary;
     }
 
     /**
@@ -111,13 +60,37 @@ public abstract class Port
      * @return {@code true} if the port is closed, {@code false} if the
      * port is open.
      */
-    public abstract boolean isClosed();
+    public final boolean isClosed()
+    {
+        return _file == null;
+    }
+
+    public abstract boolean isBinary();
 
     /**
-     * Closes the port.  This is also done from the finalizer.
+     * Closes the port.
      */
     @Override
-    public abstract void close();
+    public final void close() throws RuntimeX
+    {
+        if ( isClosed() )
+            return;
+        if ( isConstant() )
+            throw RuntimeX.mCannotModifyConstant( this );
+
+        try
+        {
+            _file.close();
+        }
+        catch ( IOException e )
+        {
+            throw RuntimeX.mIoError( e );
+        }
+        finally
+        {
+            _file = null;
+        }
+    }
 
     /**
      * Finalize the object.
@@ -130,9 +103,13 @@ public abstract class Port
             throws
             Throwable
     {
-        if ( !_finalize )
+        if ( isClosed() )
             return;
-        close();
+        if ( isConstant() )
+            return;
+
+        JavaUtil.force( this::close );
+
         // Chain finalisers.
         super.finalize();
     }
@@ -144,5 +121,24 @@ public abstract class Port
      * @return The corresponding Java type for this object.
      */
     @Override
-    public abstract Object toJava();
+    public final Object toJava()
+    {
+        return _file;
+    }
+
+    /**
+     * Return a port's string representation.
+     *
+     * @return A string representation for this port.
+     */
+    @Override
+    final public String toString()
+    {
+        return String.format(
+                "<%s '%s' %s %s>",
+                getTypename( this ),
+                name(),
+                isBinary() ? "binary" : "textual",
+                isClosed() ? "closed" : "open" );
+    }
 }

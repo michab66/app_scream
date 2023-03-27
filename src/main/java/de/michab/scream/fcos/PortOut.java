@@ -9,18 +9,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
-
-import org.smack.util.FileUtil;
+import java.util.Objects;
 
 import de.michab.scream.RuntimeX;
 
 /**
  * Represents a scheme output-port
  *
+ * r7rs, 6.13.3 p58
+ *
  * @author Michael Binz
  */
 public class PortOut
-    extends Port
+    extends Port<Writer>
 {
     /**
      * The name of the type as used by error reporting.
@@ -29,7 +30,6 @@ public class PortOut
      */
     public static final String TYPE_NAME = "output-port";
 
-    private Writer _outPort;
 
     /**
      * Create an output port.  The name that is passed is used for generating
@@ -41,12 +41,8 @@ public class PortOut
     public PortOut( String name, Writer out )
     {
         super( name );
-        _outPort = out;
-    }
-    public PortOut( String name, Writer out, boolean finalize )
-    {
-        super( name, finalize );
-        _outPort = out;
+
+        _file = Objects.requireNonNull( out );
     }
 
     /**
@@ -64,39 +60,13 @@ public class PortOut
 
         try
         {
-            _outPort = new PrintWriter(
+            _file = new PrintWriter(
                     new FileOutputStream( name ) );
         }
         catch ( IOException e )
         {
             throw RuntimeX.mIoError( e );
         }
-    }
-
-    /**
-     * Return a port's string representation.
-     *
-     * @return A string representation for this port.
-     */
-    @Override
-    public String toString()
-    {
-        return String.format(
-                "<output-port '%s' %s>",
-                name(),
-                type() );
-    }
-
-    /**
-     * Tests if a port is closed.
-     *
-     * @return {@code true} if the port is closed, {@code false} if the
-     * port is open.
-     */
-    @Override
-    public boolean isClosed()
-    {
-        return _outPort == null;
     }
 
     /**
@@ -141,10 +111,10 @@ public class PortOut
 
         try
         {
-            _outPort.write( s );
+            _file.write( s );
 
             if ( flush )
-                _outPort.flush();
+                _file.flush();
         }
         catch ( IOException e )
         {
@@ -166,7 +136,7 @@ public class PortOut
 
         try
         {
-            _outPort.write( c );
+            _file.write( c );
         }
         catch ( IOException e )
         {
@@ -192,24 +162,9 @@ public class PortOut
             write( o, true );
     }
 
-    /**
-     * Closes this port.  This is also done from the finalizer.
-     */
     @Override
-    public void close()
+    public boolean isBinary()
     {
-        FileUtil.forceClose( _outPort );
-        _outPort = null;
-    }
-
-    /**
-     * Convert this object into the Java type system.
-     *
-     * @return The corresponding Java type for this object.
-     */
-    @Override
-    public Object toJava()
-    {
-        return _outPort;
+        return false;
     }
 }

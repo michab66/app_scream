@@ -7,23 +7,20 @@ package de.michab.scream.fcos;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.InputStream;
 import java.util.Objects;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.frontend.FrontendX;
-import de.michab.scream.frontend.SchemeParser;
 
 /**
- * A Scheme textual input port.
+ * A binary Scheme input port.
  * <p>
  * r7rs, 6.13.2 p58
  *
  * @author Michael Binz
  */
-public class PortIn
-    extends Port<Reader>
+public class PortInBinary
+    extends Port<InputStream>
 {
     /**
      * The name of the type as used by error reporting.
@@ -31,11 +28,6 @@ public class PortIn
      * @see FirstClassObject#typename()
      */
     public static final String TYPE_NAME = "input-port";
-
-    /**
-     * The parser used by the read method.
-     */
-    private SchemeParser _parser = null;
 
     private static final int NOT_PEEKED = -2;
 
@@ -50,7 +42,7 @@ public class PortIn
      * @param name A name to use for this port.
      * @param in The reader to use in this port.
      */
-    public PortIn( String name, Reader in )
+    public PortInBinary( String name, InputStream in )
     {
         super( name );
 
@@ -65,48 +57,19 @@ public class PortIn
      *        file.
      * @throws RuntimeX If an error occurred.
      */
-    public PortIn( String name )
+    public PortInBinary( String name )
             throws RuntimeX
     {
         super( name );
 
         try
         {
-            _file = new InputStreamReader(
-                    new FileInputStream( name ) );
+            _file =
+                    new FileInputStream( name );
         }
         catch ( IOException e )
         {
             throw RuntimeX.mIoError( e );
-        }
-    }
-
-    /**
-     * Read a single first class object from this port.  After the read the port
-     * is positioned on the first character after this data element.
-     *
-     * @return The next datum encountered on the input port.
-     * @throws RuntimeX In case of an error.
-     */
-    public FirstClassObject read()
-            throws RuntimeX
-    {
-        if ( isClosed() )
-            throw RuntimeX.mPortClosed();
-
-        // In case no parser exists...
-        if ( null == _parser )
-            // ...create one.
-            _parser = new SchemeParser( _file );
-
-        try
-        {
-            return _parser.getExpression();
-        }
-        catch ( FrontendX e )
-        {
-            e.setFilename( name() );
-            throw e;
         }
     }
 
@@ -117,7 +80,7 @@ public class PortIn
      * @return {@code True} if a character can be read without blocking.
      * @throws RuntimeX In case an error occurred.
      */
-    public boolean charReady()
+    public boolean byteReady()
             throws RuntimeX
     {
         if ( isClosed() )
@@ -125,7 +88,7 @@ public class PortIn
 
         try
         {
-            return _file.ready();
+            return _file.available() > 0;
         }
         catch ( IOException e )
         {
@@ -143,7 +106,7 @@ public class PortIn
      * @throws RuntimeX In case an error occurred.
      * @see #readCharacter
      */
-    public FirstClassObject peekCharacter()
+    public FirstClassObject peekByte()
             throws RuntimeX
     {
         if ( isClosed() )
@@ -196,13 +159,13 @@ public class PortIn
 
         if ( c == -1 )
             return EOF;
-        else
-            return SchemeCharacter.createObject( c );
+
+        return SchemeInteger.createObject( c );
     }
 
     @Override
     public boolean isBinary()
     {
-        return false;
+        return true;
     }
 }
