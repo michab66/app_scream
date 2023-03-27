@@ -10,18 +10,23 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Function;
+
+import org.smack.util.FileUtil;
 
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
+import de.michab.scream.util.FunctionX;
 
 public class ScreamBaseTest
 {
@@ -36,6 +41,9 @@ public class ScreamBaseTest
     public final static Symbol s3 = s( "three" );
     public final static Symbol s4 = s( "four" );
     public final static Symbol s313 = s( "threethirteen" );
+
+    public final static SchemeBoolean bTrue = SchemeBoolean.T;
+    public final static SchemeBoolean bFalse = SchemeBoolean.F;
 
     public static <S extends FirstClassObject,J>
     void toJava_( Class<S> sc, Class<J> jc, J testObject, Function<J, S> factory) throws RuntimeX
@@ -178,5 +186,27 @@ public class ScreamBaseTest
     protected File tmpFile( Class<?> caller ) throws IOException
     {
         return File.createTempFile( caller.getSimpleName(), ".tmp" );
+    }
+
+    /**
+     * Creates a file and passes it to the received operation.
+     * After execution of the operation, the closable returned by the
+     * operation is closed and the file deleted.
+     *
+     * @param c
+     * @throws Exception
+     */
+    protected void withFile( FunctionX<File,Closeable,Exception> operation )
+        throws Exception
+    {
+        var f = tmpFile( getClass() );
+
+        try
+        {
+           FileUtil.forceClose( operation.apply( f ) );
+        }
+        finally {
+            f.delete();
+        }
     }
 }

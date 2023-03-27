@@ -33,7 +33,6 @@
 (define scream:binary-output-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
 
-
 ;;
 ;; r7rs definitions.
 ;;
@@ -64,7 +63,7 @@
     ((object port) (isBinary))
     #f))
 (define (textual-port? port)
-  (not (binary-port? port)))
+  (and (port? port) (not (binary-port? port))))
 (define port?
   (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
 
