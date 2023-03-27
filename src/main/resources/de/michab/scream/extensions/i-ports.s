@@ -55,7 +55,7 @@
   (or
     (scream:input-port? port) 
     (scream:binary-input-port? port)))
-    
+
 (define output-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
 (define (binary-port? port)
@@ -67,8 +67,21 @@
 (define port?
   (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
 
-;; todo input-port-open
-;; todo output-port-open
+;;
+;; input-port-open?
+;;
+(define (input-port-open? port)
+  (if (input-port? port)
+    (not ((object port) (isClosed)))
+    #f))
+
+;;
+;; output-port-open?
+;;
+(define (output-port-open? port)
+  (if (output-port? port)
+    (not ((object port) (isClosed)))
+    #f))
 
 ;;
 ;; p56 
