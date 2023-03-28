@@ -28,7 +28,7 @@
 (define scream:output-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
 (define scream:binary-output-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.PortOutbinary" #t))
 
 ;;
 ;; r7rs definitions.
