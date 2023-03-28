@@ -132,6 +132,15 @@ public class RuntimeXTest extends ScreamBaseTest
                 0 );
     }
     @Test
+    public void _0_notImplemented1() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mNotImplemented( "donald" ),
+                Code.NOT_IMPLEMENTED,
+                0,
+                "donald" );
+    }
+    @Test
     public void _1_symbolNotDefined() throws Exception
     {
         validateMessageAndType(

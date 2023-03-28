@@ -9,9 +9,16 @@
 ;;
 (define %jdk-version
   ((make-object java.lang.System) (getProperty "java.version")))
-  
-  
-  
+
+;;
+;; Error support
+;;
+
+(define scream:class:RuntimeX (make-object de.michab.scream.RuntimeX))
+
+(define (scream:error:not-implemented message)
+  (scream:class:RuntimeX (mNotImplemented message)))
+
 ;;
 ;; Displays a debug message without carriage return.
 ;;
