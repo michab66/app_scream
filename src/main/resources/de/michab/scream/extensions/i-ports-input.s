@@ -16,7 +16,7 @@
 ;;
 
 ;;
-;; read       read library procedure
+;; read library procedure
 ;;
 (define (read . arg-list)
   ;; TODO Note that this has a problem.  When reading from standard input

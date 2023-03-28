@@ -9,7 +9,7 @@
 ;;
 
 ;;
-;; write library procedure
+;; write write library procedure
 ;;
 (define (write subject . arg-list)
   (let (
@@ -34,15 +34,19 @@
     ((object the-port) (write subject))))
 
 ;;
-;; TODO write-shared p58
-;; TODO write-simple p58
+;; write-shared write library procedure
 ;;
+(define (write-shared obj port)
+  (scream:error:not-implemented "(write-shared)"))
 
 ;;
-;; p59
+;; write-simple write library procedure
 ;;
-;; (display obj)
-;; (display obj port)
+(define (write-simple obj port)
+  (scream:error:not-implemented "(write-simple)"))
+
+;;
+;; display write library procedure
 ;;
 (define (display subject . arg-list)
   (let (
@@ -67,15 +71,7 @@
     ((object the-port) (display subject))))
 
 ;;
-;; p59
-;;
-;; (newline)
-;; (newline port)
-;;
-;; Writes an end of line to port. Exactly how this is done differs from one
-;; operating system to another. Returns an unspecified value. The port argument
-;; may be omitted, in which case it defaults to the value returned by
-;; current-output-port.
+;; newline procedure
 ;;
 (define (newline . opt-port)
   (let (
@@ -94,10 +90,7 @@
   (write-char #\newline the-port)))
 
 ;;
-;; p59
-;;
-;; (write-char char) procedure
-;; (write-char char port) procedure
+;; write-char procedure
 ;;
 (define (write-char char . arg-list)
   (let (
@@ -124,7 +117,26 @@
     ((object the-port) (writeCharacter char))))
 
 
-;; (write-string string)
-;; (write-u8 byte)
-;; (write-bytevector)
-;; (flush-output-port)
+;;
+;; write-string procedure
+;;
+(define (write-string string . port)
+  (scream:error:not-implemented "(write-string)"))
+
+;;
+;; write-u8 procedure
+;;
+(define (write-u8 byte port)
+  (scream:error:not-implemented "(write-u8)"))
+
+;;
+;; write-bytevector procedure
+;;
+(define (write-bytevector . port)
+  (scream:error:not-implemented "(write-shared)"))
+
+;;
+;; flush-output-port procedure
+;;
+(define (flush-output-port . port)
+  (scream:error:not-implemented "(flush-output-port)"))
