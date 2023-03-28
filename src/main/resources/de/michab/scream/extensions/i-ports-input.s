@@ -5,6 +5,13 @@
 ;
 
 ;;
+;; scream specific
+;;
+
+;; The eof object.  To be reworked #78.
+(define EOF 'EOF)
+
+;;
 ;; r7rs 6.13.2 Input p57
 ;;
 

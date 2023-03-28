@@ -9,10 +9,7 @@
 ;;
 
 ;;
-;; p58
-;;
-;; (write obj) library procedure
-;; (write obj port) library procedure
+;; write library procedure
 ;;
 (define (write subject . arg-list)
   (let (

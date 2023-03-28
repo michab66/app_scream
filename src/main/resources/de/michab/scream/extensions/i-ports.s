@@ -12,9 +12,6 @@
 ;; Scream definitions
 ;;
 
-;; The eof object.  To be reworked #78.
-(define EOF 'EOF)
-
 ;; Output port type name.
 (define scream:type-output-port
   ((make-object de.michab.scream.fcos.PortOut) TYPE_NAME))
