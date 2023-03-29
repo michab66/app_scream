@@ -151,6 +151,6 @@ public class PortOutBinary
     @Override
     public boolean isBinary()
     {
-        return false;
+        return true;
     }
 }

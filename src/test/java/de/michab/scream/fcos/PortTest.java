@@ -113,6 +113,10 @@ public class PortTest extends ScreamBaseTest
         assertFalse( file.exists() );
 
         PortOutBinary po = new PortOutBinary( file.getPath() );
+
+        assertTrue( po.isBinary() );
+        assertFalse( po.isClosed() );
+
         po.write( content );
 
         // Exists but content is yet buffered.
