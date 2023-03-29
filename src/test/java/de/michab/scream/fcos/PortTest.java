@@ -5,6 +5,7 @@
  */
 package de.michab.scream.fcos;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -32,6 +33,10 @@ public class PortTest extends ScreamBaseTest
         assertFalse( file.exists() );
 
         PortOut po = new PortOut( file.getPath() );
+
+        assertFalse( po.isBinary() );
+        assertFalse( po.isClosed() );
+
         po.write( content );
 
         // Exists but content is yet buffered.
@@ -43,6 +48,7 @@ public class PortTest extends ScreamBaseTest
         assertEquals( content.length(), file.length() );
 
         po.close();
+        assertTrue( po.isClosed() );
 
         assertTrue( file.exists() );
 
@@ -96,6 +102,72 @@ public class PortTest extends ScreamBaseTest
     public void textualWrite() throws Exception
     {
         withFile( this::_textualWrite );
+    }
+
+    private void _binaryWrite( File file ) throws Exception
+    {
+        final var content = new byte[] { 0,1,2,3,4,5 };
+
+        file.delete();
+
+        assertFalse( file.exists() );
+
+        PortOutBinary po = new PortOutBinary( file.getPath() );
+        po.write( content );
+
+        // Exists but content is yet buffered.
+        assertTrue( file.exists() );
+        assertEquals( 0, file.length() );
+
+        // Content is flushed.
+        po.flush();
+        assertEquals( content.length, file.length() );
+
+        po.close();
+
+        assertTrue( file.exists() );
+
+        var lines =  Files.readAllBytes( file.toPath() );
+
+        assertArrayEquals( content, lines );
+
+        try {
+            po.write( content );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.PORT_CLOSED, rx.getCode() );
+        }
+        try {
+            po.writeByte( 0 );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.PORT_CLOSED, rx.getCode() );
+        }
+        try {
+            po.writeByte( i313 );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.PORT_CLOSED, rx.getCode() );
+        }
+        try {
+            po.flush();
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.PORT_CLOSED, rx.getCode() );
+        }
+    }
+    @Test
+    public void binaryWrite() throws Exception
+    {
+        withFile( this::_binaryWrite );
     }
 
 }
