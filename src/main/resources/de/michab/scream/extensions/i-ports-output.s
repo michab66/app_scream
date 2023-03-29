@@ -68,7 +68,9 @@
     (if (not (output-port? the-port))
       (error "EXPECTED_OUTPUT_PORT"))
     ; Finally do the actual write.
-    ((object the-port) (display subject))))
+    ((object the-port) (display subject))
+    ; Unspecified.
+    '()))
 
 ;;
 ;; newline procedure
