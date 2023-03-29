@@ -10,12 +10,11 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Function;
 
-import org.smack.util.FileUtil;
+import org.smack.util.FunctionalUtil.ConsumerTX;
 
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
@@ -26,7 +25,6 @@ import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
-import de.michab.scream.util.FunctionX;
 
 public class ScreamBaseTest
 {
@@ -196,14 +194,14 @@ public class ScreamBaseTest
      * @param c
      * @throws Exception
      */
-    protected void withFile( FunctionX<File,Closeable,Exception> operation )
+    protected void withFile( ConsumerTX<File,Exception> operation )
         throws Exception
     {
         var f = tmpFile( getClass() );
 
         try
         {
-           FileUtil.forceClose( operation.apply( f ) );
+           operation.accept( f );
         }
         finally {
             f.delete();
