@@ -141,7 +141,6 @@ public class PortTest extends ScreamBaseTest
         assertEquals( "" + content, lines.get( 0 ) );
     }
 
-
     @Test
     public void textualWriteChar() throws Exception
     {
