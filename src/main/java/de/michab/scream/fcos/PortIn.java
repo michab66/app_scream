@@ -54,7 +54,7 @@ public class PortIn
     {
         super( name );
 
-        _file = Objects.requireNonNull( in );
+        stream( Objects.requireNonNull( in ) );
     }
 
     /**
@@ -72,8 +72,8 @@ public class PortIn
 
         try
         {
-            _file = new InputStreamReader(
-                    new FileInputStream( name ) );
+            stream( new InputStreamReader(
+                    new FileInputStream( name ) ) );
         }
         catch ( IOException e )
         {
@@ -97,7 +97,7 @@ public class PortIn
         // In case no parser exists...
         if ( null == _parser )
             // ...create one.
-            _parser = new SchemeParser( _file );
+            _parser = new SchemeParser( stream() );
 
         try
         {
@@ -125,7 +125,7 @@ public class PortIn
 
         try
         {
-            return _file.ready();
+            return stream().ready();
         }
         catch ( IOException e )
         {
@@ -153,7 +153,7 @@ public class PortIn
         {
             try
             {
-                _peeked = _file.read();
+                _peeked = stream().read();
             }
             catch ( IOException e )
             {
@@ -187,7 +187,7 @@ public class PortIn
         }
         else try
         {
-            c = _file.read();
+            c = stream().read();
         }
         catch ( IOException e )
         {
@@ -196,8 +196,8 @@ public class PortIn
 
         if ( c == -1 )
             return EOF;
-        else
-            return SchemeCharacter.createObject( c );
+
+        return SchemeCharacter.createObject( c );
     }
 
     @Override

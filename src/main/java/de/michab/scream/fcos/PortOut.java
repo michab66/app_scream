@@ -42,7 +42,7 @@ public class PortOut
     {
         super( name );
 
-        _file = Objects.requireNonNull( out );
+        stream( Objects.requireNonNull( out ) );
     }
 
     /**
@@ -60,8 +60,8 @@ public class PortOut
 
         try
         {
-            _file = new BufferedWriter(
-                    new FileWriter( name ) );
+            stream( new BufferedWriter(
+                    new FileWriter( name ) ) );
         }
         catch ( IOException e )
         {
@@ -98,7 +98,7 @@ public class PortOut
 
         try
         {
-            _file.write( s );
+            stream().write( s );
             return this;
         }
         catch ( IOException e )
@@ -122,7 +122,7 @@ public class PortOut
 
         try
         {
-            _file.write( c );
+            stream().write( c );
             return this;
         }
         catch ( IOException e )
@@ -170,7 +170,7 @@ public class PortOut
 
         try
         {
-            _file.flush();
+            stream().flush();
             return this;
         }
         catch ( IOException e )

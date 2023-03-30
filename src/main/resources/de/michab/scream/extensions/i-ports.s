@@ -146,27 +146,26 @@
 ;;
 ;; open-input-file file library procedure
 ;;
-(define (open-input-file filename)
-  (let ((in ((make-object de.michab.scream.fcos.Port) Input)))
-   (make-object (de.michab.scream.fcos.Port filename in))))
+(define (open-input-file string)
+  (make-object (de.michab.scream.fcos.PortIn string)))
 
 ;;
 ;; open-binary-input-file file library procedure
 ;;
-(define (open-binary-input-file filename)
-  (scream:error:not-implemented "(open-binary-input-file)"))
+(define (open-binary-input-file string)
+  (make-object (de.michab.scream.fcos.PortInBinary string)))
 
 ;;
 ;; open-output-file file library procedure
 ;;
-(define (open-output-file filename)
-   (make-object (de.michab.scream.fcos.PortOut filename)))
+(define (open-output-file string)
+   (make-object (de.michab.scream.fcos.PortOut string)))
 
 ;;
 ;; open-binary-output-file file library procedure
 ;;
 (define (open-binary-output-file filename)
-  (scream:error:not-implemented "(open-binary-output-file)"))
+   (make-object (de.michab.scream.fcos.PortOutBinary string)))
 
 ;;
 ;; close-port  procedure

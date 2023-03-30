@@ -41,7 +41,7 @@ public class PortOutBinary
     {
         super( name );
 
-        _file = Objects.requireNonNull( out );
+        stream( Objects.requireNonNull( out ) );
     }
 
     /**
@@ -58,8 +58,8 @@ public class PortOutBinary
 
         try
         {
-            _file = new BufferedOutputStream(
-                    new FileOutputStream( name ) );
+            stream( new BufferedOutputStream(
+                    new FileOutputStream( name ) ) );
         }
         catch ( IOException e )
         {
@@ -94,7 +94,7 @@ public class PortOutBinary
 
         try
         {
-            _file.write( b );
+            stream().write( b );
             return this;
         }
         catch ( IOException e )
@@ -117,7 +117,7 @@ public class PortOutBinary
 
         try
         {
-            _file.write( b );
+            stream().write( b );
             return this;
         }
         catch ( IOException e )
@@ -139,7 +139,7 @@ public class PortOutBinary
 
         try
         {
-            _file.flush();
+            stream().flush();
             return this;
         }
         catch ( IOException e )

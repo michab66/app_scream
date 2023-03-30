@@ -62,7 +62,8 @@
 (define (exit)
   ((make-object java.lang.System) (exit 0)))
 
-
+(define (scream:gc)
+  ((make-object java.lang.System) (gc)))
 
 ;;
 ;;

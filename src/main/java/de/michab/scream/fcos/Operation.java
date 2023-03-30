@@ -443,7 +443,7 @@ extends FirstClassObject
     public String toString()
     {
         return  String.format(
-                "<%s %s>",
+                "#<%s %s>",
                 typename(),
                 getName() );
     }
