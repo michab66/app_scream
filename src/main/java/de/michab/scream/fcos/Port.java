@@ -7,8 +7,8 @@ package de.michab.scream.fcos;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.lang.ref.Cleaner;
+import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
 
@@ -30,6 +30,8 @@ public abstract class Port<T extends Closeable>
     implements
         AutoCloseable
 {
+    private static Logger LOG = Logger.getLogger( Port.class.getName() );
+
     // Garbage collection: We want to close a port even in the case
     // that a Scheme program forgets the reference to the port object.
 
@@ -55,16 +57,16 @@ public abstract class Port<T extends Closeable>
         @Override
         public void run()
         {
-            System.err.println( "closing port: " + _name + " c=" + _isConstant );
-            if ( ! _isConstant )
-                JavaUtil.force( _stream::close );
+            // Note that we get calls here for *all* port instances,
+            // even the closed ones.
+            if ( _stream == null )
+                return;
+            if ( _isConstant )
+                return;
+            LOG.warning( "closing lost port: " + _name );
+            JavaUtil.force( _stream::close );
         }
     }
-
-    /**
-     * Garbage collection: Testing.
-     */
-    static StringWriter messages = new StringWriter();
 
     /**
      * Garbage collection: An instance of our state.
