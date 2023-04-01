@@ -6,18 +6,24 @@
 package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.ScreamException.Code;
+import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeBoolean;
 
@@ -50,29 +56,100 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
 """, file.getPath(), uuid ),
                 str( uuid ) );
     }
-    /**
-     * p56
-     */
     @Test
     public void call_with_port() throws Exception
     {
         withFile( this::call_with_port );
     }
 
+    @Test
+    public void call_with_port_err_1() throws Exception
+    {
+        expectError( "(call-with-port)", Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
+    @Test
+    public void call_with_port_err_2() throws Exception
+    {
+        RuntimeX rx = expectError( "(call-with-port 1 2)", Code.TYPE_ERROR );
+        assertEquals( "port", rx.getArgument( 0 ) );
+        assertEquals( "integer",rx.getArgument( 1 ) );
+    }
+    @Test
+    public void call_with_port_err_3() throws Exception
+    {
+        var rx = expectError( "(call-with-port (current-input-port) 2)", Code.TYPE_ERROR );
+        assertEquals( "procedure", rx.getArgument( 0 ) );
+        assertEquals( "integer", rx.getArgument( 1 ) );
+    }
+
     /**
      * p56
      */
+    private void call_with_input_file( File file ) throws Exception
+    {
+        String uuid = UUID.randomUUID().toString();
+
+        try ( var out = new FileWriter( file ) )
+        {
+            out.write( uuid );
+        }
+
+        assertTrue( file.exists() );
+
+        expectFco(
+                String.format(
+"""
+        (call-with-input-file
+          "%s"
+          (lambda (port)
+            (read-line port)))
+
+""", file.getPath(), uuid ),
+                str( uuid ) );
+    }
     @Test
     public void call_with_input_file() throws Exception
     {
+        withFile( this::call_with_input_file );
     }
 
+    /**
+     * p56
+     */
+    private void call_with_output_file( File file ) throws Exception
+    {
+        file.delete();
+
+        String uuid = UUID.randomUUID().toString();
+
+
+        assertFalse( file.exists() );
+
+        expectFco(
+                String.format(
+"""
+        (call-with-output-file
+          "%s"
+          (lambda (port)
+            (display "%s" port)))
+
+""", file.getPath(), uuid ),
+                Cons.NIL );
+
+        try ( var in = new BufferedReader( new FileReader( file ) ) )
+        {
+            assertEquals( uuid, in.readLine() );
+        }
+
+    }
     /**
      * p56
      */
     @Test
     public void call_with_output_file() throws Exception
     {
+        withFile( this::call_with_output_file );
     }
 
 

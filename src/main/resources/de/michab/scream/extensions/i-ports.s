@@ -59,13 +59,35 @@
 ;; call-with-input-file file library procedure
 ;;
 (define (call-with-input-file string proc)
-  (scream:error:not-implemented "(call-with-input-file)"))
+  (scream:assert-type 
+    string
+    string?
+    scream:type-string)
+  (scream:assert-type
+    proc
+    procedure?
+    scream:type-procedure)
+
+  (call-with-port
+    (open-input-file string)
+    proc))
 
 ;;
 ;; call-with-output-file file library procedure
 ;;
 (define (call-with-output-file string proc)
-  (scream:error:not-implemented "(call-with-output-file)"))
+  (scream:assert-type 
+    string
+    string?
+    scream:type-string)
+  (scream:assert-type
+    proc
+    procedure?
+    scream:type-procedure)
+
+  (call-with-port
+    (open-output-file string)
+    proc))
 
 ;;
 ;; input-port? procedure

@@ -1,11 +1,22 @@
-; $Id: string.s 8 2008-09-14 14:23:20Z binzm $
 ;
-; Scream / Runtime
+; Scream @ https://github.com/urschleim/scream
 ;
-; Released under Gnu Public License
-; Copyright (c) 1998-2000 Michael G. Binz
+; Copyright © 1998-2023 Michael G. Binz
+;
+
+;;
+;; Scream definitions.
+;;
+
+;; String type name.
+(define scream:type-string
+  ((make-object de.michab.scream.fcos.SchemeString) TYPE_NAME))
 
 
+
+;;
+;; r7rs definitions.
+;;
 
 ;;
 ;; (string? obj) procedure; r5rs 30
