@@ -5,6 +5,7 @@
  */
 package de.michab.scream.fcos;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +24,7 @@ import de.michab.scream.frontend.SchemeParser;
  * @author Michael Binz
  */
 public class PortIn
-    extends Port<Reader>
+    extends Port<BufferedReader>
 {
     /**
      * The name of the type as used by error reporting.
@@ -54,7 +55,12 @@ public class PortIn
     {
         super( name );
 
-        stream( Objects.requireNonNull( in ) );
+        Objects.requireNonNull( in );
+
+        if ( ! BufferedReader.class.isAssignableFrom( in.getClass() ) )
+            in = new BufferedReader( in );
+
+        stream( (BufferedReader)in );
     }
 
     /**
@@ -72,8 +78,9 @@ public class PortIn
 
         try
         {
-            stream( new InputStreamReader(
-                    new FileInputStream( name ) ) );
+            stream( new BufferedReader(
+                        new InputStreamReader(
+                            new FileInputStream( name ) ) ) );
         }
         catch ( IOException e )
         {
@@ -201,8 +208,30 @@ public class PortIn
     }
 
     @Override
-    public boolean isBinary()
+    public SchemeBoolean isBinary()
     {
-        return false;
+        return SchemeBoolean.F;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public FirstClassObject readLine()
+        throws RuntimeX
+    {
+        try
+        {
+            var result = stream().readLine();
+
+            if ( result == null )
+                return EOF;
+
+            return new SchemeString( result );
+        }
+        catch ( IOException e )
+        {
+            throw RuntimeX.mIoError( e );
+        }
     }
 }

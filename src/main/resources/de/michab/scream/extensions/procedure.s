@@ -5,7 +5,18 @@
 ; Released under Gnu Public License
 ; Copyright (c) 1998-2000 Michael G. Binz
 
+;;
+;; Scream definitions.
+;;
 
+;; Procedure type name.
+(define scream:type-procedure
+  ((make-object de.michab.scream.fcos.Procedure) TYPE_NAME))
+
+
+;;
+;; r7rs
+;;
 
 ;;
 ;; (procedure? obj) essential procedure; r5rs 27

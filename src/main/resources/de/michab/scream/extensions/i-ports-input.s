@@ -96,7 +96,10 @@
 ;; read-line procedure
 ;;
 (define (read-line port)
-  (scream:error:not-implemented "(read-line)"))
+  (if (and (input-port? port) (textual-port? port))
+	  ((object port) (readLine))
+      (error "TYPE_ERROR" scream:type-input-port (%typename port) 1)))
+	  
 
 ;;
 ;; eof-object? procedure

@@ -16,17 +16,41 @@
 
 (define scream:class:RuntimeX (make-object de.michab.scream.RuntimeX))
 
+;; NOT_IMPLEMENTED
 (define (scream:error:not-implemented message)
   (scream:class:RuntimeX (mNotImplemented message)))
+;; TYPE_ERROR
+(define (scream:error:type-error expected found)
+  (scream:class:RuntimeX (mTypeError expected found)))
 
 ;;
 ;; Displays a debug message without carriage return.
+;; Deprecated, use (display ...)
 ;;
 (define (%print message)
   ((object ((make-object de.michab.scream.SchemeInterpreter) (getErrorPort)))
    (display message)))
 
 
+(define scream:class:fco (make-object de.michab.scream.fcos.FirstClassObject))
+
+;;
+;; Get the type name of the passed object.
+;;
+(define (scream:typename x)
+  (scream:class:fco (getTypename x)))
+
+;;
+;; (scream:assert-type object predicate expected-type)
+;;
+;; Asserts that the passed predicate evaluates to true for the passed
+;; object and returns the passed object.  If the predicate does not
+;; evaluate to true, then a type_error is thrown.
+;;
+(define (scream:assert-type object predicate expected-type)
+  (if (predicate object)
+    object
+    (error "TYPE_ERROR" expected-type (scream:typename object))))
 
 ;;
 ;; (proc-2 a b) -> (proc-n a b ...)
@@ -135,7 +159,7 @@
 
 
 ;;
-;;
+;; Deprecated, use scream:typename
 ;;
 (define (%typename x)
   (%fco-class (getTypename x)))

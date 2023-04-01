@@ -9,8 +9,12 @@
 ;;
 
 ;;
-;; Scream definitions
+;; Scream definitions.
 ;;
+
+;; Port type name.
+(define scream:type-port
+  ((make-object de.michab.scream.fcos.Port) TYPE_NAME))
 
 ;; Output port type name.
 (define scream:type-output-port
@@ -38,9 +42,18 @@
 ;; call-with-port procedure
 ;;
 (define (call-with-port port proc)
-  ((let ((result (proc port)))
+  (scream:assert-type 
+    port
+    port?
+    scream:type-port)
+  (scream:assert-type
+    proc
+    procedure?
+    scream:type-procedure)
+  
+  (let ((result (proc port)))
     (close-port port)
-    result)))
+    result))
 
 ;;
 ;; call-with-input-file file library procedure

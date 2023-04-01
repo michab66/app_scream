@@ -7,9 +7,12 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.FileWriter;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -25,12 +28,35 @@ import de.michab.scream.fcos.SchemeBoolean;
  */
 public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
 {
+    private void call_with_port( File file ) throws Exception
+    {
+        String uuid = UUID.randomUUID().toString();
+
+        try ( var out = new FileWriter( file ) )
+        {
+            out.write( uuid );
+        }
+
+        assertTrue( file.exists() );
+
+        expectFco(
+                String.format(
+"""
+        (call-with-port
+          (open-input-file "%s")
+          (lambda (port)
+            (read-line port)))
+
+""", file.getPath(), uuid ),
+                str( uuid ) );
+    }
     /**
      * p56
      */
     @Test
     public void call_with_port() throws Exception
     {
+        withFile( this::call_with_port );
     }
 
     /**

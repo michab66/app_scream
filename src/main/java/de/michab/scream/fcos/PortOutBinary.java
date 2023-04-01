@@ -149,8 +149,8 @@ public class PortOutBinary
     }
 
     @Override
-    public boolean isBinary()
+    public SchemeBoolean isBinary()
     {
-        return true;
+        return SchemeBoolean.T;
     }
 }
