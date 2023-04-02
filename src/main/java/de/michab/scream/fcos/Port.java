@@ -101,7 +101,7 @@ public abstract class Port<T extends Closeable>
     /**
      * @return The port's stream.
      */
-    protected T stream()
+    public T stream()
     {
         return _state._stream;
     }

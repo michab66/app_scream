@@ -285,19 +285,30 @@
 ;; open-input-string procedure
 ;;
 (define (open-input-string string)
-  (scream:error:not-implemented "(open-input-string)"))
+  (let
+    ((reader (make-object (java.io.StringReader string))))
+    (make-object (de.michab.scream.fcos.PortIn "input-string" reader))))
 
 ;;
 ;; open-output-string procedure
 ;;
 (define (open-output-string)
-  (scream:error:not-implemented "(open-output-string)"))
+  (let
+    ((writer (make-object (java.io.StringWriter))))
+    (make-object (de.michab.scream.fcos.PortOut "output-string" writer))))
 
 ;;
 ;; get-output-string procedure
 ;;
 (define (get-output-string port)
-  (scream:error:not-implemented "(get-output-string)"))
+  (let* (
+    (stream ((object port) (stream)))
+    (port-class (stream (getClass)))
+    (writer-class (make-object java.io.StringWriter))
+    )
+    (if (equal? port-class writer-class)
+      (stream (toString))
+      'EOF)))
 
 ;;
 ;; open-input-bytevector procedure
