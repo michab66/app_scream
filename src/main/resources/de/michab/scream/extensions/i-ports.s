@@ -147,8 +147,33 @@
 ;;
 ;; Note that the value is not cacheable since the
 ;; port may be set individually for each invocation.
-(define (current-input-port)
-  (scream:evaluator (getInPort)))
+
+(define current-input-port ())
+(define scream:current-input-port-push ())
+(define scream:current-input-port-pop ())
+
+(let ((current-input-port-stack '()))
+  (set! current-input-port
+    (lambda ()
+      (if (null? current-input-port-stack)
+        (scream:evaluator (getInPort))
+        (car current-input-port-stack))))
+
+  (set! scream:current-input-port-push
+    (lambda (port)
+    
+      (scream:assert-type 
+        port
+        port?
+        scream:type-port)
+
+      (set! current-input-port-stack (cons port current-input-port-stack))))
+
+  (set! scream:current-input-port-pop
+    (lambda ()
+      (if (not (null? current-input-port-stack))
+       (set! current-input-port-stack (cdr current-input-port-stack)))))
+)
 
 ;;
 ;; current-output-port procedure
@@ -170,7 +195,11 @@
 ;; with-input-from-file file library procedure
 ;;
 (define (with-input-from-file string thunk)
-  (scream:error:not-implemented "(with-input-from-file)"))
+  (scream:current-input-port-push
+    (open-input-file string))
+  (let ((result (thunk)))
+    (scream:current-input-port-pop)
+    result))
 
 ;;
 ;; with-output-to-file file library procedure
