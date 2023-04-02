@@ -139,15 +139,12 @@
     (not ((object port) (isClosed)))
     #f))
 
-;; Note that these values are not cacheable since the output
-;; port may be set individually for each invocation.
-
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; current-input-port procedure
 ;;
-;; Note that the value is not cacheable since the
-;; port may be set individually for each invocation.
-
+;; (scream:current-input-port-push port)
+;; (scream:current-input-port-pop)
+;;
 (define current-input-port ())
 (define scream:current-input-port-push ())
 (define scream:current-input-port-pop ())
@@ -161,10 +158,10 @@
 
   (set! scream:current-input-port-push
     (lambda (port)
-    
+
       (scream:assert-type 
         port
-        port?
+        input-port?
         scream:type-port)
 
       (set! current-input-port-stack (cons port current-input-port-stack))))
@@ -175,13 +172,38 @@
        (set! current-input-port-stack (cdr current-input-port-stack)))))
 )
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; current-output-port procedure
 ;;
-;; Note that the value is not cacheable since the
-;; port may be set individually for each invocation.
-(define (current-output-port)
-  (scream:evaluator (getOutPort)))
+;; (scream:current-output-port-push port)
+;; (scream:current-output-port-pop)
+;;
+(define current-output-port ())
+(define scream:current-output-port-push ())
+(define scream:current-output-port-pop ())
+
+(let ((current-output-port-stack '()))
+  (set! current-output-port
+    (lambda ()
+      (if (null? current-output-port-stack)
+        (scream:evaluator (getOutPort))
+        (car current-output-port-stack))))
+
+  (set! scream:current-output-port-push
+    (lambda (port)
+
+      (scream:assert-type 
+        port
+        output-port?
+        scream:type-port)
+
+      (set! current-output-port-stack (cons port current-output-port-stack))))
+
+  (set! scream:current-output-port-pop
+    (lambda ()
+      (if (not (null? current-output-port-stack))
+       (set! current-output-port-stack (cdr current-output-port-stack)))))
+)
 
 ;;
 ;; current-error-port procedure
@@ -191,7 +213,7 @@
 (define (current-error-port)
   (scream:evaluator (getErrorPort)))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; with-input-from-file file library procedure
 ;;
 (define (with-input-from-file string thunk)
@@ -201,11 +223,15 @@
     (scream:current-input-port-pop)
     result))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; with-output-to-file file library procedure
 ;;
 (define (with-output-to-file string thunk)
-  (scream:error:not-implemented "(with-output-to-file)"))
+  (scream:current-output-port-push
+    (open-output-file string))
+  (let ((result (thunk)))
+    (scream:current-output-port-pop)
+    result))
 
 ;;
 ;; open-input-file file library procedure
