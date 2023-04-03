@@ -76,11 +76,9 @@ public abstract class Port<T extends Closeable>
             new State<>();
 
     /**
-     * Garbage collection.
-     * Per instance default initialization.  Registers
-     * our port instance and the respective state.
-     * If the instance is garbage collected, the
-     * state's run operation is called.
+     * Garbage collection: Per-instance default initialization.  Registers
+     * our port instance and the respective state.  If the instance
+     * is garbage collected, the state's run operation is called.
      */
     {
         _cleaner.register( this, _state );

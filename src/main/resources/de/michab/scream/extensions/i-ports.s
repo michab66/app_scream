@@ -8,9 +8,9 @@
 ;; r7rs 6.13.1 p56 
 ;;
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Scream definitions.
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Port type name.
 (define scream:type-port
@@ -34,11 +34,11 @@
 (define scream:binary-output-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortOutBinary" #t))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; call-with-port procedure
 ;;
 (define (call-with-port port proc)
@@ -55,7 +55,7 @@
     (close-port port)
     result))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; call-with-input-file file library procedure
 ;;
 (define (call-with-input-file string proc)
@@ -72,7 +72,7 @@
     (open-input-file string)
     proc))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; call-with-output-file file library procedure
 ;;
 (define (call-with-output-file string proc)
@@ -89,7 +89,7 @@
     (open-output-file string)
     proc))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; input-port? procedure
 ;;
 (define (input-port? port)
@@ -97,13 +97,13 @@
     (scream:input-port? port) 
     (scream:binary-input-port? port)))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; output-port? procedure
 ;;
 (define output-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; binary-port? procedure
 ;;
 (define (binary-port? port)
@@ -111,19 +111,19 @@
     ((object port) (isBinary))
     #f))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; textual-port? procedure
 ;;
 (define (textual-port? port)
   (and (port? port) (not (binary-port? port))))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; port? procedure
 ;;
 (define port?
   (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; input-port-open? procedure
 ;;
 (define (input-port-open? port)
@@ -131,7 +131,7 @@
     (not ((object port) (isClosed)))
     #f))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; output-port-open? procedure
 ;;
 (define (output-port-open? port)
@@ -205,7 +205,7 @@
        (set! current-output-port-stack (cdr current-output-port-stack)))))
 )
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; current-error-port procedure
 ;;
 ;; Note that the value is not cacheable since the
@@ -233,31 +233,31 @@
     (scream:current-output-port-pop)
     result))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-input-file file library procedure
 ;;
 (define (open-input-file string)
   (make-object (de.michab.scream.fcos.PortIn string)))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-binary-input-file file library procedure
 ;;
 (define (open-binary-input-file string)
   (make-object (de.michab.scream.fcos.PortInBinary string)))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-output-file file library procedure
 ;;
 (define (open-output-file string)
    (make-object (de.michab.scream.fcos.PortOut string)))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-binary-output-file file library procedure
 ;;
 (define (open-binary-output-file filename)
    (make-object (de.michab.scream.fcos.PortOutBinary string)))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; close-port  procedure
 ;;
 (define (close-port port)
@@ -265,7 +265,7 @@
     (error "EXPECTED_PORT"))
   ((object port) (close)))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; close-input-port procedure
 ;;
 (define (close-input-port port)
@@ -273,7 +273,7 @@
     (error "EXPECTED_INPUT_PORT"))
   (close-port port))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; close-output-port  procedure
 ;;
 (define (close-output-port port)
@@ -281,7 +281,7 @@
     (error "EXPECTED_OUTPUT_PORT"))
   (close-port port))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-input-string procedure
 ;;
 (define (open-input-string string)
@@ -289,7 +289,7 @@
     ((reader (make-object (java.io.StringReader string))))
     (make-object (de.michab.scream.fcos.PortIn "input-string" reader))))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-output-string procedure
 ;;
 (define (open-output-string)
@@ -297,7 +297,7 @@
     ((writer (make-object (java.io.StringWriter))))
     (make-object (de.michab.scream.fcos.PortOut "output-string" writer))))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; get-output-string procedure
 ;;
 (define (get-output-string port)
@@ -310,19 +310,19 @@
       (stream (toString))
       'EOF)))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-input-bytevector procedure
 ;;
 (define (open-input-bytevector bytevector)
   (scream:error:not-implemented "(open-input-bytevector)"))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-output-bytevector procedure
 ;;
 (define (open-output-bytevector)
   (scream:error:not-implemented "(open-output-bytevector)"))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; get-output-bytevector procedure
 ;;
 (define (get-output-bytevector port)
