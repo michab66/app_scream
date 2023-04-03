@@ -13,7 +13,7 @@
 ;; TODO fix to support the parameters described in the spec.
 ;;
 ;(define (load string)
-;  (scream::evaluator (load string)))
+;  (scream:evaluator (load string)))
 
 (include "i-ports.s")
 (include "i-environment.s")

@@ -8,12 +8,13 @@
 ;; r7rs 6.13.1 p56 
 ;;
 
-;;
-;; Scream definitions
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Scream definitions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; The eof object.  To be reworked #78.
-(define EOF 'EOF)
+;; Port type name.
+(define scream:type-port
+  ((make-object de.michab.scream.fcos.Port) TYPE_NAME))
 
 ;; Output port type name.
 (define scream:type-output-port
@@ -31,241 +32,302 @@
 (define scream:output-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
 (define scream:binary-output-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.PortOutBinary" #t))
 
-
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;
-;; call-with-port
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; call-with-port procedure
 ;;
 (define (call-with-port port proc)
-  ((let ((result (proc port)))
+  (scream:assert-type 
+    port
+    port?
+    scream:type-port)
+  (scream:assert-type
+    proc
+    procedure?
+    scream:type-procedure)
+  
+  (let ((result (proc port)))
     (close-port port)
-    result)))
+    result))
 
-;; TODO call-with-input-file
-;; TODO call-with-output-file
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; call-with-input-file file library procedure
 ;;
-;; input-port?
+(define (call-with-input-file string proc)
+  (scream:assert-type 
+    string
+    string?
+    scream:type-string)
+  (scream:assert-type
+    proc
+    procedure?
+    scream:type-procedure)
+
+  (call-with-port
+    (open-input-file string)
+    proc))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; call-with-output-file file library procedure
+;;
+(define (call-with-output-file string proc)
+  (scream:assert-type 
+    string
+    string?
+    scream:type-string)
+  (scream:assert-type
+    proc
+    procedure?
+    scream:type-procedure)
+
+  (call-with-port
+    (open-output-file string)
+    proc))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; input-port? procedure
 ;;
 (define (input-port? port)
   (or
     (scream:input-port? port) 
     (scream:binary-input-port? port)))
-    
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; output-port? procedure
+;;
 (define output-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; binary-port? procedure
+;;
 (define (binary-port? port)
   (if (port? port)
     ((object port) (isBinary))
     #f))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; textual-port? procedure
+;;
 (define (textual-port? port)
-  (not (binary-port? port)))
+  (and (port? port) (not (binary-port? port))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; port? procedure
+;;
 (define port?
   (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
 
-;; todo input-port-open
-;; todo output-port-open
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; input-port-open? procedure
+;;
+(define (input-port-open? port)
+  (if (input-port? port)
+    (not ((object port) (isClosed)))
+    #f))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; output-port-open? procedure
 ;;
-;; p56 
+(define (output-port-open? port)
+  (if (output-port? port)
+    (not ((object port) (isClosed)))
+    #f))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; current-input-port procedure
 ;;
-;; Note that these values are not cacheable since the output
+;; (scream:current-input-port-push port)
+;; (scream:current-input-port-pop)
+;;
+(define current-input-port ())
+(define scream:current-input-port-push ())
+(define scream:current-input-port-pop ())
+
+(let ((current-input-port-stack '()))
+  (set! current-input-port
+    (lambda ()
+      (if (null? current-input-port-stack)
+        (scream:evaluator (getInPort))
+        (car current-input-port-stack))))
+
+  (set! scream:current-input-port-push
+    (lambda (port)
+
+      (scream:assert-type 
+        port
+        input-port?
+        scream:type-port)
+
+      (set! current-input-port-stack (cons port current-input-port-stack))))
+
+  (set! scream:current-input-port-pop
+    (lambda ()
+      (if (not (null? current-input-port-stack))
+       (set! current-input-port-stack (cdr current-input-port-stack)))))
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; current-output-port procedure
+;;
+;; (scream:current-output-port-push port)
+;; (scream:current-output-port-pop)
+;;
+(define current-output-port ())
+(define scream:current-output-port-push ())
+(define scream:current-output-port-pop ())
+
+(let ((current-output-port-stack '()))
+  (set! current-output-port
+    (lambda ()
+      (if (null? current-output-port-stack)
+        (scream:evaluator (getOutPort))
+        (car current-output-port-stack))))
+
+  (set! scream:current-output-port-push
+    (lambda (port)
+
+      (scream:assert-type 
+        port
+        output-port?
+        scream:type-port)
+
+      (set! current-output-port-stack (cons port current-output-port-stack))))
+
+  (set! scream:current-output-port-pop
+    (lambda ()
+      (if (not (null? current-output-port-stack))
+       (set! current-output-port-stack (cdr current-output-port-stack)))))
+)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; current-error-port procedure
+;;
+;; Note that the value is not cacheable since the
 ;; port may be set individually for each invocation.
-
-(define (current-input-port)
-  (scream::evaluator (getInPort)))
-
-(define (current-output-port)
-  (scream::evaluator (getOutPort)))
-
 (define (current-error-port)
-  (scream::evaluator (getErrorPort)))
+  (scream:evaluator (getErrorPort)))
 
-;; with-input-from-file
-;; with-output-to-file
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; with-input-from-file file library procedure
 ;;
-;; p56
-;;
-(define (open-input-file filename)
-  (let ((in ((make-object de.michab.scream.fcos.Port) Input)))
-   (make-object (de.michab.scream.fcos.Port filename in))))
+(define (with-input-from-file string thunk)
+  (scream:current-input-port-push
+    (open-input-file string))
+  (let ((result (thunk)))
+    (scream:current-input-port-pop)
+    result))
 
-;; TODO open-binary-input-file
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; with-output-to-file file library procedure
 ;;
-;; p56
-;;
-(define (open-output-file filename)
-   (make-object (de.michab.scream.fcos.PortOut filename)))
+(define (with-output-to-file string thunk)
+  (scream:current-output-port-push
+    (open-output-file string))
+  (let ((result (thunk)))
+    (scream:current-output-port-pop)
+    result))
 
-;; TODO open-output-file
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; open-input-file file library procedure
 ;;
-;; p56
+(define (open-input-file string)
+  (make-object (de.michab.scream.fcos.PortIn string)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; open-binary-input-file file library procedure
+;;
+(define (open-binary-input-file string)
+  (make-object (de.michab.scream.fcos.PortInBinary string)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; open-output-file file library procedure
+;;
+(define (open-output-file string)
+   (make-object (de.michab.scream.fcos.PortOut string)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; open-binary-output-file file library procedure
+;;
+(define (open-binary-output-file filename)
+   (make-object (de.michab.scream.fcos.PortOutBinary string)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; close-port  procedure
 ;;
 (define (close-port port)
   (if (not (port? port))
     (error "EXPECTED_PORT"))
   ((object port) (close)))
 
-;;
-;; p56
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; close-input-port procedure
 ;;
 (define (close-input-port port)
   (if (not (input-port? port))
     (error "EXPECTED_INPUT_PORT"))
   (close-port port))
 
-;;
-;; p56
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; close-output-port  procedure
 ;;
 (define (close-output-port port)
   (if (not (output-port? port))
     (error "EXPECTED_OUTPUT_PORT"))
   (close-port port))
 
-;; todo open-input-string
-;; todo open-output-string
-;; todo get-output-string
-;; todo open-input-bytevector
-;; todo open-output-bytevector
-;; todo get-output-bytevector
-;;;  input ...
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; open-input-string procedure
 ;;
-;; (read)       library procedure, r5rs 36
-;; (read port)  library procedure, r5rs 36
+(define (open-input-string string)
+  (let
+    ((reader (make-object (java.io.StringReader string))))
+    (make-object (de.michab.scream.fcos.PortIn "input-string" reader))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; open-output-string procedure
 ;;
-;; Read converts external representations of Scheme objects into the objects
-;; themselves. That is, it is a parser for the nonterminal 'datum' (see R5RS
-;; sections 7.1.2 and 6.3.2). Read returns the next object parsable from the
-;; given input port, updating port to point to the first character past the end
-;; of the external representation of the object.
-;; If an end of file is encountered in the input before any characters are
-;; found that can begin an object, then an end of file object is returned. The
-;; port remains open, and further attempts to read will also return an end of
-;; file object.
-;; If an end of file is encountered after the beginning of an object's external
-;; representation, but the external representation is incomplete and therefore
-;; not parsable, an error is signalled.
-;; The port argument may be omitted, in which case it defaults to the value
-;; returned by current-input-port. It is an error to read from a closed port.
+(define (open-output-string)
+  (let
+    ((writer (make-object (java.io.StringWriter))))
+    (make-object (de.michab.scream.fcos.PortOut "output-string" writer))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; get-output-string procedure
 ;;
-(define (read . arg-list)
-  ;; TODO Note that this has a problem.  When reading from standard input
-  ;; sometimes more than one expression has to be specified for read to
-  ;; return.  This is exactly the same behavior that the implementation in
-  ;; native Java had.
-  (let (
-    ; If a single argument is given assign this to the port.  If no argument
-    ; is given assign the current input port to the port.  If than one
-    ; argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-input-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 1)))))
+(define (get-output-string port)
+  (let* (
+    (stream ((object port) (stream)))
+    (port-class (stream (getClass)))
+    (writer-class (make-object java.io.StringWriter))
+    )
+    (if (equal? port-class writer-class)
+      (stream (toString))
+      'EOF)))
 
-    ; Check if what we assigned above is really an input port.
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (input-port? the-port))
-      (error "EXPECTED_INPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (read))))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; open-input-bytevector procedure
 ;;
-;; Returns the next character available from the input port, updating the port
-;; to point to the following character. If no more characters are available, an
-;; end of file object is returned. Port may be omitted, in which case it
-;; defaults to the value returned by current-input-port.
+(define (open-input-bytevector bytevector)
+  (scream:error:not-implemented "(open-input-bytevector)"))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; open-output-bytevector procedure
 ;;
-(define (read-char . arg-list)
-  (let (
-    ; If a single argument is given assign this to the port.  If no argument
-    ; is given assign the current input port to the port.  If than one
-    ; argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-input-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 1)))))
+(define (open-output-bytevector)
+  (scream:error:not-implemented "(open-output-bytevector)"))
 
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (input-port? the-port))
-      (error "EXPECTED_INPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (readCharacter))))
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; get-output-bytevector procedure
 ;;
-;; Returns the next character available from the input port, without updating
-;; the port to point to the following character.  If no more characters are
-;; available, an end of file object is returned. Port may be omitted, in which
-;; case it defaults to the value returned by current-input-port.
-;;
-(define (peek-char . arg-list)
-  (let (
-    ; If a single argument is given assign this to the port.  If no argument
-    ; is given assign the current input port to the port.  If than one
-    ; argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-input-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 1)))))
+(define (get-output-bytevector port)
+  (scream:error:not-implemented "(get-output-bytevector)"))
 
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (input-port? the-port))
-      (error "EXPECTED_INPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (peekCharacter))))
-
-;;
-;; Returns #t if a character is ready on the input port and returns #f
-;; otherwise.  If char-ready returns #t then the next read-char operation on
-;; the given port is guaranteed not to hang. If the port is at end of file then
-;; char-ready? returns #t. Port may be omitted, in which case it defaults to
-;; the value returned by current-input-port.
-;;
-(define (char-ready . arg-list)
-  (let (
-    ; If a single argument is given assign this to the port.  If no argument
-    ; is given assign the current input port to the port.  If than one
-    ; argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-input-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 1)))))
-
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (input-port? the-port))
-      (error "EXPECTED_INPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (charReady))))
-
-(define (eof? symbol)
-    (eqv? symbol 'EOF))
-
-(include "i-ports-output.s")
+(include 
+  "i-ports-input.s"
+  "i-ports-output.s")

@@ -7,6 +7,8 @@ package de.michab.scream.fcos;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.lang.ref.Cleaner;
+import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
 
@@ -28,6 +30,60 @@ public abstract class Port<T extends Closeable>
     implements
         AutoCloseable
 {
+    private static Logger LOG = Logger.getLogger( Port.class.getName() );
+
+    // Garbage collection: We want to close a port even in the case
+    // that a Scheme program forgets the reference to the port object.
+
+    /**
+     * Garbage collection: The cleaner needed.  Another cleaner
+     * could also be used. (Integrate one in Smack?)
+     */
+    private static final Cleaner _cleaner = Cleaner.create();
+
+    /**
+     * Garbage collection: A local type that holds the state
+     * information needed to close the stream.
+     * @param <C>
+     */
+    static class State<C extends Closeable> implements Runnable
+    {
+        public String _name;
+        public C _stream =
+                null;
+        public boolean _isConstant =
+                false;
+
+        @Override
+        public void run()
+        {
+            // Note that we get calls here for *all* port instances,
+            // even the closed ones.
+            if ( _stream == null )
+                return;
+            if ( _isConstant )
+                return;
+            LOG.warning( "closing lost port: " + _name );
+            JavaUtil.force( _stream::close );
+        }
+    }
+
+    /**
+     * Garbage collection: An instance of our state.
+     * This must not refer to the enclosing port object.
+     */
+    private final State<T> _state =
+            new State<>();
+
+    /**
+     * Garbage collection: Per-instance default initialization.  Registers
+     * our port instance and the respective state.  If the instance
+     * is garbage collected, the state's run operation is called.
+     */
+    {
+        _cleaner.register( this, _state );
+    }
+
     public static final String TYPE_NAME = "port";
 
     /**
@@ -35,9 +91,26 @@ public abstract class Port<T extends Closeable>
      */
     public static final Symbol EOF = Symbol.createObject( "EOF" );
 
+    /**
+     * @return The port's name, commonly a filename.
+     */
     private final String _name;
 
-    protected T _file;
+    /**
+     * @return The port's stream.
+     */
+    public T stream()
+    {
+        return _state._stream;
+    }
+
+    /**
+     * @param file Set the port's stream.
+     */
+    protected void stream( T file )
+    {
+        _state._stream = file;
+    }
 
     /**
      * Create a port.
@@ -47,6 +120,7 @@ public abstract class Port<T extends Closeable>
     protected Port( String name )
     {
         _name = name;
+        _state._name = toString() + "id=" + id();
     }
 
     public String name()
@@ -62,14 +136,18 @@ public abstract class Port<T extends Closeable>
      */
     public final boolean isClosed()
     {
-        return _file == null;
+        return stream() == null;
     }
 
-    public abstract boolean isBinary();
+    public abstract SchemeBoolean isBinary();
 
     /**
      * Closes the port.
      */
+    // Garbage collection: This is deliberately *not* the
+    // same implementation like the State#close operation
+    // since for this close operation we want a proper
+    // exception handling.
     @Override
     public final void close() throws RuntimeX
     {
@@ -80,50 +158,33 @@ public abstract class Port<T extends Closeable>
 
         try
         {
-            _file.close();
+            // Garbage collection: first get the state, keep it locally ...
+            var hold = stream();
+            // ... and set the state to null.
+            stream( null );
+            // Then finally close the state. If this
+            // results in an exception, this is
+            // properly handled, but we switched now
+            // to closed.
+            hold.close();
         }
         catch ( IOException e )
         {
             throw RuntimeX.mIoError( e );
         }
-        finally
-        {
-            _file = null;
-        }
     }
 
     /**
-     * Finalize the object.
-     *
-     * @throws Throwable In case of errors.
-     * @see java.lang.Object#finalize
-     */
-    @Override
-    protected void finalize()
-            throws
-            Throwable
-    {
-        if ( isClosed() )
-            return;
-        if ( isConstant() )
-            return;
-
-        JavaUtil.force( this::close );
-
-        // Chain finalisers.
-        super.finalize();
-    }
-
-    /**
-     * Convert this object into the Java type system.  For input ports returns a
-     * reader, for output ports a writer.
+     * Convert this object into the Java type system.  The concrete
+     * type returned depends on the Port-implementation.
      *
      * @return The corresponding Java type for this object.
+     * {@code null} is returned if the port is closed.
      */
     @Override
     public final Object toJava()
     {
-        return _file;
+        return stream();
     }
 
     /**
@@ -135,10 +196,20 @@ public abstract class Port<T extends Closeable>
     final public String toString()
     {
         return String.format(
-                "<%s '%s' %s %s>",
+                "#<%s '%s' %s %s>",
                 getTypename( this ),
                 name(),
-                isBinary() ? "binary" : "textual",
+                isBinary() == SchemeBoolean.T ? "binary" : "textual",
                 isClosed() ? "closed" : "open" );
+    }
+
+    @Override
+    // Garbage collection:  We need to track the constantness
+    // to prevent a close of non-closable ports.
+    final void setConstant( boolean what )
+    {
+        super.setConstant( what );
+
+        _state._isConstant = what;
     }
 }

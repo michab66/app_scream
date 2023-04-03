@@ -100,7 +100,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * The symbol being bound to an object reference of the interpreter itself.
      */
     private final static Symbol ANCHOR_SYMBOL =
-            Symbol.createObject( "scream::evaluator" );
+            Symbol.createObject( "scream:evaluator" );
 
     /**
      * The interaction environment.

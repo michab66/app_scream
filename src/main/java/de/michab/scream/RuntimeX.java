@@ -197,6 +197,11 @@ extends ScreamException
         return new RuntimeX(
                 Code.NOT_IMPLEMENTED );
     }
+    public static RuntimeX mNotImplemented( String message )
+    {
+        return new RuntimeX(
+                Code.NOT_IMPLEMENTED, message );
+    }
 
     //    # A symbol is not defined.  The argument should give the symbol name.
     //    #

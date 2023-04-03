@@ -5,6 +5,7 @@
  */
 package de.michab.scream.fcos;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +24,7 @@ import de.michab.scream.frontend.SchemeParser;
  * @author Michael Binz
  */
 public class PortIn
-    extends Port<Reader>
+    extends Port<BufferedReader>
 {
     /**
      * The name of the type as used by error reporting.
@@ -54,7 +55,12 @@ public class PortIn
     {
         super( name );
 
-        _file = Objects.requireNonNull( in );
+        Objects.requireNonNull( in );
+
+        if ( ! BufferedReader.class.isAssignableFrom( in.getClass() ) )
+            in = new BufferedReader( in );
+
+        stream( (BufferedReader)in );
     }
 
     /**
@@ -72,8 +78,9 @@ public class PortIn
 
         try
         {
-            _file = new InputStreamReader(
-                    new FileInputStream( name ) );
+            stream( new BufferedReader(
+                        new InputStreamReader(
+                            new FileInputStream( name ) ) ) );
         }
         catch ( IOException e )
         {
@@ -97,7 +104,7 @@ public class PortIn
         // In case no parser exists...
         if ( null == _parser )
             // ...create one.
-            _parser = new SchemeParser( _file );
+            _parser = new SchemeParser( stream() );
 
         try
         {
@@ -125,7 +132,7 @@ public class PortIn
 
         try
         {
-            return _file.ready();
+            return stream().ready();
         }
         catch ( IOException e )
         {
@@ -153,7 +160,7 @@ public class PortIn
         {
             try
             {
-                _peeked = _file.read();
+                _peeked = stream().read();
             }
             catch ( IOException e )
             {
@@ -187,7 +194,7 @@ public class PortIn
         }
         else try
         {
-            c = _file.read();
+            c = stream().read();
         }
         catch ( IOException e )
         {
@@ -196,13 +203,35 @@ public class PortIn
 
         if ( c == -1 )
             return EOF;
-        else
-            return SchemeCharacter.createObject( c );
+
+        return SchemeCharacter.createObject( c );
     }
 
     @Override
-    public boolean isBinary()
+    public SchemeBoolean isBinary()
     {
-        return false;
+        return SchemeBoolean.F;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public FirstClassObject readLine()
+        throws RuntimeX
+    {
+        try
+        {
+            var result = stream().readLine();
+
+            if ( result == null )
+                return EOF;
+
+            return new SchemeString( result );
+        }
+        catch ( IOException e )
+        {
+            throw RuntimeX.mIoError( e );
+        }
     }
 }

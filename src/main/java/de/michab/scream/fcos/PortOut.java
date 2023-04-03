@@ -5,9 +5,9 @@
  */
 package de.michab.scream.fcos;
 
-import java.io.FileOutputStream;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Objects;
 
@@ -42,7 +42,7 @@ public class PortOut
     {
         super( name );
 
-        _file = Objects.requireNonNull( out );
+        stream( Objects.requireNonNull( out ) );
     }
 
     /**
@@ -60,8 +60,8 @@ public class PortOut
 
         try
         {
-            _file = new PrintWriter(
-                    new FileOutputStream( name ) );
+            stream( new BufferedWriter(
+                    new FileWriter( name ) ) );
         }
         catch ( IOException e )
         {
@@ -73,26 +73,13 @@ public class PortOut
      * Write the passed object to the port.
      *
      * @param o The object to write.
-     * @param flush {@code True} results in the port being flushed after the
-     *        data is written.
-     * @throws RuntimeX In case an error ocurred.
-     */
-    public void write( FirstClassObject o, boolean flush )
-            throws RuntimeX
-    {
-        write( toString( o ), flush );
-    }
-
-    /**
-     * Write the passed object to the port.
-     *
-     * @param o The object to write.
+     * @return The port.
      * @throws RuntimeX In case an error occurred.
      */
-    public void write( FirstClassObject o )
+    public PortOut write( FirstClassObject o )
             throws RuntimeX
     {
-        write( o, false );
+        return write( toString( o ) );
     }
 
     /**
@@ -100,10 +87,10 @@ public class PortOut
      * representation including quotes.
      *
      * @param s The string to write.
-     * @param flush If {@code true} then port is flushed after the write.
+     * @return The port.
      * @throws RuntimeX In case an error occurred.
      */
-    void write( String s, boolean flush )
+    public PortOut write( String s )
             throws RuntimeX
     {
         if ( isClosed() )
@@ -111,10 +98,8 @@ public class PortOut
 
         try
         {
-            _file.write( s );
-
-            if ( flush )
-                _file.flush();
+            stream().write( s );
+            return this;
         }
         catch ( IOException e )
         {
@@ -126,9 +111,10 @@ public class PortOut
      * Write a single character to this output port.
      *
      * @param c The character to write.
+     * @return The port.
      * @throws RuntimeX In case something went wrong.
      */
-    public void writeCharacter( char c )
+    public PortOut writeCharacter( char c )
             throws RuntimeX
     {
         if ( isClosed() )
@@ -136,7 +122,8 @@ public class PortOut
 
         try
         {
-            _file.write( c );
+            stream().write( c );
+            return this;
         }
         catch ( IOException e )
         {
@@ -151,20 +138,44 @@ public class PortOut
      * @param o The object to display.
      * @throws RuntimeX In case an error occurred.
      */
-    public void display( FirstClassObject o )
+    public PortOut display( FirstClassObject o )
             throws RuntimeX
     {
         if ( o instanceof SchemeString )
-            write( ((SchemeString)o).getValue(), true );
-        else if ( o instanceof SchemeCharacter )
-            write( "" + ((SchemeCharacter)o).asCharacter(), true );
-        else
-            write( o, true );
+            return write( ((SchemeString)o).getValue() ).flush();
+
+        if ( o instanceof SchemeCharacter )
+            return write( "" + ((SchemeCharacter)o).asCharacter() ).flush();
+
+        return write( o ).flush();
     }
 
     @Override
-    public boolean isBinary()
+    public SchemeBoolean isBinary()
     {
-        return false;
+        return SchemeBoolean.F;
+    }
+
+    /**
+     * Flush the port.
+     *
+     * @return The port.
+     * @throws RuntimeX
+     */
+    public PortOut flush()
+            throws RuntimeX
+    {
+        if ( isClosed() )
+            throw RuntimeX.mPortClosed();
+
+        try
+        {
+            stream().flush();
+            return this;
+        }
+        catch ( IOException e )
+        {
+            throw RuntimeX.mIoError( e );
+        }
     }
 }

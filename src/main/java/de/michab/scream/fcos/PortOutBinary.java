@@ -5,6 +5,7 @@
  */
 package de.michab.scream.fcos;
 
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -13,7 +14,7 @@ import java.util.Objects;
 import de.michab.scream.RuntimeX;
 
 /**
- * A binary Scheme output-port
+ * A binary Scheme output-port.
  *
  * r7rs, 6.13.3 p58
  *
@@ -40,15 +41,14 @@ public class PortOutBinary
     {
         super( name );
 
-        _file = Objects.requireNonNull( out );
+        stream( Objects.requireNonNull( out ) );
     }
 
     /**
      * Create a named port.  The passed name is used for opening the file.
+     * The resulting port is buffered.
      *
      * @param name The name of the file to open.
-     * @param inout An enum value defining whether this is an input or output
-     *        file.
      * @throws RuntimeX If an error occurred.
      */
     public PortOutBinary( String name )
@@ -58,8 +58,8 @@ public class PortOutBinary
 
         try
         {
-            _file =
-                    new FileOutputStream( name );
+            stream( new BufferedOutputStream(
+                    new FileOutputStream( name ) ) );
         }
         catch ( IOException e )
         {
@@ -73,7 +73,20 @@ public class PortOutBinary
      * @param c The character to write.
      * @throws RuntimeX In case something went wrong.
      */
-    public void writeByte( SchemeInteger c )
+    public PortOutBinary writeByte( SchemeInteger c )
+            throws RuntimeX
+    {
+        return writeByte( (int)c.asLong() );
+    }
+
+    /**
+     * Write a single byte to this output port. Note that only
+     * the lower eight bits of the passed integer are written.
+     *
+     * @param b The byte to write.
+     * @throws RuntimeX In case something went wrong.
+     */
+    public PortOutBinary writeByte( int b )
             throws RuntimeX
     {
         if ( isClosed() )
@@ -81,7 +94,31 @@ public class PortOutBinary
 
         try
         {
-            _file.write( (byte)c.asLong() );
+            stream().write( b );
+            return this;
+        }
+        catch ( IOException e )
+        {
+            throw RuntimeX.mIoError( e );
+        }
+    }
+
+    /**
+     * Write an array of bytes.
+     *
+     * @param b The bytes to write.
+     * @throws RuntimeX In case something went wrong.
+     */
+    public PortOutBinary write( byte[] b )
+            throws RuntimeX
+    {
+        if ( isClosed() )
+            throw RuntimeX.mPortClosed();
+
+        try
+        {
+            stream().write( b );
+            return this;
         }
         catch ( IOException e )
         {
@@ -94,7 +131,7 @@ public class PortOutBinary
      *
      * @throws RuntimeX In case something went wrong.
      */
-    public void flush()
+    public PortOutBinary flush()
             throws RuntimeX
     {
         if ( isClosed() )
@@ -102,7 +139,8 @@ public class PortOutBinary
 
         try
         {
-            _file.flush();
+            stream().flush();
+            return this;
         }
         catch ( IOException e )
         {
@@ -111,8 +149,8 @@ public class PortOutBinary
     }
 
     @Override
-    public boolean isBinary()
+    public SchemeBoolean isBinary()
     {
-        return false;
+        return SchemeBoolean.T;
     }
 }

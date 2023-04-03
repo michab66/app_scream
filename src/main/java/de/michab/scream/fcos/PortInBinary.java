@@ -46,7 +46,7 @@ public class PortInBinary
     {
         super( name );
 
-        _file = Objects.requireNonNull( in );
+        stream( Objects.requireNonNull( in ) );
     }
 
     /**
@@ -64,8 +64,7 @@ public class PortInBinary
 
         try
         {
-            _file =
-                    new FileInputStream( name );
+            stream( new FileInputStream( name ) );
         }
         catch ( IOException e )
         {
@@ -88,7 +87,7 @@ public class PortInBinary
 
         try
         {
-            return _file.available() > 0;
+            return stream().available() > 0;
         }
         catch ( IOException e )
         {
@@ -116,7 +115,7 @@ public class PortInBinary
         {
             try
             {
-                _peeked = _file.read();
+                _peeked = stream().read();
             }
             catch ( IOException e )
             {
@@ -150,7 +149,7 @@ public class PortInBinary
         }
         else try
         {
-            c = _file.read();
+            c = stream().read();
         }
         catch ( IOException e )
         {
@@ -164,8 +163,8 @@ public class PortInBinary
     }
 
     @Override
-    public boolean isBinary()
+    public SchemeBoolean isBinary()
     {
-        return true;
+        return SchemeBoolean.T;
     }
 }
