@@ -87,8 +87,9 @@ extends Exception
         TEST_FAILED,
         ONLY_IN_QUASIQUOTE_CONTEXT,
         RADIX_NOT_SUPPORTED,
-        DUPLICATE_ELEMENT;
-
+        DUPLICATE_ELEMENT,
+        EXPECTED_BINARY_PORT,
+        EXPECTED_TEXTUAL_PORT;
 
         public int id()
         {

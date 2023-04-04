@@ -4,11 +4,11 @@
 ; Copyright © 1998-2023 Michael G. Binz
 ;
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs 6.13.3 Output p58 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write write library procedure
 ;;
 (define (write subject . arg-list)
@@ -33,19 +33,19 @@
     ; Finally do the actual read.
     ((object the-port) (write subject))))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-shared write library procedure
 ;;
 (define (write-shared obj port)
   (scream:error:not-implemented "(write-shared)"))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-simple write library procedure
 ;;
 (define (write-simple obj port)
   (scream:error:not-implemented "(write-simple)"))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display write library procedure
 ;;
 (define (display subject . arg-list)
@@ -72,7 +72,7 @@
     ; Unspecified.
     '()))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; newline procedure
 ;;
 (define (newline . opt-port)
@@ -91,7 +91,7 @@
 
   (write-char #\newline the-port)))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-char procedure
 ;;
 (define (write-char char . arg-list)
@@ -119,25 +119,25 @@
     ((object the-port) (writeCharacter char))))
 
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-string procedure
 ;;
 (define (write-string string . port)
   (scream:error:not-implemented "(write-string)"))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-u8 procedure
 ;;
 (define (write-u8 byte port)
   (scream:error:not-implemented "(write-u8)"))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-bytevector procedure
 ;;
 (define (write-bytevector . port)
   (scream:error:not-implemented "(write-shared)"))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flush-output-port procedure
 ;;
 (define (flush-output-port . port)

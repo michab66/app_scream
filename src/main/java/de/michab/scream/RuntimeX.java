@@ -754,4 +754,22 @@ extends ScreamException
                 Code.DUPLICATE_ELEMENT,
                 duplicate );
     }
+
+    // EXPECTED_BINARY_PORT_1 = \
+    // 47 : Expected binary port, got {0}.
+    public static RuntimeX mExpectedBinaryPort( FirstClassObject fco )
+    {
+        return new RuntimeX(
+                Code.EXPECTED_BINARY_PORT,
+                fco );
+    }
+
+    // EXPECTED_TEXTUAL_PORT_1 = \
+    // 47 : Expected textual port, got {0}.
+    public static RuntimeX mExpectedTextualPort( FirstClassObject fco )
+    {
+        return new RuntimeX(
+                Code.EXPECTED_TEXTUAL_PORT,
+                fco );
+    }
 }

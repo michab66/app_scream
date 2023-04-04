@@ -22,16 +22,11 @@
 ;; TYPE_ERROR
 (define (scream:error:type-error expected found)
   (scream:class:RuntimeX (mTypeError expected found)))
+;; WRONG_NUMBER_OF_ARGUMENTS
+(define (scream:error:wrong-number-of-arguments expected found)
+  (error "WRONG_NUMBER_OF_ARGUMENTS" expected found))
 
 ;;
-;; Displays a debug message without carriage return.
-;; Deprecated, use (display ...)
-;;
-(define (%print message)
-  ((object ((make-object de.michab.scream.SchemeInterpreter) (getErrorPort)))
-   (display message)))
-
-
 (define scream:class:fco (make-object de.michab.scream.fcos.FirstClassObject))
 
 ;;

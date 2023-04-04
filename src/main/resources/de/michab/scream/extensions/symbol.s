@@ -5,7 +5,12 @@
 ; Released under Gnu Public License
 ; Copyright (c) 1998-2000 Michael G. Binz
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; scream specific
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(define scream:type-symbol
+  ((make-object de.michab.scream.fcos.Symbol) TYPE_NAME))
 
 ;;
 ;; (symbol? symbol) procedure; r5rs 30
