@@ -227,7 +227,31 @@ public class PortIn
             if ( result == null )
                 return EOF;
 
-            return new SchemeString( result );
+            return SchemeString.make( result );
+        }
+        catch ( IOException e )
+        {
+            throw RuntimeX.mIoError( e );
+        }
+    }
+
+    public FirstClassObject readString( int k )
+            throws RuntimeX
+    {
+        try
+        {
+            var buffer = new char[k];
+
+            var actual = stream().read( buffer, 0, k );
+
+            if ( actual == -1 )
+                return EOF;
+
+            return SchemeString.make(
+                    new String(
+                            buffer,
+                            0,
+                            actual ) );
         }
         catch ( IOException e )
         {

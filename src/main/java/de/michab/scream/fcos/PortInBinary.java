@@ -135,7 +135,7 @@ public class PortInBinary
      * @return The character read or the end of file object.
      * @throws RuntimeX In case an error occurs.
      */
-    public FirstClassObject readCharacter()
+    public FirstClassObject readByte()
             throws RuntimeX
     {
         if ( isClosed() )

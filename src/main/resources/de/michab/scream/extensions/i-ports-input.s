@@ -34,6 +34,48 @@
   ) ; let
 )
 
+(define (scream:exec:with:textual:input::port operation port)
+  (let
+    (
+      (port
+        (cond
+          ((null? port)
+            (current-input-port))
+          ((= 1 (length port))
+            (scream:assert-type (car port) input-port? scream:type-input-port) )
+          (else
+            (scream:error:wrong-number-of-arguments 1 (length port)))))
+      (operation
+        (scream:assert-type operation procedure? scream:type-procedure))
+    )
+    (if (not (textual-port? port))
+      (error "EXPECTED_TEXTUAL_PORT" port)
+      (operation port)
+    ) ; if
+  ) ; let
+)
+
+(define (scream:exec:with:binary:input::port operation port)
+  (let
+    (
+      (port
+        (cond
+          ((null? port)
+            (current-input-port))
+          ((= 1 (length port))
+            (scream:assert-type (car port) input-port? scream:type-input-port) )
+          (else
+            (scream:error:wrong-number-of-arguments 1 (length port)))))
+      (operation
+        (scream:assert-type operation procedure? scream:type-procedure))
+    )
+    (if (not (binary-port? port))
+      (error "EXPECTED_BINARY_PORT" port)
+      (operation port)
+    ) ; if
+  ) ; let
+)
+
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs 6.13.2 Input p57
@@ -60,8 +102,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-line procedure
 ;;
-(define (read-line port)
-  (scream:exec:textual:input 'readLine port))	  
+(define (read-line . port)
+  (scream:exec:with:textual:input::port 
+    (lambda (port) 
+      ((object port) (readLine)))
+    port))
+;(define (read-line . port)
+;  (scream:exec:textual:input 'readLine port))	  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; eof-object? procedure
@@ -85,8 +132,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-string procedure
 ;;
-(define (read-string k port)
-  (scream:error:not-implemented "(read-string)"))
+(define (read-string k . port)
+  (scream:exec:with:textual:input::port 
+    (lambda (port) 
+      ((object port) (readString k)))
+    port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-u8 procedure
@@ -108,12 +158,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-bytevector procedure
-;;
+;; #109
 (define (read-bytevector k port)
   (scream:error:not-implemented "(read-bytevector)"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-bytevector! procedure
-;;
+;; #109
 (define (read-bytevector! bytevector port start end)
   (scream:error:not-implemented "(read-bytevector!)"))

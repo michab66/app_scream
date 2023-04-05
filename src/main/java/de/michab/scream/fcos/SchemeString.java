@@ -59,6 +59,36 @@ public class SchemeString
         uncheckedFill( filler );
     }
 
+    private SchemeString( StringBuilder builder )
+    {
+        _value = builder;
+    }
+
+    /**
+     * Create a {@code SchemeString} from the passed literal string.
+     * @param s The value for the string.  This is taken literally,
+     * escapes are not parsed.
+     * @return A newly allocated non-constant string.
+     */
+    public static SchemeString make( String s )
+    {
+        return new SchemeString( new StringBuilder( s ) );
+    }
+
+    /**
+     * Create a {@code SchemeString} from a Java string object.
+     * the input can contain literal character
+     * representations like '\n' and '\"'.  These will be replaced by the
+     * respective character.
+     *
+     * @param s The value for the string.  This can contain escaped characters.
+     * @return A newly allocated non-constant string.
+     */
+    public static SchemeString makeEscaped( String s )
+    {
+        return new SchemeString( s, false );
+    }
+
     /**
      * Create a constant {@code SchemeString} from a Java string object.
      * Note that the input is expected to contain literal character
@@ -68,7 +98,9 @@ public class SchemeString
      * (but not the <i>same</i> string object with regards to object identity.)
      *
      * @param s A prototype string for the new object.
+     * @deprecated Use one of make() or makeEscaped().
      */
+    @Deprecated
     public SchemeString( String s )
     {
         this( s, true );
@@ -84,7 +116,9 @@ public class SchemeString
      *
      * @param s A prototype string for the new object.
      * @param constant Defines whether the created string represents a constant.
+     * @deprecated Use one of make() or makeEscaped().
      */
+    @Deprecated
     public SchemeString( String s, boolean constant )
     {
         // TODO(MB) We are not symmetric currently with the toString method.
