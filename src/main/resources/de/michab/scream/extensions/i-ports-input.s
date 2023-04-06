@@ -4,172 +4,177 @@
 ; Copyright © 1998-2023 Michael G. Binz
 ;
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; scream specific
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; The eof object.  To be reworked #78.
-(define EOF 'EOF)
+(define (scream:exec:textual:input operation port)
+  (let
+    (
+      (port
+        (cond
+          ((null? port)
+            (current-input-port))
+          ((= 1 (length port))
+            (scream:assert-type (car port) input-port? scream:type-input-port) )
+          (else
+            (scream:error:wrong-number-of-arguments 1 (length port)))))
+      (operation
+        (scream:assert-type operation symbol? scream:type-symbol))
+    )
+    (if (not (textual-port? port))
+      (error "EXPECTED_TEXTUAL_PORT" port)
+      (scream:eval
+        (quasiquote ((object port) ((unquote operation))))
+      )
+    ) ; if
+  ) ; let
+)
 
-;;
+(define (scream:exec:with:textual:input::port operation port)
+  (let
+    (
+      (port
+        (cond
+          ((null? port)
+            (current-input-port))
+          ((= 1 (length port))
+            (scream:assert-type (car port) input-port? scream:type-input-port) )
+          (else
+            (scream:error:wrong-number-of-arguments 1 (length port)))))
+      (operation
+        (scream:assert-type operation procedure? scream:type-procedure))
+    )
+    (if (not (textual-port? port))
+      (error "EXPECTED_TEXTUAL_PORT" port)
+      (operation port)
+    ) ; if
+  ) ; let
+)
+
+(define (scream:exec:with:binary:input::port operation port)
+  (let
+    (
+      (port
+        (cond
+          ((null? port)
+            (current-input-port))
+          ((= 1 (length port))
+            (scream:assert-type (car port) input-port? scream:type-input-port) )
+          (else
+            (scream:error:wrong-number-of-arguments 1 (length port)))))
+      (operation
+        (scream:assert-type operation procedure? scream:type-procedure))
+    )
+    (if (not (binary-port? port))
+      (error "EXPECTED_BINARY_PORT" port)
+      (operation port)
+    ) ; if
+  ) ; let
+)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs 6.13.2 Input p57
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read library procedure
 ;;
-(define (read . arg-list)
-  ;; TODO Note that this has a problem.  When reading from standard input
-  ;; sometimes more than one expression has to be specified for read to
-  ;; return.  This is exactly the same behavior that the implementation in
-  ;; native Java had.
-  (let (
-    ; If a single argument is given assign this to the port.  If no argument
-    ; is given assign the current input port to the port.  If than one
-    ; argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-input-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 1)))))
+(define (read . port)
+  (scream:exec:textual:input 'read port))
 
-    ; Check if what we assigned above is really an input port.
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (input-port? the-port))
-      (error "EXPECTED_INPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (read))))
-
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-char procedure
 ;;
-(define (read-char . arg-list)
-  (let (
-    ; If a single argument is given assign this to the port.  If no argument
-    ; is given assign the current input port to the port.  If than one
-    ; argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-input-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 1)))))
+(define (read-char . port)
+  (scream:exec:textual:input 'readCharacter port))
 
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (input-port? the-port))
-      (error "EXPECTED_INPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (readCharacter))))
-
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; peek-char procedure
 ;;
-(define (peek-char . arg-list)
-  (let (
-    ; If a single argument is given assign this to the port.  If no argument
-    ; is given assign the current input port to the port.  If than one
-    ; argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-input-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 1)))))
+(define (peek-char . port)
+  (scream:exec:textual:input 'peekCharacter port))
 
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (input-port? the-port))
-      (error "EXPECTED_INPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (peekCharacter))))
-
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-line procedure
 ;;
-(define (read-line port)
-  (if (and (input-port? port) (textual-port? port))
-	  ((object port) (readLine))
-      (error "TYPE_ERROR" scream:type-input-port (%typename port) 1)))
-	  
+(define (read-line . port)
+  (scream:exec:with:textual:input::port 
+    (lambda (port) 
+      ((object port) (readLine)))
+    port))
+;(define (read-line . port)
+;  (scream:exec:textual:input 'readLine port))	  
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; eof-object? procedure
 ;;
-;; TODO
 (define (eof-object? obj)
-  (eq? 'EOF obj))
+  (eq? (eof-object) obj))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; eof-object procedure
 ;;
-;; TODO
-(define (eof-object) 'EOF)
+(define eof-object
+  (let
+    (
+      (cached ((make-object de.michab.scream.fcos.Port) EOF))
+    )
+    (lambda () cached)
+  )
+)
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; char-ready? procedure
 ;;
-(define (char-ready? . arg-list)
-  (let (
-    ; If a single argument is given assign this to the port.  If no argument
-    ; is given assign the current input port to the port.  If than one
-    ; argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-input-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 1)))))
+(define (char-ready? . port)
+  (scream:exec:textual:input 'charReady port))
 
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (input-port? the-port))
-      (error "EXPECTED_INPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (charReady))))
-
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-string procedure
 ;;
-(define (read-string k port)
-  (scream:error:not-implemented "(read-string)"))
+(define (read-string k . port)
+  (scream:exec:with:textual:input::port 
+    (lambda (port) 
+      ((object port) (readString k)))
+    port))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-u8 procedure
 ;;
-(define (read-u8 port)
-  (scream:error:not-implemented "(read-u8)"))
+(define (read-u8 . port)
+  (scream:exec:with:binary:input::port 
+    (lambda (port) 
+      ((object port) (readByte)))
+    port))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; peek-u8 procedure
 ;;
-(define (peek-u8 port)
-  (scream:error:not-implemented "(read-u8)"))
+(define (peek-u8 . port)
+  (scream:exec:with:binary:input::port 
+    (lambda (port) 
+      ((object port) (peekByte)))
+    port))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; u8-ready? procedure
 ;;
 (define (u8-ready? . port)
-  (scream:error:not-implemented "(u8-ready?)"))
+  (scream:exec:with:binary:input::port 
+    (lambda (port) 
+      ((object port) (byteReady)))
+    port))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-bytevector procedure
-;;
-(define (read-bytevector k port)
+;; #109
+(define (read-bytevector k . port)
   (scream:error:not-implemented "(read-bytevector)"))
 
-;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-bytevector! procedure
-;;
+;; #109
 (define (read-bytevector! bytevector port start end)
   (scream:error:not-implemented "(read-bytevector!)"))

@@ -653,4 +653,22 @@ public class RuntimeXTest extends ScreamBaseTest
                 46,
                 s3 );
     }
+    @Test
+    public void _47_expectedBinaryPort_1() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mExpectedBinaryPort( s3 ),
+                Code.EXPECTED_BINARY_PORT,
+                47,
+                s3 );
+    }
+    @Test
+    public void _48_expectedTextualPort_1() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mExpectedTextualPort( s3 ),
+                Code.EXPECTED_TEXTUAL_PORT,
+                48,
+                s3 );
+    }
 }

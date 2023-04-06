@@ -170,7 +170,7 @@ public class ScreamBaseTest
     }
     public static SchemeString str( String name )
     {
-        return new SchemeString( name );
+        return SchemeString.make( name );
     }
     public static SchemeInteger i( long v )
     {
@@ -187,11 +187,10 @@ public class ScreamBaseTest
     }
 
     /**
-     * Creates a file and passes it to the received operation.
-     * After execution of the operation, the closable returned by the
-     * operation is closed and the file deleted.
+     * Creates a file and passes it to the received lambda.
+     * After execution of the operation, the passed file is deleted.
      *
-     * @param c
+     * @param operation The lambda to execute.
      * @throws Exception
      */
     protected void withFile( ConsumerTX<File,Exception> operation )

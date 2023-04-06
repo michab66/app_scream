@@ -22,16 +22,25 @@ import de.michab.scream.ScreamException.Code;
 public class SchemeStringTest
 {
     @Test
-    public void constantness() throws Exception
+    public void basic() throws Exception
     {
-        SchemeString s = new SchemeString( "Motörhead" );
+        assertEquals( 3, new StringBuilder( "313" ).length() );
+    }
+
+    @Test
+    public void copyTest() throws Exception
+    {
+        SchemeString s = FirstClassObject.setConstant(
+                SchemeString.make( "Motörhead" ) );
         assertTrue( s.isConstant() );
         assertFalse( s.copy().isConstant() );
     }
+
     @Test
     public void constantness2() throws Exception
     {
-        SchemeString s = new SchemeString( "Motörhead" );
+        SchemeString s = FirstClassObject.setConstant(
+                SchemeString.make( "Motörhead" ) );
         try
         {
             s.fill( 'x' );
@@ -45,7 +54,8 @@ public class SchemeStringTest
     @Test
     public void constantness3() throws Exception
     {
-        SchemeString s = new SchemeString( "Motörhead" );
+        SchemeString s = FirstClassObject.setConstant(
+                SchemeString.make( "Motörhead" ) );
         try
         {
             s.setCharAt( 0, 'x' );
@@ -139,42 +149,23 @@ public class SchemeStringTest
     @Test
     public void constructorFromString() throws Exception
     {
-        {
-            var S = "313";
-            var s = new SchemeString( S );
-            assertEquals( S.length(), s.length() );
-            assertEquals( S, s.toJava() );
-            assertTrue( s.isConstant() );
-
-            try
-            {
-                s.setCharAt( 0, 'x' );
-                fail();
-            }
-            catch ( ScreamException e )
-            {
-                assertEquals( ScreamException.Code.CANT_MODIFY_CONSTANT, e.getCode() );
-            }
-        }
-        {
-            var S = "313";
-            var s = new SchemeString( S, false );
-            assertEquals( S.length(), s.length() );
-            assertEquals( S, s.toJava() );
-            assertFalse( s.isConstant() );
-            s.setCharAt( 0, 'x' );
-            assertEquals( "x13", s.toJava() );
-            s.fill( '#' );
-            assertEquals( "###", s.toJava() );
-        }
+        var S = "313";
+        var s = SchemeString.make( S );
+        assertEquals( S.length(), s.length() );
+        assertEquals( S, s.toJava() );
+        assertFalse( s.isConstant() );
+        s.setCharAt( 0, 'x' );
+        assertEquals( "x13", s.toJava() );
+        s.fill( '#' );
+        assertEquals( "###", s.toJava() );
     }
 
     @Test
     public void compareTo() throws Exception
     {
 
-        var thirteen = new SchemeString( "313" );
-        var fourteen = new SchemeString( "314" );
+        var thirteen = SchemeString.make( "313" );
+        var fourteen = SchemeString.make( "314" );
 
         assertEquals( -1, thirteen.compareTo( fourteen ) );
         assertEquals( 0, fourteen.compareTo( fourteen ) );
@@ -185,8 +176,8 @@ public class SchemeStringTest
     public void equal() throws Exception
     {
 
-        var thirteen = new SchemeString( "313" );
-        var fourteen = new SchemeString( "314" );
+        var thirteen = SchemeString.make( "313" );
+        var fourteen = SchemeString.make( "314" );
         var zero = SchemeDouble.createObject( 0.0 );
 
         assertTrue( thirteen.equal( thirteen ) );
@@ -196,20 +187,9 @@ public class SchemeStringTest
     }
 
     @Test
-    public void cloneTest() throws Exception
-    {
-        var thirteen = new SchemeString( "313" );
-        SchemeString clone = thirteen.copy();
-
-        assertTrue( thirteen.isConstant() );
-        assertFalse( clone.isConstant() );
-        assertTrue( clone.equal( thirteen ) );
-    }
-
-    @Test
     public void appendTest() throws Exception
     {
-        var thirteen = new SchemeString( "313" );
+        var thirteen = SchemeString.make( "313" );
         var thirteenNull = thirteen.append( null );
 
         assertTrue( thirteen.equals( thirteenNull ) );
