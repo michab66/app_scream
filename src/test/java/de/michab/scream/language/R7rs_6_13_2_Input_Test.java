@@ -5,6 +5,9 @@
  */
 package de.michab.scream.language;
 
+import java.io.File;
+import java.io.FileOutputStream;
+
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
@@ -127,5 +130,98 @@ public class R7rs_6_13_2_Input_Test extends ScreamBaseTest
                 (read-string 2 (open-input-string "elvis"))
 """,
                 str( "el") );
+    }
+
+    private void read_u8_eof( File f ) throws Exception
+    {
+        expectFco( String.format(
+"""
+        (eof-object?
+          (call-with-port
+            (open-binary-input-file "%s")
+            (lambda (port)
+              (read-u8 port)))
+        )
+
+""", f.getPath() ),
+        bTrue );
+    }
+
+    @Test
+    public void read_u8_eof() throws Exception
+    {
+        withFile( this::read_u8 );
+    }
+
+    private void read_u8( File f ) throws Exception
+    {
+        try ( var os = new FileOutputStream( f ) )
+        {
+            os.write( 1 );
+
+        }
+        expectFco( String.format(
+"""
+          (call-with-port
+            (open-binary-input-file "%s")
+            (lambda (port)
+              (read-u8 port)))
+
+""", f.getPath() ),
+        i1 );
+    }
+
+    @Test
+    public void read_u8() throws Exception
+    {
+        withFile( this::read_u8 );
+    }
+
+    private void peek_u8( File f ) throws Exception
+    {
+        try ( var os = new FileOutputStream( f ) )
+        {
+            os.write( 1 );
+
+        }
+        expectFco( String.format(
+"""
+          (call-with-port
+            (open-binary-input-file "%s")
+            (lambda (port)
+              (peek-u8 port)))
+
+""", f.getPath() ),
+        i1 );
+    }
+
+    @Test
+    public void peek_u8() throws Exception
+    {
+        withFile( this::peek_u8 );
+    }
+
+    private void u8_ready_q( File f ) throws Exception
+    {
+        try ( var os = new FileOutputStream( f ) )
+        {
+            os.write( 1 );
+
+        }
+        expectFco( String.format(
+"""
+          (call-with-port
+            (open-binary-input-file "%s")
+            (lambda (port)
+              (u8-ready? port)))
+
+""", f.getPath() ),
+        bTrue );
+    }
+
+    @Test
+    public void u8_ready_q() throws Exception
+    {
+        withFile( this::u8_ready_q );
     }
 }

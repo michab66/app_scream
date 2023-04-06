@@ -143,25 +143,34 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-u8 procedure
 ;;
-(define (read-u8 port)
-  (scream:error:not-implemented "(read-u8)"))
+(define (read-u8 . port)
+  (scream:exec:with:binary:input::port 
+    (lambda (port) 
+      ((object port) (readByte)))
+    port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; peek-u8 procedure
 ;;
-(define (peek-u8 port)
-  (scream:error:not-implemented "(read-u8)"))
+(define (peek-u8 . port)
+  (scream:exec:with:binary:input::port 
+    (lambda (port) 
+      ((object port) (peekByte)))
+    port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; u8-ready? procedure
 ;;
 (define (u8-ready? . port)
-  (scream:error:not-implemented "(u8-ready?)"))
+  (scream:exec:with:binary:input::port 
+    (lambda (port) 
+      ((object port) (byteReady)))
+    port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-bytevector procedure
 ;; #109
-(define (read-bytevector k port)
+(define (read-bytevector k . port)
   (scream:error:not-implemented "(read-bytevector)"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

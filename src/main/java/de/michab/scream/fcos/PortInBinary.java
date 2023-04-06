@@ -126,7 +126,7 @@ public class PortInBinary
         if ( _peeked == -1 )
             return EOF;
 
-        return SchemeCharacter.createObject( _peeked );
+        return SchemeInteger.createObject( _peeked );
     }
 
     /**
