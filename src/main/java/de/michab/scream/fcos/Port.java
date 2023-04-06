@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.frontend.SchemeParser;
 
 /**
  * A port.  A port can be set to constant to prevent it
@@ -89,7 +90,20 @@ public abstract class Port<T extends Closeable>
     /**
      * An object representing EOF.
      */
-    public static final Symbol EOF = Symbol.createObject( "EOF" );
+    public static final FirstClassObject EOF = makeEofObject();
+
+    private static FirstClassObject makeEofObject()
+    {
+        try
+        {
+            return FirstClassObject.setConstant(
+                    new SchemeParser( "#(EOF)" ).getExpression() );
+        }
+        catch (Exception e) {
+            throw new InternalError( e );
+        }
+    }
+
 
     /**
      * @return The port's name, commonly a filename.

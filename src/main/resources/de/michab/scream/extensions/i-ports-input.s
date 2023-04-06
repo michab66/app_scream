@@ -8,9 +8,6 @@
 ;; scream specific
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; The eof object.  To be reworked #78.
-(define EOF 'EOF)
-
 (define (scream:exec:textual:input operation port)
   (let
     (
@@ -113,15 +110,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; eof-object? procedure
 ;;
-;; TODO
 (define (eof-object? obj)
-  (eq? 'EOF obj))
+  (eq? (eof-object) obj))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; eof-object procedure
 ;;
-;; TODO
-(define (eof-object) 'EOF)
+(define eof-object
+  (let
+    (
+      (cached ((make-object de.michab.scream.fcos.Port) EOF))
+    )
+    (lambda () cached)
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; char-ready? procedure

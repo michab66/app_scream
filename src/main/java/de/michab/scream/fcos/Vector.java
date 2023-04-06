@@ -82,12 +82,11 @@ public class Vector
     }
 
     /**
-     * Create a Scheme vector from the passed array.  The array is copied.
+     * Create a Scheme vector from the passed elements.
      *
-     * @param array The array holding the initial contents of the resulting
-     *              vector.
+     * @param array The initial contents of the resulting vector.
      */
-    public Vector( FirstClassObject[] array )
+    public Vector( FirstClassObject ... array )
     {
         this( array, true );
     }

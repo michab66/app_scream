@@ -278,5 +278,10 @@ public class PortTest extends ScreamBaseTest
         }
     }
 
+    @Test
+    public void eofObject()
+    {
+        assertTrue( Port.EOF.isConstant() );
+    }
 }
 

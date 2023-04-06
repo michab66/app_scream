@@ -8,6 +8,7 @@ package de.michab.scream.language;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeCharacter;
 
 /**
@@ -36,6 +37,25 @@ public class R7rs_6_13_2_Input_Test extends ScreamBaseTest
     }
 
     @Test
+    public void read_char_eof() throws Exception
+    {
+        expectFco(
+"""
+                (eof-object?
+                  (let ((port (open-input-string "elvis")))
+                    (read-char port) ; e
+                    (read-char port) ; l
+                    (read-char port) ; v
+                    (read-char port) ; i
+                    (read-char port) ; s
+                    (read-char port) ; -> EOF
+                  )
+                )
+""",
+                bTrue );
+    }
+
+    @Test
     public void peek_char() throws Exception
     {
         expectFco(
@@ -56,23 +76,37 @@ public class R7rs_6_13_2_Input_Test extends ScreamBaseTest
     }
 
     @Test
+    public void read_line_eof() throws Exception
+    {
+        expectFco(
+"""
+        (let ((port (open-input-string "elvis")))
+          (read-line port) ; Consume elvis.
+          (read-line port) ; -> EOF
+        )
+""",
+                Port.EOF );
+    }
+
+    @Test
     public void eof_object() throws Exception
     {
         expectFco(
 """
                 (eof-object)
 """,
-                s( "EOF" ) );
+                Port.EOF );
     }
 
     @Test
     public void eof_q() throws Exception
     {
-        expectFco(
-"""
-                (eof-object? (eof-object))
-""",
-                bTrue );
+        expectFco( "(eof-object? (eof-object))", bTrue );
+        expectFco( "(eof-object? 1)", bFalse );
+        expectFco( "(eof-object? 'symbol)", bFalse );
+        expectFco( "(eof-object? 3.1415)", bFalse );
+        expectFco( "(eof-object? #(EOF))", bFalse );
+        expectFco( "(eof-object? '())", bFalse );
     }
 
     @Test
