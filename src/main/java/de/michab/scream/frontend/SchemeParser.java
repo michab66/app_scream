@@ -96,8 +96,7 @@ public class SchemeParser
      * Get the next token from whatever scanner we have.
      *
      * @return The next token read, null on EOF.
-     * @throws FrontendX In case of an error.
-     * @see de.michab.scream.scanner.SchemeParserTest#peekNextToken
+     * @throws RuntimeX In case of an error.
      */
     private Token getNextToken()
             throws RuntimeX
@@ -121,8 +120,7 @@ public class SchemeParser
      * in the same Token object.
      *
      * @return The next token, null on EOF.
-     * @throws FrontendX In case of an error.
-     * @see de.michab.scream.scanner.SchemeParserTest#getNextToken
+     * @throws RuntimeX In case of an error.
      */
     private Token peekNextToken()
             throws RuntimeX
@@ -140,7 +138,7 @@ public class SchemeParser
      * Parses a Scheme array.
      *
      * @return An array structure.
-     * @throws FrontendX In case of an error.
+     * @throws RuntimeX In case of an error.
      */
     private FirstClassObject parseArray()
             throws RuntimeX
@@ -165,7 +163,7 @@ public class SchemeParser
      * Parses a Scheme list.
      *
      * @return A list structure.
-     * @throws FrontendX In case of an error.
+     * @throws RuntimeX In case of an error.
      */
     private FirstClassObject parseList()
             throws RuntimeX
@@ -207,7 +205,7 @@ public class SchemeParser
      * Parses any scheme expression.
      *
      * @return An expression.
-     * @throws FrontendX In case of an error.
+     * @throws RuntimeX In case of an error.
      */
     private FirstClassObject parseDatum()
             throws RuntimeX
@@ -270,7 +268,7 @@ public class SchemeParser
      * reaching EOF.
      *
      * @return The next Scheme expression on the token stream.
-     * @throws FrontendX In case of an error.
+     * @throws RuntimeX In case of an error.
      */
     public FirstClassObject getExpression()
             throws RuntimeX

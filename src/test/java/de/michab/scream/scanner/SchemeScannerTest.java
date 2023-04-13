@@ -6,131 +6,157 @@
 package de.michab.scream.scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.StringReader;
 
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.ScreamException;
 import de.michab.scream.ScreamException.Code;
-import de.michab.scream.fcos.Cons;
-import de.michab.scream.fcos.Port;
-import de.michab.scream.fcos.Vector;
-import de.michab.scream.frontend.SchemeParser;
+import de.michab.scream.frontend.SchemeScanner7;
+import de.michab.scream.frontend.Token;
 
 public class SchemeScannerTest
 {
     @Test
-    public void parseArrayEmpty() throws ScreamException
+    public void empty() throws Exception
     {
-        var o = new SchemeParser( "#()" ).getExpression();
-        Vector a = (Vector)o;
-        assertEquals( 0, a.size() );
+        StringReader input = new StringReader( "" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Eof, t.getType() );
     }
 
     @Test
-    public void parseArray() throws ScreamException
+    public void character_plus() throws Exception
     {
-        var o = new SchemeParser( "#(1 2 3)" ).getExpression();
-        Vector a = (Vector)o;
-        assertEquals( 3, a.size() );
+        StringReader input = new StringReader( "#\\+" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Char, t.getType() );
+        assertEquals( '+', t.characterValue() );
     }
-
     @Test
-    public void parseListEmpty() throws ScreamException
+    public void character_lambda() throws Exception
     {
-        var o = new SchemeParser( "()" ).getExpression();
-        assertEquals( Cons.NIL, o );
+        StringReader input = new StringReader( "#\\λ" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Char, t.getType() );
+        assertEquals( 'λ', t.characterValue() );
     }
-
     @Test
-    public void parseListProper1() throws ScreamException
+    public void characterHex_lambda() throws Exception
     {
-        var o = new SchemeParser( "(a . (b . (c . (d . (e . ())))))" ).getExpression();
-        Cons cons = (Cons)o;
+        StringReader input = new StringReader( "#\\x03BB" );
 
-        assertEquals( 5, cons.length() );
-        assertTrue( cons.isProperList() );
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Char, t.getType() );
+        assertEquals( 'λ', t.characterValue() );
     }
-
     @Test
-    public void parseListProper2() throws ScreamException
+    public void characterHex_ffff1() throws Exception
     {
-        var o = new SchemeParser( "(3 1 3)" ).getExpression();
-        Cons cons = (Cons)o;
+        StringReader input = new StringReader( "#\\xFFFF1" );
 
-        assertEquals( 3, cons.length() );
-        assertEquals( 3L, cons.listRef(0).toJava() );
-        assertEquals( 1L, cons.listRef(1).toJava() );
-        assertEquals( 3L, cons.listRef(2).toJava() );
-        assertTrue( cons.isProperList() );
-    }
-
-    @Test
-    public void parseListNotProper() throws ScreamException
-    {
-        var o = new SchemeParser( "(3 1 . 3)" ).getExpression();
-        Cons cons = (Cons)o;
-
-        assertFalse( cons.isProperList() );
-    }
-
-    @Test
-    public void unexpectedEndOfInput()
-    {
-        try
-        {
-            // Missing closing brace.
-            new SchemeParser( "(+ 300 13" ).getExpression();
-            fail();
-        }
-        catch( RuntimeX e )
-        {
-            assertEquals(
-                    ScreamException.Code.PARSE_UNEXPECTED_EOF,
-                    e.getCode() );
-        }
-    }
-
-    @Test
-    public void unbalanced()
-    {
-        try
-        {
-            // Missing closing brace.
-            new SchemeParser( ")" ).getExpression();
-            fail();
-        }
-        catch( RuntimeX e )
-        {
-            assertEquals(
-                    ScreamException.Code.PARSE_UNEXPECTED,
-                    e.getCode() );
-        }
-    }
-
-    @Test
-    public void biExpression()
-    {
-        var x1 = "(+ 300 13)";
-        var x2 = "(+ 4 5)";
+        SchemeScanner7 s = new SchemeScanner7( input );
 
         try
         {
-            SchemeParser sp = new SchemeParser( x1 + x2 );
-            var x = sp.getExpression();
-            assertEquals( x1, x.toString() );
-            var y = sp.getExpression();
-            assertEquals( x2, y.toString() );
-            var z = sp.getExpression();
-            assertEquals( Port.EOF, z );
+          s.getNextToken();
+          fail();
         }
-        catch( RuntimeX e )
+        catch ( RuntimeX rx )
         {
-            // Unexpected end of input.
-            assertEquals( Code.PARSE_EXPECTED, e.getId() );
+            assertEquals( Code.SCAN_UNEXPECTED_CHAR, rx.getCode() );
+            assertEquals( "#\\xFFFF1", rx.getArgument( 2 ) );
         }
+    }
+    @Test
+    public void characterHex_syntax() throws Exception
+    {
+        // Actually matched as a bad character-name followed by number 1.
+        StringReader input = new StringReader( "#\\xFFFyF1" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        try
+        {
+          s.getNextToken();
+          fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.SCAN_UNEXPECTED_CHAR, rx.getCode() );
+            assertEquals( "#\\xFFFyF", rx.getArgument( 2 ) );
+        }
+    }
+    @Test
+    public void characterName_space() throws Exception
+    {
+        StringReader input = new StringReader( "#\\space" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Char, t.getType() );
+        assertEquals( ' ', t.characterValue() );
+    }
+    @Test
+    public void characterName_error() throws Exception
+    {
+        StringReader input = new StringReader( "#\\error" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        try
+        {
+          s.getNextToken();
+          fail();
+        }
+        catch ( RuntimeX rx )
+        {
+          assertEquals( Code.SCAN_UNEXPECTED_CHAR, rx.getCode() );
+          assertEquals( "#\\error", rx.getArgument( 2 ) );
+        }
+    }
+
+    @Test
+    public void symbol() throws Exception
+    {
+        StringReader input = new StringReader( "+" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Symbol, t.getType() );
+        assertEquals( "+", t.stringValue() );
+    }
+
+    @Test
+    public void vector() throws Exception
+    {
+        StringReader input = new StringReader( "#(" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Array, t.getType() );
     }
 }
