@@ -10,6 +10,7 @@
 
 package de.michab.scream.frontend;
 
+import de.michab.scream.RuntimeX;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.ScreamException.Code;
 
@@ -27,7 +28,7 @@ import de.michab.scream.ScreamException.Code;
  * method. */
 %function getNextToken
 %type Token
-%yylexthrow FrontendX
+%yylexthrow RuntimeX
 
 /* Scanner should be able to scan unicode. */
 %unicode
@@ -95,9 +96,9 @@ subsequent =
 // r7rs
 digit =
   [0-9]
-// r7rs
+// r7rs - extended to support also uppercase digits.
 hex_digit =
-  {digit} | a | b | c | d | e | f
+  {digit} | [a-fA-F]
 // r7rs
 explicit_sign = "+" |
   "-"
@@ -143,9 +144,11 @@ symbol_element = [^\|\\] |
 BOOLEAN = \#t | \#f |\#true |\#false
 
 // r7rs
-CHARACTER = \#\\ . |
-  \#\\ {character_name} |
-  \#\\\x {hex_scalar_value}
+CHARACTER = \#\\ . 
+
+CHARACTER_HEX = \#\\\x {hex_scalar_value}
+
+CHARACTER_NAME = \#\\ {letter}{letter}+ 
 
 // r7rs
 character_name = 
@@ -220,19 +223,55 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
   {CHARACTER} {
     // Get the matched token cutting off the '#\' part.
     String matched = yytext().substring( 2 );
+    return new Token( matched.charAt( 0 ) );
+  }
+
+  {CHARACTER_HEX} {
+    // Remove prefix '#\x'.
+    String matched = yytext().substring( 3 );
+
+    try 
+    {
+      var value = Integer.parseInt( matched, 16 );
+
+      if ( value > 0 && value < 0xffff )
+        return new Token( (char)value );
+    }
+    catch ( Exception e )
+    {
+    }
+    
+    throw RuntimeX.mScanUnexpectedCharacter( yyline+1, yycolumn+1, yytext() );
+  }
+
+  {CHARACTER_NAME} {
+    // Remove prefix '#\'.
+    String matched = yytext().substring( 2 );
     char result;
 
-    // In case the matched token is one of the named characters transform them
-    // into their character representation...
-    if ( matched.equals( "space" ) )
-      result = ' ';
-    else if ( matched.equals( "newline" ) )
-      result = '\n';
-    else
-      // ...else just move the character.
-      result = matched.charAt( 0 );
-
-    return new Token( result );
+    switch ( matched )
+    {
+      case "alarm":
+        return new Token( (char)0x07 );
+      case "backspace":
+        return new Token( (char)0x08 );
+      case "delete":
+        return new Token( (char)0x7f );
+      case "escape":
+        return new Token( (char)0x1b );
+      case "newline":
+        return new Token( (char)0x0a );
+      case "null":
+        return new Token( (char)0x00 );
+      case "return":
+        return new Token( (char)0x0d );
+      case "space":
+        return new Token( ' ' );
+      case "tab":
+        return new Token( '\t' );
+      default:
+        throw RuntimeX.mScanUnexpectedCharacter( yyline+1, yycolumn+1, yytext() );
+    }
   }
 
   {STRING} {
