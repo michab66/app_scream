@@ -174,8 +174,7 @@ stringelement = [^\n\"] |
   "\\" {intraline_whitespace}* {line_ending} {intraline_whitespace}* |
   {inline_hex_escape}
 
-bytevector = "#u8("
-  
+START_BYTEVECTOR = "#u8("
 
 INTEGER = {sign}?{uinteger}
 sign = [\+\-]
@@ -272,6 +271,10 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
       default:
         throw RuntimeX.mScanUnexpectedCharacter( yyline+1, yycolumn+1, yytext() );
     }
+  }
+
+  {START_BYTEVECTOR} {
+    return new Token( Tk.Bytevector );
   }
 
   {STRING} {

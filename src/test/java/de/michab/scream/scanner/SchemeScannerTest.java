@@ -159,4 +159,16 @@ public class SchemeScannerTest
 
         assertEquals( Token.Tk.Array, t.getType() );
     }
+
+    @Test
+    public void byteVector() throws Exception
+    {
+        StringReader input = new StringReader( " #u8(" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Bytevector, t.getType() );
+    }
 }

@@ -33,7 +33,8 @@ public class Token
         Eof,
         QuasiQuote,
         Unquote,
-        UnquoteSplicing
+        UnquoteSplicing,
+        Bytevector
     }
 
     /**
