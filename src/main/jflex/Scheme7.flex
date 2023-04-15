@@ -36,6 +36,12 @@ import de.michab.scream.ScreamException.Code;
 %line
 %column
 
+%{
+int commentNestCount = 0;
+%}
+
+%states NESTED_COMMENT
+
 // r7rs
 delimiter = whitespace |
   {vertical_line} |
@@ -55,19 +61,24 @@ vertical_line = \|
 
 /* Matches end of line in a system independent and unicode compliant way.  This
  * expression is from the JFlex manual. */
-// r7rs
 line_ending = \r|\n|\r\n|\u2028|\u2029|\u000B|\u000C|\u0085
 
-// r7rs -- TODO
-comment = \;.*
+//
+// Comments.
+//
 
-//comment_text = letter* / _nested_begin
+SINGLE_LINE_COMMENT = ";" .*
+NC_BEGIN = "#|"
+NC_END = "|#"
+DATUM_COMMENT = "#;"
 
-// r7rs
+//
+// Directives
+//
 directive = "#!fold-case" | "#!no-fold-case"
 
 // r7rs
-atmosphere = {whitespace} | {comment} | {directive}
+atmosphere = {whitespace} | {SINGLE_LINE_COMMENT} | {directive}
 
 // r7rs
 INTERTOKEN_SPACE = {atmosphere}+
@@ -140,30 +151,22 @@ symbol_element = [^\|\\] |
   {mnemonic_escape} |
   \\\|
 
-// r7rs
+
 BOOLEAN = \#t | \#f |\#true |\#false
 
-// r7rs
+//
+// Characters
+//
 CHARACTER = \#\\ . 
 
 CHARACTER_HEX = \#\\\x {hex_scalar_value}
 
+// Character names are dynamically checked in the rule.
 CHARACTER_NAME = \#\\ {letter}{letter}+ 
-
-// r7rs
-character_name = 
-  "alarm" |
-  "backspace" | 
-  "delete" |
-  "escape" |
-  "newline" |
-  "null" |
-  "return" |
-  "space" |
-  "tab"
 
 // TODO
 anybutnewline = .
+
 // r7rs
 STRING = \"({stringelement})*\"
 
@@ -192,17 +195,6 @@ QUOTE = \'
 QUASIQUOTE = \`
 UNQUOTE = \,
 UNQUOTE_SPLICING = \,\@
-
-/* In former times the line below read as 
- * "SINGLE_LINE_COMMENT = \;({anybutnewline})*{line_ending}".  This had the major
- * disadvantage of not matching a comment in the last line of a file that is
- * not terminated by a new line.  This version below uses the fact that
- * scanning is greedy and tries to match always the longest possible token.  
- * This means that always the whole line is matched, up to, but not including, 
- * the next newline or end of the file.  In the former case the newline is 
- * consumed as intertoken space, in the latter case the scanner terminates 
- * cleanly. */
-SINGLE_LINE_COMMENT = \;({anybutnewline})*
 
 %%
 
@@ -335,13 +327,15 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
 
   {INTERTOKEN_SPACE} {/* ignore */}
 
-  <<EOF>> {
-    // If we reached EOF, we close the reader...
-    yyreset( null );
-    // ...before doing business as usual.
-    return Token.createToken( Tk.Eof );
+  {NC_BEGIN} {
+    yybegin( NESTED_COMMENT );
+    commentNestCount++;
   }
-
+  
+  {DATUM_COMMENT} {
+      return Token.createToken( Tk.DatumComment );
+  }
+  
   /*
    * Error rules
    */
@@ -355,4 +349,50 @@ SINGLE_LINE_COMMENT = \;({anybutnewline})*
   . {
     throw new FrontendX( yyline+1, yycolumn+1, Code.SCAN_UNEXPECTED_CHAR, yytext() );
   }
+  
+  // Catch unmatched nested comments.  An NC_END token must never
+  // be visible in YYINITIAL.
+  {NC_END} {
+      throw RuntimeX.mScanUnbalancedComment( yyline+1, yycolumn+1 );
+  }
+}
+
+<NESTED_COMMENT> {
+
+  {NC_BEGIN} {
+    commentNestCount++;
+  }
+
+  {NC_END} {
+    commentNestCount--;
+
+    if ( commentNestCount == 0 )
+      yybegin( YYINITIAL );
+    else if ( commentNestCount > 0 )
+      ;
+    else
+      throw RuntimeX.mScanUnbalancedComment( yyline+1, yycolumn+1 );
+  }
+
+  /* The first pattern consumes everything but the characters
+   * '|' and '#' that appear in a nested comment start- or end-
+   * token.
+   * Pattern two and three consume a single of these characters,
+   * respectively.
+   *
+   * This works since pattern matching is greedy.
+   */
+  ([^\|\#])+ | "#" | "|" {
+    // Ignore.
+  }
+}
+
+<<EOF>> {
+  if ( commentNestCount > 0 )
+      throw RuntimeX.mScanUnbalancedComment( yyline+1, yycolumn+1 );
+
+  // If we reached EOF, we close the reader...
+  yyreset( null );
+  // ...before doing business as usual.
+  return Token.createToken( Tk.Eof );
 }

@@ -89,7 +89,8 @@ extends Exception
         RADIX_NOT_SUPPORTED,
         DUPLICATE_ELEMENT,
         EXPECTED_BINARY_PORT,
-        EXPECTED_TEXTUAL_PORT;
+        EXPECTED_TEXTUAL_PORT,
+        SCAN_UNBALANCED_COMMENT;
 
         public int id()
         {

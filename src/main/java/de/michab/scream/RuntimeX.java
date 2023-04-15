@@ -772,4 +772,14 @@ extends ScreamException
                 Code.EXPECTED_TEXTUAL_PORT,
                 fco );
     }
+
+    // SCAN_UNBALANCED_COMMENT_2 = \
+    // 49 : Unbalanced comment found at line {0}, column {1}.
+    public static RuntimeX mScanUnbalancedComment( int line, int column )
+    {
+        return new RuntimeX(
+                Code.SCAN_UNBALANCED_COMMENT,
+                line,
+                column );
+    }
 }

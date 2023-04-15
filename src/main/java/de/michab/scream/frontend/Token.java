@@ -34,7 +34,8 @@ public class Token
         QuasiQuote,
         Unquote,
         UnquoteSplicing,
-        Bytevector
+        Bytevector,
+        DatumComment
     }
 
     /**

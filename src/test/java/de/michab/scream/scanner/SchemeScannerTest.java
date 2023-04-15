@@ -16,6 +16,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeScanner7;
 import de.michab.scream.frontend.Token;
+import de.michab.scream.frontend.Token.Tk;
 
 public class SchemeScannerTest
 {
@@ -170,5 +171,126 @@ public class SchemeScannerTest
         var t = s.getNextToken();
 
         assertEquals( Token.Tk.Bytevector, t.getType() );
+    }
+
+    @Test
+    public void lineComment_plain() throws Exception
+    {
+        StringReader input = new StringReader(
+                ";  #| special comment characters  # | |# \n 313" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Integer, t.getType() );
+        assertEquals( 313, t.integerValue() );
+    }
+
+    @Test
+    public void datumComment_plain() throws Exception
+    {
+        StringReader input = new StringReader(
+                "#;" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Tk.DatumComment, t.getType() );
+    }
+
+    @Test
+    public void nestedComment_plain() throws Exception
+    {
+        StringReader input = new StringReader(
+                "#| special comment characters  # | |# 313" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Integer, t.getType() );
+    }
+    @Test
+    public void nestedComment_plain_multiline() throws Exception
+    {
+        StringReader input = new StringReader(
+"""
+#|
+ | Durch diese hohle Gasse muss er kommen.
+ |# 313
+""" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Integer, t.getType() );
+    }
+    @Test
+    public void nestedComment_nested() throws Exception
+    {
+        StringReader input = new StringReader(
+                "#| #| #| #| #| #| #|  |<-comment-># | |# |# |# |# |# |# |# 313" );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Integer, t.getType() );
+    }
+
+    @Test
+    public void nestedComment_error_unclosed() throws Exception
+    {
+        StringReader input = new StringReader( "#|  #| b |# ... 313" );
+
+        var s = new SchemeScanner7( input );
+
+        try
+        {
+            s.getNextToken();
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.SCAN_UNBALANCED_COMMENT, rx.getCode() );
+        }
+    }
+
+    @Test
+    public void nestedComment_error_unopened() throws Exception
+    {
+        StringReader input = new StringReader( " |# 313 " );
+
+        var s = new SchemeScanner7( input );
+
+        try
+        {
+            s.getNextToken();
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.SCAN_UNBALANCED_COMMENT, rx.getCode() );
+        }
+    }
+    @Test
+    public void nestedComment_error_doublyClosed() throws Exception
+    {
+        StringReader input = new StringReader( "#| comment |# |# 313 " );
+
+        var s = new SchemeScanner7( input );
+
+        try
+        {
+            s.getNextToken();
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.SCAN_UNBALANCED_COMMENT, rx.getCode() );
+        }
     }
 }
