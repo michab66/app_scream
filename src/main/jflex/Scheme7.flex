@@ -164,9 +164,6 @@ CHARACTER_HEX = \#\\\x {hex_scalar_value}
 // Character names are dynamically checked in the rule.
 CHARACTER_NAME = \#\\ {letter}{letter}+ 
 
-// TODO
-anybutnewline = .
-
 // r7rs
 STRING = \"({stringelement})*\"
 
@@ -179,7 +176,41 @@ stringelement = [^\n\"] |
 
 START_BYTEVECTOR = "#u8("
 
-INTEGER = {sign}?{uinteger}
+//
+// Numbers.
+//
+
+exponent_marker = "e"
+sign = "+" | "-"
+exactness = "#i" | "#e"
+radix_2 = "#b"
+radix_8 = "#o"
+radix_10 = "#d"
+radix_16 = "#x"
+digit_2  = "0" | "1"
+digit_8  = {digit_2}  | "2" | "3" | "4" | "5" | "6" | "7"
+digit_10 = {digit_8}  | "8" | "9"
+digit_16 = {digit_10} | "a" | "b" | "c" | "d" | "e" | "f"
+
+suffix = {exponent_marker} {sign} {digit_10}+
+
+prefix_2  = {radix_2}  {exactness}? | {exactness}? {radix_2}
+prefix_8  = {radix_8}  {exactness}? | {exactness}? {radix_8}
+prefix_10 = {radix_10} {exactness}? | {exactness}? {radix_10} | {exactness}
+prefix_16 = {radix_16} {exactness}? | {exactness}? {radix_16}
+
+uinteger_2 = {digit_2}+
+uinteger_8 = {digit_8}+
+uinteger_10 = {digit_10}+
+uinteger_16 = {digit_16}+
+
+integer_2 = {prefix_2} {sign}? {uinteger_2}
+integer_8 = {prefix_8} {sign}?{uinteger_8}
+integer_10 = {prefix_10}? {sign}? {uinteger_10}
+integer_16 = {prefix_16} {sign}? {uinteger_16}
+
+INTEGER = {integer_2} | {integer_8} | {integer_10} | {integer_16}
+
 sign = [\+\-]
 uinteger = ({digit})+
 REAL = {sign}?{ureal}
@@ -277,9 +308,47 @@ UNQUOTE_SPLICING = \,\@
   }
 
   {INTEGER} {
+    var matched = yytext();
+    
+    boolean inexact = matched.contains( "#i" );
+    boolean exact = matched.contains( "#e" );
+
+    if ( inexact )
+        matched = matched.replace( "#i", "" );
+    if ( exact )
+        matched = matched.replace( "#e", "" );
+
+    boolean r2 = matched.contains( "#b" );
+    boolean r8 = matched.contains( "#o" );
+    boolean r10 = matched.contains( "#d" );
+    boolean r16 = matched.contains( "#x" );
+
+    int radix = 10;
+
+    if ( r2 )
+    {
+        matched = matched.replace( "#b", "" );
+        radix = 2;
+    }
+    else if ( r8 ) 
+    {
+        matched = matched.replace( "#o", "" );
+        radix = 8;
+    }
+    else if ( r10 )
+    {
+        matched = matched.replace( "#d", "" );
+        radix = 10;
+    }
+    else if ( r16 )
+    {
+        matched = matched.replace( "#x", "" );
+        radix = 16;
+    }
+
     try
     {
-      return new Token( Long.parseLong( yytext() ) );
+      return new Token( Long.parseLong( matched, radix ) );
     }
     catch ( NumberFormatException e )
     {
@@ -331,11 +400,11 @@ UNQUOTE_SPLICING = \,\@
     yybegin( NESTED_COMMENT );
     commentNestCount++;
   }
-  
+
   {DATUM_COMMENT} {
       return Token.createToken( Tk.DatumComment );
   }
-  
+
   /*
    * Error rules
    */
@@ -349,7 +418,7 @@ UNQUOTE_SPLICING = \,\@
   . {
     throw new FrontendX( yyline+1, yycolumn+1, Code.SCAN_UNEXPECTED_CHAR, yytext() );
   }
-  
+
   // Catch unmatched nested comments.  An NC_END token must never
   // be visible in YYINITIAL.
   {NC_END} {

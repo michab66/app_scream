@@ -293,4 +293,57 @@ public class SchemeScannerTest
             assertEquals( Code.SCAN_UNBALANCED_COMMENT, rx.getCode() );
         }
     }
+
+    private void testInteger( String code, long expected ) throws Exception
+    {
+        StringReader input = new StringReader( code );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Integer, t.getType() );
+        assertEquals( expected, t.integerValue() );
+    }
+
+    @Test
+    public void numberInteger() throws Exception
+    {
+        testInteger( "313", 313 );
+        testInteger( "#e313", 313 );
+        testInteger( "-313", -313 );
+
+        testInteger( "#b10", 2 );
+        testInteger( "#b-10", -2 );
+        testInteger( "#b#e10", 2 );
+        testInteger( "#b#e-10", -2 );
+        testInteger( "#b#i10", 2 );
+        testInteger( "#e#b10", 2 );
+        testInteger( "#i#b10", 2 );
+
+        testInteger( "#o10", 8 );
+        testInteger( "#o-10", -8 );
+        testInteger( "#o#e10", 8 );
+        testInteger( "#o#e-10", -8 );
+        testInteger( "#o#i10", 8 );
+        testInteger( "#e#o10", 8 );
+        testInteger( "#i#o10", 8 );
+
+        testInteger( "#d10", 10 );
+        testInteger( "#d-10", -10 );
+        testInteger( "#d#e10", 10 );
+        testInteger( "#d#e-10", -10 );
+        testInteger( "#d#i10", 10 );
+        testInteger( "#e#d10", 10 );
+        testInteger( "#i#d10", 10 );
+
+        testInteger( "#x10", 16 );
+        testInteger( "#x10", 16 );
+        testInteger( "#x-10", -16 );
+        testInteger( "#x#e10", 16 );
+        testInteger( "#x#e-10", -16 );
+        testInteger( "#x#i10", 16 );
+        testInteger( "#e#x10", 16 );
+        testInteger( "#i#x10", 16 );
+    }
 }
