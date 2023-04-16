@@ -671,4 +671,14 @@ public class RuntimeXTest extends ScreamBaseTest
                 48,
                 s3 );
     }
+    @Test
+    public void _49_scanUnbalancedComment() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mScanUnbalancedComment( 1, 1 ),
+                Code.SCAN_UNBALANCED_COMMENT,
+                49,
+                1,
+                1);
+    }
 }
