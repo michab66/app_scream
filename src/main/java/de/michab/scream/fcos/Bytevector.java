@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 2023 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -43,8 +43,21 @@ public final class Bytevector
         setConstant( true );
     }
 
+
+    /**
+     * Set a byte in the bytevector.
+     *
+     * @param idx The index to use.
+     * @param value The value to set.
+     * @return The bytevector.
+     * @throws RuntimeX If the bytevector is constant or the index
+     * is out of bounds.
+     */
     public Bytevector set( int idx, int value ) throws RuntimeX
     {
+        if ( isConstant() )
+            throw RuntimeX.mCannotModifyConstant( this );
+
         try
         {
             _vector[idx] = (byte)value;
@@ -57,6 +70,13 @@ public final class Bytevector
         }
     }
 
+    /**
+     * Read a byte in the bytevector.
+     *
+     * @param idx The index to read.
+     * @return The value at the index.
+     * @throws RuntimeX If the bytevector index is out of bounds.
+     */
     public int get( int idx ) throws RuntimeX
     {
         try
@@ -69,6 +89,9 @@ public final class Bytevector
         }
     }
 
+    /**
+     * @return The size of the bytevector.
+     */
     public int size()
     {
         return _vector.length;
@@ -82,7 +105,7 @@ public final class Bytevector
      * @see FirstClassObject#eq
      */
     @Override
-    public boolean eq( FirstClassObject other )
+    public boolean equal( FirstClassObject other )
     {
         return equals( other );
     }
