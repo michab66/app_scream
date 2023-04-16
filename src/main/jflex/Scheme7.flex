@@ -192,7 +192,7 @@ digit_8  = {digit_2}  | "2" | "3" | "4" | "5" | "6" | "7"
 digit_10 = {digit_8}  | "8" | "9"
 digit_16 = {digit_10} | "a" | "b" | "c" | "d" | "e" | "f"
 
-suffix = {exponent_marker} {sign} {digit_10}+
+suffix = {exponent_marker} {sign}? {digit_10}+
 
 prefix_2  = {radix_2}  {exactness}? | {exactness}? {radix_2}
 prefix_8  = {radix_8}  {exactness}? | {exactness}? {radix_8}
@@ -211,10 +211,11 @@ integer_16 = {prefix_16} {sign}? {uinteger_16}
 
 INTEGER = {integer_2} | {integer_8} | {integer_10} | {integer_16}
 
-sign = [\+\-]
-uinteger = ({digit})+
-REAL = {sign}?{ureal}
-ureal = {uinteger}?\.{uinteger}
+decimal_10 = {uinteger_10} {suffix} |
+  {sign}? {uinteger_10}? \. {uinteger_10} {suffix}? |
+  {sign}? {uinteger_10} \. {uinteger_10}? {suffix}?
+
+REAL = {decimal_10}
 
 STARTLIST = "("
 

@@ -346,4 +346,32 @@ public class SchemeScannerTest
         testInteger( "#e#x10", 16 );
         testInteger( "#i#x10", 16 );
     }
+
+    private void testFloat( String code, double expected ) throws Exception
+    {
+        StringReader input = new StringReader( code );
+
+        SchemeScanner7 s = new SchemeScanner7( input );
+
+        var t = s.getNextToken();
+
+        assertEquals( Token.Tk.Double, t.getType() );
+        assertEquals( expected, t.doubleValue() );
+    }
+
+    @Test
+    public void numberDouble() throws Exception
+    {
+        testFloat( "313e0", 313d );
+        testFloat( "313.0", 313d );
+        testFloat( "-313.0", -313d );
+        testFloat( "313.", 313d );
+        testFloat( ".313", .313d );
+        testFloat( "-.313", -.313d );
+        testFloat( "-313.", -313d );
+        testFloat( "-313.0e1", -3130d );
+        testFloat( "-313.0e-1", -31.3d );
+        testFloat( "-313.0e2", -31300d );
+        testFloat( ".313e3", 313d );
+    }
 }
