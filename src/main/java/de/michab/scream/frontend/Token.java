@@ -19,23 +19,25 @@ public class Token
      * The Scheme tokens used by the frontend.
      */
     public enum Tk {
-        Symbol,
-        Integer,
-        Double,
         Array,
-        List,
-        End,
-        String,
-        Quote,
-        Dot,
         Boolean,
-        Char,
-        Eof,
-        QuasiQuote,
-        Unquote,
-        UnquoteSplicing,
         Bytevector,
-        DatumComment
+        Char,
+        DatumComment,
+        Dot,
+        Double,
+        End,
+        Eof,
+        Integer,
+        Label,
+        LabelReference,
+        List,
+        String,
+        Symbol,
+        QuasiQuote,
+        Quote,
+        Unquote,
+        UnquoteSplicing
     }
 
     /**

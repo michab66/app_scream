@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 
 //
@@ -22,7 +22,7 @@ import de.michab.scream.ScreamException.Code;
 %final
 
 // Create a main function in the scanner class for testing purposes.
-%debug
+// %debug
 
 /* Defines the name, return type and thrown exceptions for the scanning
  * method. */
@@ -42,22 +42,17 @@ int commentNestCount = 0;
 
 %states NESTED_COMMENT
 
-// r7rs
-delimiter = whitespace |
-  {vertical_line} |
-  "(" |
-  ")" |
-  \" |
-  ";"
+dquote = "\""
 
-// r7rs
-intraline_whitespace = [ \t]
+intraline_whitespace =
+  [ \t]
 
-// r7rs
-whitespace = {intraline_whitespace} | {line_ending}
+whitespace =
+  {intraline_whitespace} |
+  {line_ending}
 
-// r7rs
-vertical_line = \|
+vertical_line =
+  "|"
 
 /* Matches end of line in a system independent and unicode compliant way.  This
  * expression is from the JFlex manual. */
@@ -67,114 +62,141 @@ line_ending = \r|\n|\r\n|\u2028|\u2029|\u000B|\u000C|\u0085
 // Comments.
 //
 
-SINGLE_LINE_COMMENT = ";" .*
-NC_BEGIN = "#|"
-NC_END = "|#"
-DATUM_COMMENT = "#;"
+SINGLE_LINE_COMMENT =
+  ";" .*
+  
+NC_BEGIN =
+  "#|"
+
+NC_END =
+  "|#"
+
+DATUM_COMMENT =
+  "#;"
 
 //
 // Directives
 //
-directive = "#!fold-case" | "#!no-fold-case"
+directive =
+  "#!fold-case" |
+  "#!no-fold-case"
 
-// r7rs
-atmosphere = {whitespace} | {SINGLE_LINE_COMMENT} | {directive}
+atmosphere = 
+  {whitespace} |
+  {SINGLE_LINE_COMMENT} |
+  {directive}
 
-// r7rs
-INTERTOKEN_SPACE = {atmosphere}+
+INTERTOKEN_SPACE =
+  {atmosphere}+
 
-// r7rs
 IDENTIFIER = 
   {initial}({subsequent})* |
   {vertical_line} {symbol_element}* {vertical_line} |
   {peculiar_identifier}
 
-// r7rs
-initial = {letter}|{specialinitial}
+initial =
+  {letter} |
+  {specialinitial}
 
-// r7rs
-letter = [a-zA-Z]
+letter =
+  [a-zA-Z]
 
-// r7rs
-specialinitial = [\!\$\%\&\*\/\:\<\=\>\?\^\_\~]
+specialinitial =
+  [\!\$\%\&\*\/\:\<\=\>\?\^\_\~]
 
-// r7rs
 subsequent = 
   {initial} | 
   {digit} |
   {special_subsequent}
 
-// r7rs
 digit =
   [0-9]
+
 // r7rs - extended to support also uppercase digits.
 hex_digit =
-  {digit} | [a-fA-F]
-// r7rs
-explicit_sign = "+" |
-  "-"
-// r7rs
+  {digit} |
+  [a-fA-F]
+
 special_subsequent = 
-  {explicit_sign} | 
+  {sign} | 
   "." | 
   "@"
 
-// r7rs
-inline_hex_escape = "\x" {hex_scalar_value} \;
-// r7rs
-hex_scalar_value = {hex_digit}+
+inline_hex_escape =
+  "\x" {hex_scalar_value} \;
 
-mnemonic_escape = \\a | \\b | \\t | \\n | \\r
+hex_scalar_value =
+  {hex_digit}+
 
-// r7rs
+mnemonic_escape = \\a |
+  \\b |
+  \\t |
+  \\n |
+  \\r
+
 peculiar_identifier =
-  {explicit_sign} |
-  {explicit_sign} {sign_subsequent} {subsequent}* |
-  {explicit_sign} \. {dot_subsequent} {subsequent}* |
+  {sign} |
+  {sign} {sign_subsequent} {subsequent}* |
+  {sign} \. {dot_subsequent} {subsequent}* |
   \. {dot_subsequent} {subsequent}*
 
-// r7rs
 dot_subsequent = sign_subsequent |
   "."
 
-// r7rs
 sign_subsequent =
   {initial} |
-  {explicit_sign} |
+  {sign} |
   "@"
 
 DOT = "."
 
-// r7rs
-symbol_element = [^\|\\] |
+symbol_element =
+  [^\|\\] |
   {inline_hex_escape} |
   {mnemonic_escape} |
   \\\|
 
 
-BOOLEAN = \#t | \#f |\#true |\#false
+BOOLEAN =
+  "#t" | "#f" | "#true" | "#false" | 
+  "#T" | "#F" | "#TRUE" | "#FALSE"
 
 //
 // Characters
 //
-CHARACTER = \#\\ . 
 
-CHARACTER_HEX = \#\\\x {hex_scalar_value}
+char_prefix =
+  "#\\"
+
+CHARACTER =
+  {char_prefix} . 
+
+CHARACTER_HEX =
+  {char_prefix} "x" {hex_scalar_value}
 
 // Character names are dynamically checked in the rule.
-CHARACTER_NAME = \#\\ {letter}{letter}+ 
+CHARACTER_NAME =
+  {char_prefix} {letter}{letter}+ 
 
-// r7rs
-STRING = \"({stringelement})*\"
+//
+// Strings
+//
+STRING =
+  {dquote} ({stringelement})* {dquote}
 
-stringelement = [^\n\"] |
+stringelement =
+  [^\n\"] |
   {mnemonic_escape} |
   "\\\"" |
   "\\\\" |
   "\\" {intraline_whitespace}* {line_ending} {intraline_whitespace}* |
   {inline_hex_escape}
 
-START_BYTEVECTOR = "#u8("
+//
+// Bytevector.
+//
+START_BYTEVECTOR =
+  "#u8("
 
 //
 // Numbers.
@@ -190,43 +212,79 @@ radix_16 = "#x"
 digit_2  = "0" | "1"
 digit_8  = {digit_2}  | "2" | "3" | "4" | "5" | "6" | "7"
 digit_10 = {digit_8}  | "8" | "9"
-digit_16 = {digit_10} | "a" | "b" | "c" | "d" | "e" | "f"
+digit_16 = {digit_10} | [aA] | [bB] | [cC] | [dD] | [eE] | [fF]
 
 suffix = {exponent_marker} {sign}? {digit_10}+
 
-prefix_2  = {radix_2}  {exactness}? | {exactness}? {radix_2}
-prefix_8  = {radix_8}  {exactness}? | {exactness}? {radix_8}
-prefix_10 = {radix_10} {exactness}? | {exactness}? {radix_10} | {exactness}
-prefix_16 = {radix_16} {exactness}? | {exactness}? {radix_16}
+prefix_2 =
+  {radix_2} {exactness}? |
+  {exactness}? {radix_2}
+prefix_8 =
+  {radix_8} {exactness}? |
+  {exactness}? {radix_8}
+prefix_10 =
+  {radix_10} {exactness}? |
+  {exactness}? {radix_10} |
+  {exactness}
+prefix_16 =
+  {radix_16} {exactness}? |
+  {exactness}? {radix_16}
 
-uinteger_2 = {digit_2}+
-uinteger_8 = {digit_8}+
-uinteger_10 = {digit_10}+
-uinteger_16 = {digit_16}+
+uinteger_2 =
+  {digit_2}+
+uinteger_8 =
+  {digit_8}+
+uinteger_10 =
+  {digit_10}+
+uinteger_16 =
+  {digit_16}+
 
-integer_2 = {prefix_2} {sign}? {uinteger_2}
-integer_8 = {prefix_8} {sign}?{uinteger_8}
-integer_10 = {prefix_10}? {sign}? {uinteger_10}
-integer_16 = {prefix_16} {sign}? {uinteger_16}
+integer_2 =
+  {prefix_2} {sign}? {uinteger_2}
+integer_8 =
+  {prefix_8} {sign}?{uinteger_8}
+integer_10 =
+  {prefix_10}? {sign}? {uinteger_10}
+integer_16 =
+  {prefix_16} {sign}? {uinteger_16}
 
-INTEGER = {integer_2} | {integer_8} | {integer_10} | {integer_16}
+INTEGER =
+  {integer_2} |
+  {integer_8} |
+  {integer_10} |
+  {integer_16}
 
-decimal_10 = {uinteger_10} {suffix} |
+decimal_10 =
+  {uinteger_10} {suffix} |
   {sign}? {uinteger_10}? \. {uinteger_10} {suffix}? |
   {sign}? {uinteger_10} \. {uinteger_10}? {suffix}?
 
-REAL = {decimal_10}
+REAL =
+  {decimal_10}
 
-STARTLIST = "("
+STARTLIST =
+  "("
 
-STARTARRAY = "#("
+STARTARRAY =
+  "#("
 
-END = ")"
+END =
+  ")"
 
-QUOTE = \'
-QUASIQUOTE = \`
-UNQUOTE = \,
-UNQUOTE_SPLICING = \,\@
+QUOTE =
+  "'"
+
+QUASIQUOTE =
+  "`"
+
+UNQUOTE =
+  ","
+
+UNQUOTE_SPLICING =
+  ",@"
+
+LABEL = "#" {uinteger_10} "#"
+LABEL_REFERENCE = "#" {uinteger_10} "="
 
 %%
 
@@ -244,9 +302,7 @@ UNQUOTE_SPLICING = \,\@
   }
 
   {CHARACTER} {
-    // Get the matched token cutting off the '#\' part.
-    String matched = yytext().substring( 2 );
-    return new Token( matched.charAt( 0 ) );
+    return new Token( yycharat( 2 ) );
   }
 
   {CHARACTER_HEX} {
@@ -295,6 +351,14 @@ UNQUOTE_SPLICING = \,\@
       default:
         throw RuntimeX.mScanUnexpectedCharacter( yyline+1, yycolumn+1, yytext() );
     }
+  }
+
+  {LABEL} {
+    return new Token( Tk.Label );
+  }
+  
+  {LABEL_REFERENCE} {
+    return new Token( Tk.LabelReference );
   }
 
   {START_BYTEVECTOR} {

@@ -337,6 +337,11 @@ public class SchemeScannerTest
         testInteger( "#e#d10", 10 );
         testInteger( "#i#d10", 10 );
 
+        testInteger( "#xba", 186 );
+        testInteger( "#xBa", 186 );
+        testInteger( "#xbA", 186 );
+        testInteger( "#xBA", 186 );
+
         testInteger( "#x10", 16 );
         testInteger( "#x10", 16 );
         testInteger( "#x-10", -16 );
