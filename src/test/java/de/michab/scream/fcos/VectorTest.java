@@ -151,7 +151,7 @@ public class VectorTest extends ScreamBaseTest
         }
         catch ( RuntimeX rx )
         {
-            assertEquals( Code.CANT_MODIFY_CONSTANT, rx.getCode() );
+            assertEquals( Code.CANNOT_MODIFY_CONSTANT, rx.getCode() );
         }
     }
 
@@ -169,7 +169,7 @@ public class VectorTest extends ScreamBaseTest
         }
         catch ( RuntimeX rx )
         {
-            assertEquals( Code.CANT_MODIFY_CONSTANT, rx.getCode() );
+            assertEquals( Code.CANNOT_MODIFY_CONSTANT, rx.getCode() );
         }
     }
 }

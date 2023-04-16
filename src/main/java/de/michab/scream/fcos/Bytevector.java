@@ -39,10 +39,14 @@ public final class Bytevector
     }
     public Bytevector( int length )
     {
-        _vector = new byte[ length ];
-        setConstant( true );
+        this( length, (byte)0 );
     }
+    public Bytevector( int length, int filler )
+    {
+        _vector = new byte[ length ];
 
+        Arrays.fill( _vector, (byte)filler );
+    }
 
     /**
      * Set a byte in the bytevector.

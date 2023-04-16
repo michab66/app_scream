@@ -48,7 +48,7 @@ public class SchemeStringTest
         }
         catch ( RuntimeX e )
         {
-            assertEquals( Code.CANT_MODIFY_CONSTANT, e.getCode() );
+            assertEquals( Code.CANNOT_MODIFY_CONSTANT, e.getCode() );
         }
     }
     @Test
@@ -63,7 +63,7 @@ public class SchemeStringTest
         }
         catch ( RuntimeX e )
         {
-            assertEquals( Code.CANT_MODIFY_CONSTANT, e.getCode() );
+            assertEquals( Code.CANNOT_MODIFY_CONSTANT, e.getCode() );
         }
     }
 

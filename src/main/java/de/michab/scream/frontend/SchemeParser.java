@@ -9,7 +9,10 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+import org.smack.util.IntegerUtil;
+
 import de.michab.scream.RuntimeX;
+import de.michab.scream.fcos.Bytevector;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
@@ -160,6 +163,47 @@ public class SchemeParser
     }
 
     /**
+     * Parses a Scheme array.
+     *
+     * @return An array structure.
+     * @throws RuntimeX In case of an error.
+     */
+    private FirstClassObject parseBytevector()
+            throws RuntimeX
+    {
+        ArrayList<Byte> collector =
+                new ArrayList<>();
+
+        while ( Tk.End != peekNextToken().getType() )
+        {
+            Token token = getNextToken();
+
+            if ( Tk.Integer != token.getType() )
+                throw RuntimeX.mParseExpected( Tk.Integer );
+
+            try {
+                var value = (byte)IntegerUtil.rangeCheck( 8, token.integerValue() );
+                collector.add( Byte.valueOf( value ) );
+            }
+            catch ( IllegalArgumentException ia )
+            {
+                throw RuntimeX.mRangeExceeded(
+                       SchemeInteger.createObject( token.integerValue() ),
+                       "[0..255]" );
+            }
+        }
+
+        // Consume the End token.
+        getNextToken();
+
+        byte[] result = new byte[ collector.size() ];
+        for ( int i = 0 ; i < result.length ; i++ )
+            result[i] = collector.get( i );
+
+        return  FirstClassObject.setConstant( new Bytevector( result ) );
+    }
+
+    /**
      * Parses a Scheme list.
      *
      * @return A list structure.
@@ -192,7 +236,7 @@ public class SchemeParser
 
             // List has to be finished.
             if ( Tk.End != getNextToken().getType() )
-                throw RuntimeX.mParseExpected( Token.createToken( Tk.End ) );
+                throw RuntimeX.mParseExpected( Tk.End );
         }
         else
             cdr = parseList();
@@ -214,6 +258,9 @@ public class SchemeParser
 
         switch ( token.getType() )
         {
+        case Bytevector:
+            return parseBytevector();
+
         case Char:
             return SchemeCharacter.createObject( token.characterValue() );
 
@@ -233,7 +280,7 @@ public class SchemeParser
             return parseList();
 
         case String:
-            return new SchemeString( token.stringValue() );
+            return SchemeString.makeEscaped( token.stringValue() );
 
         case Quote:
             return new Cons( QUOTE_SYMBOL,

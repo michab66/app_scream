@@ -31,6 +31,6 @@ public class SyntaxDoTest extends ScreamBaseTest
     @Test
     public void isLocked() throws Exception
     {
-        expectError( "(set! do 'it)", Code.CANT_MODIFY_CONSTANT );
+        expectError( "(set! do 'it)", Code.CANNOT_MODIFY_CONSTANT );
     }
 }

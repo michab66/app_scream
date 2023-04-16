@@ -7,6 +7,7 @@
 ; Perform common runtime initialisation.
 (include
  "basic.s"
+ "bytevector.s"
  "quasiquote.s"
  "symbol.s"
  "boolean.s"

@@ -32,6 +32,18 @@ public class BytevectorTest extends ScreamBaseTest
     }
 
     @Test
+    public void createInitialized() throws Exception
+    {
+        Bytevector bv = new Bytevector( 5, (byte)13 );
+
+        assertEquals( 13, bv.get( 0 ) );
+        assertEquals( 13, bv.get( 1 ) );
+        assertEquals( 13, bv.get( 2 ) );
+        assertEquals( 13, bv.get( 3 ) );
+        assertEquals( 13, bv.get( 4 ) );
+    }
+
+    @Test
     public void size() throws Exception
     {
         byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
@@ -119,7 +131,7 @@ public class BytevectorTest extends ScreamBaseTest
         }
         catch ( RuntimeX rx )
         {
-            assertEquals( Code.CANT_MODIFY_CONSTANT, rx.getCode() );
+            assertEquals( Code.CANNOT_MODIFY_CONSTANT, rx.getCode() );
         }
     }
 
