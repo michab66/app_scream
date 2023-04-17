@@ -61,7 +61,7 @@ public final class Bytevector
         {
             SchemeInteger i = Scut.as( SchemeInteger.class, c );
 
-            if ( i.asLong() > 0xff )
+            if ( i.asLong() > 0xff || i.asLong() < 0 )
                 throw RuntimeX.mRangeExceeded( c, "[0..255]" );
             _vector[count++] = (byte)i.asLong();
         }

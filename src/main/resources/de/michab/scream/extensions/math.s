@@ -7,12 +7,17 @@
 ; Copyright (c) 1998-2004 Michael G. Binz
 
 ;;
+;; Scream definitions.
+;;
+
+(define scream:type-integer
+  ((make-object de.michab.scream.fcos.SchemeInteger) TYPE_NAME))
+
+;;
 ;; Keep your environment tidy!
 ;;
 (define %class-Math (make-object java.lang.Math))
 (define (%to-float x) (+ 0.0 x))
-
-
 
 ;;
 ;; (number? obj) procedure; r5rs 30

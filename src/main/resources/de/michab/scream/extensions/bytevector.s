@@ -65,3 +65,11 @@
  |#
 (define (bytevector . byte)
 	(make-object (de.michab.scream.fcos.Bytevector byte)))
+
+#|
+ | (bytevector-length byte ...)  procedure; r7rs 6.9 p50
+ |#
+(define (bytevector-length bytevector)
+  (if (not (bytevector? bytevector))
+    (error "TYPE_ERROR" scream:type-bytevector bytevector)
+    ((object bytevector) (size))))
