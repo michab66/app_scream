@@ -22,6 +22,14 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void createEmpty() throws Exception
     {
+        Bytevector bv = new Bytevector( 0 );
+
+        assertEquals( 0, bv.size() );
+    }
+
+    @Test
+    public void createUninitialized() throws Exception
+    {
         Bytevector bv = new Bytevector( 5 );
 
         assertEquals( 0, bv.get( 0 ) );
@@ -41,6 +49,17 @@ public class BytevectorTest extends ScreamBaseTest
         assertEquals( 13, bv.get( 2 ) );
         assertEquals( 13, bv.get( 3 ) );
         assertEquals( 13, bv.get( 4 ) );
+    }
+
+    @Test
+    public void createFromCons() throws Exception
+    {
+        Bytevector bv = new Bytevector( (Cons)parse( "(1 2 3)" ) );
+
+        assertEquals( 1, bv.get( 0 ) );
+        assertEquals( 2, bv.get( 1 ) );
+        assertEquals( 3, bv.get( 2 ) );
+        assertFalse( bv.isConstant() );
     }
 
     @Test

@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.util.Scut;
 
 /**
  * Represents the bytevector type.
@@ -36,6 +37,34 @@ public final class Bytevector
         Objects.requireNonNull( content );
 
         _vector = Arrays.copyOf( content, content.length );
+    }
+    public Bytevector( Cons bytes ) throws RuntimeX
+    {
+        Objects.requireNonNull( bytes );
+
+        if ( ! Cons.isProper( bytes ) )
+            throw RuntimeX.mExpectedProperList( bytes );
+
+        if ( 0 == Cons.length( bytes ) )
+        {
+            _vector = new byte[0];
+            return;
+        }
+
+        if ( Cons.length( bytes ) > Integer.MAX_VALUE )
+            throw RuntimeX.mRangeExceeded( bytes, "[0..MAX_INT]" );
+
+        _vector = new byte[(int)bytes.length()];
+
+        int count = 0;
+        for ( var c : bytes )
+        {
+            SchemeInteger i = Scut.as( SchemeInteger.class, c );
+
+            if ( i.asLong() > 0xff )
+                throw RuntimeX.mRangeExceeded( c, "[0..255]" );
+            _vector[count++] = (byte)i.asLong();
+        }
     }
     public Bytevector( int length )
     {

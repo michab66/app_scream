@@ -26,7 +26,7 @@
 
 #|
  | (make-bytevector k)
- | (make-bytevector k byte) library procedure; r7rs 6.3 p40
+ | (make-bytevector k byte) library procedure; r7rs 6.9 p49
  |#
 
 (define scream:int-max #x7fffffff)
@@ -59,3 +59,9 @@
     (else (error "TOO_MANY_ARGUMENTS" 2))
   ) ; cond
 )
+
+#|
+ | (bytevector byte ...)  procedure; r7rs 6.9 p49
+ |#
+(define (bytevector . byte)
+	(make-object (de.michab.scream.fcos.Bytevector byte)))
