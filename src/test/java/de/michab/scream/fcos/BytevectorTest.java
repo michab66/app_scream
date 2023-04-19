@@ -19,6 +19,28 @@ import de.michab.scream.ScreamException.Code;
 
 public class BytevectorTest extends ScreamBaseTest
 {
+    /**
+     * Converts the passed integers into a byte array.
+     * Checks the value range [0..255].
+     *
+     * @param bytes The integers.
+     * @return A newly allocated byte array.
+     */
+    private byte[] tba( int ... bytes )
+    {
+        byte[] result = new byte[ bytes.length ];
+
+        int count = 0;
+        for ( var c : bytes )
+        {
+            if ( c < 0 || c > 255 )
+                throw new IllegalArgumentException( "Range error:" + c );
+            result[count++] = (byte)c;
+        }
+
+        return result;
+    }
+
     @Test
     public void createEmpty() throws Exception
     {
@@ -42,7 +64,7 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void createInitialized() throws Exception
     {
-        Bytevector bv = new Bytevector( 5, (byte)13 );
+        Bytevector bv = new Bytevector( 5, 13 );
 
         assertEquals( 13, bv.get( 0 ) );
         assertEquals( 13, bv.get( 1 ) );
@@ -63,9 +85,21 @@ public class BytevectorTest extends ScreamBaseTest
     }
 
     @Test
+    public void createFromByteArray() throws Exception
+    {
+        var value = tba( 0, 255 );
+
+        Bytevector bv = new Bytevector( value );
+
+        assertEquals( value.length, bv.size() );
+        assertEquals( 0, bv.get( 0 ) );
+        assertEquals( 255, bv.get( 1 ) );
+    }
+
+    @Test
     public void size() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv = new Bytevector( value );
 
@@ -75,7 +109,7 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void equals_() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv1 = new Bytevector( value );
         Bytevector bv2 = new Bytevector( value );
@@ -86,7 +120,7 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void eqq() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv1 = new Bytevector( value );
         Bytevector bv2 = new Bytevector( value );
@@ -97,7 +131,7 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void equalq() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv1 = new Bytevector( value );
         Bytevector bv2 = new Bytevector( value );
@@ -108,7 +142,7 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void content() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv = new Bytevector( value );
 
@@ -122,7 +156,7 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void set() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv = new Bytevector( value );
 
@@ -139,7 +173,7 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void setConstant() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv = FirstClassObject.setConstant( new Bytevector( value ) );
 
@@ -157,7 +191,7 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void setOutOfBounds() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv = new Bytevector( value );
 
@@ -175,7 +209,7 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void getOutOfBounds() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv = new Bytevector( value );
 
@@ -193,22 +227,122 @@ public class BytevectorTest extends ScreamBaseTest
     @Test
     public void tostring() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba(
+                0, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+                10, 11, 12, 13, 14, 15, 255 );
 
         Bytevector bv = new Bytevector( value );
 
         var s = bv.toString();
 
-        assertEquals( "#u8(1 2 3 4 5)", s );
+        assertEquals(
+                "#u8(#x00 #x01 #x02 #x03 #x04 #x05 #x06 #x07 #x08 " +
+                    "#x09 #x0a #x0b #x0c #x0d #x0e #x0f #xff)", s );
     }
 
     @Test
     public void toJava() throws Exception
     {
-        byte[] value = new byte[]{ (byte)1, (byte)2, (byte)3, (byte)4, (byte)5  };
+        byte[] value = tba( 1, 2, 3, 4, 5 );
 
         Bytevector bv = new Bytevector( value );
 
         assertArrayEquals( value, (byte[])bv.toJava() );
     }
+
+    @Test
+    public void copy() throws Exception
+    {
+        byte[] value = tba( 1, 2, 3, 4, 5 );
+
+        Bytevector bv1 = new Bytevector( value );
+        Bytevector bv2 = bv1.copy();
+
+        assertFalse( bv1 == bv2 );
+        assertEquals( bv1.size(), bv2.size() );
+
+        assertEquals( 1, bv1.get( 0 ) );
+        assertEquals( 1, bv2.get( 0 ) );
+        bv2.set( 0, 0xff );
+        assertEquals( 1, bv1.get( 0 ) );
+        assertEquals( 0xff, bv2.get( 0 ) );
+    }
+
+    @Test
+    public void copyStart() throws Exception
+    {
+        byte[] value = tba( 1, 2, 3, 4, 5 );
+
+        Bytevector bv1 = new Bytevector( value );
+        Bytevector bv2 = bv1.copy( 1 );
+
+        assertEquals( value.length, bv1.size() );
+        assertEquals( value.length-1, bv2.size() );
+
+        assertEquals( 2, bv2.get( 0 ) );
+        assertEquals( 5, bv2.get( 3 ) );
+    }
+    public void copyStartEmpty() throws Exception
+    {
+        byte[] value = tba( 1 );
+
+        Bytevector bv1 = new Bytevector( value );
+        Bytevector bv2 = bv1.copy( 1 );
+
+        assertEquals( 0, bv2.size() );
+
+        assertEquals( 2, bv2.get( 0 ) );
+        assertEquals( 5, bv2.get( 3 ) );
+    }
+    @Test
+    public void copyStart_indexOutOfBounds() throws Exception
+    {
+        byte[] value = tba( 1, 2 );
+        Bytevector bv = new Bytevector( value );
+
+        try
+        {
+            bv.copy( -1 );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.RANGE_EXCEEDED, rx.getCode() );
+        }
+
+        try
+        {
+            bv.copy( 3 );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.INDEX_OUT_OF_BOUNDS, rx.getCode() );
+        }
+    }
+
+    @Test
+    public void copyStartEnd() throws Exception
+    {
+        byte[] value = tba( 1, 2, 3, 4, 5 );
+
+        Bytevector bv1 = new Bytevector( value );
+        Bytevector bv2 = bv1.copy( 2, 4 );
+
+        assertEquals( 2, bv2.size() );
+        assertEquals( 3, bv2.get( 0 ) );
+        assertEquals( 4, bv2.get( 1 ) );
+    }
+
+    @Test
+    public void copyStartEnd_empty() throws Exception
+    {
+        byte[] value = tba( 1, 2, 3, 4, 5 );
+
+        Bytevector bv1 = new Bytevector( value );
+        Bytevector bv2 = bv1.copy( 2, 2 );
+
+        assertEquals( 0, bv2.size() );
+    }
+
 }

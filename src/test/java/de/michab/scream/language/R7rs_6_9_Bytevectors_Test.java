@@ -116,4 +116,20 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
                 "(bytevector-length 3)",
                 Code.TYPE_ERROR );
     }
+
+    /**
+     * p50
+     */
+    @Test
+    public void bytevector_set() throws Exception
+    {
+        expectFco(
+"""
+        (let ((bv (bytevector 1 2 3 4)))
+          (bytevector-set! bv 1 3)
+          bv)
+
+""",
+        parse( "#u8(1 3 3 4)" ) );
+    }
 }

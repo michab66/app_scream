@@ -34,8 +34,6 @@
 (define (make-bytevector k . byte)
   (if (not (integer? k))
     (error "TYPE_ERROR" k scream:type-integer))
-  (if (or (< k 0) (> k scream:int-max))
-    (error "RANGE_EXCEEDED" k "[0..#x7fffffff]"))
 
   (cond
     ;; If the optional argument is not given.
@@ -47,12 +45,8 @@
         (cond
           ((not (integer? byte))
              (error "TYPE_ERROR" byte scream:type-integer))
-          ((and
-             (>= byte 0)
-             (<= byte 255))
-             (make-object (de.michab.scream.fcos.Bytevector k byte)))
           (else
-             (error "RANGE_EXCEEDED" byte "[0..255]" ))
+             (make-object (de.michab.scream.fcos.Bytevector k byte)))
         )
       ))
     ;; If there are more than one optional arguments.
@@ -73,3 +67,19 @@
   (if (not (bytevector? bytevector))
     (error "TYPE_ERROR" scream:type-bytevector bytevector)
     ((object bytevector) (size))))
+
+#|
+ | (bytevector-ref bytevector k)  procedure; r7rs 6.9 p50
+ |#
+(define (bytevector-ref bytevector k)
+  (if (not (bytevector? bytevector))
+    (error "TYPE_ERROR" scream:type-bytevector bytevector)
+    ((object bytevector) (get k))))
+
+#|
+ | (bytevector-set! bytevector k)  procedure; r7rs 6.9 p50
+ |#
+(define (bytevector-set! bytevector k byte)
+  (if (not (bytevector? bytevector))
+    (error "TYPE_ERROR" scream:type-bytevector bytevector)
+    ((object bytevector) (set k byte))))

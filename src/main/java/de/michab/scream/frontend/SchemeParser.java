@@ -1,15 +1,13 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.frontend;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
-
-import org.smack.util.IntegerUtil;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Bytevector;
@@ -26,9 +24,9 @@ import de.michab.scream.fcos.Vector;
 import de.michab.scream.frontend.Token.Tk;
 
 /**
- * An LL(1) parser for scheme.  Parses the non-terminal <datum> described in
- * r5rs.  No special provisions are met for parsing keywords and related
- * expressions, this has to be handled by the interpreter.
+ * An LL(1) parser for scheme.  Parses the non-terminal {@code <datum>}
+ * described in r7rs.  No special provisions are met for parsing keywords
+ * and related expressions, this has to be handled by the interpreter.
  *
  * @author Michael G. Binz
  */
@@ -74,9 +72,7 @@ public class SchemeParser
     private Token _peeked = null;
 
     /**
-     * Construct a parser for the passed reader.  Creates its scanner and operates
-     * the scanner in a synchronous way.  Currently it is possible to create a
-     * synchronous parser by specifying a null sink.
+     * Construct a parser for the passed reader.
      *
      * @param source A reader that delivers the parser input.
      */
@@ -96,7 +92,7 @@ public class SchemeParser
     }
 
     /**
-     * Get the next token from whatever scanner we have.
+     * Get the next token.
      *
      * @return The next token read, null on EOF.
      * @throws RuntimeX In case of an error.
@@ -163,7 +159,7 @@ public class SchemeParser
     }
 
     /**
-     * Parses a Scheme array.
+     * Parses a Scheme bytevector.
      *
      * @return An array structure.
      * @throws RuntimeX In case of an error.
@@ -181,16 +177,8 @@ public class SchemeParser
             if ( Tk.Integer != token.getType() )
                 throw RuntimeX.mParseExpected( Tk.Integer );
 
-            try {
-                var value = (byte)IntegerUtil.rangeCheck( 8, token.integerValue() );
-                collector.add( Byte.valueOf( value ) );
-            }
-            catch ( IllegalArgumentException ia )
-            {
-                throw RuntimeX.mRangeExceeded(
-                       SchemeInteger.createObject( token.integerValue() ),
-                       "[0..255]" );
-            }
+            collector.add(
+                    Bytevector.assertByte( token.integerValue() ) );
         }
 
         // Consume the End token.

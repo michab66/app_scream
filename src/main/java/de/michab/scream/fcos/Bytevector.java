@@ -30,7 +30,7 @@ public final class Bytevector
     private final byte[] _vector;
 
     /**
-     * Create an instance.
+     * Create an instance. Used from the Scream runtime.
      */
     public Bytevector( byte ... content )
     {
@@ -51,30 +51,27 @@ public final class Bytevector
             return;
         }
 
-        if ( Cons.length( bytes ) > Integer.MAX_VALUE )
-            throw RuntimeX.mRangeExceeded( bytes, "[0..MAX_INT]" );
-
-        _vector = new byte[(int)bytes.length()];
+        _vector = new byte[assertLength( Cons.length( bytes ) )];
 
         int count = 0;
         for ( var c : bytes )
         {
             SchemeInteger i = Scut.as( SchemeInteger.class, c );
 
-            if ( i.asLong() > 0xff || i.asLong() < 0 )
-                throw RuntimeX.mRangeExceeded( c, "[0..255]" );
-            _vector[count++] = (byte)i.asLong();
+            _vector[count++] = assertByte( i.asLong() );
         }
     }
-    public Bytevector( int length )
+    public Bytevector( long length ) throws RuntimeX
     {
-        this( length, (byte)0 );
+        this( length, 0 );
     }
-    public Bytevector( int length, int filler )
+    public Bytevector( long length, long filler ) throws RuntimeX
     {
-        _vector = new byte[ length ];
+        _vector = new byte[ assertIndex( length ) ];
 
-        Arrays.fill( _vector, (byte)filler );
+        byte bFiller = assertByte( filler );
+
+        Arrays.fill( _vector, bFiller );
     }
 
     /**
@@ -86,14 +83,14 @@ public final class Bytevector
      * @throws RuntimeX If the bytevector is constant or the index
      * is out of bounds.
      */
-    public Bytevector set( int idx, int value ) throws RuntimeX
+    public Bytevector set( long idx, long value ) throws RuntimeX
     {
         if ( isConstant() )
             throw RuntimeX.mCannotModifyConstant( this );
 
         try
         {
-            _vector[idx] = (byte)value;
+            _vector[assertIndex( idx )] = assertByte( value );
 
             return this;
         }
@@ -110,11 +107,11 @@ public final class Bytevector
      * @return The value at the index.
      * @throws RuntimeX If the bytevector index is out of bounds.
      */
-    public int get( int idx ) throws RuntimeX
+    public int get( long idx ) throws RuntimeX
     {
         try
         {
-            return 0 | _vector[idx];
+            return 0xff & _vector[assertIndex( idx )];
         }
         catch ( ArrayIndexOutOfBoundsException e )
         {
@@ -146,7 +143,7 @@ public final class Bytevector
     /**
      * Transform this to its string representation.
      *
-     * @return A string representation for this object.
+     * @return A string representation of this object.
      * @see FirstClassObject#toString
      */
     @Override
@@ -159,10 +156,14 @@ public final class Bytevector
 
         for ( var c : _vector )
         {
-            result.append( 0 | c );
-            result.append( " " );
+            String toAppend = String.format(
+                    "#x%02x ",
+                    Byte.toUnsignedInt( c ) );
+
+            result.append( toAppend );
         }
 
+        // Replace the trailing space.
         result.setCharAt( result.length()-1, ')' );
 
         return result.toString();
@@ -208,5 +209,69 @@ public final class Bytevector
         {
             return false;
         }
+    }
+
+    @Override
+    public Bytevector copy()
+    {
+        return new Bytevector( _vector );
+    }
+    public Bytevector copy( long start ) throws RuntimeX
+    {
+        return copy( start, _vector.length );
+    }
+    /**
+     *
+     * @param start
+     * @param to exclusive
+     * @return
+     * @throws RuntimeX
+     */
+    public Bytevector copy( long start, long to ) throws RuntimeX
+    {
+        var iStart =
+                assertIndex( start );
+        var iTo =
+                assertIndex( to );
+
+        if ( start < 0 || start > _vector.length )
+            throw RuntimeX.mIndexOutOfBounds( start );
+        if ( to < 0 || to > _vector.length )
+            throw RuntimeX.mIndexOutOfBounds( to );
+        if ( start > to )
+            throw RuntimeX.mIllegalArgument( "start > to" );
+
+        return new Bytevector(
+                Arrays.copyOfRange( _vector, iStart, iTo ) );
+    }
+
+    public static int assertLength( long idx ) throws RuntimeX
+    {
+        if ( idx < 0 || idx > Integer.MAX_VALUE )
+            throw RuntimeX.mRangeExceeded(
+                    SchemeInteger.createObject( idx ),
+                    "[0.." + Integer.MAX_VALUE + "]" );
+
+        return (int)idx;
+    }
+
+    public static int assertIndex( long idx ) throws RuntimeX
+    {
+        if ( idx < 0 || idx > Integer.MAX_VALUE )
+            throw RuntimeX.mRangeExceeded(
+                    SchemeInteger.createObject( idx ),
+                    "[0.." + Integer.MAX_VALUE + "]" );
+
+        return (int)idx;
+    }
+
+    public static byte assertByte( long idx ) throws RuntimeX
+    {
+        if ( idx < 0 || idx > 0xff )
+            throw RuntimeX.mRangeExceeded(
+                    SchemeInteger.createObject( idx ),
+                    "[0..255]" );
+
+        return (byte)(0xff & idx);
     }
 }
