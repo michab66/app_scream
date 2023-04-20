@@ -83,3 +83,45 @@
   (if (not (bytevector? bytevector))
     (error "TYPE_ERROR" scream:type-bytevector bytevector)
     ((object bytevector) (set k byte))))
+
+#|
+ | (bytevector-copy bytevector bytevector)  procedure; r7rs 6.9 p50
+ | (bytevector-copy bytevector bytevector start)  procedure; r7rs 6.9 p50
+ | (bytevector-copy bytevector bytevector start end)  procedure; r7rs 6.9 p50
+ |#
+ 
+(define (bvc0 bv)
+  ((object bv) (copy)))
+
+(define (bvc1 bv start)
+  (cond
+    ((not (integer? start))
+      (error "TYPE_ERROR" scream:type-integer start))
+    (else
+      ((object bv) (copy start)))))
+
+(define (bvc2 bv start end)
+  (cond
+    ((not (integer? start))
+      (error "TYPE_ERROR" scream:type-integer start))
+    ((not (integer? end))
+      (error "TYPE_ERROR" scream:type-integer start))
+    (else
+      ((object bv) (copy start end)))))
+
+(define (bytevector-copy bytevector . rest)
+  (if (not (bytevector? bytevector))
+    (error "TYPE_ERROR" scream:type-bytevector bytevector)
+
+    (cond
+      ((null? rest)
+        (bvc0 bytevector))
+
+      ((= 2 (length rest))
+        (bvc2 bytevector (car rest) (cadr rest)))
+
+      ((= 1 (length rest))
+        (bvc1 bytevector (car rest)))
+
+      (else
+        (error "TOO_MANY_ARGUMENTS" 3)))))
