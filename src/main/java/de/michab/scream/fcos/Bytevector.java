@@ -211,6 +211,30 @@ public final class Bytevector
         }
     }
 
+    /**
+     * Append a this with another bytevector into a newly allocated bytevector.
+     *
+     * @param other The bytevector to append.
+     * @return The new bytevector.
+     * @throws RuntimeX
+     */
+    public Bytevector append( Bytevector other )
+            throws RuntimeX
+    {
+        if ( other.size() == 0 )
+            return copy();
+        if ( size() == 0 )
+            return other.copy();
+
+        Bytevector result = new Bytevector(
+                Arrays.copyOf(
+                        _vector,
+                        _vector.length + other._vector.length ) );
+        return result.copyFrom(
+                _vector.length,
+                other );
+    }
+
     @Override
     public Bytevector copy()
     {
@@ -245,19 +269,169 @@ public final class Bytevector
                 Arrays.copyOfRange( _vector, iStart, iTo ) );
     }
 
-    public static int assertLength( long idx ) throws RuntimeX
+    /**
+     * Copies the content from source into this bytevector to startIdx.
+     *
+     * @param source Source bytevector.
+     * @param tgtIdx Target index.
+     * @return This.
+     * @throws RuntimeX If this is constant or the data does not fit.
+     */
+    public Bytevector copyFrom( long tgtIdx, Bytevector source  )
+            throws RuntimeX
     {
-        if ( idx < 0 || idx > Integer.MAX_VALUE )
+        if ( isConstant() )
+            throw RuntimeX.mCannotModifyConstant( this );
+
+        int toCopy = source._vector.length;
+
+        // Prevent ioob below.
+        if ( _vector.length - tgtIdx < toCopy )
+            throw RuntimeX.mIndexOutOfBounds( _vector.length );
+
+        try
+        {
+            System.arraycopy(
+                    source._vector,
+                    0,
+                    _vector,
+                    assertIndex( tgtIdx ),
+                    source._vector.length );
+        }
+        catch ( ArrayIndexOutOfBoundsException  e )
+        {
+            throw new InternalError( "Unexpected." );
+        }
+
+        return this;
+    }
+
+    /**
+     * Copies the content from source into this bytevector to startIdx.
+     *
+     * @param source Source bytevector.
+     * @param tgtIdx Target index.
+     * @param srcIdx The start index in the source vector.
+     * @return This.
+     * @throws RuntimeX If this is constant or the data does not fit.
+     */
+    public Bytevector copyFrom( long tgtIdx, Bytevector source, long srcIdx )
+            throws RuntimeX
+    {
+        if ( isConstant() )
+            throw RuntimeX.mCannotModifyConstant( this );
+
+        int iTgtIdx =
+                assertIndex( tgtIdx );
+        int iSrcIdx =
+                assertIndex( srcIdx );
+
+        int toCopy =
+                source._vector.length - iSrcIdx;
+        int copyable =
+                _vector.length - iTgtIdx;
+
+        if ( toCopy == 0 )
+            return this;
+        if ( toCopy < 0 )
+            throw RuntimeX.mIllegalArgument( "toCopy < 0" );
+
+        // Prevent ioob below.
+        if ( copyable < toCopy )
+            throw RuntimeX.mIndexOutOfBounds( _vector.length );
+
+        try
+        {
+            System.arraycopy(
+                    source._vector,
+                    iSrcIdx,
+                    _vector,
+                    iTgtIdx,
+                    toCopy );
+        }
+        catch ( ArrayIndexOutOfBoundsException  e )
+        {
+            throw new InternalError( "Unexpected." );
+        }
+
+        return this;
+    }
+
+    /**
+     * Copies the content from source into this bytevector to startIdx.
+     *
+     * @param source Source bytevector.
+     * @param tgtIdx Target index.
+     * @param srcIdx The start index in the source vector.
+     * @param srcIdx The end index in the source vector.
+     * @return This.
+     * @throws RuntimeX If this is constant or the data does not fit.
+     */
+    public Bytevector copyFrom(
+            long tgtIdx,
+            Bytevector source,
+            long srcIdx,
+            long endIdx )
+        throws RuntimeX
+    {
+        if ( isConstant() )
+            throw RuntimeX.mCannotModifyConstant( this );
+
+        if ( endIdx < srcIdx )
+            throw RuntimeX.mIllegalArgument( "endIdx < srcIndex" );
+
+        int iTgtIdx =
+                assertIndex( tgtIdx );
+        int iSrcIdx =
+                assertIndex( srcIdx );
+        int iEndIdx =
+                assertIndex( endIdx );
+
+        int toCopy =
+                iEndIdx - iSrcIdx;
+        int copyable =
+                _vector.length - iTgtIdx;
+
+        if ( toCopy == 0 )
+            return this;
+        if ( toCopy < 0 )
+            throw RuntimeX.mIllegalArgument( "toCopy < 0" );
+
+
+        // Prevent ioob below.
+        if ( copyable < toCopy )
+            throw RuntimeX.mIndexOutOfBounds( _vector.length );
+
+        try
+        {
+            System.arraycopy(
+                    source._vector,
+                    iSrcIdx,
+                    _vector,
+                    iTgtIdx,
+                    toCopy );
+        }
+        catch ( ArrayIndexOutOfBoundsException  e )
+        {
+            throw new InternalError( "Unexpected." );
+        }
+
+        return this;
+    }
+
+    public static int assertLength( long len ) throws RuntimeX
+    {
+        if ( len < 0 || len > Integer.MAX_VALUE )
             throw RuntimeX.mRangeExceeded(
-                    SchemeInteger.createObject( idx ),
+                    SchemeInteger.createObject( len ),
                     "[0.." + Integer.MAX_VALUE + "]" );
 
-        return (int)idx;
+        return (int)len;
     }
 
     public static int assertIndex( long idx ) throws RuntimeX
     {
-        if ( idx < 0 || idx > Integer.MAX_VALUE )
+        if ( idx < 0 || idx >= Integer.MAX_VALUE )
             throw RuntimeX.mRangeExceeded(
                     SchemeInteger.createObject( idx ),
                     "[0.." + Integer.MAX_VALUE + "]" );

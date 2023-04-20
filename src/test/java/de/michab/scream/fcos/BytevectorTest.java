@@ -118,6 +118,25 @@ public class BytevectorTest extends ScreamBaseTest
     }
 
     @Test
+    public void equalq_2() throws Exception
+    {
+        byte[] value = tba( 1, 2, 3, 4, 5 );
+
+        Bytevector bv1 = new Bytevector( value );
+
+        assertFalse( bv1.equal( Cons.NIL ) );
+    }
+    @Test
+    public void equalq_3() throws Exception
+    {
+        byte[] value = tba( 1, 2, 3, 4, 5 );
+
+        Bytevector bv1 = new Bytevector( value );
+
+        assertFalse( bv1.equal( i313 ) );
+    }
+
+    @Test
     public void eqq() throws Exception
     {
         byte[] value = tba( 1, 2, 3, 4, 5 );
@@ -282,18 +301,16 @@ public class BytevectorTest extends ScreamBaseTest
         assertEquals( 2, bv2.get( 0 ) );
         assertEquals( 5, bv2.get( 3 ) );
     }
+
+    @Test
     public void copyStartEmpty() throws Exception
     {
-        byte[] value = tba( 1 );
-
-        Bytevector bv1 = new Bytevector( value );
+        Bytevector bv1 = new Bytevector( tba( 1 ) );
         Bytevector bv2 = bv1.copy( 1 );
 
         assertEquals( 0, bv2.size() );
-
-        assertEquals( 2, bv2.get( 0 ) );
-        assertEquals( 5, bv2.get( 3 ) );
     }
+
     @Test
     public void copyStart_indexOutOfBounds() throws Exception
     {
@@ -343,6 +360,178 @@ public class BytevectorTest extends ScreamBaseTest
         Bytevector bv2 = bv1.copy( 2, 2 );
 
         assertEquals( 0, bv2.size() );
+    }
+
+    @Test
+    public void copyFrom_atFrom() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2 ) );
+        Bytevector into =
+                new Bytevector( tba( 11, 22, 33, 44 ) );
+
+        into.copyFrom( 1, from );
+
+        assertEquals( 11, into.get( 0 ) );
+        assertEquals( 1, into.get( 1 ) );
+        assertEquals( 2, into.get( 2 ) );
+        assertEquals( 44, into.get( 3 ) );
+    }
+
+    @Test
+    public void copyFrom_atFrom2() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2 ) );
+        Bytevector into =
+                new Bytevector( tba( 11, 22, 33 ) );
+
+        into.copyFrom( 1, from );
+
+        assertEquals( 11, into.get( 0 ) );
+        assertEquals( 1, into.get( 1 ) );
+        assertEquals( 2, into.get( 2 ) );
+    }
+
+    @Test
+    public void copyFrom_atFrom3() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2 ) );
+        Bytevector into =
+                new Bytevector( tba( 11, 22 ) );
+
+        into.copyFrom( 0, from );
+
+        assertEquals( 1, into.get( 0 ) );
+        assertEquals( 2, into.get( 1 ) );
+    }
+
+    @Test
+    public void copyFrom_atFrom_error_rangeExceeded() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2 ) );
+        Bytevector into =
+                new Bytevector( tba( 11, 22 ) );
+
+        try
+        {
+            into.copyFrom( -1, from);
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.RANGE_EXCEEDED, rx.getCode() );
+        }
+    }
+
+    @Test
+    public void copyFrom_atFrom_error_index() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2 ) );
+        Bytevector into =
+                new Bytevector( tba( 11, 22 ) );
+
+        try
+        {
+            into.copyFrom( 1, from);
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.INDEX_OUT_OF_BOUNDS, rx.getCode() );
+        }
+    }
+
+    @Test
+    public void copyFrom_atFrom_error_constant() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2 ) );
+        Bytevector into = FirstClassObject.setConstant(
+                new Bytevector( tba( 11, 22 ) ) );
+
+        try
+        {
+            into.copyFrom( 0, from);
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.CANNOT_MODIFY_CONSTANT, rx.getCode() );
+        }
+    }
+
+    @Test
+    public void copyFrom_atFromStart() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2 ) );
+        Bytevector into =
+                new Bytevector( tba( 11, 22, 33, 44 ) );
+
+        into.copyFrom( 1, from, 1 );
+
+        assertEquals( 11, into.get( 0 ) );
+        assertEquals( 2, into.get( 1 ) );
+        assertEquals( 33, into.get( 2 ) );
+        assertEquals( 44, into.get( 3 ) );
+    }
+
+    @Test
+    public void copyFrom_atFromStart_nothing() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2 ) );
+        Bytevector into =
+                new Bytevector( tba( 11, 22, 33, 44 ) );
+
+        into.copyFrom( 1, from, 2 );
+
+        assertEquals( 11, into.get( 0 ) );
+        assertEquals( 22, into.get( 1 ) );
+        assertEquals( 33, into.get( 2 ) );
+        assertEquals( 44, into.get( 3 ) );
+    }
+
+    @Test
+    public void copyFrom_atFromStartEnd() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2, 3, 4, 5 ) );
+        Bytevector into =
+                new Bytevector( tba( 10, 20, 30, 40, 50 ) );
+        into.copyFrom( 1, from, 0, 2 );
+
+        assertEquals( 10, into.get( 0 ) );
+        assertEquals( 1, into.get( 1 ) );
+        assertEquals( 2, into.get( 2 ) );
+        assertEquals( 40, into.get( 3 ) );
+        assertEquals( 50, into.get( 4 ) );
+    }
+
+    @Test
+    public void append() throws Exception
+    {
+        Bytevector from =
+                new Bytevector( tba( 1, 2, 3, 4, 5 ) );
+        Bytevector into =
+                new Bytevector( tba( 6, 7, 8, 9, 10 ) );
+        Bytevector appended = from.append( into );
+
+        assertEquals( from.size() + into.size(), appended.size() );
+        assertEquals( 1, appended.get( 0 ) );
+        assertEquals( 2, appended.get( 1 ) );
+        assertEquals( 3, appended.get( 2 ) );
+        assertEquals( 4, appended.get( 3 ) );
+        assertEquals( 5, appended.get( 4 ) );
+        assertEquals( 6, appended.get( 5 ) );
+        assertEquals( 7, appended.get( 6 ) );
+        assertEquals( 8, appended.get( 7 ) );
+        assertEquals( 9, appended.get( 8 ) );
+        assertEquals( 10, appended.get( 9 ) );
     }
 
 }
