@@ -121,7 +121,7 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
      * p50
      */
     @Test
-    public void bytevector_set() throws Exception
+    public void bytevector_setq() throws Exception
     {
         expectFco(
 """
@@ -131,5 +131,26 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
 
 """,
         parse( "#u8(1 3 3 4)" ) );
+    }
+
+    /**
+     * p50
+     */
+    @Test
+    public void bytevector_append() throws Exception
+    {
+        expectFco(
+"""
+        (let
+          (
+            (a (bytevector 0 1 2 3 4 5))
+            (b (bytevector 6 7 8 9 10 11 12 13 14 15 16))
+            (c (bytevector 17 18 19 20 21 22 23 24))
+          )
+          (bytevector-append a b c)
+        )
+
+""",
+        parse( "#u8(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24)" ) );
     }
 }

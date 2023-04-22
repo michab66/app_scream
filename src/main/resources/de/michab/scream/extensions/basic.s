@@ -48,19 +48,23 @@
     (error "TYPE_ERROR" expected-type (scream:typename object))))
 
 ;;
-;; (proc-2 a b) -> (proc-n a b ...)
-;; (proc-2 (proc-2 a b) c)
+;; (scream:to-transitive proc2) => (proc2 a b ...)
 ;;
-(define (%mk-transitive proc2)
-  (letrec
-    ((transitiver
-       (lambda (a b . rest)
+;; Takes a procedure proc2 accepting two arguments.
+;; Returns a procedure that accepts a variable number of
+;; arguments calling proc2 as follows:
+;;
+;; (proc2 (proc2 (proc2 1 2) 3) 4)
+;;
+;; That is, the result is a transitive version of proc2.
+;;
+
+(define (scream:to-transitive proc2)
+  (define (transitiver a b . rest)
          (if (null? rest)
            (proc2 a b)
-           (apply transitiver (proc2 a b) rest)))))
-    transitiver))
-
-
+           (apply transitiver (proc2 a b) rest)))
+    transitiver)
 
 ;;
 ;; Displays a debug message with carriage return.

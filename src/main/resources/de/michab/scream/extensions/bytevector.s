@@ -57,8 +57,10 @@
 #|
  | (bytevector byte ...)  procedure; r7rs 6.9 p49
  |#
-(define (bytevector . byte)
-	(make-object (de.michab.scream.fcos.Bytevector byte)))
+(define (bytevector . bytes)
+  (if (null? bytes)
+    (make-bytevector 0)
+	(make-object (de.michab.scream.fcos.Bytevector bytes))))
 
 #|
  | (bytevector-length byte ...)  procedure; r7rs 6.9 p50
@@ -85,31 +87,31 @@
     ((object bytevector) (set k byte))))
 
 #|
- | (bytevector-copy bytevector bytevector)  procedure; r7rs 6.9 p50
- | (bytevector-copy bytevector bytevector start)  procedure; r7rs 6.9 p50
- | (bytevector-copy bytevector bytevector start end)  procedure; r7rs 6.9 p50
+ | (bytevector-copy bytevector)  procedure; r7rs 6.9 p50
+ | (bytevector-copy bytevector start)  procedure; r7rs 6.9 p50
+ | (bytevector-copy bytevector start end)  procedure; r7rs 6.9 p50
  |#
- 
-(define (bvc0 bv)
-  ((object bv) (copy)))
-
-(define (bvc1 bv start)
-  (cond
-    ((not (integer? start))
-      (error "TYPE_ERROR" scream:type-integer start))
-    (else
-      ((object bv) (copy start)))))
-
-(define (bvc2 bv start end)
-  (cond
-    ((not (integer? start))
-      (error "TYPE_ERROR" scream:type-integer start))
-    ((not (integer? end))
-      (error "TYPE_ERROR" scream:type-integer start))
-    (else
-      ((object bv) (copy start end)))))
-
 (define (bytevector-copy bytevector . rest)
+
+  (define (bvc0 bv)
+    ((object bv) (copy)))
+
+  (define (bvc1 bv start)
+    (cond
+      ((not (integer? start))
+        (error "TYPE_ERROR" scream:type-integer start))
+      (else
+        ((object bv) (copy start)))))
+
+  (define (bvc2 bv start end)
+    (cond
+      ((not (integer? start))
+        (error "TYPE_ERROR" scream:type-integer start))
+      ((not (integer? end))
+        (error "TYPE_ERROR" scream:type-integer start))
+      (else
+        ((object bv) (copy start end)))))
+
   (if (not (bytevector? bytevector))
     (error "TYPE_ERROR" scream:type-bytevector bytevector)
 
@@ -125,3 +127,78 @@
 
       (else
         (error "TOO_MANY_ARGUMENTS" 3)))))
+
+#|
+ | (bytevector-copy! to at from)  procedure; r7rs 6.9 p50
+ | (bytevector-copy! to at from start)  procedure; r7rs 6.9 p50
+ | (bytevector-copy! to at from start end)  procedure; r7rs 6.9 p50
+ |#
+(define (bytevector-copy! to at from . rest)
+  (if (not (bytevector? to))
+    (error "TYPE_ERROR" scream:type-bytevector to))
+  (if (not (bytevector? from))
+    (error "TYPE_ERROR" scream:type-bytevector from))
+
+  (define (bvc!0 to at from)
+    ((object to) (copyFrom at from)))
+
+  (define (bvc!1 to at from start)
+    (cond
+      ((not (integer? start))
+        (error "TYPE_ERROR" scream:type-integer start))
+      (else
+        ((object to) (copyFrom at from start)))))
+
+  (define (bvc!2 to at from start end)
+    (cond
+      ((not (integer? start))
+        (error "TYPE_ERROR" scream:type-integer start))
+      ((not (integer? end))
+        (error "TYPE_ERROR" scream:type-integer start))
+      (else
+        ((object to) (copyFrom at from start end)))))
+
+  (cond
+    ((null? rest)
+      (bvc!0 to at from))
+
+    ((= 2 (length rest))
+      (bvc!2 to at from (car rest) (cadr rest)))
+
+    ((= 1 (length rest))
+      (bvc!1 to at from (car rest)))
+
+    (else
+      (error "TOO_MANY_ARGUMENTS" 3))))
+
+#|
+ | (bytevector-append bytevector ...)  procedure; r7rs 6.9 p50
+ |#
+(define (bytevector-append . args)
+
+  ; A local, binary, append.
+  (define (bva_2 a b)
+    (if (not (bytevector? a))
+      (error "TYPE_ERROR" scream:type-bytevector a))
+    (if (not (bytevector? b))
+      (error "TYPE_ERROR" scream:type-bytevector b))
+  ((object a) (append b)))
+
+  ; Local append transitive.
+  (define bva_n
+    (scream:to-transitive bva_2))
+
+  (cond
+    ; No args => empty bv.
+    ((null? args)
+      (bytevector))
+    ; One bv arg => return this.
+    ((and (= 1 (length args)) (bytevector? (car args)))
+      (car args))
+    ; One arg, no bv => error.
+    ((= 1 (length args))
+      (error "TYPE_ERROR" scream:type-bytevector b))
+    ; Process arg lengths >= 2.
+    (else
+      (apply bva_n args))))
+
