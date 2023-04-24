@@ -198,7 +198,7 @@ public class R7rs_6_12_Environments_and_evaluation_Test extends ScreamBaseTest
         }
         catch ( RuntimeX rx )
         {
-            assertEquals( Code.CANT_MODIFY_CONSTANT, rx.getCode() );
+            assertEquals( Code.CANNOT_MODIFY_CONSTANT, rx.getCode() );
         }
     }
 }

@@ -72,7 +72,7 @@ extends Exception
         METHOD_NOT_FOUND,
         ILLEGAL_ACCESS,
         INVOCATION_EXCEPTION,
-        CANT_ACCESS_INSTANCE,
+        CANNOT_ACCESS_INSTANCE,
         CREATION_FAILED,
         ILLEGAL_ARGUMENT,
         SCAN_UNBALANCED_QUOTE,
@@ -81,7 +81,7 @@ extends Exception
         PARSE_UNEXPECTED_EOF,
         PARSE_UNEXPECTED,
         INTERRUPTED,
-        CANT_MODIFY_CONSTANT,
+        CANNOT_MODIFY_CONSTANT,
         NO_PROXY,
         PROXY_CANNOT_INSTANTIATE,
         TEST_FAILED,
@@ -90,7 +90,8 @@ extends Exception
         DUPLICATE_ELEMENT,
         EXPECTED_BINARY_PORT,
         EXPECTED_TEXTUAL_PORT,
-        SCAN_UNBALANCED_COMMENT;
+        SCAN_UNBALANCED_COMMENT,
+        RANGE_EXCEEDED;
 
         public int id()
         {

@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -21,6 +21,7 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.frontend.Token;
+import de.michab.scream.frontend.Token.Tk;
 
 public class RuntimeXTest extends ScreamBaseTest
 {
@@ -472,7 +473,7 @@ public class RuntimeXTest extends ScreamBaseTest
     {
         validateMessageAndType(
                 RuntimeX.mCannotAccessInstance(),
-                Code.CANT_ACCESS_INSTANCE,
+                Code.CANNOT_ACCESS_INSTANCE,
                 30 );
     }
     @Test
@@ -531,13 +532,11 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void _36_parseExpected1() throws Exception
     {
-        var token = Token.createToken( Token.Tk.Dot );
-
         validateMessageAndType(
-                RuntimeX.mParseExpected( token ),
+                RuntimeX.mParseExpected( Tk.Dot ),
                 Code.PARSE_EXPECTED,
                 36,
-                token );
+                Tk.Dot );
     }
     @Test
     public void _37_parseUnexpectedEof() throws Exception
@@ -571,7 +570,7 @@ public class RuntimeXTest extends ScreamBaseTest
     {
         validateMessageAndType(
                 RuntimeX.mCannotModifyConstant(),
-                Code.CANT_MODIFY_CONSTANT,
+                Code.CANNOT_MODIFY_CONSTANT,
                 40 );
     }
     @Test
@@ -579,7 +578,7 @@ public class RuntimeXTest extends ScreamBaseTest
     {
         validateMessageAndType(
                 RuntimeX.mCannotModifyConstant( s1 ),
-                Code.CANT_MODIFY_CONSTANT,
+                Code.CANNOT_MODIFY_CONSTANT,
                 40,
                 s1 );
     }
@@ -680,5 +679,15 @@ public class RuntimeXTest extends ScreamBaseTest
                 49,
                 1,
                 1);
+    }
+    @Test
+    public void _50_rangeExceeded() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mRangeExceeded( i313, "> 256" ),
+                Code.RANGE_EXCEEDED,
+                50,
+                i313,
+                "> 256" );
     }
 }

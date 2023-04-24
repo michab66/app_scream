@@ -16,6 +16,7 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.frontend.Token;
+import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
@@ -571,7 +572,7 @@ extends ScreamException
     public static RuntimeX mCannotAccessInstance()
     {
         return new RuntimeX(
-                Code.CANT_ACCESS_INSTANCE );
+                Code.CANNOT_ACCESS_INSTANCE );
     }
 
     //    # arg 0: The class name that was tried to instantiate.
@@ -634,7 +635,7 @@ extends ScreamException
     //    #
     //    PARSE_EXPECTED_1 = \
     //    36 : Expected {0}.
-    public static RuntimeX mParseExpected( Token token )
+    public static RuntimeX mParseExpected( Tk token )
     {
         return new RuntimeX(
                 Code.PARSE_EXPECTED,
@@ -675,7 +676,7 @@ extends ScreamException
     public static RuntimeX mCannotModifyConstant()
     {
         return new RuntimeX(
-                Code.CANT_MODIFY_CONSTANT );
+                Code.CANNOT_MODIFY_CONSTANT );
     }
 
     //    CANT_MODIFY_CONSTANT_1 = \
@@ -683,7 +684,7 @@ extends ScreamException
     public static RuntimeX mCannotModifyConstant( FirstClassObject constant )
     {
         return new RuntimeX(
-                Code.CANT_MODIFY_CONSTANT,
+                Code.CANNOT_MODIFY_CONSTANT,
                 constant );
     }
 
@@ -781,5 +782,15 @@ extends ScreamException
                 Code.SCAN_UNBALANCED_COMMENT,
                 line,
                 column );
+    }
+
+    // RANGE_EXCEEDED_1 = \
+    // 50 : Range exceeded. Actual {0}, expected {1}.
+    public static RuntimeX mRangeExceeded( FirstClassObject fco, String rangeDescription )
+    {
+        return new RuntimeX(
+                Code.RANGE_EXCEEDED,
+                fco,
+                rangeDescription );
     }
 }

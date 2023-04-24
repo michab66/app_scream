@@ -36,6 +36,14 @@ public class SyntaxDefine extends Syntax
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
+        // The args represent a source code position and thus
+        // must not be modified.
+        // TODO: check if this can be generalized.
+        // args always copy and *can* thus be modified
+        // in compilation.
+        FirstClassObject.setConstant( args );
+        args = args.copy();
+
         var variableSlot = args.getCar();
 
         var rest = Scut.as(
@@ -66,6 +74,7 @@ public class SyntaxDefine extends Syntax
                 s-> {
                     throw RuntimeX.mSyntaxError();
                 } );
+
         Symbol name = Scut.as(
                 Symbol.class,
                 signature.listRef( 0 ),

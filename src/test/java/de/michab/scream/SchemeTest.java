@@ -134,7 +134,7 @@ public class SchemeTest extends ScreamBaseTest
     @Test
     public void lockedOperation() throws Exception
     {
-        expectError( "(set! + 0)", Code.CANT_MODIFY_CONSTANT );
+        expectError( "(set! + 0)", Code.CANNOT_MODIFY_CONSTANT );
     }
 
     /**

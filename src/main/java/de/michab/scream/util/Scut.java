@@ -10,6 +10,7 @@ import java.util.HashSet;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.SchemeInteger;
 
 /**
  * Scream utilities.
@@ -143,4 +144,47 @@ public class Scut
             break;
         }
     }
+
+    public static int assertIndex( long idx ) throws RuntimeX
+    {
+        if ( idx < 0 || idx >= Integer.MAX_VALUE )
+            throw RuntimeX.mRangeExceeded(
+                    SchemeInteger.createObject( idx ),
+                    "[0.." + Integer.MAX_VALUE + "]" );
+
+        return (int)idx;
+    }
+
+    public static <A> int assertMaxIndex( int maximum, long idx ) throws RuntimeX
+    {
+        if ( idx < 0 || idx > Integer.MAX_VALUE )
+            throw RuntimeX.mRangeExceeded(
+                    SchemeInteger.createObject( idx ),
+                    "[0.." + Integer.MAX_VALUE + "]" );
+        if ( idx > maximum )
+            throw RuntimeX.mIndexOutOfBounds( idx );
+
+        return (int)idx;
+    }
+
+    public static int assertLength( long len ) throws RuntimeX
+    {
+        if ( len < 0 || len > Integer.MAX_VALUE )
+            throw RuntimeX.mRangeExceeded(
+                    SchemeInteger.createObject( len ),
+                    "[0.." + Integer.MAX_VALUE + "]" );
+
+        return (int)len;
+    }
+
+    public static byte assertByte( long idx ) throws RuntimeX
+    {
+        if ( idx < 0 || idx > 0xff )
+            throw RuntimeX.mRangeExceeded(
+                    SchemeInteger.createObject( idx ),
+                    "[0..255]" );
+
+        return (byte)(0xff & idx);
+    }
+
 }

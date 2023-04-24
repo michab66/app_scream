@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
@@ -25,6 +27,17 @@ public class SchemeStringTest
     public void basic() throws Exception
     {
         assertEquals( 3, new StringBuilder( "313" ).length() );
+    }
+
+    @Test
+    public void basic_2() throws Exception
+    {
+        String s = "λ Hélô 丧";
+        assertEquals( 8, s.length() );
+        byte[] bytes = s.getBytes( StandardCharsets.UTF_8 );
+        assertTrue( 8 < bytes.length );
+        String s2 = new String( bytes, StandardCharsets.UTF_8 );
+        assertEquals( s, s2 );
     }
 
     @Test
@@ -48,7 +61,7 @@ public class SchemeStringTest
         }
         catch ( RuntimeX e )
         {
-            assertEquals( Code.CANT_MODIFY_CONSTANT, e.getCode() );
+            assertEquals( Code.CANNOT_MODIFY_CONSTANT, e.getCode() );
         }
     }
     @Test
@@ -63,7 +76,7 @@ public class SchemeStringTest
         }
         catch ( RuntimeX e )
         {
-            assertEquals( Code.CANT_MODIFY_CONSTANT, e.getCode() );
+            assertEquals( Code.CANNOT_MODIFY_CONSTANT, e.getCode() );
         }
     }
 
