@@ -5,6 +5,7 @@
  */
 package de.michab.scream.fcos;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -51,14 +52,14 @@ public final class Bytevector
             return;
         }
 
-        _vector = new byte[assertLength( Cons.length( bytes ) )];
+        _vector = new byte[Scut.assertLength( Cons.length( bytes ) )];
 
         int count = 0;
         for ( var c : bytes )
         {
             SchemeInteger i = Scut.as( SchemeInteger.class, c );
 
-            _vector[count++] = assertByte( i.asLong() );
+            _vector[count++] = Scut.assertByte( i.asLong() );
         }
     }
     public Bytevector( long length ) throws RuntimeX
@@ -67,9 +68,9 @@ public final class Bytevector
     }
     public Bytevector( long length, long filler ) throws RuntimeX
     {
-        _vector = new byte[ assertIndex( length ) ];
+        _vector = new byte[ Scut.assertLength( length ) ];
 
-        byte bFiller = assertByte( filler );
+        byte bFiller = Scut.assertByte( filler );
 
         Arrays.fill( _vector, bFiller );
     }
@@ -90,7 +91,7 @@ public final class Bytevector
 
         try
         {
-            _vector[assertIndex( idx )] = assertByte( value );
+            _vector[Scut.assertIndex( idx )] = Scut.assertByte( value );
 
             return this;
         }
@@ -111,7 +112,7 @@ public final class Bytevector
     {
         try
         {
-            return 0xff & _vector[assertIndex( idx )];
+            return 0xff & _vector[Scut.assertIndex( idx )];
         }
         catch ( ArrayIndexOutOfBoundsException e )
         {
@@ -254,14 +255,9 @@ public final class Bytevector
     public Bytevector copy( long start, long to ) throws RuntimeX
     {
         var iStart =
-                assertIndex( start );
+                Scut.assertMaxIndex( _vector.length, start );
         var iTo =
-                assertIndex( to );
-
-        if ( start < 0 || start > _vector.length )
-            throw RuntimeX.mIndexOutOfBounds( start );
-        if ( to < 0 || to > _vector.length )
-            throw RuntimeX.mIndexOutOfBounds( to );
+                Scut.assertMaxIndex( _vector.length, to );
         if ( start > to )
             throw RuntimeX.mIllegalArgument( "start > to" );
 
@@ -280,30 +276,7 @@ public final class Bytevector
     public Bytevector copyFrom( long tgtIdx, Bytevector source  )
             throws RuntimeX
     {
-        if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
-
-        int toCopy = source._vector.length;
-
-        // Prevent ioob below.
-        if ( _vector.length - tgtIdx < toCopy )
-            throw RuntimeX.mIndexOutOfBounds( _vector.length );
-
-        try
-        {
-            System.arraycopy(
-                    source._vector,
-                    0,
-                    _vector,
-                    assertIndex( tgtIdx ),
-                    source._vector.length );
-        }
-        catch ( ArrayIndexOutOfBoundsException  e )
-        {
-            throw new InternalError( "Unexpected." );
-        }
-
-        return this;
+        return copyFrom( tgtIdx, source, 0, source.size() );
     }
 
     /**
@@ -318,43 +291,7 @@ public final class Bytevector
     public Bytevector copyFrom( long tgtIdx, Bytevector source, long srcIdx )
             throws RuntimeX
     {
-        if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
-
-        int iTgtIdx =
-                assertIndex( tgtIdx );
-        int iSrcIdx =
-                assertIndex( srcIdx );
-
-        int toCopy =
-                source._vector.length - iSrcIdx;
-        int copyable =
-                _vector.length - iTgtIdx;
-
-        if ( toCopy == 0 )
-            return this;
-        if ( toCopy < 0 )
-            throw RuntimeX.mIllegalArgument( "toCopy < 0" );
-
-        // Prevent ioob below.
-        if ( copyable < toCopy )
-            throw RuntimeX.mIndexOutOfBounds( _vector.length );
-
-        try
-        {
-            System.arraycopy(
-                    source._vector,
-                    iSrcIdx,
-                    _vector,
-                    iTgtIdx,
-                    toCopy );
-        }
-        catch ( ArrayIndexOutOfBoundsException  e )
-        {
-            throw new InternalError( "Unexpected." );
-        }
-
-        return this;
+        return copyFrom( tgtIdx, source, srcIdx, source.size() );
     }
 
     /**
@@ -381,11 +318,11 @@ public final class Bytevector
             throw RuntimeX.mIllegalArgument( "endIdx < srcIndex" );
 
         int iTgtIdx =
-                assertIndex( tgtIdx );
+                Scut.assertIndex( tgtIdx );
         int iSrcIdx =
-                assertIndex( srcIdx );
+                Scut.assertIndex( srcIdx );
         int iEndIdx =
-                assertIndex( endIdx );
+                Scut.assertMaxIndex( source.size(), endIdx );
 
         int toCopy =
                 iEndIdx - iSrcIdx;
@@ -419,33 +356,31 @@ public final class Bytevector
         return this;
     }
 
-    public static int assertLength( long len ) throws RuntimeX
+    /**
+     * Convert this to a SchemeString.
+     *
+     * @param offset
+     * @param end
+     * @return
+     * @throws RuntimeX
+     */
+    public SchemeString asString( long startIdx, long endIdx )
+            throws RuntimeX
     {
-        if ( len < 0 || len > Integer.MAX_VALUE )
-            throw RuntimeX.mRangeExceeded(
-                    SchemeInteger.createObject( len ),
-                    "[0.." + Integer.MAX_VALUE + "]" );
+        if ( endIdx < startIdx )
+            throw RuntimeX.mIllegalArgument( "end < start" );
+        var length =
+                size();
+        var iStart =
+                Scut.assertMaxIndex( length, startIdx );
+        var iEnd =
+                Scut.assertMaxIndex( length, endIdx );
 
-        return (int)len;
-    }
-
-    public static int assertIndex( long idx ) throws RuntimeX
-    {
-        if ( idx < 0 || idx >= Integer.MAX_VALUE )
-            throw RuntimeX.mRangeExceeded(
-                    SchemeInteger.createObject( idx ),
-                    "[0.." + Integer.MAX_VALUE + "]" );
-
-        return (int)idx;
-    }
-
-    public static byte assertByte( long idx ) throws RuntimeX
-    {
-        if ( idx < 0 || idx > 0xff )
-            throw RuntimeX.mRangeExceeded(
-                    SchemeInteger.createObject( idx ),
-                    "[0..255]" );
-
-        return (byte)(0xff & idx);
+        return SchemeString.make(
+                new String(
+                        _vector,
+                        iStart,
+                        iEnd - iStart,
+                        StandardCharsets.UTF_8 ) );
     }
 }

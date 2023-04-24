@@ -22,6 +22,7 @@ import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Vector;
 import de.michab.scream.frontend.Token.Tk;
+import de.michab.scream.util.Scut;
 
 /**
  * An LL(1) parser for scheme.  Parses the non-terminal {@code <datum>}
@@ -178,7 +179,7 @@ public class SchemeParser
                 throw RuntimeX.mParseExpected( Tk.Integer );
 
             collector.add(
-                    Bytevector.assertByte( token.integerValue() ) );
+                    Scut.assertByte( token.integerValue() ) );
         }
 
         // Consume the End token.

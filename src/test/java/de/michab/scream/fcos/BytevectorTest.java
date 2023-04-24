@@ -97,6 +97,19 @@ public class BytevectorTest extends ScreamBaseTest
     }
 
     @Test
+    public void create_err_RangeExceeded() throws Exception
+    {
+        try
+        {
+            new Bytevector( Integer.MAX_VALUE +1 );
+            fail();
+        }
+        catch (RuntimeX rx) {
+            assertEquals( Code.RANGE_EXCEEDED, rx.getCode() );
+        }
+    }
+
+    @Test
     public void size() throws Exception
     {
         byte[] value = tba( 1, 2, 3, 4, 5 );

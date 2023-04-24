@@ -1,11 +1,14 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
+import java.nio.charset.StandardCharsets;
+
 import de.michab.scream.RuntimeX;
+import de.michab.scream.util.Scut;
 
 /**
  * Represents the scheme string type.  Strings are sequences of characters.
@@ -281,6 +284,26 @@ public class SchemeString
             resultArray[i] = SchemeCharacter.createObject( _value.charAt( i ) );
 
         return Cons.create( resultArray );
+    }
+
+    public Bytevector toBytevector(
+            long startIdx,
+            long endIdx ) throws RuntimeX
+    {
+        if ( endIdx < startIdx )
+            throw RuntimeX.mIllegalArgument( "end < start" );
+        var length =
+                length();
+        var iStart =
+                Scut.assertMaxIndex( length, startIdx );
+        var iEnd =
+                Scut.assertMaxIndex( length, endIdx );
+
+        return new Bytevector(
+                        getValue().substring(
+                                iStart,
+                                iEnd ).getBytes(
+                                        StandardCharsets.UTF_8 ) );
     }
 
     /**

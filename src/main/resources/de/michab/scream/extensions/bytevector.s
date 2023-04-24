@@ -18,9 +18,9 @@
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;
-;; (bytevector? obj) library procedure; 6.9 r7rs 49
-;;
+#|
+ | (bytevector? obj) library procedure; 6.9 r7rs 49
+ |#
 (define bytevector?
   (typePredicateGenerator "de.michab.scream.fcos.Bytevector" #t))
 
@@ -28,9 +28,6 @@
  | (make-bytevector k)
  | (make-bytevector k byte) library procedure; r7rs 6.9 p49
  |#
-
-(define scream:int-max #x7fffffff)
-
 (define (make-bytevector k . byte)
   (if (not (integer? k))
     (error "TYPE_ERROR" k scream:type-integer))
@@ -154,7 +151,7 @@
       ((not (integer? start))
         (error "TYPE_ERROR" scream:type-integer start))
       ((not (integer? end))
-        (error "TYPE_ERROR" scream:type-integer start))
+        (error "TYPE_ERROR" scream:type-integer end))
       (else
         ((object to) (copyFrom at from start end)))))
 
@@ -202,3 +199,82 @@
     (else
       (apply bva_n args))))
 
+#|
+ | (utf8->string bytevector)  procedure; r7rs 6.9 p50
+ | (utf8->string bytevector start)  procedure; r7rs 6.9 p50
+ | (utf8->string bytevector start end)  procedure; r7rs 6.9 p50
+ |#
+(define (utf8->string bv . rest)
+  (if (not (bytevector? bv))
+    (error "TYPE_ERROR" scream:type-bytevector bv))
+
+  (define (bvc!0 bv start end)
+    (cond
+      ((not (integer? start))
+        (error "TYPE_ERROR" scream:type-integer start))
+      ((not (integer? end))
+        (error "TYPE_ERROR" scream:type-integer end))
+      (else
+        ((object bv) (asString start end)))))
+
+  (cond
+    ((null? rest)
+      (bvc!0 
+       bv
+       0
+       (bytevector-length bv)))
+
+    ((= 2 (length rest))
+      (bvc!0
+       bv
+       (car rest)
+       (cadr rest)))
+
+    ((= 1 (length rest))
+      (bvc!0 
+       bv
+       (car rest)
+       (bytevector-length bv)))
+
+    (else
+      (error "TOO_MANY_ARGUMENTS" 3))))
+
+#|
+ | (string->utf8 string)  procedure; r7rs 6.9 p50
+ | (string->utf8 string start)  procedure; r7rs 6.9 p50
+ | (string->utf8 string start end)  procedure; r7rs 6.9 p50
+ |#
+(define (string->utf8 string . rest)
+  (if (not (string? string))
+    (error "TYPE_ERROR" scream:type-string string))
+
+  (define (bvc!0 string start end)
+    (cond
+      ((not (integer? start))
+        (error "TYPE_ERROR" scream:type-integer start))
+      ((not (integer? end))
+        (error "TYPE_ERROR" scream:type-integer end))
+      (else
+        ((object string) (toBytevector start end)))))
+
+  (cond
+    ((null? rest)
+      (bvc!0 
+       string
+       0
+       (string-length string)))
+
+    ((= 2 (length rest))
+      (bvc!0
+       string
+       (car rest)
+       (cadr rest)))
+
+    ((= 1 (length rest))
+      (bvc!0 
+       string
+       (car rest)
+       (string-length string)))
+
+    (else
+      (error "TOO_MANY_ARGUMENTS" 3))))
