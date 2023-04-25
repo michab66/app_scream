@@ -764,10 +764,46 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void memv_1() throws Exception
     {
-        var result = scriptEngine().evalFco( """
+        expectFco( """
                 (memv 101 '(100 101 102))
-                """ );
-        assertEqualq( parse( "(101 102)" ), result );
+                """,
+                "(101 102)" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void list_copy() throws Exception
+    {
+        expectError(
+"""
+        (define a '(1 8 2 8))
+        (set-car! a '3)
+""",
+        Code.CANNOT_MODIFY_CONSTANT );
+
+        expectFco(
+"""
+        (define a '(1 8 2 8))
+        (define b (list-copy a))
+        (set-car! b '3)
+        b
+""",
+        "(3 8 2 8)" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void list_copy_err_type() throws Exception
+    {
+        expectError(
+"""
+        (list-copy 5)
+""",
+        Code.TYPE_ERROR );
     }
 
 }

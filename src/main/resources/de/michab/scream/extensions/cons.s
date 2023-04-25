@@ -3,30 +3,40 @@
 ; Copyright © 1998-2023 Michael G. Binz
 
 ;;
-;; (null? obj)      library procedure; r5rs 26
+;; r7rs 6.4 p40
 ;;
-(define (null? obj)
-  (eqv? () obj))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Scream definitions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Init type name.
+(define scream:type-bytevector
+  ((make-object de.michab.scream.fcos.Cons) TYPE_NAME))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; r7rs definitions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;
-;; (pair? obj)         procedure; r5rs 26
+;; (pair? obj) procedure p41
 ;;
 (define (pair? obj)
   (and
     (not (null? obj))
     ((typePredicateGenerator "de.michab.scream.fcos.Cons" #t) obj)))
 
-
-
 ;;
-;; (cons obj1 obj2)    procedure; r5rs 26
+;; (cons obj1 obj2) procedure p41
 ;;
 (define (cons obj1 obj2)
   (make-object (de.michab.scream.fcos.Cons obj1 obj2)))
 
-
+;;
+;; (null? obj)      library procedure; r5rs 26
+;;
+(define (null? obj)
+  (eqv? () obj))
 
 ;;
 ;; (set-car! pair new-car)       procedure; r5rs 26
@@ -39,8 +49,6 @@
            (%typename pair)
            1)))
 
-
-
 ;;
 ;; (set-cdr! pair new-cdr)       procedure; r5rs 26
 ;;
@@ -51,8 +59,6 @@
            %type-cons
            (%typename pair)
            1)))
-
-
 
 ;;
 ;; (car pair)           procedure; r5rs 26
@@ -106,8 +112,6 @@
 (define (cdddar pair) (cdr (cdr (cdr (car pair)))))
 (define (cddddr pair) (cdr (cdr (cdr (cdr pair)))))
 
-
-
 ;;
 ;; (list? obj) library procedure; r5rs 26
 ;;
@@ -118,15 +122,11 @@
       (pair? obj)
       ((object obj) (isProperList)))))
 
-
-
 ;;
 ;; (list obj ...) library procedure; r5rs 27
 ;;
 (define (list . elements)
   elements)
-
-
 
 ;;
 ;; (length list) library procedure; r5rs 27
@@ -143,8 +143,6 @@
       ((object list) (length)))
     (else
       (error "EXPECTED_PROPER_LIST"))))
-
-
 
 ;;
 ;; (reverse list) library procedure; r7rs 42
@@ -212,8 +210,6 @@
            (%typename list)
            1)))
 
-
-
 ;;
 ;; (list-ref list k) library procedure; r5rs 27
 ;;
@@ -224,9 +220,6 @@
            %type-cons
            (%typename list)
            1)))
-
-
-
 
 ;;
 ;; (memq obj list) library procedure; r5rs 27
@@ -239,8 +232,6 @@
            (%typename list)
            2)))
 
-
-
 ;;
 ;; (memv obj list) library procedure; r5rs 27
 ;;
@@ -252,8 +243,6 @@
            (%typename list)
            2)))
 
-
-
 ;;
 ;; (member obj list) library procedure; r5rs 27
 ;;
@@ -264,8 +253,6 @@
            %type-cons
            (%typename list)
            2)))
-
-
 
 ;;
 ;; (assq obj alist) library procedure; r5rs 27
@@ -301,3 +288,12 @@
            %type-cons
            (%typename alist)
            2)))
+
+#|
+ | (list-copy obj) procedure r7rs 6.4 p43
+ |#
+(define (list-copy list)
+  (if (null? list)
+      '()
+      (cons (car list)
+            (list-copy (cdr list)))))
