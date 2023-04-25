@@ -253,6 +253,10 @@ public class SchemeParser
         case Char:
             return SchemeCharacter.createObject( token.characterValue() );
 
+        case DatumComment:
+            parseDatum();
+            return parseDatum();
+
         case Symbol:
             return Symbol.createObject( token.stringValue() );
 

@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamException;
 import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
@@ -20,7 +21,7 @@ import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.Vector;
 import de.michab.scream.frontend.SchemeParser;
 
-public class SchemeParserTest
+public class SchemeParserTest extends ScreamBaseTest
 {
     @Test
     public void parseArrayEmpty() throws ScreamException
@@ -132,5 +133,20 @@ public class SchemeParserTest
             // Unexpected end of input.
             assertEquals( Code.PARSE_EXPECTED, e.getId() );
         }
+    }
+
+    @Test
+    public void datumComment() throws RuntimeX
+    {
+        expectFco(
+"""
+            (+
+              (+ 1 1)
+              (+ 2 2)
+              #; (+ 3 3)
+              (+ 4 4)
+            )
+""",
+            i(14) );
     }
 }
