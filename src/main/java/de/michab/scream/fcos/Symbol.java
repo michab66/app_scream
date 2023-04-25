@@ -54,7 +54,7 @@ extends FirstClassObject
     private Symbol( String name )
     {
         _name = name;
-        setConstant( true );
+        setConstant();
     }
 
     @Override

@@ -311,7 +311,7 @@ public abstract class FirstClassObject
     T setConstant( T fco )
     {
         if ( Cons.NIL != fco )
-            fco.setConstant( true );
+            fco.setConstant();
         return fco;
     }
 
@@ -325,13 +325,19 @@ public abstract class FirstClassObject
      *         state of the {@code FirstClassObject} from constant to
      *         variable.
      */
-    void setConstant( boolean what )
+    @Deprecated
+    private void setConstant( boolean what )
     {
         if ( _isConstant && !what )
             throw new IllegalArgumentException(
                     "Constant->variable change not allowed." );
 
         _isConstant = what;
+    }
+    public FirstClassObject setConstant()
+    {
+        _isConstant = true;
+        return this;
     }
 
     /**

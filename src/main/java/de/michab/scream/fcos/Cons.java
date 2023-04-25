@@ -672,11 +672,11 @@ public class Cons
      * @param what The new value for the constantness.
      */
     @Override
-    void setConstant( boolean what )
+    public FirstClassObject setConstant()
     {
-        super.setConstant( what );
-        setConstant( _car, what );
-        setConstant( _cdr, what );
+        setConstant( _car );
+        setConstant( _cdr );
+        return super.setConstant();
     }
 
     private static class Iterator_ implements java.util.Iterator<FirstClassObject>

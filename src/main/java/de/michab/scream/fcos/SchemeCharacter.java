@@ -55,7 +55,7 @@ public class SchemeCharacter
     private SchemeCharacter( char value )
     {
         _character = value;
-        setConstant( true );
+        setConstant();
     }
 
     /**

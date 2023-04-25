@@ -220,10 +220,10 @@ public abstract class Port<T extends Closeable>
     @Override
     // Garbage collection:  We need to track the constantness
     // to prevent a close of non-closable ports.
-    final void setConstant( boolean what )
+    public final FirstClassObject setConstant()
     {
-        super.setConstant( what );
+        _state._isConstant = true;
 
-        _state._isConstant = what;
+        return super.setConstant();
     }
 }
