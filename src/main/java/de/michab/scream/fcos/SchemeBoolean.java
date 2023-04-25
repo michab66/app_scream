@@ -55,7 +55,7 @@ public class SchemeBoolean
      */
     private SchemeBoolean()
     {
-        setConstant( true );
+        setConstant();
     }
 
     /**

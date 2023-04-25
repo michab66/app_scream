@@ -490,7 +490,7 @@ public class SchemeObject
             return SchemeCharacter.createObject( ((java.lang.Character)object).charValue() );
 
         if ( object instanceof String )
-            return new SchemeString( (String)object );
+            return SchemeString.make( (String)object );
 
         if ( object instanceof java.lang.Boolean )
             return SchemeBoolean.createObject( ((java.lang.Boolean)object).booleanValue() );

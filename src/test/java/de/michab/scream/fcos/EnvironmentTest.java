@@ -80,7 +80,7 @@ public class EnvironmentTest extends ScreamBaseTest
         var environment = new Environment( "test-environment" );
 
         assertFalse( environment.isConstant() );
-        environment.setConstant( true );
+        environment.setConstant();
         assertTrue( environment.isConstant() );
     }
 

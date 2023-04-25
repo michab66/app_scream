@@ -64,10 +64,8 @@ extends FirstClassObject
     Number( boolean isExact )
     {
         _isExact = isExact;
-        setConstant( true );
+        setConstant();
     }
-
-
 
     /**
      * Default constructor.  Since this is an abstract class this is only
@@ -77,8 +75,6 @@ extends FirstClassObject
     {
         this( false );
     }
-
-
 
     /**
      * Returns this number's value as long.

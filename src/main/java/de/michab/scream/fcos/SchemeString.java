@@ -119,10 +119,8 @@ public class SchemeString
      *
      * @param s A prototype string for the new object.
      * @param constant Defines whether the created string represents a constant.
-     * @deprecated Use one of make() or makeEscaped().
      */
-    @Deprecated
-    public SchemeString( String s, boolean constant )
+    private SchemeString( String s, boolean constant )
     {
         // TODO(MB) We are not symmetric currently with the toString method.
         // We should accept here a valid Scheme string literal like
@@ -130,7 +128,8 @@ public class SchemeString
         _value = new StringBuilder( s );
         replaceAll( _value, "\\n", "\n" );
         replaceAll( _value, "\\\"", "\"" );
-        setConstant( constant );
+        if ( constant )
+            setConstant();
     }
 
     /**
@@ -216,7 +215,7 @@ public class SchemeString
 
         try
         {
-            return new SchemeString( crtValue.substring( start, end ) );
+            return SchemeString.make( crtValue.substring( start, end ) );
         }
         catch ( StringIndexOutOfBoundsException e )
         {
