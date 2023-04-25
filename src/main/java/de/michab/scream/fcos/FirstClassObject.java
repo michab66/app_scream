@@ -198,6 +198,7 @@ public abstract class FirstClassObject
      *         object passed in.
      */
     public static FirstClassObject copy( FirstClassObject fco )
+            throws RuntimeX
     {
         if ( fco == Cons.NIL )
             return Cons.NIL;
@@ -206,13 +207,12 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Copy this scheme object.  The default implementation returns identity which
-     * can be used if the object cannot be modified.  Otherwise this need to be
-     * overridden.
+     * Copy this scheme object.  The default implementation returns identity.
      *
      * @return A copy of the object.
      */
-    protected FirstClassObject copy()
+    public FirstClassObject copy()
+            throws RuntimeX
     {
         return this;
     }

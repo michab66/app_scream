@@ -497,10 +497,15 @@ public class Cons
 
     /**
      * @return A recursive copy of this list.
+     * @throws RuntimeX
      */
     @Override
     public Cons copy()
+            throws RuntimeX
     {
+        if ( isCircular() )
+            throw RuntimeX.mIllegalArgument( "circular list" );
+
         return new Cons(
                 copy( _car ),
                 copy( _cdr ) );
