@@ -108,6 +108,10 @@ public class Procedure
     public final Thunk apply( Environment e, Cons args, Cont<FirstClassObject> c  )
             throws RuntimeX
     {
-        return _execute( e, args, c );
+        // Do not evaluate the arguments.
+        return _executeImpl(
+                _closure,
+                args,
+                c );
     }
 }

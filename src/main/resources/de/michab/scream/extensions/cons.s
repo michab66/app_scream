@@ -11,8 +11,18 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Init type name.
-(define scream:type-bytevector
+(define scream:type-cons
   ((make-object de.michab.scream.fcos.Cons) TYPE_NAME))
+
+(define (circular? list)
+  (cond
+    ((null? list)
+      #f)
+    ((not (pair? list))
+      (error "TYPE_ERROR" scream:type-cons list))
+    (else
+      ((object list) (isCircular))))) 
+ 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
@@ -21,10 +31,8 @@
 ;;
 ;; (pair? obj) procedure p41
 ;;
-(define (pair? obj)
-  (and
-    (not (null? obj))
-    ((typePredicateGenerator "de.michab.scream.fcos.Cons" #t) obj)))
+(define pair?
+  (typePredicateGenerator "de.michab.scream.fcos.Cons" #t))
 
 ;;
 ;; (cons obj1 obj2) procedure p41
