@@ -28,7 +28,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     {
         expectFco(
                 "(procedure? car)",
-                SchemeBoolean.T );
+                bTrue );
     }
 
     /**
@@ -39,7 +39,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     {
         expectFco(
                 "(procedure? 'car)",
-                SchemeBoolean.F );
+                bFalse );
     }
 
     /**
@@ -48,11 +48,11 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void procedureq_3() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (procedure? (lambda(x) (* x x)))
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+            """,
+            bTrue );
     }
 
     /**
@@ -61,11 +61,11 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void procedureq_4() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (procedure? '(lambda(x) (* x x)))
-            """ );
-        assertEquals( SchemeBoolean.F, result );
+            """,
+            bFalse );
     }
 
     /**
@@ -74,11 +74,11 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void procedureq_5() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        expectFco(
             """
             (call-with-current-continuation procedure?)
-            """ );
-        assertEquals( SchemeBoolean.T, result );
+            """,
+            bTrue );
     }
 
     /**
@@ -87,13 +87,11 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void apply_r7rs_1() throws Exception
     {
-        var se = scriptEngine();
-
-        var result = se.evalFco(
+        expectFco(
             """
             (apply + (list 3 4))
-            """ );
-        assertEquals( i(7), result );
+            """,
+            i(7) );
     }
 
     /**
@@ -102,9 +100,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void apply_r7rs_2() throws Exception
     {
-        var se = scriptEngine();
-
-        var result = se.evalFco(
+        expectFco(
             """
             (define compose
               (lambda (f g)
@@ -112,8 +108,8 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
                   (f (apply g args)))))
             ; The original example uses sqrt.
             ((compose - *) 12 75)
-            """ );
-        assertEquals( i(-900), result );
+            """,
+            i(-900) );
     }
 
     @Test
@@ -133,6 +129,14 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     }
 
     @Test
+    public void apply_3() throws Exception
+    {
+        expectFco(
+                "(apply cadr '((a b)))",
+                s("b") );
+    }
+
+    @Test
     public void apply_err_2() throws Exception
     {
         // Last argument wrong.
@@ -148,6 +152,37 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
         expectError(
                 "(apply 1 300 10 '(2 1))",
                 Code.TYPE_ERROR );
+    }
+
+    /**
+     * p51
+     */
+    @Test
+    public void map_1() throws Exception
+    {
+        expectFco(
+                "(map cadr '((a b)(d e)(g h)))",
+                parse( "(b e h)" ) );
+    }
+    /**
+     * p51
+     */
+    @Test
+    public void map_2() throws Exception
+    {
+        expectFco(
+                "(map (lambda (n) (expt n n))  '(1 2 3 4 5))",
+                parse( "(1 4 27 256 3125)" ) );
+    }
+    /**
+     * p51
+     */
+    @Test
+    public void map_3() throws Exception
+    {
+        expectFco(
+                "(map + '(1 2 3) '(4 5 6 7))",
+                parse( "(5 7 9)" ) );
     }
 
     /**

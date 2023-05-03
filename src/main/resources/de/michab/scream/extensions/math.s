@@ -209,7 +209,7 @@
 
 (define round ())
 (define sqrt ())
-(define expt ())
+(define expt-float ())
 
 ;;
 ;; Open a special scope to keep the java.lang.Math instance in the local
@@ -294,13 +294,28 @@
   ;;
   (set! sqrt (lambda (x) (math (sqrt x))))
 
-  ;;
-  ;; expt - procedure - r5rs p. 24
-  ;;
-  (set! expt (lambda (x y) (math (pow (to-float x) (to-float y)))))
+  (set! expt-float (lambda (x y) (math (pow (to-float x) (to-float y)))))
 )
 
 
+(define (expt-int x y)
+  (define (_expt-int x y)
+    (if (eqv? y 1)
+      x
+      (* x (_expt-int x (- y 1)))))
+
+  (cond 
+    ((< y 0) (error "RANGE_EXCEEDED" y "y >= 0"))
+    ((= y 0) 1)
+    (else (_expt-int x y))))
+    
+#|
+ | (expt z1 z2) procedure; r7rs 6.2.6 p38
+ |#
+(define (expt x y)
+  (if (and (integer? x) (integer? y))
+    (expt-int x y)
+    (expt-float x y)))
 
 ;;
 ;; truncate - procedure - r5rs p. 23
