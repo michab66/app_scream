@@ -168,6 +168,16 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p51
      */
     @Test
+    public void map_2() throws Exception
+    {
+        expectFco(
+                "(map (lambda (n) (expt n n))  '(1 2 3 4 5))",
+                parse( "(1 4 27 256 3125)" ) );
+    }
+    /**
+     * p51
+     */
+    @Test
     public void map_3() throws Exception
     {
         expectFco(
