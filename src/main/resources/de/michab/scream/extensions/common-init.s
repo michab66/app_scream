@@ -9,6 +9,7 @@
  "basic.s"
  "bytevector.s"
  "quasiquote.s"
+ "case-lambda.s"
  "symbol.s"
  "boolean.s"
  "math.s"
