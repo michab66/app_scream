@@ -314,6 +314,15 @@ public class RuntimeXTest extends ScreamBaseTest
                 314L );
     }
     @Test
+    public void _14_wrongNumberOfArguments1() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mWrongNumberOfArguments( 313 ),
+                Code.WRONG_NUMBER_OF_ARGUMENTS,
+                14,
+                313L );
+    }
+    @Test
     public void _14_wrongNumberOfArguments2() throws Exception
     {
         validateMessageAndType(

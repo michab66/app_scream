@@ -391,6 +391,14 @@ extends ScreamException
                 received );
     }
 
+    //    # arg 0: Number of received parameters
+    public static RuntimeX mWrongNumberOfArguments( long received )
+    {
+        return new RuntimeX(
+                Code.WRONG_NUMBER_OF_ARGUMENTS,
+                received );
+    }
+
     //    # arg 0: Number of expected parameters
     //    # arg 1: Number of received parameters
     //    #

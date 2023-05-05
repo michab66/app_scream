@@ -367,7 +367,7 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
      * p50
      */
     @Test
-    public void bytevector_string_to_utf8() throws Exception
+    public void bytevector_utf8_to_string() throws Exception
     {
         expectFco(
 """
@@ -381,7 +381,7 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
      * p50
      */
     @Test
-    public void bytevector_utf8_to_string() throws Exception
+    public void bytevector_string_to_utf8() throws Exception
     {
         expectFco(
 """
