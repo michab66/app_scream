@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
+import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
 import javax.swing.AbstractAction;
@@ -34,6 +35,7 @@ import org.smack.swing.swingx.MultiSplitLayout.Split;
 import org.smack.util.JavaUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
+import org.smack.util.TimeProbe;
 
 import de.michab.scream.Scream;
 import de.michab.scream.fcos.Cons;
@@ -45,10 +47,12 @@ import de.michab.scream.fcos.Cons;
  */
 public class ScreamUi extends SingleFrameApplication
 {
+    private final static Logger LOG =
+            Logger.getLogger( ScreamUi.class.getName() );
+
     private JToolBar _toolbar =
             new JToolBar();
-    private ScriptEngine _scream =
-            new Scream().getScriptEngine();
+    private final ScriptEngine _scream;
     private final JTextArea _textArea =
             new JTextArea();
     private final JXConsole _console =
@@ -57,6 +61,14 @@ public class ScreamUi extends SingleFrameApplication
             new JXConsole();
     private final JXConsole _stdoin =
             new JXConsole();
+
+    public ScreamUi()
+    {
+        TimeProbe tp = new TimeProbe().start();
+        _scream = new Scream().getScriptEngine();
+        tp.stop();
+        LOG.warning( "Startup: " + tp.toString() );
+    }
 
     private void performExec( String text )
     {
