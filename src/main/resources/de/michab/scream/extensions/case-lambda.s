@@ -2,31 +2,14 @@
 ;
 ; Copyright © 2023 Michael G. Binz
 
-;;
-;; r7rs 4.2.9 p21
-;;
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Scream definitions.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #|
-(define range
-  (case-lambda
-    ((e) (range 0 e))
-    ((b e) (do ((r '() (cons e r))
-                (e (- e 1) (- e 1)))
-               ((< e b) r)))))
-
-(range 3) =⇒ (0 1 2)
-(range 3 5) =⇒ (3 4)
-|#
-
+ | (case-lambda <clause> ...) case-lambda library syntax, r7rs 4.2.9 p21
+ |#
 (%syntax (case-lambda clause . clauses)
   (define clauses (cons clause clauses))
 
@@ -55,14 +38,14 @@
         (define found (assv length a-list))
         (if found
           (apply (cadr found) args)
-          (error "WRONG_NUMBER_OF_ARGUMENTS" 313 length))
+          (error "WRONG_NUMBER_OF_ARGUMENTS" length))
     )
   )
 
   (scream:eval (create-lambda))
 )
 
-#|
+#| Generated code.
 
 (define range 
 
@@ -87,25 +70,17 @@
     ; a-list = ((1 lambda1) (2 lambda))
 
     (define length (length args))
-    (display "length: ")(display length)(newline)
 
     (define found (assv length a-list))
-;    (display "found: ")(display found)(newline)
-;    (display "         : ")(display (cadr found))(newline)
 
     (if found
       (apply (cadr found) args)
-      (error "WRONG_NUMBER_OF_ARGUMENTS" 313 length))
+      (error "WRONG_NUMBER_OF_ARGUMENTS" length))
   )
 ) ; define range 
 
 ; (range 3)
 ; (range 3 5)
 ; (range 3 5 6) => error
-
-(define (range-test b e)
-  (do ((r '() (cons e r))
-        (e (- e 1) (- e 1)))
-       ((< e b) r)))
 
 |#

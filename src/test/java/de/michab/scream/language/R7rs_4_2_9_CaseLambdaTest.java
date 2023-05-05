@@ -5,10 +5,15 @@
  */
 package de.michab.scream.language;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
+import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 
 public class R7rs_4_2_9_CaseLambdaTest extends ScreamBaseTest
@@ -46,6 +51,16 @@ public class R7rs_4_2_9_CaseLambdaTest extends ScreamBaseTest
         {
             var result = se.evalFco( "(range 1 2 3)" );
             assertEqualq( i(6), result );
+        }
+        try
+        {
+            se.evalFco( "(range 1 2 3 4)" );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.WRONG_NUMBER_OF_ARGUMENTS, rx.getCode() );
+            assertEquals( "4", rx.getArgument( 0 ) );
         }
     }
 }
