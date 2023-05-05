@@ -204,77 +204,64 @@
  | (utf8->string bytevector start)  procedure; r7rs 6.9 p50
  | (utf8->string bytevector start end)  procedure; r7rs 6.9 p50
  |#
-(define (utf8->string bv . rest)
-  (if (not (bytevector? bv))
-    (error "TYPE_ERROR" scream:type-bytevector bv))
+(define utf8->string
+  (case-lambda
 
-  (define (bvc!0 bv start end)
-    (cond
-      ((not (integer? start))
-        (error "TYPE_ERROR" scream:type-integer start))
-      ((not (integer? end))
-        (error "TYPE_ERROR" scream:type-integer end))
-      (else
-        ((object bv) (asString start end)))))
+    ((bv)
+      (utf8->string
+        bv
+        0
+        (bytevector-length bv)))
 
-  (cond
-    ((null? rest)
-      (bvc!0 
-       bv
-       0
-       (bytevector-length bv)))
+    ((bv start)
+      (utf8->string
+        bv
+        start
+        (bytevector-length bv)))
 
-    ((= 2 (length rest))
-      (bvc!0
-       bv
-       (car rest)
-       (cadr rest)))
-
-    ((= 1 (length rest))
-      (bvc!0 
-       bv
-       (car rest)
-       (bytevector-length bv)))
-
-    (else
-      (error "TOO_MANY_ARGUMENTS" 3))))
+    ((bv start end)
+      (cond
+        ((not (bytevector? bv))
+          (error "TYPE_ERROR" scream:type-bytevector bv))
+        ((not (integer? start))
+          (error "TYPE_ERROR" scream:type-integer start))
+        ((not (integer? end))
+          (error "TYPE_ERROR" scream:type-integer end))
+        (else
+          ((object bv) (asString start end)))))
+  )
+)
 
 #|
  | (string->utf8 string)  procedure; r7rs 6.9 p50
  | (string->utf8 string start)  procedure; r7rs 6.9 p50
  | (string->utf8 string start end)  procedure; r7rs 6.9 p50
  |#
-(define (string->utf8 string . rest)
-  (if (not (string? string))
-    (error "TYPE_ERROR" scream:type-string string))
+(define string->utf8
 
-  (define (bvc!0 string start end)
-    (cond
-      ((not (integer? start))
-        (error "TYPE_ERROR" scream:type-integer start))
-      ((not (integer? end))
-        (error "TYPE_ERROR" scream:type-integer end))
-      (else
-        ((object string) (toBytevector start end)))))
+  (case-lambda
+  
+    ((string)
+     (string->utf8
+         string
+         0
+         (string-length string)))
+  
+    ((string start)
+      (string->utf8
+        string
+        start
+        (string-length string)))
 
-  (cond
-    ((null? rest)
-      (bvc!0 
-       string
-       0
-       (string-length string)))
-
-    ((= 2 (length rest))
-      (bvc!0
-       string
-       (car rest)
-       (cadr rest)))
-
-    ((= 1 (length rest))
-      (bvc!0 
-       string
-       (car rest)
-       (string-length string)))
-
-    (else
-      (error "TOO_MANY_ARGUMENTS" 3))))
+    ((string start end)
+     (cond
+       ((not (string? string))
+         (error "TYPE_ERROR" scream:type-string string))
+       ((not (integer? start))
+         (error "TYPE_ERROR" scream:type-integer start))
+       ((not (integer? end))
+         (error "TYPE_ERROR" scream:type-integer end))
+       (else
+         ((object string) (toBytevector start end)))))
+  )
+)

@@ -7,7 +7,6 @@
 ; Perform common runtime initialisation.
 (include
  "basic.s"
- "bytevector.s"
  "quasiquote.s"
  "case-lambda.s"
  "symbol.s"
@@ -19,4 +18,5 @@
  "string.s"
  "procedure.s"
  "object.s"
+ "bytevector.s"
  "cleanup.s")
