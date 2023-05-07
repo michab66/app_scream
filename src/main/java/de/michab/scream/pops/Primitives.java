@@ -227,6 +227,85 @@ public class Primitives
     }
 
     /**
+     * Last phase of do iteration binding.
+     *
+     * @param e The environment receiving the bindings.
+     * @param toBind The bindings to perform.
+     * @param c The continuation receiving finally the environment
+     * that contains the rebound bindings.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
+    private static Thunk _bindDoFinish(
+            Environment e,
+            Cons toBind,
+            Cont<Environment> c )
+                    throws RuntimeX
+    {
+        if ( Cons.NIL == toBind )
+            return c.accept( e );
+
+        Cons current =
+                Scut.as( Cons.class, toBind.getCar() );
+        Symbol variable =
+                Scut.as( Symbol.class, current.getCar() );
+        FirstClassObject value =
+                current.getCdr();
+
+        e.assign(
+                variable,
+                value );
+
+        return _bindDoFinish(
+                e,
+                Scut.as( Cons.class, toBind.getCdr() ),
+                c );
+    }
+
+    /**
+     * Performs the iteration step bindings of a do expression.
+     *
+     * @param e The environment finally receiving the results.
+     * @param bindings The list of bindings to process.
+     * Format is like {@code ((<variable1> <init1>) ...)}.
+     * @param temporaryBound A list of (symbol, value) pairs holding
+     * the evaluation results.
+     * @param c A continuation that receives the extended environment.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
+    private static Thunk _bindDo(
+            Environment e,
+            Cons bindings,
+            Cons temporaryBound,
+            Cont<Environment> c )
+                    throws RuntimeX
+    {
+        if ( bindings == Cons.NIL )
+            return _bindDoFinish( e, temporaryBound, c );
+
+        Cons current =
+                Scut.as( Cons.class, bindings.getCar() );
+        Symbol variable =
+                Scut.as( Symbol.class, current.listRef(0) );
+        FirstClassObject init =
+                current.listRef(1);
+
+        Cont<FirstClassObject> evalResult = fco -> {
+            return _bindDo(
+                    e,
+                    (Cons)bindings.getCdr(),
+                    new Cons( new Cons( variable, fco ), temporaryBound ),
+                    c );
+        };
+
+        return _x_eval(
+                e,
+                init,
+                evalResult );
+    }
+
+    /**
      * Performs variable binding for the {@code let...} syntax.
      *
      * @param e The environment used to evaluate the {@code <init>} expressions.
@@ -498,10 +577,10 @@ public class Primitives
                         c );
 
         Cont<FirstClassObject> loopInit =
-                unused -> _bindLet(
-                        e,
+                unused -> _bindDo(
                         e,
                         steps,
+                        Cons.NIL,
                         restart );
 
         // Process the command list.
