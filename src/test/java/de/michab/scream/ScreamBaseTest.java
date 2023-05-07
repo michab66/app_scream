@@ -88,20 +88,40 @@ public class ScreamBaseTest
      * Evaluate a script and check whether the result is
      * (equal? ...) to a given value.
      *
+     * @param result The evaluator to use.
      * @param script The script to execute.
      * @param expected The expected result.  This may be Cons.NIL.
      * @return The script engine used in the test.
+     */
+    protected ScreamEvaluator expectFco(
+            ScreamEvaluator result,
+            String script,
+            FirstClassObject expected )
+                    throws RuntimeX
+    {
+        assertEqualq(
+                expected,
+                result.evalFco( script ) );
+        return result;
+    }
+
+    /**
+     * Evaluate a script and check whether the result is
+     * (equal? ...) to a given value.
+     *
+     * @param script The script to execute.
+     * @param expected The expected result.  This may be Cons.NIL.
+     * @return The script engine created and used in the test.
      */
     protected ScreamEvaluator expectFco(
             String script,
             FirstClassObject expected )
                     throws RuntimeX
     {
-        var result = scriptEngine();
-        assertEqualq(
-                expected,
-                result.evalFco( script ) );
-        return result;
+        return expectFco(
+                scriptEngine(),
+                script,
+                expected );
     }
 
     /**

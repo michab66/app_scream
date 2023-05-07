@@ -63,4 +63,24 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
             """,
             i(25) );
     }
+
+    /**
+     * #186
+     */
+    @Test
+    public void do_186() throws Exception
+    {
+        var se = scriptEngine();
+
+        expectFco(
+            se,
+            """
+(define (range-test b e)
+  (do ((r '() (cons e r))
+        (e (- e 1) (- e 1)))
+       ((< e b) r)))
+(range-test 3 5)
+            """,
+            parse( "(3 4)" ) );
+    }
 }
