@@ -6,17 +6,18 @@
 
 ; Perform common runtime initialisation.
 (include
- "basic.s"
- "quasiquote.s"
- "case-lambda.s"
- "symbol.s"
- "boolean.s"
- "math.s"
- "cons.s"
- "vector.s"
- "char.s"
- "string.s"
- "procedure.s"
- "object.s"
- "bytevector.s"
- "cleanup.s")
+  "basic.s"
+  "cons.s"
+  "vector.s"
+  "delayed.s"
+  "quasiquote.s"
+  "case-lambda.s"
+  "symbol.s"
+  "boolean.s"
+  "math.s"
+  "char.s"
+  "string.s"
+  "procedure.s"
+  "object.s"
+  "bytevector.s"
+)
