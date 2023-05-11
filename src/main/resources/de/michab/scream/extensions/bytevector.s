@@ -14,6 +14,10 @@
 (define scream:type-bytevector
   ((make-object de.michab.scream.fcos.Bytevector) TYPE_NAME))
 
+(define (scream:delay-op promise)
+  (lambda args
+    (apply (force promise) args)))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -88,85 +92,68 @@
  | (bytevector-copy bytevector start)  procedure; r7rs 6.9 p50
  | (bytevector-copy bytevector start end)  procedure; r7rs 6.9 p50
  |#
-(define (bytevector-copy bytevector . rest)
+(define bytevector-copy
 
-  (define (bvc0 bv)
-    ((object bv) (copy)))
+  (scream:delay-op (delay ; -->
 
-  (define (bvc1 bv start)
-    (cond
-      ((not (integer? start))
-        (error "TYPE_ERROR" scream:type-integer start))
-      (else
-        ((object bv) (copy start)))))
+  (case-lambda
 
-  (define (bvc2 bv start end)
-    (cond
-      ((not (integer? start))
-        (error "TYPE_ERROR" scream:type-integer start))
-      ((not (integer? end))
-        (error "TYPE_ERROR" scream:type-integer start))
-      (else
-        ((object bv) (copy start end)))))
+    ((bytevector)
+      (bytevector-copy bytevector 0 (bytevector-length bytevector)))
 
-  (if (not (bytevector? bytevector))
-    (error "TYPE_ERROR" scream:type-bytevector bytevector)
+    ((bytevector start)
+      (bytevector-copy bytevector start (bytevector-length bytevector)))
 
-    (cond
-      ((null? rest)
-        (bvc0 bytevector))
+    ((bytevector start end)
+      (cond
+        ((not (bytevector? bytevector))
+          (error "TYPE_ERROR" scream:type-bytevector bytevector))
+        ((not (integer? start))
+          (error "TYPE_ERROR" scream:type-integer start))
+        ((not (integer? end))
+          (error "TYPE_ERROR" scream:type-integer start))
+        (else
+          ((object bytevector) (copy start end)))))
 
-      ((= 2 (length rest))
-        (bvc2 bytevector (car rest) (cadr rest)))
+  ) ; case-lambda
 
-      ((= 1 (length rest))
-        (bvc1 bytevector (car rest)))
-
-      (else
-        (error "TOO_MANY_ARGUMENTS" 3)))))
+  )) ; <--
+)    
 
 #|
  | (bytevector-copy! to at from)  procedure; r7rs 6.9 p50
  | (bytevector-copy! to at from start)  procedure; r7rs 6.9 p50
  | (bytevector-copy! to at from start end)  procedure; r7rs 6.9 p50
  |#
-(define (bytevector-copy! to at from . rest)
-  (if (not (bytevector? to))
-    (error "TYPE_ERROR" scream:type-bytevector to))
-  (if (not (bytevector? from))
-    (error "TYPE_ERROR" scream:type-bytevector from))
+(define bytevector-copy!
 
-  (define (bvc!0 to at from)
-    ((object to) (copyFrom at from)))
+  (scream:delay-op (delay ; -->
 
-  (define (bvc!1 to at from start)
-    (cond
-      ((not (integer? start))
-        (error "TYPE_ERROR" scream:type-integer start))
-      (else
-        ((object to) (copyFrom at from start)))))
+  (case-lambda
 
-  (define (bvc!2 to at from start end)
-    (cond
-      ((not (integer? start))
-        (error "TYPE_ERROR" scream:type-integer start))
-      ((not (integer? end))
-        (error "TYPE_ERROR" scream:type-integer end))
-      (else
-        ((object to) (copyFrom at from start end)))))
+    ((to at from)
+      (bytevector-copy! to at from 0 (bytevector-length from)))
 
-  (cond
-    ((null? rest)
-      (bvc!0 to at from))
+    ((to at from start)
+      (bytevector-copy! to at from start (bytevector-length from)))
 
-    ((= 2 (length rest))
-      (bvc!2 to at from (car rest) (cadr rest)))
+    ((to at from start end)
+      (cond
+        ((not (bytevector? to))
+          (error "TYPE_ERROR" scream:type-bytevector to))
+        ((not (bytevector? from))
+          (error "TYPE_ERROR" scream:type-bytevector from))
+        ((not (integer? start))
+          (error "TYPE_ERROR" scream:type-integer start))
+        ((not (integer? end))
+          (error "TYPE_ERROR" scream:type-integer end))
+        (else
+          ((object to) (copyFrom at from start end)))))
+  ) ; case-lambda
 
-    ((= 1 (length rest))
-      (bvc!1 to at from (car rest)))
+  )) ; <--
 
-    (else
-      (error "TOO_MANY_ARGUMENTS" 3))))
+)
 
 #|
  | (bytevector-append bytevector ...)  procedure; r7rs 6.9 p50
@@ -205,6 +192,8 @@
  | (utf8->string bytevector start end)  procedure; r7rs 6.9 p50
  |#
 (define utf8->string
+  (scream:delay-op (delay ; -->
+
   (case-lambda
 
     ((bv)
@@ -230,6 +219,7 @@
         (else
           ((object bv) (asString start end)))))
   )
+  )) ; <--
 )
 
 #|
@@ -239,29 +229,30 @@
  |#
 (define string->utf8
 
-  (case-lambda
+  (scream:delay-op (delay ; -->
+    (case-lambda
   
-    ((string)
-     (string->utf8
-         string
-         0
-         (string-length string)))
+      ((string)
+        (string->utf8
+           string
+           0
+           (string-length string)))
   
-    ((string start)
-      (string->utf8
-        string
-        start
-        (string-length string)))
+      ((string start)
+        (string->utf8
+          string
+          start
+          (string-length string)))
 
-    ((string start end)
-     (cond
-       ((not (string? string))
-         (error "TYPE_ERROR" scream:type-string string))
-       ((not (integer? start))
-         (error "TYPE_ERROR" scream:type-integer start))
-       ((not (integer? end))
-         (error "TYPE_ERROR" scream:type-integer end))
-       (else
-         ((object string) (toBytevector start end)))))
-  )
+      ((string start end)
+       (cond
+         ((not (string? string))
+           (error "TYPE_ERROR" scream:type-string string))
+         ((not (integer? start))
+           (error "TYPE_ERROR" scream:type-integer start))
+         ((not (integer? end))
+           (error "TYPE_ERROR" scream:type-integer end))
+         (else
+           ((object string) (toBytevector start end))))))
+  )) ; <--
 )

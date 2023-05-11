@@ -213,7 +213,7 @@ public final class Bytevector
     }
 
     /**
-     * Append a this with another bytevector into a newly allocated bytevector.
+     * Append this with another bytevector into a newly allocated bytevector.
      *
      * @param other The bytevector to append.
      * @return The new bytevector.
@@ -233,7 +233,9 @@ public final class Bytevector
                         _vector.length + other._vector.length ) );
         return result.copyFrom(
                 _vector.length,
-                other );
+                other,
+                0,
+                other.size() );
     }
 
     @Override
@@ -241,10 +243,7 @@ public final class Bytevector
     {
         return new Bytevector( _vector );
     }
-    public Bytevector copy( long start ) throws RuntimeX
-    {
-        return copy( start, _vector.length );
-    }
+
     /**
      *
      * @param start
@@ -263,35 +262,6 @@ public final class Bytevector
 
         return new Bytevector(
                 Arrays.copyOfRange( _vector, iStart, iTo ) );
-    }
-
-    /**
-     * Copies the content from source into this bytevector to startIdx.
-     *
-     * @param source Source bytevector.
-     * @param tgtIdx Target index.
-     * @return This.
-     * @throws RuntimeX If this is constant or the data does not fit.
-     */
-    public Bytevector copyFrom( long tgtIdx, Bytevector source  )
-            throws RuntimeX
-    {
-        return copyFrom( tgtIdx, source, 0, source.size() );
-    }
-
-    /**
-     * Copies the content from source into this bytevector to startIdx.
-     *
-     * @param source Source bytevector.
-     * @param tgtIdx Target index.
-     * @param srcIdx The start index in the source vector.
-     * @return This.
-     * @throws RuntimeX If this is constant or the data does not fit.
-     */
-    public Bytevector copyFrom( long tgtIdx, Bytevector source, long srcIdx )
-            throws RuntimeX
-    {
-        return copyFrom( tgtIdx, source, srcIdx, source.size() );
     }
 
     /**
