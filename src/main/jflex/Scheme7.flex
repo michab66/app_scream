@@ -12,7 +12,7 @@ package de.michab.scream.frontend;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.frontend.Token.Tk;
-import de.michab.scream.ScreamException.Code;
+import de.michab.scream.RuntimeX.Code;
 
 %%
 

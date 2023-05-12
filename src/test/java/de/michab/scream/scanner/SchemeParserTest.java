@@ -13,9 +13,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.Vector;
@@ -24,7 +23,7 @@ import de.michab.scream.frontend.SchemeParser;
 public class SchemeParserTest extends ScreamBaseTest
 {
     @Test
-    public void parseArrayEmpty() throws ScreamException
+    public void parseArrayEmpty() throws Exception
     {
         var o = new SchemeParser( "#()" ).getExpression();
         Vector a = (Vector)o;
@@ -32,7 +31,7 @@ public class SchemeParserTest extends ScreamBaseTest
     }
 
     @Test
-    public void parseArray() throws ScreamException
+    public void parseArray() throws Exception
     {
         var o = new SchemeParser( "#(1 2 3)" ).getExpression();
         Vector a = (Vector)o;
@@ -40,14 +39,14 @@ public class SchemeParserTest extends ScreamBaseTest
     }
 
     @Test
-    public void parseListEmpty() throws ScreamException
+    public void parseListEmpty() throws Exception
     {
         var o = new SchemeParser( "()" ).getExpression();
         assertEquals( Cons.NIL, o );
     }
 
     @Test
-    public void parseListProper1() throws ScreamException
+    public void parseListProper1() throws Exception
     {
         var o = new SchemeParser( "(a . (b . (c . (d . (e . ())))))" ).getExpression();
         Cons cons = (Cons)o;
@@ -57,7 +56,7 @@ public class SchemeParserTest extends ScreamBaseTest
     }
 
     @Test
-    public void parseListProper2() throws ScreamException
+    public void parseListProper2() throws Exception
     {
         var o = new SchemeParser( "(3 1 3)" ).getExpression();
         Cons cons = (Cons)o;
@@ -70,7 +69,7 @@ public class SchemeParserTest extends ScreamBaseTest
     }
 
     @Test
-    public void parseListNotProper() throws ScreamException
+    public void parseListNotProper() throws Exception
     {
         var o = new SchemeParser( "(3 1 . 3)" ).getExpression();
         Cons cons = (Cons)o;
@@ -90,7 +89,7 @@ public class SchemeParserTest extends ScreamBaseTest
         catch( RuntimeX e )
         {
             assertEquals(
-                    ScreamException.Code.PARSE_UNEXPECTED_EOF,
+                    Code.PARSE_UNEXPECTED_EOF,
                     e.getCode() );
         }
     }
@@ -107,7 +106,7 @@ public class SchemeParserTest extends ScreamBaseTest
         catch( RuntimeX e )
         {
             assertEquals(
-                    ScreamException.Code.PARSE_UNEXPECTED,
+                    Code.PARSE_UNEXPECTED,
                     e.getCode() );
         }
     }

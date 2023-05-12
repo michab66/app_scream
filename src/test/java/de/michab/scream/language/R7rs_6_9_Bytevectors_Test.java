@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException.Code;
 
 /**
  * rsr7 6.9 Bytevectors, p50

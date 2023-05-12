@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Operation;
 

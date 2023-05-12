@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException.Code;
 
 /**
  * r7rs 4.2.2 Binding constructs, p16

@@ -11,9 +11,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException;
-import de.michab.scream.ScreamException.Code;
 
 public class VectorTest extends ScreamBaseTest
 {
@@ -42,15 +41,15 @@ public class VectorTest extends ScreamBaseTest
             v.get( size );
             fail();
         }
-        catch ( ScreamException e ) {
-            assertEquals( Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
+        catch ( RuntimeX e ) {
+            assertEquals( RuntimeX.Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
         }
         try {
             v.set( size, Cons.NIL );
             fail();
         }
-        catch ( ScreamException e ) {
-            assertEquals( Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
+        catch ( RuntimeX e ) {
+            assertEquals( RuntimeX.Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
         }
     }
 

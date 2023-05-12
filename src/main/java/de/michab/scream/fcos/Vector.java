@@ -8,7 +8,6 @@ package de.michab.scream.fcos;
 import java.util.Arrays;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.ScreamException.Code;
 
 /**
  * Vectors are heterogeneous structures whose elements are indexed by integers.
@@ -129,7 +128,7 @@ public class Vector
         }
         catch ( IndexOutOfBoundsException e )
         {
-            throw new RuntimeX( Code.INDEX_OUT_OF_BOUNDS, "" + idx );
+            throw RuntimeX.mIndexOutOfBounds( idx );
         }
     }
 

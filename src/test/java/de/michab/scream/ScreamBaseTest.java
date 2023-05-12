@@ -16,7 +16,7 @@ import java.util.function.Function;
 
 import org.smack.util.FunctionalUtil.ConsumerTX;
 
-import de.michab.scream.ScreamException.Code;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;

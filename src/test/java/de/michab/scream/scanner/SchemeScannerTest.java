@@ -13,7 +13,7 @@ import java.io.StringReader;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.ScreamException.Code;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.frontend.SchemeScanner7;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;

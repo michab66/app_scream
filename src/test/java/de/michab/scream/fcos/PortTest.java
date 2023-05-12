@@ -20,8 +20,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException.Code;
 
 public class PortTest extends ScreamBaseTest
 {

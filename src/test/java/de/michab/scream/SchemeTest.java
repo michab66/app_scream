@@ -19,7 +19,7 @@ import javax.script.ScriptException;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.ScreamException.Code;
+import de.michab.scream.RuntimeX.Code;
 
 public class SchemeTest extends ScreamBaseTest
 {
@@ -35,8 +35,8 @@ public class SchemeTest extends ScreamBaseTest
         }
         catch ( ScriptException e )
         {
-            assertInstanceOf( ScreamException.class, e.getCause() );
-            ScreamException sex = (ScreamException)e.getCause();
+            assertInstanceOf( RuntimeX.class, e.getCause() );
+            RuntimeX sex = (RuntimeX)e.getCause();
             // TYPE_ERROR
             assertEquals( Code.TYPE_ERROR, sex.getCode() );
         }

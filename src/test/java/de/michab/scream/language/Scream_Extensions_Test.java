@@ -1,15 +1,15 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.language;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException.Code;
 
 /**
  * scream extensions

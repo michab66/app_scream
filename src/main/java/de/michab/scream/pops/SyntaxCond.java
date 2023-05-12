@@ -7,7 +7,6 @@ package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -41,16 +40,14 @@ public class SyntaxCond extends Syntax
         {
             var fco = arg.getCar();
             if ( ! (fco instanceof Cons) )
-                throw new RuntimeX( Code.BAD_CLAUSE,
-                        toString( fco ) );
+                throw RuntimeX.mBadClause( fco );
             Cons clause = Scut.as( Cons.class, fco);
 
             // TODO unexpected ELSE message.
             if ( eqv( ELSE, clause.getCar() ) )
             {
                 if ( Cons.NIL != arg.getCdr() )
-                    throw new RuntimeX( Code.BAD_CLAUSE,
-                            toString( fco ) );
+                    throw RuntimeX.mBadClause( fco );
                 clause.setCar( SchemeBoolean.T );
             }
         }

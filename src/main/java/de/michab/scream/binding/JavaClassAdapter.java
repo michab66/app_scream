@@ -18,7 +18,6 @@ import java.util.logging.Logger;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.ScreamException.Code;
 
 /**
  * This class encapsulates information for a Java class.  This is read from the
@@ -268,7 +267,7 @@ public class JavaClassAdapter
             throws RuntimeX
     {
         if ( ! Proxy.isProxyClass( _clazz ) )
-            throw new RuntimeX( Code.NO_PROXY, _clazz.getName() );
+            throw RuntimeX.mNoProxy( _clazz.getName() );
 
         Constructor<?> c = null;
         try
@@ -283,15 +282,15 @@ public class JavaClassAdapter
         }
         catch ( NoSuchMethodException e )
         {
-            throw new RuntimeX( Code.PROXY_CANNOT_INSTANTIATE, _clazz.getName() );
+            throw RuntimeX.mProxyCannotInstantiate( _clazz.getName() );
         }
         catch ( IllegalAccessException e )
         {
-            throw new RuntimeX( Code.ILLEGAL_ACCESS, _clazz.getName() );
+            throw RuntimeX.mIllegalAccess( _clazz.getName() );
         }
         catch ( InstantiationException e )
         {
-            throw new RuntimeX( Code.PROXY_CANNOT_INSTANTIATE, _clazz.getName() );
+            throw RuntimeX.mProxyCannotInstantiate( _clazz.getName() );
         }
     }
 
@@ -317,7 +316,7 @@ public class JavaClassAdapter
     }
 
     /**
-     * Returns the filtered set of methods accessable from Scream.
+     * Returns the filtered set of methods accessible from Scream.
      *
      * @return The filtered set of methods accessible from Scream.
      * @see java.lang.Class#getMethods
@@ -355,7 +354,7 @@ public class JavaClassAdapter
         }
         catch ( NoSuchFieldException e )
         {
-            throw new RuntimeX( Code.FIELD_NOT_FOUND, name );
+            throw RuntimeX.mFieldNotFound( name );
         }
     }
 

@@ -15,7 +15,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.ScreamException.Code;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeDouble;
@@ -27,26 +27,26 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void internalError() throws Exception
     {
-        var se = new RuntimeX( ScreamException.Code.INTERNAL_ERROR.name() );
+        var se = new RuntimeX( Code.INTERNAL_ERROR.name() );
 
         assertEquals(
                 -1,
                 se.getId() );
         assertEquals(
-                ScreamException.Code.INTERNAL_ERROR,
+                Code.INTERNAL_ERROR,
                 se.getCode() );
     }
 
     @Test
     public void _16_badBinding() throws Exception
     {
-        var se = new RuntimeX( ScreamException.Code.BAD_BINDING.name(), "a1", "a2" );
+        var se = new RuntimeX( Code.BAD_BINDING.name(), "a1", "a2" );
 
         assertEquals(
-                ScreamException.Code.BAD_BINDING.id(),
+                Code.BAD_BINDING.id(),
                 se.getId() );
         assertEquals(
-                ScreamException.Code.BAD_BINDING,
+                Code.BAD_BINDING,
                 se.getCode() );
 
         assertTrue( se.getMessage().contains( "a1" ) );
@@ -59,6 +59,14 @@ public class RuntimeXTest extends ScreamBaseTest
         var rx = new RuntimeX( "duck" );
         assertEquals( Code.ERROR, rx.getCode() );
         assertEquals( "35 : duck", rx.getMessage() );
+    }
+
+    @Test
+    public void unknownName() throws Exception
+    {
+            var sex = new RuntimeX( ".UNKNOWN", 1, 2, 3 );
+            assertEquals( Code.ERROR, sex.getCode() );
+            assertEquals( "35 : .UNKNOWN 1 2 3", sex.getMessage() );
     }
 
 //    @Test
