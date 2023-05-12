@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -57,32 +56,11 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void unknownCode() throws Exception
     {
-        try
-        {
-            new RuntimeX( "duck" );
-            fail();
-        }
-        catch ( IllegalArgumentException e )
-        {
-            assertTrue( e.getMessage().contains( "duck" ) );
-        }
+        var rx = new RuntimeX( "duck" );
+        assertEquals( Code.ERROR, rx.getCode() );
+        assertEquals( "35 : duck", rx.getMessage() );
     }
 
-
-//    @Test
-//    public void unknownName() throws Exception
-//    {
-//        try
-//        {
-//            new ScreamException( ".UNKNOWN" );
-//            fail();
-//        }
-//        catch ( RuntimeException e )
-//        {
-//            assertEquals( e.getMessage(), "Unknown ScreamException name='.UNKNOWN'" );
-//        }
-//    }
-//
 //    @Test
 //    public void nameInternal() throws Exception
 //    {
@@ -454,6 +432,17 @@ public class RuntimeXTest extends ScreamBaseTest
                 what );
     }
     @Test
+    public void _27_methodNotFound2() throws Exception
+    {
+        var what = "what";
+
+        validateMessageAndType(
+                RuntimeX.mMethodNotFound( what, Cons.create( i1, i2 ) ),
+                Code.METHOD_NOT_FOUND,
+                27,
+                "what(1 2)" );
+    }
+    @Test
     public void _28_illegalAccess1() throws Exception
     {
         var what = "what";
@@ -537,6 +526,14 @@ public class RuntimeXTest extends ScreamBaseTest
                 1,
                 2,
                 what );
+    }
+    @Test
+    public void _35_error() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mError(),
+                Code.ERROR,
+                35 );
     }
     @Test
     public void _36_parseExpected1() throws Exception

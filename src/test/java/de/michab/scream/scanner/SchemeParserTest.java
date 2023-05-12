@@ -130,8 +130,9 @@ public class SchemeParserTest extends ScreamBaseTest
         }
         catch( RuntimeX e )
         {
+            // TODO remove try catch.  This is never executed.
             // Unexpected end of input.
-            assertEquals( Code.PARSE_EXPECTED, e.getId() );
+            assertEquals( Code.PARSE_EXPECTED, e.getCode() );
         }
     }
 

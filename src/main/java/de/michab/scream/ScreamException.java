@@ -6,11 +6,13 @@
 package de.michab.scream;
 
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.smack.util.CachedHolder;
 import org.smack.util.JavaUtil;
-import org.smack.util.StringUtil;
 
 import de.michab.scream.fcos.Symbol;
 
@@ -28,16 +30,11 @@ import de.michab.scream.fcos.Symbol;
  * In case the passed message is not found in the resource bundle, the original
  * message is printed with a question mark prepended.
  *
- * <p>One of the design goals of this exception is to be lightweight in the
- * sense that instantiation does not imply high overhead.  Accesses to the
- * resource bundle occur only if either the message itself or the numeric
- * message id are requested from a {@code RuntimeX} instance.
- *
  * @author Michael Binz
  */
 @SuppressWarnings("serial")
 public class ScreamException
-extends Exception
+    extends Exception
 {
     public enum Code
     {
@@ -77,6 +74,7 @@ extends Exception
         ILLEGAL_ARGUMENT,
         SCAN_UNBALANCED_QUOTE,
         SCAN_UNEXPECTED_CHAR,
+        ERROR,
         PARSE_EXPECTED,
         PARSE_UNEXPECTED_EOF,
         PARSE_UNEXPECTED,
@@ -105,9 +103,56 @@ extends Exception
 
                 for ( var c : Code.values() )
                     result.put( c.toString(), c );
-                return result;
+                return Collections.unmodifiableMap( result );
             });
 
+    private final CachedHolder<String> _message =
+            new CachedHolder<String>( this::makeMessage );
+
+    /**
+     * Creates a scream exception.
+     *
+     * @param msg The message that will be used as a key into Scream's error
+     * message resource bundle. This must be neither null nor a blank string.
+     * @param args The arguments to be formatted into the message.
+     * @throws IllegalArgumentException In case the passed message was blank.
+     * @throws NullPointerException In case the passed message was
+     * @{code null}.
+     */
+    @Deprecated
+    ScreamException( String msg, Object ... args )
+    {
+        super( Objects.requireNonNull( msg ) );
+
+        // Ensure that we received a non-empty message.
+        if ( msg.isBlank() )
+            throw new IllegalArgumentException( "Empty message." );
+
+        _code =
+                getCode( msg );
+        _errorArguments =
+                args == null ?
+                    new String[0] :
+                    args;
+    }
+
+    ScreamException( Code c, Object ... args )
+    {
+        super( Objects.requireNonNull( c ).toString() );
+        _code = c;
+        _errorArguments =
+                args == null ?
+                    new String[0] :
+                    args;
+    }
+
+    /**
+     * Get an error code for the passed name.
+     *
+     * @param name An error name.
+     * @return If the name does not match one of the well-defined codes a default code of
+     * Code.ERROR is returned, otherwise the respective error code.
+     */
     private static Code getCode( String name )
     {
         var result = nameToCode.get( name );
@@ -115,33 +160,10 @@ extends Exception
         if ( result != null )
             return result;
 
-        throw new IllegalArgumentException( "Unknown ScreamException name='" + name + "'" );
+        return Code.ERROR;
     }
 
     private final Code _code;
-
-    /**
-     * Delimits the error id from the message.
-     */
-    private final static char ID_DELIMITER = ':';
-
-    /**
-     * The actual error message.  Initialized only by an access to the message
-     * accessor or error id.
-     */
-    private String _errorMessage = null;
-
-    /**
-     * The error id.  Initialized only by an access to the message accessor or
-     * error id.  -2 initial value is returned if error id resolution failed.
-     */
-    private int _errorId = -2;
-
-    /**
-     * Specifies whether the error message and id have been initialized from
-     * the resource bundle file.
-     */
-    private boolean _lazyInitDone = false;
 
     /**
      * A reference to the arguments to be formatted into the error message.
@@ -168,8 +190,6 @@ extends Exception
     }
 
     /**
-     * Read the symbolic name of the operation that reported the exception.
-     *
      * @return The symbolic name of the operation that reported the exception.
      * @see ScreamException#setOperationName
      */
@@ -188,20 +208,11 @@ extends Exception
     }
 
     /**
-     * Get a numeric error id.  In case there was a misconfiguration in the
-     * resource bundle -2 is returned.
-     *
      * @return The numeric error id.
      */
     public int getId()
     {
-        if ( ! _lazyInitDone )
-        {
-            _lazyInitDone = true;
-            initialise();
-        }
-
-        return _errorId;
+        return _code.id();
     }
 
     public Code getCode()
@@ -217,85 +228,42 @@ extends Exception
     @Override
     public String getMessage()
     {
-        if ( ! _lazyInitDone )
-        {
-            _lazyInitDone = true;
-            initialise();
-        }
-
-        return _errorMessage;
+        return _message.get();
     }
 
-    /**
-     * Initialize the _errorMessage and _errorId attributes.
-     */
-    private void initialise()
+    private String makeMessage()
     {
         // Get the original message.  Note that this can neither be null nor
         // the empty string.  See invariant in constructor.
-        String message = super.getMessage();
-        // Append the number of arguments to the message key.
-        if ( _errorArguments != null  && _errorArguments.length > 0 )
-            message += "_" + _errorArguments.length;
+        String messageId = super.getMessage();
 
-        message = ErrorMessages.map.get( message );
-        // Use the message string as the resource key to get the ultimate message.
-        //        message = Localiser.localise( _errorBundle, message, message );
-        //        if ( ! message.equals( tmp ) )
-        //            System.out.println( "warn scream x" );
-
-        // Return the message with the arguments formatted in.
-        _errorMessage = MessageFormat.format( message, _errorArguments );
-
-
-        // Now get the error id from the message.
-        int colonIdx = _errorMessage.indexOf( ID_DELIMITER );
-        if ( colonIdx == -1 )
-            // No error id specified.
-            return;
-
-        try
+        if ( _errorArguments.length > 0 )
         {
-            _errorId = Integer.parseInt(
-                    _errorMessage.substring( 0, colonIdx ).trim() );
+            // Append the number of arguments to the message key.
+            String messageKey =
+                    messageId +
+                    "_" +
+                    _errorArguments.length;
+
+            var result = ErrorMessages.map.get( messageKey );
+
+            if ( result != null )
+                return getId() + " : " + MessageFormat.format(
+                    result,
+                    _errorArguments );
         }
-        catch ( NumberFormatException e )
+
+        StringBuilder result =
+                ErrorMessages.map.containsKey( messageId ) ?
+                        new StringBuilder( ErrorMessages.map.get( messageId ) ) :
+                        new StringBuilder( messageId );
+
+        for ( var c : _errorArguments )
         {
-            // Do nothing.  _errorId defaults to error code.
+            result.append( " " );
+            result.append( c );
         }
-    }
 
-    /**
-     * Creates a scream exception.
-     *
-     * @param msg The message that will be used as a key into Scream's error
-     * message resource bundle.
-     * @param args The arguments to be formatted into the message.
-     * @exception IllegalArgumentException In case the passed message was
-     * either @{code null} or the empty string.
-     */
-    @Deprecated
-    protected ScreamException( String msg, Object ... args )
-    {
-        super( msg );
-
-        // Ensure that we received a valid non-null and non-empty message.
-        if ( StringUtil.isEmpty( msg ) )
-            throw new IllegalArgumentException( "ScreamException: Invalid message." );
-
-        _code =
-                getCode( msg );
-        _errorArguments =
-                args;
-    }
-
-    protected ScreamException( Code c )
-    {
-        this( c.toString() );
-    }
-
-    protected ScreamException( Code c, Object ... arguments )
-    {
-        this( c.toString(), arguments );
+        return getId() + " : " + result.toString();
     }
 }

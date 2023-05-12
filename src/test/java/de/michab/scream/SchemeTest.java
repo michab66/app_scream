@@ -39,7 +39,6 @@ public class SchemeTest extends ScreamBaseTest
             ScreamException sex = (ScreamException)e.getCause();
             // TYPE_ERROR
             assertEquals( Code.TYPE_ERROR, sex.getCode() );
-            assertEquals( 11, sex.getId() );
         }
     }
 

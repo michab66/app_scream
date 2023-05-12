@@ -616,6 +616,16 @@ extends ScreamException
                 Code.SCAN_UNBALANCED_QUOTE );
     }
 
+    //    SCAN_UNBALANCED_QUOTE_2 = \
+    //    33 : Unbalanced quote found at line {0}, column {1}.
+    public static RuntimeX mScanUnbalancedQuote( int line, int column )
+    {
+        return new RuntimeX(
+                Code.SCAN_UNBALANCED_QUOTE,
+                line,
+                column );
+    }
+
     //    SCAN_UNEXPECTED_CHAR_3 = \
     //    34 : Unexpected character ''{2}'' found at line {0}, column {1}.
     public static RuntimeX mScanUnexpectedCharacter( int line, int col, String character )
@@ -627,14 +637,12 @@ extends ScreamException
                 character );
     }
 
-    //    SCAN_UNBALANCED_QUOTE_2 = \
-    //    33 : Unbalanced quote found at line {0}, column {1}.
-    public static RuntimeX mScanUnbalancedQuote( int line, int column )
+    //    ERROR = \
+    //    Error.
+    public static RuntimeX mError()
     {
         return new RuntimeX(
-                Code.SCAN_UNBALANCED_QUOTE,
-                line,
-                column );
+                Code.ERROR );
     }
 
     //    # The parser didn't receive an expected token.
