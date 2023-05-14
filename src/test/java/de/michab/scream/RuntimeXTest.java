@@ -47,11 +47,10 @@ public class RuntimeXTest extends ScreamBaseTest
         // tests the fallback to BAD_BINDING.
         assertFalse(
                 ErrorMessages.map.containsKey( Code.BAD_BINDING.toString() )
-        )
-        ;
+        );
+
         var se = new RuntimeX( Code.BAD_BINDING, "unknown" );
 
-        System.out.println( se.getMessage() );
         assertEquals(
                 Code.BAD_BINDING.id(),
                 se.getId() );

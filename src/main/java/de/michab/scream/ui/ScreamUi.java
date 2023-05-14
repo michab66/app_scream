@@ -7,13 +7,13 @@ package de.michab.scream.ui;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
 import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
+import javax.script.ScriptException;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -50,6 +50,8 @@ public class ScreamUi extends SingleFrameApplication
     private final static Logger LOG =
             Logger.getLogger( ScreamUi.class.getName() );
 
+    private final TimeProbe _startupTp =
+            new TimeProbe( "Startup:" );
     private JToolBar _toolbar =
             new JToolBar();
     private final ScriptEngine _scream;
@@ -62,12 +64,27 @@ public class ScreamUi extends SingleFrameApplication
     private final JXConsole _stdoin =
             new JXConsole();
 
+    private final OutputStreamWriter _consoleWriter =
+            new OutputStreamWriter( _console.getOut() );
+
     public ScreamUi()
     {
-        TimeProbe tp = new TimeProbe().start();
+        _startupTp.start();
         _scream = new Scream().getScriptEngine();
-        tp.stop();
-        LOG.warning( "Startup: " + tp.toString() );
+        _startupTp.stop();
+    }
+
+    private void writeConsole( String message )
+    {
+        try
+        {
+            _consoleWriter.write( message + StringUtil.EOL );
+            _consoleWriter.flush();
+        }
+        catch ( Exception e )
+        {
+            throw new InternalError( "Unexpected: " + e );
+        }
     }
 
     private void performExec( String text )
@@ -87,18 +104,13 @@ public class ScreamUi extends SingleFrameApplication
 
             w.flush();
         }
+        catch ( ScriptException e )
+        {
+            writeConsole( e.getCause().getMessage() );
+        }
         catch ( Exception e )
         {
-            try
-            {
-                e.printStackTrace();
-                _console.getOut().write( e.getMessage().getBytes() );
-                _console.getOut().write( StringUtil.EOL.getBytes() );
-            }
-            catch ( IOException e1 )
-            {
-                throw new InternalError( "unexpected" );
-            }
+            writeConsole( e.toString() );
         }
     }
 
@@ -121,6 +133,12 @@ public class ScreamUi extends SingleFrameApplication
     }
 
     @Override
+    protected void ready()
+    {
+        writeConsole( _startupTp.toString() );
+    }
+
+    @Override
     protected void initialize( String[] args )
     {
         {
@@ -130,9 +148,7 @@ public class ScreamUi extends SingleFrameApplication
         }
 
         System.setErr( new PrintStream(_stderr.getOut() ) );
-        System.err.print( "@console:err" + StringUtil.EOL );
         System.setOut( new PrintStream(_stdoin.getOut() ) );
-        System.out.print( "@console:in-out" + StringUtil.EOL );
     }
 
     @Override
