@@ -7,7 +7,6 @@ package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -41,13 +40,13 @@ public class SyntaxSyntax extends Syntax
                 Cons.class,
                 args.listRef( 0 ),
                 s-> {
-                    throw new RuntimeX( Code.SYNTAX_ERROR );
+                    throw RuntimeX.mSyntaxError();
                 } );
         Symbol name = Scut.as(
                 Symbol.class,
                 signature.listRef( 0 ),
                 s -> {
-                    throw new RuntimeX( Code.DEFINE_ERROR );
+                    throw RuntimeX.mDefineError();
                 } );
         FirstClassObject parameterList =
                 signature.getCdr();

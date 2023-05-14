@@ -14,9 +14,8 @@ import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.SchemeInteger;
@@ -61,7 +60,7 @@ public class ScutTest extends ScreamBaseTest
             Scut.as( SchemeInteger.class, fco );
             fail();
         }
-        catch ( ScreamException e )
+        catch ( RuntimeX e )
         {
             assertEquals( Code.TYPE_ERROR, e.getCode() );
             // Check for format error.
@@ -81,7 +80,7 @@ public class ScutTest extends ScreamBaseTest
                     (s) -> { throw RuntimeX.mDuplicateElement( s ); } );
             fail();
         }
-        catch ( ScreamException e )
+        catch ( RuntimeX e )
         {
             assertEquals( Code.DUPLICATE_ELEMENT, e.getCode() );
             // Check for format error.

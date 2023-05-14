@@ -15,9 +15,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.frontend.SchemeParser;
 
 public class ConsTest extends ScreamBaseTest
@@ -175,7 +174,7 @@ public class ConsTest extends ScreamBaseTest
         }
         catch ( RuntimeX e )
         {
-            assertEquals( ScreamException.Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
+            assertEquals( Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
         }
     }
 

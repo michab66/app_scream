@@ -7,8 +7,8 @@ package de.michab.scream.language;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.SchemeBoolean;
 
 /**

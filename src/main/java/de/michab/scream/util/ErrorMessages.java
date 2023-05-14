@@ -3,7 +3,7 @@
  *
  * Copyright © 1998-2022 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.util;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,10 +15,10 @@ import org.smack.util.resource.ResourceMap;
 /**
  * The error messages.
  */
-class ErrorMessages
+public class ErrorMessages
 {
     /**
-     * The raw vendor id to vendor name mappings.
+     * The error id to message mappings.
      */
     public final static Map<String, String> map = JavaUtil.make( () -> {
         ResourceMap rm = ResourceMap.getResourceMap( ErrorMessages.class );
@@ -29,17 +29,7 @@ class ErrorMessages
         HashMap<String, String> n = new HashMap<>();
 
         for ( var c : rm.keySet() )
-        {
-            try
-            {
-                n.put( c, rm.get( c ) );
-            }
-            catch ( NumberFormatException e )
-            {
-                // Skip qualified names.
-                continue;
-            }
-        }
+            n.put( c, rm.get( c ) );
 
         return Collections.unmodifiableMap( n );
     });

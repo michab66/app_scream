@@ -17,9 +17,8 @@ import java.nio.charset.StandardCharsets;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException;
-import de.michab.scream.ScreamException.Code;
 
 public class SchemeStringTest
 {
@@ -112,9 +111,9 @@ public class SchemeStringTest
             s.getCharAt( L );
             fail();
         }
-        catch ( ScreamException e )
+        catch ( RuntimeX e )
         {
-            assertEquals( ScreamException.Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
+            assertEquals( RuntimeX.Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
         }
 
         var j = s.toJava();

@@ -705,7 +705,7 @@ public final class ScreamEvaluator implements ScriptEngine
 //                return null;
 //            return result.toJava();
         }
-        catch ( ScreamException e )
+        catch ( RuntimeX e )
         {
             throw new ScriptException( e );
         }

@@ -11,9 +11,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
-import de.michab.scream.ScreamException.Code;
 import de.michab.scream.fcos.Cons;
 
 public class R7rs_4_2_9_CaseLambdaTest extends ScreamBaseTest

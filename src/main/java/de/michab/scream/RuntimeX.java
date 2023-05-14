@@ -7,7 +7,13 @@ package de.michab.scream;
 
 import java.io.IOException;
 import java.lang.reflect.Executable;
+import java.text.MessageFormat;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+
+import org.smack.util.CachedHolder;
 
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
@@ -15,64 +21,180 @@ import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeString;
+import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.ErrorMessages;
 
 /**
- * An exception to be thrown at run-time of a Scheme program.  This type of
- * exception gets transformed to a user error message.
+ * An exception to be thrown at run-time of a Scheme program.
+ *
+ * The Exception message is set by the constructor to either
+ * <p>
+ *  * a Code element in stringified form. In this case the
+ *  Code-member is the the passed code.
+ * <p>
+ *  * a string passed into the constructor. The code element
+ *  is then set to {@link Code#ERROR}.
+ * <p>
+ * Message generation:
+ * <p>
+ * If error arguments are set, the number of error arguments
+ * is appended to the message (e.g. MESSAGE_2) and the resulting
+ * key is looked up in the error messages property file. If found
+ * the message is resolved using MessageFormat#format using the message
+ * arguments and returned.  If MessageFormat#format throws an exception
+ * this is not catched.
+ * <p>
+ *
+ * If the above did not result in a message, then a second lookup
+ * into the error message property file is performed using the
+ * plain message (e.g. MESSAGE).  If the key exists, then the
+ * error arguments are appended as space-delimited string to the
+ * resolved value and returned.
+ * <p>
+ *
+ * If the above did not result in a message the plain error message
+ * is used and the arror arguments are appended as space-delimited
+ * strings and returned.
  *
  * @author Michael Binz
  */
 @SuppressWarnings("serial")
 public class RuntimeX
-extends ScreamException
+    extends Exception
 {
     /**
-     * Create an error message with parameters.
-     *
-     * @param msg The access key into the error message resource bundle.
-     * @param args The arguments to be formatted into the error message.
-     * @deprecated
+     * The message code.
      */
-    @Deprecated
+    private final Code _code;
+
+    /**
+     * A reference to the arguments to be formatted into the error message.
+     * This is never {@code null}.
+     */
+    private final Object[] _errorArguments;
+
+    /**
+     * The name of the operation where the exception occurred.
+     */
+    private Symbol _operationName = null;
+
+    /**
+     * Predefined error codes.
+     */
+    public enum Code
+    {
+        INTERNAL_ERROR,
+        NOT_IMPLEMENTED,
+        SYMBOL_NOT_DEFINED,
+        SYMBOL_NOT_ASSIGNABLE,
+        TOO_MANY_SUBEXPRESSIONS,
+        SYNTAX_ERROR,
+        DEFINE_ERROR,
+        EXPECTED_PROPER_LIST,
+        INDEX_OUT_OF_BOUNDS,
+        CALLED_NON_PROCEDURAL,
+        INVALID_ASSOC_LIST,
+        CAR_FAILED,
+        TYPE_ERROR,
+        NOT_ENOUGH_ARGUMENTS,
+        TOO_MANY_ARGUMENTS,
+        WRONG_NUMBER_OF_ARGUMENTS,
+        REQUIRES_EQUIVALENT_CONS_LEN,
+        BAD_BINDING,
+        BAD_CLAUSE,
+        DIVISION_BY_ZERO,
+        PORT_CLOSED,
+        EXPECTED_INPUT_PORT,
+        EXPECTED_OUTPUT_PORT,
+        IO_ERROR,
+        DUPLICATE_FORMAL,
+        INVALID_FORMALS,
+        CLASS_NOT_FOUND,
+        FIELD_NOT_FOUND,
+        METHOD_NOT_FOUND,
+        ILLEGAL_ACCESS,
+        INVOCATION_EXCEPTION,
+        CANNOT_ACCESS_INSTANCE,
+        CREATION_FAILED,
+        ILLEGAL_ARGUMENT,
+        SCAN_UNBALANCED_QUOTE,
+        SCAN_UNEXPECTED_CHAR,
+        ERROR,
+        PARSE_EXPECTED,
+        PARSE_UNEXPECTED_EOF,
+        PARSE_UNEXPECTED,
+        INTERRUPTED,
+        CANNOT_MODIFY_CONSTANT,
+        NO_PROXY,
+        PROXY_CANNOT_INSTANTIATE,
+        TEST_FAILED,
+        ONLY_IN_QUASIQUOTE_CONTEXT,
+        RADIX_NOT_SUPPORTED,
+        DUPLICATE_ELEMENT,
+        EXPECTED_BINARY_PORT,
+        EXPECTED_TEXTUAL_PORT,
+        SCAN_UNBALANCED_COMMENT,
+        RANGE_EXCEEDED;
+
+        public int id()
+        {
+            return ordinal() -1;
+        }
+    }
+
+    private static final CachedHolder<Map<String,Code>>
+    _nameToCode =
+        new CachedHolder<Map<String,Code>>(
+            () -> {
+                var result = new HashMap<String, Code>();
+
+                for ( var c : Code.values() )
+                    result.put( c.toString(), c );
+                return Collections.unmodifiableMap( result );
+            }
+    );
+
+    private final CachedHolder<String> _message =
+            new CachedHolder<String>( this::makeMessage );
+
+    /**
+     * Creates a Scream exception.
+     *
+     * @param msg The message that will be used as a key into Scream's error
+     * message properties. This must be neither null nor a blank string.
+     * If this is not a stringified element of the Code-enumeration, the
+     * Code-member is set to {@link Code#ERROR}.
+     * @param args The arguments to be formatted into the message.
+     * @throws IllegalArgumentException In case the passed message was blank.
+     * @throws NullPointerException In case the passed message was
+     * @{code null}.
+     */
     public RuntimeX( String msg, Object ... args )
     {
-        super( msg, args );
+        super( Objects.requireNonNull( msg ) );
+
+        if ( msg.isBlank() )
+            throw new IllegalArgumentException( "Empty message." );
+
+        _code =
+                getCode( msg );
+        _errorArguments =
+                args == null ?
+                    new String[0] :
+                    args;
     }
 
-    /**
-     * Create an error message with parameters.
-     *
-     * @param msg The access key into the error message resource bundle.
-     * @deprecated
-     */
-    @Deprecated
-    public RuntimeX( String msg )
+    public RuntimeX( Code c, Object ... args )
     {
-        super( msg );
-    }
-
-    /**
-     * Create an error message with parameters.
-     *
-     * @param msg The access key into the error message resource bundle.
-     * @param args The arguments to be formatted into the error message.
-     */
-    public RuntimeX( Code msg, Object ... args )
-    {
-        super( msg, args );
-    }
-
-    /**
-     * Create an error message with parameters.
-     *
-     * @param msg The access key into the error message resource bundle.
-     */
-    public RuntimeX( Code msg )
-    {
-        super( msg );
+        super( Objects.requireNonNull( c ).toString() );
+        _code = c;
+        _errorArguments =
+                args == null ?
+                    new String[0] :
+                    args;
     }
 
     public RuntimeX addCause( Throwable cause )
@@ -81,27 +203,122 @@ extends ScreamException
         return this;
     }
 
-    //    /**
-    //     * (%error-catch expression)
-    //     */
-    //    static private Syntax errorCatchSyntax = new Syntax( "%error-catch" )
-    //    {
-    //        @Override
-    //        public FirstClassObject activate( Environment parent, FirstClassObject[] args )
-    //                throws RuntimeX
-    //        {
-    //            checkArgumentCount( 1, args );
-    //
-    //            try
-    //            {
-    //                return FirstClassObject.evaluate( args[0], parent );
-    //            }
-    //            catch ( RuntimeX e )
-    //            {
-    //                return SchemeInteger.createObject( e.getId() );
-    //            }
-    //        }
-    //    };
+    /**
+     * Get an error code for the passed name.
+     *
+     * @param name An error name.
+     * @return If the name does not match one of the well-defined codes a default code of
+     * Code.ERROR is returned, otherwise the respective error code.
+     */
+    private static Code getCode( String name )
+    {
+        var result = _nameToCode.get().get( name );
+
+        if ( result != null )
+            return result;
+
+        return Code.ERROR;
+    }
+
+    /**
+     * Sets the name of the throwing operation.  Note that this is only set once
+     * and locked.  Further calls to set do <i>not</i> change the operation name
+     * set by the first call to this method.
+     *
+     * @param operation The name of the throwing operation.
+     * @see ScreamException#getOperationName
+     */
+    public void setOperationName( Symbol operation )
+    {
+        if ( _operationName == null )
+            _operationName = operation;
+    }
+
+    /**
+     * @return The symbolic name of the operation that reported the exception.
+     * @see ScreamException#setOperationName
+     */
+    public Symbol getOperationName()
+    {
+        return _operationName;
+    }
+
+    /**
+     * @return Never {@code null}.
+     */
+    public Object[] getArguments()
+    {
+        return _errorArguments;
+    }
+    public Object getArgument( int idx )
+    {
+        return _errorArguments[idx];
+    }
+
+    /**
+     * @return The numeric error id.
+     */
+    public int getId()
+    {
+        return _code.id();
+    }
+
+    /**
+     * @return The exception's code.
+     */
+    public Code getCode()
+    {
+        return _code;
+    }
+
+    /**
+     * @return This exception's message.
+     * See {@link RuntimeX} class documentation.
+     */
+    @Override
+    public String getMessage()
+    {
+        return _message.get();
+    }
+
+    /**
+     * @return A message. See {@link RuntimeX} class documentation.
+     */
+    private String makeMessage()
+    {
+        // Get the original message.  Note that this can neither be null nor
+        // the empty string.  See invariant in constructor.
+        String messageId = super.getMessage();
+
+        if ( _errorArguments.length > 0 )
+        {
+            // Append the number of arguments to the message key.
+            String messageKey =
+                    messageId +
+                    "_" +
+                    _errorArguments.length;
+
+            var result = ErrorMessages.map.get( messageKey );
+
+            if ( result != null )
+                return getId() + " : " + MessageFormat.format(
+                    result,
+                    _errorArguments );
+        }
+
+        StringBuilder result =
+                ErrorMessages.map.containsKey( messageId ) ?
+                        new StringBuilder( ErrorMessages.map.get( messageId ) ) :
+                        new StringBuilder( messageId );
+
+        for ( var c : _errorArguments )
+        {
+            result.append( " " );
+            result.append( c );
+        }
+
+        return getId() + " : " + result.toString();
+    }
 
     /**
      * Scream specific {@code (error ...)} procedure.  Interrupts the
@@ -118,30 +335,23 @@ extends ScreamException
                 checkArgumentCount( 1, Integer.MAX_VALUE, args );
                 checkArgument( 1, SchemeString.class, args.listRef( 0 ) );
 
-                // Yes, the first argument is definitely a SchemeString.
                 String message = createReadable( args.listRef( 0 ) );
 
-                // Transform the remaining arguments in error arguments.
                 Object[] arguments = new Object[ (int)(args.length() -1) ];
-                for ( int i = (int)(args.length()-1) ; i > 0 ; i-- )
+                for ( int i = 1 ; i < (int)(args.length()) ; i++ )
                     arguments[i-1] = createReadable( args.listRef( i ) );
 
-                // We must have been called by a scheme-defined procedure.  Get its name
-                // and report that as the operation in error.
                 RuntimeX result = new RuntimeX( message, arguments );
 
-                // TODO: This is a temporary workaround.
-                // Remove as soon as the apply call chain is removed.
-                if ( e != null )
-                    result.setOperationName( e.getName() );
+                result.setOperationName( e.getName() );
+
                 throw result;
             }
 
             /**
              * Makes a human readable string from a FirstClassObject.  That means for
-             * a real scheme string that the double quotes are removed -- gnah instead
-             * of "gnah" -- and that for all other cases the FCO.stringize is called,
-             * handling with grace even NIL.
+             * a scheme string that the double quotes are removed -- gnah instead
+             * of "gnah" -- and that for all other cases the FCO.toString is called.
              */
             private String createReadable( FirstClassObject o )
             {
@@ -164,11 +374,10 @@ extends ScreamException
      * @param tle The top-level environment to be extended.
      * @throws RuntimeX
      */
-    static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendTopLevelEnvironment( Environment tle )
             throws RuntimeX
     {
         tle.setPrimitive( errorProcedure( tle ) );
-        //        tle.setPrimitive( errorCatchSyntax );
         return tle;
     }
 
@@ -616,6 +825,16 @@ extends ScreamException
                 Code.SCAN_UNBALANCED_QUOTE );
     }
 
+    //    SCAN_UNBALANCED_QUOTE_2 = \
+    //    33 : Unbalanced quote found at line {0}, column {1}.
+    public static RuntimeX mScanUnbalancedQuote( int line, int column )
+    {
+        return new RuntimeX(
+                Code.SCAN_UNBALANCED_QUOTE,
+                line,
+                column );
+    }
+
     //    SCAN_UNEXPECTED_CHAR_3 = \
     //    34 : Unexpected character ''{2}'' found at line {0}, column {1}.
     public static RuntimeX mScanUnexpectedCharacter( int line, int col, String character )
@@ -627,14 +846,12 @@ extends ScreamException
                 character );
     }
 
-    //    SCAN_UNBALANCED_QUOTE_2 = \
-    //    33 : Unbalanced quote found at line {0}, column {1}.
-    public static RuntimeX mScanUnbalancedQuote( int line, int column )
+    //    ERROR = \
+    //    Error.
+    public static RuntimeX mError()
     {
         return new RuntimeX(
-                Code.SCAN_UNBALANCED_QUOTE,
-                line,
-                column );
+                Code.ERROR );
     }
 
     //    # The parser didn't receive an expected token.

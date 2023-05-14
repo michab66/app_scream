@@ -15,9 +15,8 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException;
-import de.michab.scream.ScreamException.Code;
 
 public class SchemeIntegerTest extends ScreamBaseTest
 {
@@ -109,7 +108,7 @@ public class SchemeIntegerTest extends ScreamBaseTest
             throws X;
     }
 
-    private void typeFailureTest( FuncX<FirstClassObject, Number, Exception> op ) throws RuntimeX
+    private void typeFailureTest( FuncX<FirstClassObject, Number, Exception> op ) throws Exception
     {
         var symbol = Symbol.createObject( "313" );
         try
@@ -117,22 +116,18 @@ public class SchemeIntegerTest extends ScreamBaseTest
             op.apply( symbol );
             fail();
         }
-        catch ( Exception e )
+        catch ( RuntimeX e )
         {
-            assertInstanceOf( ScreamException.class, e );
-            ScreamException se = (ScreamException)e;
-            assertEquals( Code.TYPE_ERROR, se.getCode() );
+            assertEquals( Code.TYPE_ERROR, e.getCode() );
         }
         try
         {
             op.apply( Cons.NIL );
             fail();
         }
-        catch ( Exception e )
+        catch ( RuntimeX e )
         {
-            assertInstanceOf( ScreamException.class, e );
-            ScreamException se = (ScreamException)e;
-            assertEquals( Code.TYPE_ERROR, se.getCode() );
+            assertEquals( Code.TYPE_ERROR, e.getCode() );
         }
     }
 

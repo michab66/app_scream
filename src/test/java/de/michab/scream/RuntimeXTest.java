@@ -7,6 +7,7 @@ package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -16,38 +17,72 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.ScreamException.Code;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
+import de.michab.scream.util.ErrorMessages;
 
 public class RuntimeXTest extends ScreamBaseTest
 {
     @Test
+    public void blankError() throws Exception
+    {
+        try
+        {
+            new RuntimeX( "" );
+            fail();
+        }
+        catch ( IllegalArgumentException expected )
+        {
+        }
+    }
+
+    @Test
+    public void paramMismatch() throws Exception
+    {
+        // BAD_BINDING is only defined by BAD_BINDING_2,  this
+        // tests the fallback to BAD_BINDING.
+        assertFalse(
+                ErrorMessages.map.containsKey( Code.BAD_BINDING.toString() )
+        )
+        ;
+        var se = new RuntimeX( Code.BAD_BINDING, "unknown" );
+
+        System.out.println( se.getMessage() );
+        assertEquals(
+                Code.BAD_BINDING.id(),
+                se.getId() );
+        assertEquals(
+                Code.BAD_BINDING,
+                se.getCode() );
+    }
+
+    @Test
     public void internalError() throws Exception
     {
-        var se = new RuntimeX( ScreamException.Code.INTERNAL_ERROR.name() );
+        var se = new RuntimeX( Code.INTERNAL_ERROR.name() );
 
         assertEquals(
                 -1,
                 se.getId() );
         assertEquals(
-                ScreamException.Code.INTERNAL_ERROR,
+                Code.INTERNAL_ERROR,
                 se.getCode() );
     }
 
     @Test
     public void _16_badBinding() throws Exception
     {
-        var se = new RuntimeX( ScreamException.Code.BAD_BINDING.name(), "a1", "a2" );
+        var se = new RuntimeX( Code.BAD_BINDING.name(), "a1", "a2" );
 
         assertEquals(
-                ScreamException.Code.BAD_BINDING.id(),
+                Code.BAD_BINDING.id(),
                 se.getId() );
         assertEquals(
-                ScreamException.Code.BAD_BINDING,
+                Code.BAD_BINDING,
                 se.getCode() );
 
         assertTrue( se.getMessage().contains( "a1" ) );
@@ -57,32 +92,19 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void unknownCode() throws Exception
     {
-        try
-        {
-            new RuntimeX( "duck" );
-            fail();
-        }
-        catch ( IllegalArgumentException e )
-        {
-            assertTrue( e.getMessage().contains( "duck" ) );
-        }
+        var rx = new RuntimeX( "duck" );
+        assertEquals( Code.ERROR, rx.getCode() );
+        assertEquals( "35 : duck", rx.getMessage() );
     }
 
+    @Test
+    public void unknownName() throws Exception
+    {
+            var sex = new RuntimeX( ".UNKNOWN", 1, 2, 3 );
+            assertEquals( Code.ERROR, sex.getCode() );
+            assertEquals( "35 : .UNKNOWN 1 2 3", sex.getMessage() );
+    }
 
-//    @Test
-//    public void unknownName() throws Exception
-//    {
-//        try
-//        {
-//            new ScreamException( ".UNKNOWN" );
-//            fail();
-//        }
-//        catch ( RuntimeException e )
-//        {
-//            assertEquals( e.getMessage(), "Unknown ScreamException name='.UNKNOWN'" );
-//        }
-//    }
-//
 //    @Test
 //    public void nameInternal() throws Exception
 //    {
@@ -454,6 +476,17 @@ public class RuntimeXTest extends ScreamBaseTest
                 what );
     }
     @Test
+    public void _27_methodNotFound2() throws Exception
+    {
+        var what = "what";
+
+        validateMessageAndType(
+                RuntimeX.mMethodNotFound( what, Cons.create( i1, i2 ) ),
+                Code.METHOD_NOT_FOUND,
+                27,
+                "what(1 2)" );
+    }
+    @Test
     public void _28_illegalAccess1() throws Exception
     {
         var what = "what";
@@ -537,6 +570,14 @@ public class RuntimeXTest extends ScreamBaseTest
                 1,
                 2,
                 what );
+    }
+    @Test
+    public void _35_error() throws Exception
+    {
+        validateMessageAndType(
+                RuntimeX.mError(),
+                Code.ERROR,
+                35 );
     }
     @Test
     public void _36_parseExpected1() throws Exception

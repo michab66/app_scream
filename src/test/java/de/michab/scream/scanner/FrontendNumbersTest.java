@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamException;
 import de.michab.scream.fcos.SchemeInteger;
 
 public class FrontendNumbersTest
@@ -30,7 +29,7 @@ public class FrontendNumbersTest
     }
 
     @Test
-    public void parseIntegers() throws ScreamException
+    public void parseIntegers() throws Exception
     {
         // TODO failure cases
 //      validate( "#x10", 16 );  // Hex in scheme7
