@@ -3,8 +3,10 @@
  *
  * Copyright © 1998-2023 Michael G. Binz
  */
-package de.michab.scream;
+package de.michab.scream.util;
 
+import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.FirstClassObject;
 
 /**

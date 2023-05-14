@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.smack.util.CachedHolder;
-import org.smack.util.JavaUtil;
 
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
@@ -26,10 +25,39 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.ErrorMessages;
 
 /**
- * An exception to be thrown at run-time of a Scheme program.  This type of
- * exception gets transformed to a user error message.
+ * An exception to be thrown at run-time of a Scheme program.
+ *
+ * The Exception message is set by the constructor to either
+ * <p>
+ *  * a Code element in stringified form. In this case the
+ *  Code-member is the the passed code.
+ * <p>
+ *  * a string passed into the constructor. The code element
+ *  is then set to {@link Code#ERROR}.
+ * <p>
+ * Message generation:
+ * <p>
+ * If error arguments are set, the number of error arguments
+ * is appended to the message (e.g. MESSAGE_2) and the resulting
+ * key is looked up in the error messages property file. If found
+ * the message is resolved using MessageFormat#format using the message
+ * arguments and returned.  If MessageFormat#format throws an exception
+ * this is not catched.
+ * <p>
+ *
+ * If the above did not result in a message, then a second lookup
+ * into the error message property file is performed using the
+ * plain message (e.g. MESSAGE).  If the key exists, then the
+ * error arguments are appended as space-delimited string to the
+ * resolved value and returned.
+ * <p>
+ *
+ * If the above did not result in a message the plain error message
+ * is used and the arror arguments are appended as space-delimited
+ * strings and returned.
  *
  * @author Michael Binz
  */
@@ -37,10 +65,14 @@ import de.michab.scream.util.Continuation.Thunk;
 public class RuntimeX
     extends Exception
 {
+    /**
+     * The message code.
+     */
     private final Code _code;
 
     /**
      * A reference to the arguments to be formatted into the error message.
+     * This is never {@code null}.
      */
     private final Object[] _errorArguments;
 
@@ -49,7 +81,9 @@ public class RuntimeX
      */
     private Symbol _operationName = null;
 
-
+    /**
+     * Predefined error codes.
+     */
     public enum Code
     {
         INTERNAL_ERROR,
@@ -111,34 +145,37 @@ public class RuntimeX
         }
     }
 
-    private static final Map<String,Code> nameToCode = JavaUtil.make(
+    private static final CachedHolder<Map<String,Code>>
+    _nameToCode =
+        new CachedHolder<Map<String,Code>>(
             () -> {
                 var result = new HashMap<String, Code>();
 
                 for ( var c : Code.values() )
                     result.put( c.toString(), c );
                 return Collections.unmodifiableMap( result );
-            });
+            }
+    );
 
     private final CachedHolder<String> _message =
             new CachedHolder<String>( this::makeMessage );
 
     /**
-     * Creates a scream exception.
+     * Creates a Scream exception.
      *
      * @param msg The message that will be used as a key into Scream's error
-     * message resource bundle. This must be neither null nor a blank string.
+     * message properties. This must be neither null nor a blank string.
+     * If this is not a stringified element of the Code-enumeration, the
+     * Code-member is set to {@link Code#ERROR}.
      * @param args The arguments to be formatted into the message.
      * @throws IllegalArgumentException In case the passed message was blank.
      * @throws NullPointerException In case the passed message was
      * @{code null}.
      */
-    @Deprecated
     public RuntimeX( String msg, Object ... args )
     {
         super( Objects.requireNonNull( msg ) );
 
-        // Ensure that we received a non-empty message.
         if ( msg.isBlank() )
             throw new IllegalArgumentException( "Empty message." );
 
@@ -160,52 +197,6 @@ public class RuntimeX
                     args;
     }
 
-//    /**
-//     * Create an error message with parameters.
-//     *
-//     * @param msg The access key into the error message resource bundle.
-//     * @param args The arguments to be formatted into the error message.
-//     * @deprecated
-//     */
-//    @Deprecated
-//    public RuntimeX( String msg, Object ... args )
-//    {
-//        super( msg, args );
-//    }
-
-//    /**
-//     * Create an error message with parameters.
-//     *
-//     * @param msg The access key into the error message resource bundle.
-//     * @deprecated
-//     */
-//    @Deprecated
-//    public RuntimeX( String msg )
-//    {
-//        super( msg );
-//    }
-
-//    /**
-//     * Create an error message with parameters.
-//     *
-//     * @param msg The access key into the error message resource bundle.
-//     * @param args The arguments to be formatted into the error message.
-//     */
-//    public RuntimeX( Code msg, Object ... args )
-//    {
-//        super( msg, args );
-//    }
-
-//    /**
-//     * Create an error message with parameters.
-//     *
-//     * @param msg The access key into the error message resource bundle.
-//     */
-//    public RuntimeX( Code msg )
-//    {
-//        super( msg );
-//    }
-
     public RuntimeX addCause( Throwable cause )
     {
         super.initCause( cause );
@@ -221,7 +212,7 @@ public class RuntimeX
      */
     private static Code getCode( String name )
     {
-        var result = nameToCode.get( name );
+        var result = _nameToCode.get().get( name );
 
         if ( result != null )
             return result;
@@ -252,6 +243,9 @@ public class RuntimeX
         return _operationName;
     }
 
+    /**
+     * @return Never {@code null}.
+     */
     public Object[] getArguments()
     {
         return _errorArguments;
@@ -269,15 +263,17 @@ public class RuntimeX
         return _code.id();
     }
 
+    /**
+     * @return The exception's code.
+     */
     public Code getCode()
     {
         return _code;
     }
 
     /**
-     * Get the message from this exception.
-     *
      * @return This exception's message.
+     * See {@link RuntimeX} class documentation.
      */
     @Override
     public String getMessage()
@@ -285,6 +281,9 @@ public class RuntimeX
         return _message.get();
     }
 
+    /**
+     * @return A message. See {@link RuntimeX} class documentation.
+     */
     private String makeMessage()
     {
         // Get the original message.  Note that this can neither be null nor
@@ -321,28 +320,6 @@ public class RuntimeX
         return getId() + " : " + result.toString();
     }
 
-    //    /**
-    //     * (%error-catch expression)
-    //     */
-    //    static private Syntax errorCatchSyntax = new Syntax( "%error-catch" )
-    //    {
-    //        @Override
-    //        public FirstClassObject activate( Environment parent, FirstClassObject[] args )
-    //                throws RuntimeX
-    //        {
-    //            checkArgumentCount( 1, args );
-    //
-    //            try
-    //            {
-    //                return FirstClassObject.evaluate( args[0], parent );
-    //            }
-    //            catch ( RuntimeX e )
-    //            {
-    //                return SchemeInteger.createObject( e.getId() );
-    //            }
-    //        }
-    //    };
-
     /**
      * Scream specific {@code (error ...)} procedure.  Interrupts the
      * current computation with a runtime error.
@@ -358,30 +335,23 @@ public class RuntimeX
                 checkArgumentCount( 1, Integer.MAX_VALUE, args );
                 checkArgument( 1, SchemeString.class, args.listRef( 0 ) );
 
-                // Yes, the first argument is definitely a SchemeString.
                 String message = createReadable( args.listRef( 0 ) );
 
-                // Transform the remaining arguments in error arguments.
                 Object[] arguments = new Object[ (int)(args.length() -1) ];
-                for ( int i = (int)(args.length()-1) ; i > 0 ; i-- )
+                for ( int i = 1 ; i < (int)(args.length()) ; i++ )
                     arguments[i-1] = createReadable( args.listRef( i ) );
 
-                // We must have been called by a scheme-defined procedure.  Get its name
-                // and report that as the operation in error.
                 RuntimeX result = new RuntimeX( message, arguments );
 
-                // TODO: This is a temporary workaround.
-                // Remove as soon as the apply call chain is removed.
-                if ( e != null )
-                    result.setOperationName( e.getName() );
+                result.setOperationName( e.getName() );
+
                 throw result;
             }
 
             /**
              * Makes a human readable string from a FirstClassObject.  That means for
-             * a real scheme string that the double quotes are removed -- gnah instead
-             * of "gnah" -- and that for all other cases the FCO.stringize is called,
-             * handling with grace even NIL.
+             * a scheme string that the double quotes are removed -- gnah instead
+             * of "gnah" -- and that for all other cases the FCO.toString is called.
              */
             private String createReadable( FirstClassObject o )
             {
@@ -404,11 +374,10 @@ public class RuntimeX
      * @param tle The top-level environment to be extended.
      * @throws RuntimeX
      */
-    static Environment extendTopLevelEnvironment( Environment tle )
+    public static Environment extendTopLevelEnvironment( Environment tle )
             throws RuntimeX
     {
         tle.setPrimitive( errorProcedure( tle ) );
-        //        tle.setPrimitive( errorCatchSyntax );
         return tle;
     }
 

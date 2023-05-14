@@ -7,8 +7,10 @@ package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -21,9 +23,43 @@ import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
+import de.michab.scream.util.ErrorMessages;
 
 public class RuntimeXTest extends ScreamBaseTest
 {
+    @Test
+    public void blankError() throws Exception
+    {
+        try
+        {
+            new RuntimeX( "" );
+            fail();
+        }
+        catch ( IllegalArgumentException expected )
+        {
+        }
+    }
+
+    @Test
+    public void paramMismatch() throws Exception
+    {
+        // BAD_BINDING is only defined by BAD_BINDING_2,  this
+        // tests the fallback to BAD_BINDING.
+        assertFalse(
+                ErrorMessages.map.containsKey( Code.BAD_BINDING.toString() )
+        )
+        ;
+        var se = new RuntimeX( Code.BAD_BINDING, "unknown" );
+
+        System.out.println( se.getMessage() );
+        assertEquals(
+                Code.BAD_BINDING.id(),
+                se.getId() );
+        assertEquals(
+                Code.BAD_BINDING,
+                se.getCode() );
+    }
+
     @Test
     public void internalError() throws Exception
     {

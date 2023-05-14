@@ -8,11 +8,11 @@ package de.michab.scream.fcos;
 import java.util.HashSet;
 import java.util.Set;
 
-import de.michab.scream.ConversionFailedX;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.ConversionFailedX;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
@@ -336,8 +336,6 @@ extends FirstClassObject
     {
         if ( received == Cons.NIL ||
                 ! formal.isAssignableFrom( received.getClass() ) )
-            //    if ( received != Cons.NIL &&
-            //         ! formal.isAssignableFrom( received.getClass() ) )
         {
             throw new ConversionFailedX( received, formal, position );
         }

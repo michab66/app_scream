@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
 
-import de.michab.scream.ConversionFailedX;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
@@ -33,6 +32,7 @@ import de.michab.scream.fcos.Syntax;
 import de.michab.scream.fcos.Vector;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.ConversionFailedX;
 import de.michab.scream.util.Scut;
 
 /**
