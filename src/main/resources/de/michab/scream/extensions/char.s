@@ -5,7 +5,12 @@
 ; Released under Gnu Public License
 ; Copyright (c) 1998-2000 Michael G. Binz
 
+;;
+;; Scream definitions.
+;;
 
+(define scream:type-character
+  ((make-object de.michab.scream.fcos.SchemeCharacter) TYPE_NAME))
 
 ;;
 ;; (char? obj) procedure; r5rs 29

@@ -63,4 +63,61 @@ public class R7rs_4_2_9_CaseLambdaTest extends ScreamBaseTest
             assertEquals( "4", rx.getArgument( 0 ) );
         }
     }
+    @Test
+    public void caseLambda() throws Exception
+    {
+        ScreamEvaluator se = scriptEngine();
+
+        {
+        var result = se.evalFco(
+                """
+    (define default3
+      (case-lambda
+        (()
+          (default3 'ad 'bd 'cd))
+        ((a)
+          (default3 a 'bd 'cd))
+        ((a b)
+          (default3 a b 'cd))
+        ((a b c)
+          (list a b c))))
+                """ );
+
+        assertEqualq( Cons.NIL, result );
+        }
+        {
+            expectFco(
+                    se,
+                    "(default3)",
+                    parse( "(ad bd cd)" ) );
+        }
+        {
+            expectFco(
+                    se,
+                    "(default3 1)",
+                    parse( "(1 bd cd)" ) );
+        }
+        {
+            expectFco(
+                    se,
+                    "(default3 1 2)",
+                    parse( "(1 2 cd)" ) );
+        }
+        {
+            expectFco(
+                    se,
+                    "(default3 1 2 3)",
+                    parse( "(1 2 3)" ) );
+        }
+        try
+        {
+            se.evalFco( "(default3 1 2 3 4)" );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.WRONG_NUMBER_OF_ARGUMENTS, rx.getCode() );
+            assertEquals( "4", rx.getArgument( 0 ) );
+        }
+    }
 }

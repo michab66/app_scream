@@ -34,21 +34,10 @@ public class SchemeString
     private final StringBuilder _value;
 
     /**
-     * Create a new string in a specified length.  The string is filled with
-     * spaces.
-     *
-     * @param length The length for the new string.
-     */
-    public SchemeString( int length )
-    {
-        this( length, SchemeCharacter.SPACE.asCharacter() );
-    }
-
-    /**
      * Create a new string in a specified length, initialised with the passed
      * character.
      *
-     * @param length The length for the new string.
+     * @param length The length of the new string.
      * @param filler A character used to fill the new string.
      */
     public SchemeString( int length, char filler )
@@ -90,23 +79,6 @@ public class SchemeString
     public static SchemeString makeEscaped( String s )
     {
         return new SchemeString( s, false );
-    }
-
-    /**
-     * Create a constant {@code SchemeString} from a Java string object.
-     * Note that the input is expected to contain literal character
-     * representations like '\n' and '\"'.  These will be replaced by the
-     * respective character.  The {@code toString()} method can be used to
-     * get again the same string representation as passed into this constructor
-     * (but not the <i>same</i> string object with regards to object identity.)
-     *
-     * @param s A prototype string for the new object.
-     * @deprecated Use one of make() or makeEscaped().
-     */
-    @Deprecated
-    public SchemeString( String s )
-    {
-        this( s, true );
     }
 
     /**

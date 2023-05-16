@@ -16,8 +16,8 @@
   "boolean.s"
   "math.s"
   "char.s"
-  "string.s"
   "procedure.s"
+  "string.s"
   "object.s"
   "bytevector.s"
 )
