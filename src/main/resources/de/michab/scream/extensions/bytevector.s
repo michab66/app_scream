@@ -14,10 +14,6 @@
 (define scream:type-bytevector
   ((make-object de.michab.scream.fcos.Bytevector) TYPE_NAME))
 
-(define (scream:delay-op promise)
-  (lambda args
-    (apply (force promise) args)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

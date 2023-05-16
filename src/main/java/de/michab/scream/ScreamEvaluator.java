@@ -229,7 +229,7 @@ public final class ScreamEvaluator implements ScriptEngine
     {
         return evalImpl(
                 _interaction,
-                new SchemeReader( reader )::getExpression );
+                new SchemeParser( reader )::getExpression );
     }
 
     /**

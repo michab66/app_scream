@@ -50,13 +50,37 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     }
 
     @Test
+    public void make_string_1() throws Exception
+    {
+        expectFco(
+            """
+            (make-string 8)
+            """,
+            """
+            "        "
+            """);
+    }
+
+    @Test
+    public void make_string_2() throws Exception
+    {
+        expectFco(
+            """
+            (make-string 8 #\\ß)
+            """,
+            """
+            "ßßßßßßßß"
+            """);
+    }
+
+    @Test
     public void substring_1() throws Exception
     {
         var result = scriptEngine().evalFco(
             """
             (substring "Donald" 1 4)
             """ );
-        assertEqualq( new SchemeString( "ona" ), result );
+        assertEqualq( SchemeString.makeEscaped( "ona" ), result );
     }
     @Test
     public void substring_2() throws Exception
@@ -65,7 +89,7 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
             """
             (substring "Donald" 4 4)
             """ );
-        assertEqualq( new SchemeString( "" ), result );
+        assertEqualq( SchemeString.makeEscaped( "" ), result );
     }
 
     @Test
@@ -79,7 +103,7 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
 
               (substring donald-s 0 donald-len))
             """ );
-        assertEqualq( new SchemeString( "donald" ), result );
+        assertEqualq( SchemeString.makeEscaped( "donald" ), result );
     }
 
     @Test
@@ -100,7 +124,7 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
             """
             (string-append "Huckle" "berry")
             """ );
-        assertEqualq( new SchemeString( "Huckleberry" ), result );
+        assertEqualq( SchemeString.makeEscaped( "Huckleberry" ), result );
     }
 
     @Test

@@ -27,24 +27,30 @@
 
 
 ;;
-;; (make-string k) procedure; r5rs 30
-;; (make-string k char) procedure; r5rs 30
+;; (make-string k) procedure; r7rs 46
+;; (make-string k char) procedure; r7rs 46
 ;;
-(define (make-string k . char)
+(define make-string
 
-  ;; Check if we only received a single optional argument.
-  (if (> (length char) 1)
-    (error "TOO_MANY_ARGUMENTS" 1))
+(scream:delay-op (delay ; -->
 
-  (if (integer? k)
-    (let ((result (make-object (de.michab.scream.fcos.SchemeString k))))
-      (if (= 1 (length char))
-        (if (char? (car char))
-          ((object result) (fill (car char)))
-          (error "TYPE_ERROR" %type-char (%typename (car char)) 2)))
-      result)
-    (error "TYPE_ERROR" %type-integer (%typename k) 1)))
+  (case-lambda
 
+    ((k)
+      (make-string k #\space))
+
+    ((k char)
+      (cond
+        ((not (integer? k))
+          (error "TYPE_ERROR" scream:type-integer to))
+        ((not (char? char))
+          (error "TYPE_ERROR" scream:type-character from))
+        (else
+          (make-object (de.michab.scream.fcos.SchemeString k char)))))
+  ) ; case-lambda
+
+  )) ; <--
+)
 
 
 ;;
@@ -129,7 +135,7 @@
   (if (string? string)
     (do
       ; Init
-      ((result (make-object (de.michab.scream.fcos.SchemeString string)))
+      ((result ((make-object de.michab.scream.fcos.SchemeString) (makeEscaped string)))
        (append-list optional-string-list (cdr append-list)))
 
       ; Test

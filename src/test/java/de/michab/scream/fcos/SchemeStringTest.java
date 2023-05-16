@@ -86,47 +86,7 @@ public class SchemeStringTest
                 SchemeString.class,
                 String.class,
                 "micbinz",
-                SchemeString::new );
-    }
-
-    @Test
-    public void constructorLength() throws Exception
-    {
-        final var L = 5;
-        final var F = SchemeCharacter.SPACE.asCharacter();
-
-        var s = new SchemeString( L );
-        assertEquals( L, s.length() );
-        assertFalse( s.isConstant() );
-
-        for ( var i = 0 ; i < s.length() ; i++ )
-        {
-            assertEquals(
-                    F,
-                    s.getCharAt( i ) );
-        }
-
-        try
-        {
-            s.getCharAt( L );
-            fail();
-        }
-        catch ( RuntimeX e )
-        {
-            assertEquals( RuntimeX.Code.INDEX_OUT_OF_BOUNDS, e.getCode() );
-        }
-
-        var j = s.toJava();
-        assertNotNull( j );
-        assertInstanceOf( String.class, j );
-        String js = (String)j;
-        assertEquals( L, js.length() );
-        for ( var i = 0 ; i < js.length() ; i++ )
-        {
-            assertEquals(
-                    F,
-                    js.charAt( i ) );
-        }
+                SchemeString::makeEscaped );
     }
 
     @Test
