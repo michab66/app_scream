@@ -1,2 +1,2 @@
 # scream
-A scheme interpreter.
+A Scheme interpreter.
