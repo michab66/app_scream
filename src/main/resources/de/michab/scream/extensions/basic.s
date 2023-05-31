@@ -16,16 +16,6 @@
 
 (define scream:class:RuntimeX (make-object de.michab.scream.RuntimeX))
 
-;; NOT_IMPLEMENTED
-(define (scream:error:not-implemented message)
-  (scream:class:RuntimeX (mNotImplemented message)))
-;; TYPE_ERROR
-(define (scream:error:type-error expected found)
-  (scream:class:RuntimeX (mTypeError expected found)))
-;; WRONG_NUMBER_OF_ARGUMENTS
-(define (scream:error:wrong-number-of-arguments expected found)
-  (error "WRONG_NUMBER_OF_ARGUMENTS" expected found))
-
 ;;
 (define scream:class:fco (make-object de.michab.scream.fcos.FirstClassObject))
 

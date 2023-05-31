@@ -314,19 +314,27 @@
 ;; open-input-bytevector procedure
 ;;
 (define (open-input-bytevector bytevector)
-  (scream:error:not-implemented "(open-input-bytevector)"))
+  (scream:assert-type 
+    bytevector
+    bytevector?
+    scream:type-bytevector)
+  
+  (make-object 
+    (de.michab.scream.fcos.PortInBinary
+      "input-bytevector" 
+      ((object bytevector) (asStream)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-output-bytevector procedure
 ;;
 (define (open-output-bytevector)
-  (scream:error:not-implemented "(open-output-bytevector)"))
+  (error "NOT_IMPLEMENTED" "(open-output-bytevector)"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; get-output-bytevector procedure
 ;;
 (define (get-output-bytevector port)
-  (scream:error:not-implemented "(get-output-bytevector)"))
+  (error "NOT_IMPLEMENTED" "(get-output-bytevector)"))
 
 (include 
   "i-ports-input.s"
