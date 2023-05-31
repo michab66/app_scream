@@ -5,6 +5,8 @@
  */
 package de.michab.scream.fcos;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
@@ -352,5 +354,13 @@ public final class Bytevector
                         iStart,
                         iEnd - iStart,
                         StandardCharsets.UTF_8 ) );
+    }
+    
+    /**
+     * @return The internal byte array.
+     */
+    public InputStream asStream()
+    {
+    	return new ByteArrayInputStream( _vector );    	
     }
 }

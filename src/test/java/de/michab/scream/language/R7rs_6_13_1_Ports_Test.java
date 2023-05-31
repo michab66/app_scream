@@ -254,4 +254,76 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
         }
     }
 
+    /**
+     * p57
+     */
+    @Test
+    public void open_input_bytevector() throws Exception
+    {
+        var se = scriptEngine();
+
+        {
+        	expectFco( 
+        			se,
+                """
+                (define ibv (open-input-bytevector #u8(1 2 3)))
+                (and (input-port? ibv) (binary-port? ibv))
+                """,
+               bTrue );
+        }
+        {
+        	expectFco( 
+        			se,
+        			"(read-u8 ibv)",
+        			i(1) );
+        }
+        {
+        	expectFco( 
+        			se,
+        			"(read-u8 ibv)",
+        			i(2) );
+        }
+        {
+        	expectFco( 
+        			se,
+        			"(read-u8 ibv)",
+        			i(3) );
+        }
+        {
+        	expectFco( 
+        			se,
+        			"(eof-object? (read-u8 ibv))",
+        			bTrue );
+        }
+    }
+    public void open_input_bytevector_empty() throws Exception
+    {
+        var se = scriptEngine();
+
+        {
+        	expectFco( 
+        			se,
+                """
+                (define ibv (open-input-bytevector #u8()))
+                (and (input-port? ibv) (binary-port? ibv))
+                """,
+               bTrue );
+        }
+        {
+        	expectFco( 
+        			se,
+        			"(eof-object? (read-u8 ibv))",
+        			bTrue );
+        }
+    }
+    @Test
+    public void open_input_bytevector_err() throws Exception
+    {
+    	expectError( 
+    			"(open-input-bytevector 3)",
+    			Code.TYPE_ERROR );
+    	expectError( 
+    			"(open-input-bytevector \"string\")",
+    			Code.TYPE_ERROR );
+    }
 }

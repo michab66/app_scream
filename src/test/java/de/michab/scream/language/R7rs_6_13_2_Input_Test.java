@@ -132,21 +132,6 @@ public class R7rs_6_13_2_Input_Test extends ScreamBaseTest
                 str( "el") );
     }
 
-    private void read_u8_eof( File f ) throws Exception
-    {
-        expectFco( String.format(
-"""
-        (eof-object?
-          (call-with-port
-            (open-binary-input-file "%s")
-            (lambda (port)
-              (read-u8 port)))
-        )
-
-""", f.getPath() ),
-        bTrue );
-    }
-
     @Test
     public void read_u8_eof() throws Exception
     {
