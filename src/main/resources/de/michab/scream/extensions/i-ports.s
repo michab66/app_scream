@@ -100,8 +100,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; output-port? procedure
 ;;
-(define output-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
+(define (output-port? port)
+  (or
+    (scream:output-port? port)
+    (scream:binary-output-port? port)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; binary-port? procedure
@@ -328,13 +330,23 @@
 ;; open-output-bytevector procedure
 ;;
 (define (open-output-bytevector)
-  (error "NOT_IMPLEMENTED" "(open-output-bytevector)"))
+  (make-object
+    (de.michab.scream.fcos.PortOutBinary
+      "output-bytevector"
+      (make-object
+        (java.io.ByteArrayOutputStream)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; get-output-bytevector procedure
 ;;
 (define (get-output-bytevector port)
-  (error "NOT_IMPLEMENTED" "(get-output-bytevector)"))
+  (let* (
+    (stream ((object port) (stream)))
+    (array ((object stream) (toByteArray))) )
+    
+    (make-object (de.michab.scream.fcos.Bytevector array))
+  )
+)
 
 (include 
   "i-ports-input.s"
