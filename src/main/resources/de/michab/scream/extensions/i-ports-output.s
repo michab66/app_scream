@@ -123,22 +123,48 @@
 ;; write-string procedure
 ;;
 (define (write-string string . port)
-  (scream:error:not-implemented "(write-string)"))
+  (error "NOT_IMPLEMENTED" "(write-string)"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-u8 procedure
 ;;
-(define (write-u8 byte port)
-  (scream:error:not-implemented "(write-u8)"))
+(define write-u8
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((byte)
+      (write-u8 byte (current-output-port)))
+
+    ((byte port)
+      (cond
+        ((not (integer? byte))
+          (error "TYPE_ERROR" scream:type-integer byte))
+        ((not (output-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        ((not (binary-port? port))
+          (error "TYPE_ERROR" scream:binary-port port))
+        (else
+          ((object port) (writeByte byte))
+          '())
+      ) ; cond
+    )
+
+  ) ; case-lambda
+
+  )) ; <--
+
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-bytevector procedure
 ;;
 (define (write-bytevector . port)
-  (scream:error:not-implemented "(write-shared)"))
+  (error "NOT_IMPLEMENTED" "(write-shared)"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flush-output-port procedure
 ;;
 (define (flush-output-port . port)
-  (scream:error:not-implemented "(flush-output-port)"))
+  (error "NOT_IMPLEMENTED" "(flush-output-port)"))

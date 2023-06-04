@@ -145,6 +145,10 @@ public final class ScreamEvaluator implements ScriptEngine
         _schemeReport.define(
                 ANCHOR_SYMBOL,
                 new SchemeObject( this ) );
+        // Load extensions defined in scheme source files.
+        addExtensions(
+        		_schemeReport,
+        		schemeExtensions );
         addExtensions(
                 _schemeReport,
                 schemeInstanceExtensions );
@@ -606,10 +610,10 @@ public final class ScreamEvaluator implements ScriptEngine
             throw new InternalError( e );
         }
 
-        // Load extensions defined in scheme source files.
-        addExtensions(
-                result,
-                schemeExtensions );
+//        // Load extensions defined in scheme source files.
+//        addExtensions(
+//                result,
+//                schemeExtensions );
 
         return FirstClassObject.setConstant( result );
     }
