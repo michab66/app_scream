@@ -11,10 +11,9 @@
   ((make-object java.lang.System) (getProperty "java.version")))
 
 ;;
-;; Error support
+;; An object to be returned if the spec defines 'unspecified'.
 ;;
-
-(define scream:class:RuntimeX (make-object de.michab.scream.RuntimeX))
+(define scream:unspecified '())
 
 ;;
 (define scream:class:fco (make-object de.michab.scream.fcos.FirstClassObject))

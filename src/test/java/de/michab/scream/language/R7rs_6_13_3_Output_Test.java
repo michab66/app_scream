@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.SchemeString;
 
 /**
  * r7rs 6.13.1 Ports
@@ -111,5 +112,132 @@ public class R7rs_6_13_3_Output_Test extends ScreamBaseTest
             f.delete();
             assertFalse( f.exists() );
         }
+    }
+
+    /**
+     * p59
+     */
+    @Test
+    public void newline__() throws Exception
+    {
+        var se = scriptEngine();
+
+        var sw = new StringWriter();
+
+        {
+            var context = se.getContext();
+            context.setWriter( sw );
+            se.setContext( context );
+        }
+
+        expectFco(
+                se,
+                """
+                (newline)
+                """ ,
+                Cons.NIL );
+
+        assertEquals( "\n", sw.toString() );
+    }
+
+    /**
+     * p59
+     */
+    @Test
+    public void newline__port() throws Exception
+    {
+        expectFco(
+            """
+            (define os (open-output-string))
+            (newline os)
+            (let ((result (get-output-string os)))
+              (close-port os)
+              result)
+            """,
+            SchemeString.makeEscaped( "\n" )
+            );
+    }
+
+    /**
+     * p59
+     */
+    @Test
+    public void write_string__() throws Exception
+    {
+        var se = scriptEngine();
+
+        var sw = new StringWriter();
+
+        {
+            var context = se.getContext();
+            context.setWriter( sw );
+            se.setContext( context );
+        }
+
+        assertEqualq(
+                se.evalFco(
+                        """
+                        (write-string "donald")
+                        """ ),
+                Cons.NIL );
+
+        assertEquals( "donald", sw.toString() );
+    }
+
+    /**
+     * p59
+     */
+    @Test
+    public void write_string__port() throws Exception
+    {
+        expectFco(
+            """
+            (define os (open-output-string))
+            (write-string "donald" os)
+            (let ((result (get-output-string os)))
+              (close-port os)
+              result)
+            """,
+            """
+            "donald"
+            """);
+    }
+
+    /**
+     * p59
+     */
+    @Test
+    public void write_string__port_start() throws Exception
+    {
+        expectFco(
+            """
+            (define os (open-output-string))
+            (write-string "donald" os 1)
+            (let ((result (get-output-string os)))
+              (close-port os)
+              result)
+            """,
+            """
+            "onald"
+            """ );
+    }
+
+    /**
+     * p59
+     */
+    @Test
+    public void write_string__port_start_end() throws Exception
+    {
+        expectFco(
+            """
+            (define os (open-output-string))
+            (write-string "donald" os 1 5)
+            (let ((result (get-output-string os)))
+              (close-port os)
+              result)
+            """,
+            """
+            "onal"
+            """ );
     }
 }

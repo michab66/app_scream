@@ -31,7 +31,8 @@
     (if (not (output-port? the-port))
       (error "EXPECTED_OUTPUT_PORT"))
     ; Finally do the actual read.
-    ((object the-port) (write subject))))
+    ((object the-port) (write subject))
+    scream:unspecified))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-shared write library procedure
@@ -48,48 +49,62 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; display write library procedure
 ;;
-(define (display subject . arg-list)
-  (let (
-    ; If a single optional argument is given assign this to the port.  If no
-    ; optional argument is given assign the current output port to the port.
-    ; If more than one optional argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length arg-list))
-          (current-output-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 2)))))
+(define display
 
-    ; Check if what we assigned above is really an output port.
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
-    (if (not (output-port? the-port))
-      (error "EXPECTED_OUTPUT_PORT"))
-    ; Finally do the actual write.
-    ((object the-port) (display subject))
-    ; Unspecified.
-    '()))
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((obj)
+      (display obj (current-output-port)))
+
+    ((obj port)
+      (cond
+        ((not (output-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        ((not (textual-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        (else
+          ((object port) (display obj))
+          scream:unspecified)
+      ) ; cond
+    )
+
+  ) ; case-lambda
+
+  )) ; <--
+
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; newline procedure
 ;;
-(define (newline . opt-port)
-  (let (
-    ; If a single optional argument is given assign this to the port.  If no
-    ; optional argument is given assign the current output port to the port.
-    ; If more than one optional argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length opt-port))
-          (current-output-port))
-        ((= 1 (length opt-port))
-          (car opt-port))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 2)))))
+(define newline
 
-  (write-char #\newline the-port)))
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    (()
+      (newline (current-output-port)))
+
+    ((port)
+      
+      (cond
+        ((not (output-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        ((not (textual-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        (else
+          (write-char #\newline port)
+          scream:unspecified)
+      ) ; cond
+    )
+
+  ) ; case-lambda
+
+  )) ; <--
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-char procedure
@@ -122,8 +137,43 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-string procedure
 ;;
-(define (write-string string . port)
-  (error "NOT_IMPLEMENTED" "(write-string)"))
+(define write-string
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((string)
+      (write-string string (current-output-port) 0 (string-length string)))
+
+    ((string port)
+      (write-string string port 0 (string-length string)))
+
+    ((string port start)
+      (write-string string port start (string-length string)))
+
+    ((string port start end)
+      (cond
+        ((not (string? string))
+          (error "TYPE_ERROR" scream:type-string string))
+        ((not (output-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        ((not (textual-port? port))
+          (error "TYPE_ERROR" scream:textual-port port))
+        ((not (integer? start))
+          (error "TYPE_ERROR" scream:integer start))
+        ((not (integer? end))
+          (error "TYPE_ERROR" scream:integer end))
+        (else
+          ((object port) (display (substring string start end)))
+          scream:unspecified)
+      ) ; cond
+    )
+
+  ) ; case-lambda
+
+  )) ; <--
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-u8 procedure
@@ -147,7 +197,7 @@
           (error "TYPE_ERROR" scream:binary-port port))
         (else
           ((object port) (writeByte byte))
-          '())
+          scream:unspecified)
       ) ; cond
     )
 
@@ -166,5 +216,26 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flush-output-port procedure
 ;;
-(define (flush-output-port . port)
-  (error "NOT_IMPLEMENTED" "(flush-output-port)"))
+(define flush-output-port
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    (()
+      (flush-output-port (current-output-port)))
+
+    ((port)
+      (cond
+        ((not (output-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        (else
+          ((object port) (flush))
+          scream:unspecified)
+      ) ; cond
+    )
+
+  ) ; case-lambda
+
+  )) ; <--
+)
