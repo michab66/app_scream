@@ -79,21 +79,32 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; newline procedure
 ;;
-(define (newline . opt-port)
-  (let (
-    ; If a single optional argument is given assign this to the port.  If no
-    ; optional argument is given assign the current output port to the port.
-    ; If more than one optional argument is given return an error.
-    (the-port
-      (cond
-        ((= 0 (length opt-port))
-          (current-output-port))
-        ((= 1 (length opt-port))
-          (car opt-port))
-        (else
-          (error "TOO_MANY_ARGUMENTS" 2)))))
+(define newline
 
-  (write-char #\newline the-port)))
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    (()
+      (newline (current-output-port)))
+
+    ((port)
+      
+      (cond
+        ((not (output-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        ((not (textual-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        (else
+          (write-char #\newline port)
+          scream:unspecified)
+      ) ; cond
+    )
+
+  ) ; case-lambda
+
+  )) ; <--
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-char procedure
