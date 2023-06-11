@@ -176,7 +176,7 @@ public final class Bytevector
      * @return The byte array.
      */
     @Override
-    public Object toJava()
+    public byte[] toJava()
     {
         return Arrays.copyOf( _vector, _vector.length );
     }
@@ -355,12 +355,12 @@ public final class Bytevector
                         iEnd - iStart,
                         StandardCharsets.UTF_8 ) );
     }
-    
+
     /**
      * @return The internal byte array.
      */
     public InputStream asStream()
     {
-    	return new ByteArrayInputStream( _vector );    	
+    	return new ByteArrayInputStream( _vector );
     }
 }
