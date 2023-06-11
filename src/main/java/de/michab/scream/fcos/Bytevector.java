@@ -176,7 +176,7 @@ public final class Bytevector
      * @return The byte array.
      */
     @Override
-    public Object toJava()
+    public byte[] toJava()
     {
         return Arrays.copyOf( _vector, _vector.length );
     }
@@ -331,9 +331,9 @@ public final class Bytevector
     /**
      * Convert this to a SchemeString.
      *
-     * @param offset
-     * @param end
-     * @return
+     * @param startIdx The index of the first byte to be included.
+     * @param endIdx The last byte to include.
+     * @return A newly allocated string.
      * @throws RuntimeX
      */
     public SchemeString asString( long startIdx, long endIdx )
@@ -355,12 +355,12 @@ public final class Bytevector
                         iEnd - iStart,
                         StandardCharsets.UTF_8 ) );
     }
-    
+
     /**
-     * @return The internal byte array.
+     * @return A stream on the contained bytes.
      */
     public InputStream asStream()
     {
-    	return new ByteArrayInputStream( _vector );    	
+    	return new ByteArrayInputStream( _vector );
     }
 }

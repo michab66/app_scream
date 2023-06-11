@@ -210,8 +210,38 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; write-bytevector procedure
 ;;
-(define (write-bytevector . port)
-  (error "NOT_IMPLEMENTED" "(write-shared)"))
+(define write-bytevector
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((bytevector port)
+      (write-bytevector bytevector port 0 (bytevector-length bytevector)))
+
+    ((bytevector port start)
+      (write-bytevector bytevector port start (bytevector-length bytevector)))
+
+    ((bytevector port start end)
+      (cond
+        ((not (bytevector? bytevector))
+          (error "TYPE_ERROR" scream:type-bytevector bytevcetor))
+        ((not (output-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
+        ((not (binary-port? port))
+          (error "TYPE_ERROR" scream:binary-port port))
+        (else
+          (let ((buffer ((object bytevector) (copy start end))))
+            ((object port) (write ((object buffer) (toJava))))
+            scream:unspecified))
+      ) ; cond
+    )
+
+  ) ; case-lambda
+
+  )) ; <--
+
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; flush-output-port procedure

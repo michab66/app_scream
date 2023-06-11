@@ -240,4 +240,64 @@ public class R7rs_6_13_3_Output_Test extends ScreamBaseTest
             "onal"
             """ );
     }
+
+    /**
+     * p59
+     */
+    @Test
+    public void write_bytevector__port() throws Exception
+    {
+        expectFco(
+            """
+            (define bv #u8(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16))
+            (define obv (open-output-bytevector))
+            (write-bytevector bv obv)
+            (let ((result (equal? bv (get-output-bytevector obv))))
+              (close-port obv)
+              result)
+            """,
+            "#t" );
+    }
+
+    /**
+     * p59
+     */
+    @Test
+    public void write_bytevector__port_start() throws Exception
+    {
+        expectFco(
+                """
+                (define bv #u8(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16))
+                (define obv (open-output-bytevector))
+
+                (write-bytevector bv obv 9)
+
+                (let ((result (equal? (bytevector-copy bv 9)
+                                      (get-output-bytevector obv))))
+                  (close-port obv)
+                  result)
+                """,
+                "#t" );
+    }
+
+    /**
+     * p59
+     */
+    @Test
+    public void write_bytevector__port_start_end() throws Exception
+    {
+        expectFco(
+                """
+                (define bv #u8(0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16))
+                (define obv (open-output-bytevector))
+
+                (write-bytevector bv obv 9 12)
+
+                (let ((result (equal? (bytevector-copy bv 9 12)
+                                      (get-output-bytevector obv))))
+                  (close-port obv)
+                  result)
+                """,
+                "#t" );
+    }
 }
