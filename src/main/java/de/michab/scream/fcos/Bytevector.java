@@ -331,9 +331,9 @@ public final class Bytevector
     /**
      * Convert this to a SchemeString.
      *
-     * @param offset
-     * @param end
-     * @return
+     * @param startIdx The index of the first byte to be included.
+     * @param endIdx The last byte to include.
+     * @return A newly allocated string.
      * @throws RuntimeX
      */
     public SchemeString asString( long startIdx, long endIdx )
@@ -357,7 +357,7 @@ public final class Bytevector
     }
 
     /**
-     * @return The internal byte array.
+     * @return A stream on the contained bytes.
      */
     public InputStream asStream()
     {
