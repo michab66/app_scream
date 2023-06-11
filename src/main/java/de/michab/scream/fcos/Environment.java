@@ -254,7 +254,7 @@ public final class Environment
     }
 
     @Override
-    public Object toJava()
+    public HashMap<Symbol, FirstClassObject> toJava()
     {
         return _symbolMap;
     }

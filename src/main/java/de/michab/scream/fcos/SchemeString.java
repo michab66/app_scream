@@ -415,7 +415,7 @@ public class SchemeString
      * @return An object representing this object in the Java type system.
      */
     @Override
-    public Object toJava()
+    public String toJava()
     {
         return _value.toString();
     }

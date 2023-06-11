@@ -186,7 +186,7 @@ public class SchemeInteger
      * @return An instance of java.lang.Long.
      */
     @Override
-    public Object toJava()
+    public Long toJava()
     {
         return Long.valueOf( _value );
     }

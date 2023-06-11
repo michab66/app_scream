@@ -129,7 +129,7 @@ public class SchemeCharacter
      * @return References to {@code java.lang.Character} instances.
      */
     @Override
-    public Object toJava()
+    public Character toJava()
     {
         return Character.valueOf( _character );
     }

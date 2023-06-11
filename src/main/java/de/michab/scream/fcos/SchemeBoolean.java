@@ -96,7 +96,7 @@ public class SchemeBoolean
      * @see SchemeBoolean#getValue() for access to the primitive value.
      */
     @Override
-    public Object toJava()
+    public Boolean toJava()
     {
         return this == T ? Boolean.TRUE : Boolean.FALSE;
     }

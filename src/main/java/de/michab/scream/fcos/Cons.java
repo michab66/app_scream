@@ -652,7 +652,7 @@ public class Cons
      * @throws RuntimeX
      */
     @Override
-    public Object toJava() throws RuntimeX
+    public Object[] toJava() throws RuntimeX
     {
         FirstClassObject[] unconverted = asArray();
 
