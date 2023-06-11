@@ -5,7 +5,6 @@
  */
 package de.michab.scream.language;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
@@ -29,7 +28,6 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     }
 
     @Test
-    @Disabled
     public void r7rs_literal_true() throws Exception
     {
         expectFco( "#true", bTrue );

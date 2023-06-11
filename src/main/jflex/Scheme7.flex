@@ -298,7 +298,8 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   }
 
   {BOOLEAN} {
-    return new Token( "#t".equalsIgnoreCase( yytext() ) );
+    return new Token(
+     yytext().toLowerCase().startsWith( "#t" ) );
   }
 
   {CHARACTER} {
