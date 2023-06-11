@@ -220,7 +220,7 @@ public class Vector
      * @throws RuntimeX
      */
     @Override
-    public Object toJava() throws RuntimeX
+    public Object[] toJava() throws RuntimeX
     {
         Object[] result = new Object[ _theArray.length ];
 

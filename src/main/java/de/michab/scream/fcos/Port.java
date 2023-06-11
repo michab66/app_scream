@@ -196,7 +196,7 @@ public abstract class Port<T extends Closeable>
      * {@code null} is returned if the port is closed.
      */
     @Override
-    public final Object toJava()
+    public final T toJava()
     {
         return stream();
     }

@@ -199,7 +199,7 @@ public class SchemeDouble extends
      * <code>java.lang.Double</code>.
      */
     @Override
-    public Object toJava()
+    public Double toJava()
     {
         return Double.valueOf( _value );
     }
