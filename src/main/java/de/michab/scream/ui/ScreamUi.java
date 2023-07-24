@@ -6,7 +6,6 @@
 package de.michab.scream.ui;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
@@ -14,20 +13,24 @@ import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
-import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.smack.application.ApplicationInfo;
+import org.smack.swing.application.Action8;
 import org.smack.swing.application.SingleFrameApplication;
 import org.smack.swing.swingx.JXConsole;
 import org.smack.swing.swingx.JXMultiSplitPane;
+import org.smack.swing.swingx.JXTextArea;
 import org.smack.swing.swingx.MultiSplitLayout;
 import org.smack.swing.swingx.MultiSplitLayout.Divider;
 import org.smack.swing.swingx.MultiSplitLayout.Leaf;
@@ -47,6 +50,7 @@ import de.michab.scream.fcos.Cons;
  */
 public class ScreamUi extends SingleFrameApplication
 {
+    @SuppressWarnings("unused")
     private final static Logger LOG =
             Logger.getLogger( ScreamUi.class.getName() );
 
@@ -55,8 +59,60 @@ public class ScreamUi extends SingleFrameApplication
     private JToolBar _toolbar =
             new JToolBar();
     private final ScriptEngine _scream;
-    private final JTextArea _textArea =
-            new JTextArea();
+
+    private final JTextArea _textArea = JavaUtil.make( () ->
+    {
+        var result = new JXTextArea();
+
+        final JPopupMenu contextMenu = new JPopupMenu();
+
+        var cut = new Action8( result::cut ).inject( getClass(), "actCut" );
+        contextMenu.add( cut );
+
+        var copy = new Action8( result::copy ).inject( getClass(), "actCopy" );
+        contextMenu.add( copy );
+
+        var paste = new Action8( result::paste ).inject( getClass(), "actPaste" );
+        contextMenu.add( paste );
+
+        contextMenu.addSeparator();
+
+        var exec = new Action8( () -> performExec(
+                result.getSelectedText() ) ).text( "Execute selected" );
+        contextMenu.add( exec );
+
+        final PopupMenuListener pml = new PopupMenuListener()
+        {
+            @Override
+            public void popupMenuWillBecomeVisible( PopupMenuEvent e )
+            {
+                var selected = result.getSelectedText();
+
+                exec.setEnabled( ! StringUtil.isEmpty( selected ) );
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible( PopupMenuEvent e )
+            {
+                // TODO Auto-generated method stub
+
+            }
+
+            @Override
+            public void popupMenuCanceled( PopupMenuEvent e )
+            {
+                // TODO Auto-generated method stub
+
+            }
+        };
+
+        contextMenu.addPopupMenuListener( pml );
+
+        result.setComponentPopupMenu(contextMenu);
+
+        return result;
+    } );
+
     private final JXConsole _console =
             new JXConsole();
     private final JXConsole _stderr =
@@ -114,23 +170,21 @@ public class ScreamUi extends SingleFrameApplication
         }
     }
 
-    private class CommitAction extends AbstractAction {
-        @Override
-        public void actionPerformed(ActionEvent ev) {
-            if ( ev.getSource() != _textArea )
-                return;
+    private Action8 commitAction = new Action8( (ev) ->
+    {
+        if ( ev.getSource() != _textArea )
+            return;
 
-            JTextArea src = (JTextArea)ev.getSource();
+        JTextArea src = (JTextArea)ev.getSource();
 
-            var selected = src.getSelectedText();
+        var selected = src.getSelectedText();
 
-            if ( StringUtil.isEmpty( selected ) )
-                return;
+        if ( StringUtil.isEmpty( selected ) )
+            return;
 
-            performExec( selected );
-            src.setSelectionStart( src.getSelectionEnd() );
-        }
-    }
+        performExec( selected );
+        src.setSelectionStart( src.getSelectionEnd() );
+    });
 
     @Override
     protected void ready()
@@ -163,7 +217,7 @@ public class ScreamUi extends SingleFrameApplication
                 COMMIT_ACTION);
         am.put(
                 COMMIT_ACTION,
-                new CommitAction());
+                commitAction);
 
         _stderr.setName( "std::err" );
         _stdoin.setName( "std::in::out" );
@@ -177,9 +231,9 @@ public class ScreamUi extends SingleFrameApplication
 
             Split row = JavaUtil.make( () -> {
                 var left = new Leaf("left");
-                left.setWeight( .8 );
+                left.setWeight( .5 );
                 var right = new Leaf( "right" );
-                right.setWeight( .2 );
+                right.setWeight( .5 );
 
                 return new Split(
                         left,
@@ -205,6 +259,12 @@ public class ScreamUi extends SingleFrameApplication
                     new MultiSplitLayout( column ) );
 
             msp.add( ioTabs, "bottom");
+
+            msp.add( new JScrollPane( _textArea ), "left");
+
+
+
+
             msp.add( new JScrollPane( _textArea ), "left");
             msp.add( _console, "right");
 
@@ -225,7 +285,7 @@ public class ScreamUi extends SingleFrameApplication
         show( view );
     }
 
-    public static void main( String[] argv )
+    public static void main( String[] argv ) throws Exception
     {
         ServiceManager.initApplicationService(
                 new ApplicationInfo( ScreamUi.class ) );

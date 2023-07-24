@@ -29,7 +29,7 @@
         <dependency>
             <groupId>micbinz</groupId>
             <artifactId>smack_swing</artifactId>
-            <version>11.5-SNAPSHOT</version>
+            <version>11.6</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
