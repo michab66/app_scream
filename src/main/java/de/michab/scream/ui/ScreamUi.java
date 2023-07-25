@@ -22,15 +22,15 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
 import org.smack.application.ApplicationInfo;
 import org.smack.swing.application.Action8;
+import org.smack.swing.application.ApplicationProperties;
 import org.smack.swing.application.SingleFrameApplication;
+import org.smack.swing.beans.PersistentJavaBeanProperty;
 import org.smack.swing.swingx.JXConsole;
 import org.smack.swing.swingx.JXMultiSplitPane;
-import org.smack.swing.swingx.JXTextArea;
 import org.smack.swing.swingx.MultiSplitLayout;
 import org.smack.swing.swingx.MultiSplitLayout.Divider;
 import org.smack.swing.swingx.MultiSplitLayout.Leaf;
@@ -60,9 +60,12 @@ public class ScreamUi extends SingleFrameApplication
             new JToolBar();
     private final ScriptEngine _scream;
 
+
     private final JTextArea _textArea = JavaUtil.make( () ->
     {
-        var result = new JXTextArea();
+        var result = new JTextArea();
+
+        result.setName( "compositionArea" );
 
         final JPopupMenu contextMenu = new JPopupMenu();
 
@@ -78,33 +81,23 @@ public class ScreamUi extends SingleFrameApplication
         contextMenu.addSeparator();
 
         var exec = new Action8( () -> performExec(
-                result.getSelectedText() ) ).text( "Execute selected" );
+                result.getSelectedText() ) ).inject( getClass(), "actExecSelected" );
         contextMenu.add( exec );
 
-        final PopupMenuListener pml = new PopupMenuListener()
-        {
-            @Override
-            public void popupMenuWillBecomeVisible( PopupMenuEvent e )
-            {
-                var selected = result.getSelectedText();
+        final PopupMenuListener pml = new PopupMenuListenerL().setOnBecomeVisible(
+                (e) -> {
+                    var selected = result.getSelectedText();
 
-                exec.setEnabled( ! StringUtil.isEmpty( selected ) );
-            }
-
-            @Override
-            public void popupMenuWillBecomeInvisible( PopupMenuEvent e )
-            {
-                // TODO Auto-generated method stub
-
-            }
-
-            @Override
-            public void popupMenuCanceled( PopupMenuEvent e )
-            {
-                // TODO Auto-generated method stub
-
-            }
-        };
+                    cut.setEnabled(
+                            result.isEditable() &&
+                            StringUtil.hasContent( selected ) );
+                    copy.setEnabled(
+                            StringUtil.hasContent( selected ) );
+                    paste.setEnabled(
+                            result.isEditable() &&
+                            StringUtil.hasContent( UiUtil.getClipboardText() ) );
+                    exec.setEnabled( StringUtil.hasContent( selected ) );
+                } );
 
         contextMenu.addPopupMenuListener( pml );
 
@@ -112,6 +105,16 @@ public class ScreamUi extends SingleFrameApplication
 
         return result;
     } );
+
+    /**
+     * A persistent property for the text in the composition area.
+     */
+    private PersistentJavaBeanProperty<String, JTextArea> compositionText =
+            new PersistentJavaBeanProperty<String, JTextArea>(
+                    _textArea,
+                    "StringUtil.EMPTY_STRING",
+                    "text",
+                    ServiceManager.getApplicationService( org.smack.util.converters.StringConverter.class ) );
 
     private final JXConsole _console =
             new JXConsole();
@@ -208,6 +211,8 @@ public class ScreamUi extends SingleFrameApplication
     @Override
     protected void startup()
     {
+        _textArea.setText( compositionText.get() );
+
         var COMMIT_ACTION = "commit";
 
         InputMap im = _textArea.getInputMap();
@@ -262,9 +267,6 @@ public class ScreamUi extends SingleFrameApplication
 
             msp.add( new JScrollPane( _textArea ), "left");
 
-
-
-
             msp.add( new JScrollPane( _textArea ), "left");
             msp.add( _console, "right");
 
@@ -285,11 +287,18 @@ public class ScreamUi extends SingleFrameApplication
         show( view );
     }
 
+    @Override
+    protected void shutdown()
+    {
+        compositionText.set( _textArea.getText() );
+    }
+
     public static void main( String[] argv ) throws Exception
     {
         ServiceManager.initApplicationService(
                 new ApplicationInfo( ScreamUi.class ) );
-
+        ServiceManager.getApplicationService(
+                ApplicationProperties.class );
         ScreamUi.launch( ScreamUi.class, argv );
     }
 }
