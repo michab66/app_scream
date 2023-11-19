@@ -5,10 +5,10 @@
  */
 package de.michab.scream.ui;
 
-import java.awt.Component;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.script.ScriptEngine;
@@ -25,16 +25,18 @@ import javax.swing.KeyStroke;
 import javax.swing.event.PopupMenuListener;
 
 import org.smack.application.ApplicationInfo;
+import org.smack.swing.SwingUtil;
 import org.smack.swing.application.Action8;
 import org.smack.swing.application.ApplicationProperties;
 import org.smack.swing.application.SingleFrameApplication;
 import org.smack.swing.beans.PersistentJavaBeanProperty;
 import org.smack.swing.swingx.JXConsole;
 import org.smack.swing.swingx.JXMultiSplitPane;
-import org.smack.swing.swingx.MultiSplitLayout;
-import org.smack.swing.swingx.MultiSplitLayout.Divider;
-import org.smack.swing.swingx.MultiSplitLayout.Leaf;
-import org.smack.swing.swingx.MultiSplitLayout.Split;
+import org.smack.swing.swingx.multisplitpane.MultiSplitLayout;
+import org.smack.swing.swingx.multisplitpane.MultiSplitLayout.Column;
+import org.smack.swing.swingx.multisplitpane.MultiSplitLayout.Leaf;
+import org.smack.swing.swingx.multisplitpane.MultiSplitLayout.Row;
+import org.smack.swing.swingx.multisplitpane.MultiSplitLayout.Split;
 import org.smack.util.JavaUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
@@ -60,6 +62,22 @@ public class ScreamUi extends SingleFrameApplication
             new JToolBar();
     private final ScriptEngine _scream;
 
+
+    /**
+     * The top-level multi split pane.
+     */
+    private JXMultiSplitPane _msp;
+
+    /**
+     * The default layout spec for the top-level multi layout.
+     * Gets overwritten in init() with the spec from the
+     * previous application execution.
+     */
+    private Split _multiSplitModel = new Column(
+            new Row(
+                    new Leaf( .5, "left"),
+                    new Leaf( 0, "right" ) ),
+            new Leaf( .5, "bottom" ) );
 
     private final JTextArea _textArea = JavaUtil.make( () ->
     {
@@ -95,7 +113,7 @@ public class ScreamUi extends SingleFrameApplication
                             StringUtil.hasContent( selected ) );
                     paste.setEnabled(
                             result.isEditable() &&
-                            StringUtil.hasContent( UiUtil.getClipboardText() ) );
+                            StringUtil.hasContent( SwingUtil.getClipboardText() ) );
                     exec.setEnabled( StringUtil.hasContent( selected ) );
                 } );
 
@@ -198,12 +216,38 @@ public class ScreamUi extends SingleFrameApplication
     @Override
     protected void initialize( String[] args )
     {
+        // Check if we find a valid multisplit layout from our previous execution
+        // in persistence.
+        {
+            var applicationProperties = ServiceManager.getApplicationService(
+                    ApplicationProperties.class );
+
+            String multiSplitLayoutString = applicationProperties.get(
+                    getClass(),
+                    "multiSplitLayout",
+                    null );
+
+            if ( StringUtil.hasContent( multiSplitLayoutString ) )
+            {
+                try {
+                    _multiSplitModel =
+                            MultiSplitLayout.parseModel( multiSplitLayoutString );
+
+                }
+                catch (Exception e) {
+                    LOG.log( Level.INFO, "Failure parsing model.  Using default.", e );
+                }
+            }
+        }
+
+        // Connect the streams between interpreter and UI.
         {
             var c = _scream.getContext();
             c.setWriter( new OutputStreamWriter( _stdoin.getOut() ) );
             _scream.setContext( c );
         }
 
+        // Connect the standard streams to the UI.
         System.setErr( new PrintStream(_stderr.getOut() ) );
         System.setOut( new PrintStream(_stdoin.getOut() ) );
     }
@@ -231,44 +275,21 @@ public class ScreamUi extends SingleFrameApplication
         ioTabs.add( _stdoin, 0 );
         ioTabs.add( _stderr, 1 );
 
-        Component component = JavaUtil.make( () -> {
-            // https://stackoverflow.com/questions/8660687/how-to-use-multisplitlayout-in-swingx
+        _msp = JavaUtil.make( () -> {
 
-            Split row = JavaUtil.make( () -> {
-                var left = new Leaf("left");
-                left.setWeight( .5 );
-                var right = new Leaf( "right" );
-                right.setWeight( .5 );
-
-                return new Split(
-                        left,
-                        new Divider(),
-                        right );
-            });
-
-            Split column = JavaUtil.make( () -> {
-                var bottom = new Leaf( "bottom" );
-                bottom.setWeight( .5 );
-                row.setWeight( .5 );
-
-                var result = new Split(
-                        row,
-                        new Divider(),
-                        bottom );
-                result.setRowLayout( false );
-
-                return result;
-            });
-
-            JXMultiSplitPane msp = new JXMultiSplitPane(
-                    new MultiSplitLayout( column ) );
-
-            msp.add( ioTabs, "bottom");
-
-            msp.add( new JScrollPane( _textArea ), "left");
-
-            msp.add( new JScrollPane( _textArea ), "left");
-            msp.add( _console, "right");
+            JXMultiSplitPane msp =
+                    new JXMultiSplitPane(
+                            new MultiSplitLayout(
+                                    _multiSplitModel ) );
+            msp.add(
+                    ioTabs,
+                    "bottom");
+            msp.add(
+                    new JScrollPane( _textArea ),
+                    "left");
+            msp.add(
+                    _console,
+                    "right");
 
             return msp;
         } );
@@ -276,7 +297,7 @@ public class ScreamUi extends SingleFrameApplication
         var view = getMainView();
 
         view.setComponent(
-                component );
+                _msp );
         view.setToolBar(
                 _toolbar );
         view.setStatusBar(
@@ -290,7 +311,21 @@ public class ScreamUi extends SingleFrameApplication
     @Override
     protected void shutdown()
     {
+        super.shutdown();
+
+        // Save text from the composition area for the next run.
         compositionText.set( _textArea.getText() );
+
+        // Save the multiSplitLayout for the next run.
+        {
+            var applicationProperties = ServiceManager.getApplicationService(
+                    ApplicationProperties.class );
+
+            applicationProperties.put(
+                    getClass(),
+                    "multiSplitLayout",
+                    _msp.getModel().toString() );
+        }
     }
 
     public static void main( String[] argv ) throws Exception
