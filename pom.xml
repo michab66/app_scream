@@ -29,7 +29,7 @@
         <dependency>
             <groupId>micbinz</groupId>
             <artifactId>smack_swing</artifactId>
-            <version>11.9</version>
+            <version>${maven.compiler.release}.10</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
