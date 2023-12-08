@@ -95,7 +95,23 @@
               </execution>
             </executions>
           </plugin>
+
+          <!-- Allows execution from command line 'mvn exec:exec' -->
+          <!-- See https://stackoverflow.com/questions/9924994/maven-execjava-run-class-file-within-jar/26448245#26448245 -->
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.3.2</version>
+            <configuration>
+              <executable>java</executable>
+              <arguments>
+                <argument>-jar</argument>
+                <argument>target/scream-${project.version}.jar</argument>
+              </arguments>
+            </configuration>
+          </plugin>
         </plugins>
+
         <pluginManagement>
         	<plugins>
         		<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
