@@ -84,8 +84,20 @@
 ;;
 (define for-each map)
 
+#|
+ | (values obj ...) r7rs 6.10 p53 procedure
+ |#
+(define (values . things)
+     (call-with-current-continuation
+        (lambda (cont) (apply cont things))))
+
+#|
+ | (call-with-values producer consumer) r7rs 6.10 p53 procedure
+ |#
+;; Implemented in Continuation.java
+
 ;;
-;;
+;; See https://github.com/urschleim/scream/issues/221
 ;;
 (define (eq? x y)
     (%fco-class (eq x y)))

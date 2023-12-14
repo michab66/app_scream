@@ -315,4 +315,50 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
         assertEqualq( i(3), se.evalFco( "(return 2)" ) );
         assertEqualq( i(121), se.evalFco( "(return 120)" ) );
     }
+
+    @Test
+    public void values() throws Exception
+    {
+        expectFco(
+"""
+        (values 1 2)
+""",
+        "(1 2)" );
+    }
+
+    @Test
+    public void call_with_values() throws Exception
+    {
+        expectFco(
+"""
+        (call-with-values
+            (lambda () (values 4 5))
+            (lambda (a b) b))
+""",
+        i(5) );
+    }
+
+    @Test
+    public void call_with_values_1() throws Exception
+    {
+        expectFco(
+"""
+        (call-with-values
+            (lambda () (values 300 10 3))
+            (lambda (a b c) (+ a b c)))
+""",
+         i(313) );
+    }
+
+    @Test
+    public void call_with_values_2() throws Exception
+    {
+        expectError(
+"""
+        (call-with-values
+            (lambda () (values 300 10 3))
+            (lambda (a b) (+ a b)))
+""",
+        Code.WRONG_NUMBER_OF_ARGUMENTS);
+    }
 }

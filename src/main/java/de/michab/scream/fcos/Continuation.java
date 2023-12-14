@@ -60,13 +60,58 @@ public class Continuation extends Procedure
         }.setClosure( e );
     }
 
+    /**
+     * (call-with-current-continuation ...
+     */
+    static private Procedure callWithValuesProc( Environment e )
+    {
+        return new Procedure( "call-with-values" )
+        {
+
+            @Override
+            protected Thunk _executeImpl(
+                    Environment e,
+                    Cons args,
+                    Cont<FirstClassObject> c )
+                            throws RuntimeX
+            {
+
+                checkArgumentCount( 2, args );
+
+                var producer = Scut.as(
+                        Procedure.class,
+                        args.listRef(0) );
+                var consumer = Scut.as(
+                        Procedure.class,
+                        args.listRef(1) );
+
+                Cont<FirstClassObject> branch = values ->
+                {
+                    return consumer._execute(
+                            e,
+                            Scut.as( Cons.class, values ),
+                            c );
+                };
+
+                return producer._execute(
+                        e,
+                        Cons.NIL,
+                        branch );
+            }
+        }.setClosure( e );
+    }
+
     @Override
     protected Thunk _executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
-        checkArgumentCount( 1, args );
+//        checkArgumentCount( 1, args );
 
-        return _cont.accept( args.getCar() );
+        var values = args.length() == 1 ?
+                args.getCar() :
+                args;
+
+        return _cont.accept( values );
     }
 
     /**
@@ -79,6 +124,7 @@ public class Continuation extends Procedure
     public static Environment extendTopLevelEnvironment( Environment tle )
             throws RuntimeX
     {
+        tle.setPrimitive( callWithValuesProc( tle ) );
         var ccc = callccProc( tle );
         tle.setPrimitive( ccc );
         tle.define( Symbol.createObject( "call/cc" ), ccc );
