@@ -105,8 +105,6 @@ public class Continuation extends Procedure
     protected Thunk _executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
-//        checkArgumentCount( 1, args );
-
         var values = args.length() == 1 ?
                 args.getCar() :
                 args;
