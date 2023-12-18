@@ -154,12 +154,13 @@ public class Primitives
     }
 
     /**
-     * Create a list of new values.
+     * Defines a list of symbols in the passed environment.
+     * All symbols are defined to the same value.
      *
      * @param e The environment for evaluation.
-     * @param s The symbol to set.
-     * @param o The object to evaluate.
-     * @param c A continuation receiving NIL.
+     * @param symbols The symbols to define.
+     * @param o The value to set.
+     * @param c The resulting extended environment.
      * @return The thunk.
      */
     private static Thunk _define(
@@ -169,15 +170,92 @@ public class Primitives
             Cont<Environment> c )
                     throws RuntimeX
     {
+        var circular = new Cons( Cons.NIL, Cons.NIL );
+        circular.setCdr( circular );
+
+        Cont<FirstClassObject> done = ignored -> {
+            return c.accept( e );
+        };
+
+        return _defineList(
+                e,
+                symbols,
+                circular,
+                done );
+    }
+
+    /**
+     * Defines a list of symbols in the passed environment and returns the
+     * passed environment e.
+     *
+     * @param e The environment receiving the definitions.
+     * @param symbols The symbols to define.
+     * @param values The values to define.  If the list of values is shorter
+     * than the list of symbols, then the symbols to the end of the list are
+     * defined to {@code Cons.NIL}.
+     *
+     * @param c returns nil.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
+    private static Thunk _defineList(
+            Environment e,
+            Cons symbols,
+            Cons values,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
         if ( symbols == Cons.NIL )
             return c.accept( e );
 
-        Cont<FirstClassObject> next = v -> {
-            e.define( (Symbol)symbols.getCar(), v );
-            return _define( e, (Cons)symbols.getCdr(), o, c );
-        };
+        var firstSymbol =
+                Scut.as( Symbol.class, symbols.getCar() );
+        var firstValue = values == Cons.NIL ?
+                Cons.NIL:
+                values.getCar();
 
-        return _x_eval( e, o, next );
+        e.define( firstSymbol, firstValue );
+
+        var restSymbols =
+                Scut.as( Cons.class, symbols.getCdr() );
+        var restValues =
+                values == Cons.NIL ?
+                        Cons.NIL :
+                        Scut.as( Cons.class, values.getCdr() );
+
+        return _defineList(
+                e,
+                restSymbols,
+                restValues,
+                c );
+    }
+
+    /**
+     * Defines a list of symbols in the passed environment and returns the
+     * passed list of symbols.
+     *
+     * @param e The environment receiving the definitions.
+     * @param symbols The symbols to define.
+     * @param values The values to define.  If the list of values is shorter
+     * than the list of symbols, then the symbols to the end of the list are
+     * defined to {@code Cons.NIL}.
+     * @param c Returns 'symbols'.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
+    public static Thunk _x_defineList(
+            Environment e,
+            Cons symbols,
+            Cons values,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+
+        return _defineList(
+                e,
+                symbols,
+                values,
+                ignored -> c.accept( symbols ) );
     }
 
     /**
