@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
 
-public class R7rs_6_2_6_Numerical_operations extends ScreamBaseTest
+public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
 {
     @Test
     public void sqrt() throws Exception
