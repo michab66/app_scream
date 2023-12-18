@@ -46,6 +46,7 @@ import de.michab.scream.pops.SyntaxBegin;
 import de.michab.scream.pops.SyntaxCase;
 import de.michab.scream.pops.SyntaxCond;
 import de.michab.scream.pops.SyntaxDefine;
+import de.michab.scream.pops.SyntaxDefineValues;
 import de.michab.scream.pops.SyntaxDo;
 import de.michab.scream.pops.SyntaxIf;
 import de.michab.scream.pops.SyntaxLambda;
@@ -637,6 +638,7 @@ public final class ScreamEvaluator implements ScriptEngine
             SyntaxCase.extendNullEnvironment( result );
             SyntaxCond.extendNullEnvironment( result );
             SyntaxDefine.extendNullEnvironment( result );
+            SyntaxDefineValues.extendNullEnvironment( result );
             SyntaxDo.extendNullEnvironment( result );
             SyntaxIf.extendNullEnvironment( result );
             SyntaxLambda.extendNullEnvironment( result );
