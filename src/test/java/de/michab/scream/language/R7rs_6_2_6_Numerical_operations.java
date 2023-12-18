@@ -33,7 +33,7 @@ public class R7rs_6_2_6_Numerical_operations extends ScreamBaseTest
     public void sqrt_3() throws Exception
     {
         expectFco(
-                "(integer? (sqrt 4))",
+                "(integer? (sqrt 43))",
                 bTrue );
     }
 }
