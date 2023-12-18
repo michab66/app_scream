@@ -1,23 +1,26 @@
-; $Id: math.s 8 2008-09-14 14:23:20Z binzm $
+; Scream @ https://github.com/urschleim/scream
 ;
-; Scream / Math runtime
-;
-; Comments contain text from R5RS
-; Released under Gnu Public License
-; Copyright (c) 1998-2004 Michael G. Binz
+; Copyright © 1998-2023 Michael G. Binz
 
 ;;
-;; Scream definitions.
+;; r7rs 6.2.6 Numerical operations, p35
 ;;
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Scream definitions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define scream:type-integer
   ((make-object de.michab.scream.fcos.SchemeInteger) TYPE_NAME))
 
-;;
-;; Keep your environment tidy!
-;;
-(define %class-Math (make-object java.lang.Math))
+(define scream:math (make-object java.lang.Math))
+
 (define (%to-float x) (+ 0.0 x))
+ 
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; r7rs definitions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;
 ;; (number? obj) procedure; r5rs 30
@@ -208,7 +211,19 @@
 (define ceiling ())
 
 (define round ())
-(define sqrt ())
+
+#|
+ | (sqrt z) inexact library procedure; r7rs 38
+ |#
+(define (sqrt z) 
+  (let ((result (scream:math (sqrt z))))
+    (if (= z (* result result))
+    	(round result)
+    	result
+    )
+  )
+)
+
 (define expt-float ())
 
 ;;
@@ -289,11 +304,6 @@
   	(lambda (x) 
   	  (round (math (ceil x)))))
 
-  ;;
-  ;; sqrt - procedure - r5rs p. 24
-  ;;
-  (set! sqrt (lambda (x) (math (sqrt x))))
-
   (set! expt-float (lambda (x y) (math (pow (to-float x) (to-float y)))))
 )
 
@@ -333,7 +343,7 @@
 (define (remainder x y)
   ; Well that guy behaves magically.  Maps to the range of smallest abs
   ; values. Uh.
-  (let ((result (round (%class-Math (IEEEremainder (%to-float x)
+  (let ((result (round (scream:math (IEEEremainder (%to-float x)
                                                    (%to-float y))))))
     (cond ((and (positive? x) (negative? result))
            (+ result (abs y)))
@@ -350,7 +360,7 @@
 (define (modulo x y)
   ; Well that guy behaves magically.  Maps to the range of smallest abs
   ; values. Uh.
-  (let ((result (round (%class-Math (IEEEremainder (%to-float x)
+  (let ((result (round (scream:math (IEEEremainder (%to-float x)
                                                    (%to-float y))))))
     (cond ((and (positive? y) (negative? result))
            (+ result (abs y)))

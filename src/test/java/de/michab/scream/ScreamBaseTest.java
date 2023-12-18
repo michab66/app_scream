@@ -21,6 +21,7 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
@@ -199,6 +200,17 @@ public class ScreamBaseTest
     protected static Cons c( FirstClassObject ... fcos )
     {
         return Cons.create( fcos );
+    }
+
+    /**
+     * Create a scream double.
+     *
+     * @param v The value of the double.
+     * @return The requested value.
+     */
+    protected static SchemeDouble d( double v )
+    {
+        return SchemeDouble.createObject( v );
     }
 
     protected File tmpFile( Class<?> caller ) throws IOException

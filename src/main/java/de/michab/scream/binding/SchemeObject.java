@@ -21,6 +21,7 @@ import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.SchemeCharacter;
@@ -345,7 +346,7 @@ public class SchemeObject
                 result = Float.valueOf( (float)((SchemeDouble)actual).asDouble() );
 
             else if ( formal == java.lang.Double.TYPE )
-                result = Double.valueOf( ((SchemeDouble)actual).asDouble() );
+                result = Double.valueOf( ((Number)actual).asDouble() );
 
             else if ( formal == java.lang.Character.TYPE )
                 result = Character.valueOf( ((SchemeCharacter)actual).asCharacter() );
