@@ -224,6 +224,21 @@
   )
 )
 
+#|
+ | (exact-integer-sqrt k) inexact library procedure; r7rs 38
+ |#
+(define (exact-integer-sqrt k) 
+  (let*
+    (
+      (result (round (scream:math (sqrt k))))
+      (result-square (* result result))
+      (rest (- k result-square))
+    )
+    
+    (values result rest)
+  )
+)
+
 (define expt-float ())
 
 ;;

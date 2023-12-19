@@ -36,4 +36,19 @@ public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
                 "(integer? (sqrt 4))",
                 bTrue );
     }
+
+    @Test
+    public void exact_integer_sqrt() throws Exception
+    {
+        expectFco(
+                "(exact-integer-sqrt 4)",
+                "(2 0)" );
+    }
+    @Test
+    public void exact_integer_sqrt_1() throws Exception
+    {
+        expectFco(
+                "(exact-integer-sqrt 5)",
+                "(2 1)" );
+    }
 }
