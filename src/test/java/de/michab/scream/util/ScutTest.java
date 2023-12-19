@@ -129,14 +129,31 @@ public class ScutTest extends ScreamBaseTest
     }
 
     @Test
-    public void unique() throws Exception
+    public void unique_numbers() throws Exception
     {
         var list = readSingleExpression( "(1 2 3)", Cons.class );
 
         Scut.checkUnique( list );
     }
+
     @Test
-    public void notUnique() throws Exception
+    public void unique_symbols() throws Exception
+    {
+        var list = readSingleExpression( "(a b c)", Cons.class );
+
+        Scut.checkUnique( list );
+    }
+
+    @Test
+    public void unique_mixed() throws Exception
+    {
+        var list = readSingleExpression( "(a 1 b 2)", Cons.class );
+
+        Scut.checkUnique( list );
+    }
+
+    @Test
+    public void notUnique_numbers() throws Exception
     {
         var list = readSingleExpression( "(1 2 3 1)", Cons.class );
 
@@ -151,6 +168,41 @@ public class ScutTest extends ScreamBaseTest
             assertEquals( i1, x.getArguments()[0] );
         }
     }
+
+    @Test
+    public void notUnique_symbols() throws Exception
+    {
+        var list = readSingleExpression( "(a b b a)", Cons.class );
+
+        try
+        {
+            Scut.checkUnique( list );
+            fail();
+        }
+        catch ( RuntimeX x )
+        {
+            assertEquals( Code.DUPLICATE_ELEMENT, x.getCode() );
+            assertEquals( s("b"), x.getArguments()[0] );
+        }
+    }
+
+    @Test
+    public void notUnique_mixed() throws Exception
+    {
+        var list = readSingleExpression( "(a 1 b 1)", Cons.class );
+
+        try
+        {
+            Scut.checkUnique( list );
+            fail();
+        }
+        catch ( RuntimeX x )
+        {
+            assertEquals( Code.DUPLICATE_ELEMENT, x.getCode() );
+            assertEquals( i(1), x.getArguments()[0] );
+        }
+    }
+
     @Test
     public void uniqueNotProper() throws Exception
     {

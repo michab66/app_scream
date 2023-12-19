@@ -113,6 +113,12 @@ public class Scut
                 );
     }
 
+    /**
+     * Check if the passed list contains no duplicate elements.
+     *
+     * @param c The list to check.
+     * @throws RuntimeX mDuplicateElement if duplicate elements were found.
+     */
     public static void checkUnique( Cons c ) throws RuntimeX
     {
         var unifier = new HashSet<FirstClassObject>();
@@ -187,4 +193,23 @@ public class Scut
         return (byte)(0xff & idx);
     }
 
+    /**
+     * Ensure that the passed list contains only elements of the
+     * passed type.
+     *
+     * @param list The list to check.  Must be proper.
+     * @param type The expected type of the elements.
+     * @throws RuntimeX If the list contains other types than {@code type}.
+     */
+    public static void assertHomogeneous(
+            Cons list,
+            Class<? extends FirstClassObject> type )
+        throws RuntimeX
+    {
+        if ( ! Cons.isProper( list ) )
+            throw RuntimeX.mExpectedProperList();
+
+        for ( var c : list )
+            as( type, c );
+    }
 }
