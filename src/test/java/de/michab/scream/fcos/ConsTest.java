@@ -99,7 +99,7 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void tail() throws Exception
     {
-        Cons c1 = readSingleExpression(
+        Cons c1 = parse(
                 "(0 1 2 3 4)",
                 Cons.class );
 
@@ -112,7 +112,7 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void tailEmpty() throws Exception
     {
-        Cons c1 = readSingleExpression(
+        Cons c1 = parse(
                 "(0 1 2 3 4)",
                 Cons.class );
 
@@ -129,7 +129,7 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void properNot() throws Exception
     {
-        var p = readSingleExpression( "(1 2 3 . 4)", Cons.class );
+        var p = parse( "(1 2 3 . 4)", Cons.class );
         assertFalse( p.isProperList() );
         assertFalse( p.isCircular() );
         assertEquals( 3, p.length() );
@@ -146,7 +146,7 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void circular() throws Exception
     {
-        Cons c1 = readSingleExpression(
+        Cons c1 = parse(
                 "(0 1 2 3 4)",
                 Cons.class );
 
@@ -159,7 +159,7 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void ref() throws Exception
     {
-        Cons c1 = readSingleExpression(
+        Cons c1 = parse(
                 "(0 1 2 3 4)",
                 Cons.class );
 
@@ -181,10 +181,10 @@ public class ConsTest extends ScreamBaseTest
     @Test
     public void equality() throws Exception
     {
-        Cons c1 = readSingleExpression(
+        Cons c1 = parse(
                 "(0 1 2 3 4)",
                 Cons.class );
-        Cons c2 = readSingleExpression(
+        Cons c2 = parse(
                 "(0 1 2 3 4)",
                 Cons.class );
 

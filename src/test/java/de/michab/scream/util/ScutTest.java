@@ -133,7 +133,7 @@ public class ScutTest extends ScreamBaseTest
     @Test
     public void unique_numbers() throws Exception
     {
-        var list = readSingleExpression( "(1 2 3)", Cons.class );
+        var list = parse( "(1 2 3)", Cons.class );
 
         Scut.checkUnique( list );
     }
@@ -141,7 +141,7 @@ public class ScutTest extends ScreamBaseTest
     @Test
     public void unique_symbols() throws Exception
     {
-        var list = readSingleExpression( "(a b c)", Cons.class );
+        var list = parse( "(a b c)", Cons.class );
 
         Scut.checkUnique( list );
     }
@@ -149,7 +149,7 @@ public class ScutTest extends ScreamBaseTest
     @Test
     public void unique_mixed() throws Exception
     {
-        var list = readSingleExpression( "(a 1 b 2)", Cons.class );
+        var list = parse( "(a 1 b 2)", Cons.class );
 
         Scut.checkUnique( list );
     }
@@ -157,7 +157,7 @@ public class ScutTest extends ScreamBaseTest
     @Test
     public void notUnique_numbers() throws Exception
     {
-        var list = readSingleExpression( "(1 2 3 1)", Cons.class );
+        var list = parse( "(1 2 3 1)", Cons.class );
 
         try
         {
@@ -174,7 +174,7 @@ public class ScutTest extends ScreamBaseTest
     @Test
     public void notUnique_symbols() throws Exception
     {
-        var list = readSingleExpression( "(a b b a)", Cons.class );
+        var list = parse( "(a b b a)", Cons.class );
 
         try
         {
@@ -191,7 +191,7 @@ public class ScutTest extends ScreamBaseTest
     @Test
     public void notUnique_mixed() throws Exception
     {
-        var list = readSingleExpression( "(a 1 b 1)", Cons.class );
+        var list = parse( "(a 1 b 1)", Cons.class );
 
         try
         {
@@ -208,7 +208,7 @@ public class ScutTest extends ScreamBaseTest
     @Test
     public void uniqueNotProper() throws Exception
     {
-        var list = readSingleExpression( "(1 2 3 . 4)", Cons.class );
+        var list = parse( "(1 2 3 . 4)", Cons.class );
 
         Scut.checkUnique( list );
     }
@@ -216,7 +216,7 @@ public class ScutTest extends ScreamBaseTest
     @Test
     public void notUniqueNotProper() throws Exception
     {
-        var list = readSingleExpression( "(1 2 3 . 1)", Cons.class );
+        var list = parse( "(1 2 3 . 1)", Cons.class );
 
         try
         {
@@ -235,8 +235,8 @@ public class ScutTest extends ScreamBaseTest
     {
         HashSet<FirstClassObject> unifier = new HashSet<>();
 
-        var l1 = readSingleExpression( "(1 2 3)", Cons.class );
-        var l2 = readSingleExpression( "(4 5 1)", Cons.class );
+        var l1 = parse( "(1 2 3)", Cons.class );
+        var l2 = parse( "(4 5 1)", Cons.class );
 
         try
         {
@@ -254,35 +254,35 @@ public class ScutTest extends ScreamBaseTest
     @Test
     public void assertHomogeneous_integers() throws Exception
     {
-        var list = readSingleExpression( "(1 2 3)", Cons.class );
+        var list = parse( "(1 2 3)", Cons.class );
 
         Scut.assertHomogeneous( list, SchemeInteger.class );
     }
     @Test
     public void assertHomogeneous_floats() throws Exception
     {
-        var list = readSingleExpression( "(1. 2. 3.)", Cons.class );
+        var list = parse( "(1. 2. 3.)", Cons.class );
 
         Scut.assertHomogeneous( list, SchemeDouble.class );
     }
     @Test
     public void assertHomogeneous_numbers() throws Exception
     {
-        var list = readSingleExpression( "(1 2. 3)", Cons.class );
+        var list = parse( "(1 2. 3)", Cons.class );
 
         Scut.assertHomogeneous( list, Number.class );
     }
     @Test
     public void assertHomogeneous_symbols() throws Exception
     {
-        var list = readSingleExpression( "(tick trick track)", Cons.class );
+        var list = parse( "(tick trick track)", Cons.class );
 
         Scut.assertHomogeneous( list, Symbol.class );
     }
     @Test
     public void assertHomogeneous_fail_integers() throws Exception
     {
-        var list = readSingleExpression( "(1 2. 3)", Cons.class );
+        var list = parse( "(1 2. 3)", Cons.class );
 
         try
         {

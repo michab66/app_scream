@@ -20,7 +20,7 @@ public class FrontendNumbersTest
             long expected )
                     throws RuntimeX
     {
-        SchemeInteger n = ScreamBaseTest.readSingleExpression(
+        SchemeInteger n = ScreamBaseTest.parse(
                 scheme,
                 SchemeInteger.class );
         assertEquals(
