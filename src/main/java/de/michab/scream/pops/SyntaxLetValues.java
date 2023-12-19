@@ -33,12 +33,10 @@ public abstract class SyntaxLetValues
     /**
      * A proper list with length greater than 0 of two element lists, each
      * having a symbol as the first element.
-     * @param operationName The name of the calling operation.  Used in error
-     * handling.
      *
      * @return A proper list of symbols that are assigned in the binding list.
      */
-    protected Cons validateBindings( Cons bindings ) throws RuntimeX
+    protected void validateBindings( Cons bindings ) throws RuntimeX
     {
         final var originalBindings = bindings;
         ConsumerX<Long> ic = s -> {
@@ -51,8 +49,6 @@ public abstract class SyntaxLetValues
                 Integer.MAX_VALUE,
                 ic ,
                 ic );
-
-        Cons result = Cons.NIL;
 
         for ( var c : bindings )
         {
@@ -82,11 +78,7 @@ public abstract class SyntaxLetValues
                 throw RuntimeX.mExpectedProperList();
             Scut.checkUnique( symbolList );
             Scut.assertHomogeneous( symbolList, Symbol.class );
-
-            result = new Cons( symbolList, result );
         }
-
-        return result;
     }
 
     /**
@@ -134,8 +126,11 @@ public abstract class SyntaxLetValues
 
             validateBindings( bindings );
 
-            return Primitives._x_letStar(
-                    e,
+            var extended = e.extend( getName() );
+
+            return Primitives._x_let_values(
+                    extended,
+                    extended,
                     bindings,
                     body,
                     c);

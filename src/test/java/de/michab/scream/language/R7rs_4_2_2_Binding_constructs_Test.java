@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.language;
 
@@ -11,9 +11,9 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.SchemeBoolean;
 
 /**
- * r7rs 4.2.2 Binding constructs.
+ * r7rs 4.2.2 Binding constructs, p16
  *
- * @author MICBINZ
+ * @author micbinz
  */
 public class R7rs_4_2_2_Binding_constructs_Test extends ScreamBaseTest
 {
@@ -84,5 +84,35 @@ public class R7rs_4_2_2_Binding_constructs_Test extends ScreamBaseTest
              (even? 88))
             """,
             SchemeBoolean.T );
+    }
+
+    /**
+     * p17
+     */
+    @Test
+    public void let_values_1() throws Exception
+    {
+        expectFco(
+"""
+        (let-values (((root rem) (exact-integer-sqrt 32)))
+          (* root rem))
+""",
+        i(35) );
+    }
+
+    /**
+     * p17
+     */
+    @Test
+    public void let_star_values_1() throws Exception
+    {
+        expectFco(
+"""
+        (let ((a 'a) (b 'b) (x 'x) (y 'y))
+          (let*-values (((a b) (values x y))
+                               ((x y) (values a b)))
+            (list a b x y)))
+""",
+        "(x y x y)" );
     }
 }
