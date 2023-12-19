@@ -84,7 +84,8 @@ public abstract class SyntaxLet
     }
 
     /**
-     * (let <bindings> <body>) syntax r7rs, p16
+     * {@code (let <bindings> <body>) syntax r7rs, p16}
+     * <p>
      * where bindings is ((variable1 init1) ...) and body is a sequence of
      * expressions.
      */
@@ -112,7 +113,8 @@ public abstract class SyntaxLet
     };
 
     /**
-     * (let* <bindings> <body>) syntax r5rs, 11
+     * {@code (let* <bindings> <body>) syntax r7rs, p16}
+     * <p>
      * where bindings is ((variable1 init1) ...) and body is a sequence of
      * expressions.
      */
