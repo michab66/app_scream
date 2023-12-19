@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.scanner;
 
@@ -31,9 +31,7 @@ public class FrontendNumbersTest
     @Test
     public void parseIntegers() throws Exception
     {
-        // TODO failure cases
-//      validate( "#x10", 16 );  // Hex in scheme7
-//      validate( "10#x", 16 );  // error
+        validate( "#x10", 16 );
 
         validate( "0", 0 );
 
