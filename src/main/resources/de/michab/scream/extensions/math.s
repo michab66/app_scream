@@ -15,7 +15,7 @@
 
 (define scream:math (make-object java.lang.Math))
 
-(define (%to-float x) (+ 0.0 x))
+(define (scream:to-float x) (+ 0.0 x))
  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -198,6 +198,14 @@
 ;;
 (define abs ())
 
+#|
+ | (truncate x) procedure; r7rs 6.2.6 p37
+ |#
+(define (truncate x)
+  (if (positive? x)
+    (floor x)
+    (ceiling x)))
+
 (define exp ())
 (define log ())
 (define sin ())
@@ -230,7 +238,7 @@
 (define (exact-integer-sqrt k) 
   (let*
     (
-      (result (round (scream:math (sqrt k))))
+      (result (truncate (scream:math (sqrt k))))
       (result-square (* result result))
       (rest (- k result-square))
     )
@@ -343,23 +351,13 @@
     (expt-float x y)))
 
 ;;
-;; truncate - procedure - r5rs p. 23
-;;
-(define (truncate x)
-  (if (positive? x)
-    (floor x)
-    (ceiling x)))
-
-
-
-;;
 ;; remainder - procedure - r5rs p. 22
 ;;
 (define (remainder x y)
   ; Well that guy behaves magically.  Maps to the range of smallest abs
   ; values. Uh.
-  (let ((result (round (scream:math (IEEEremainder (%to-float x)
-                                                   (%to-float y))))))
+  (let ((result (round (scream:math (IEEEremainder (scream:to-float x)
+                                                   (scream:to-float y))))))
     (cond ((and (positive? x) (negative? result))
            (+ result (abs y)))
           ((and (negative? x) (positive? result))
@@ -375,8 +373,9 @@
 (define (modulo x y)
   ; Well that guy behaves magically.  Maps to the range of smallest abs
   ; values. Uh.
-  (let ((result (round (scream:math (IEEEremainder (%to-float x)
-                                                   (%to-float y))))))
+  ; TODO micbinz scream:to-float should not be required.
+  (let ((result (round (scream:math (IEEEremainder (scream:to-float x)
+                                                   (scream:to-float y))))))
     (cond ((and (positive? y) (negative? result))
            (+ result (abs y)))
           ((and (negative? y) (positive? result))
