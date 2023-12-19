@@ -268,7 +268,7 @@ public class Primitives
      * @return A thunk.
      * @throws RuntimeX
      */
-    private static Thunk _x_defineValues(
+    public static Thunk _x_defineValues(
             Environment target,
             Environment eval,
             Cons values,
@@ -469,7 +469,7 @@ public class Primitives
      *   ((c d) (init2))
      * )
      */
-    private static Thunk _bindLetValues(
+    private static Thunk _bindValues(
             Environment e,
             Environment extended,
             Cons bindings,
@@ -494,14 +494,17 @@ public class Primitives
                 e,
                 values,
                 init,
-                ignored -> _bindLetValues( e, extended, remainingBindings, c ) );
+                ignored -> _bindValues( e, extended, remainingBindings, c ) );
+    }
 
-//        Cont<FirstClassObject> evalResult = fco -> {
-//            extended.define( variable, fco );
-//            return _bindLetValues( e, extended, remainingBindings, c );
-//        };
-//
-//        return _x_eval( e, init, evalResult );
+    public static Thunk _x_bindValues(
+            Environment e,
+            Environment extended,
+            Cons bindings,
+            Cont<Environment> c )
+                    throws RuntimeX
+    {
+        return () -> _bindValues( e, extended, bindings, c );
     }
 
     public static Thunk _x_let_values(
@@ -518,7 +521,7 @@ public class Primitives
                         body,
                         c );
 
-        return () -> _bindLetValues(
+        return () -> _bindValues(
                 current,
                 extended,
                 bindings,

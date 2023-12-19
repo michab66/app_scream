@@ -46,34 +46,12 @@ public class SyntaxDefineValues extends Syntax
         var expression =
                 args.listRef( 1 );
 
-        // Receives the values from the evaluation of the
-        // expression and sets the formals accordingly.
-        Cont<FirstClassObject> defineValues = v -> {
-            if ( ! FirstClassObject.is( Cons.class,v ) )
-                v = new Cons( v, Cons.NIL );
-
-            var receivedValueCount = Scut.as( Cons.class, v ).length();
-
-            if ( receivedValueCount != formals.length() )
-                throw RuntimeX.mWrongNumberOfArguments(
-                        formals.length(),
-                        receivedValueCount );
-
-            return Primitives._x_defineList(
-                    e,
-                    formals,
-                    Scut.as( Cons.class, v ),
-                    // Constant result of the define-values procedure.
-                    ignored -> c.accept( Cons.NIL ) );
-        };
-
-        // Evaluate the expression,
-        // the resulting values are passed to
-        // defineValues above.
-        return Primitives._x_eval(
+        return Primitives._x_defineValues(
                 e,
+                e,
+                formals,
                 expression,
-                defineValues );
+                ignored -> c.accept( Cons.NIL ) );
     }
 
     /**
