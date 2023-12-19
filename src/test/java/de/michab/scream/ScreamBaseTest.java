@@ -27,6 +27,11 @@ import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 
+/**
+ * scream test support.
+ *
+ * @author micbinz
+ */
 public class ScreamBaseTest
 {
     public final static SchemeInteger i1 = i( 1 );
@@ -56,24 +61,34 @@ public class ScreamBaseTest
         assertEquals( testObject, j );
     }
 
-    static public <S extends FirstClassObject> S readSingleExpression(
-            String scheme, Class<S> cl )
-                    throws RuntimeX
+    /**
+     * Parses the passed Scheme expression and returns the expected type.
+     *
+     * @param <S> The expected result type.
+     * @param scheme A Scheme expression.
+     * @param cl The expected type.
+     * @return The read FirstClassObject as type S.
+     * @throws RuntimeX If evaluation of the expression failed.
+     * @throws ClassCastException if the expression does not evaluate to S.
+     */
+    static public <S extends FirstClassObject> S parse(
+            String scheme,
+            Class<S> cl )
+        throws RuntimeX
     {
-        var parser =
-                new SchemeParser( scheme );
-        var fco =
-                parser.getExpression();
-        assertEquals(
-                Port.EOF,
-                parser.getExpression() );
-        assertInstanceOf( cl, fco );
-        return cl.cast( fco );
+        return cl.cast( parse( scheme ) );
     }
 
+    /**
+     * Parses the passed Scheme expression.
+     *
+     * @param scheme A Scheme expression.
+     * @return The evaluation result.
+     * @throws RuntimeX If evaluation of the expression failed.
+     */
     static public FirstClassObject parse(
             String scheme )
-                    throws RuntimeX
+        throws RuntimeX
     {
         var parser =
                 new SchemeParser( scheme );

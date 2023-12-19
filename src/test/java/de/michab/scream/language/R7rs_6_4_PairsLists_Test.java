@@ -739,7 +739,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
                  '("a", "b", "c")
                  string-ci=?)
                 """ );
-        assertEqualq( readSingleExpression(
+        assertEqualq( parse(
                 """
                  ("b", "c")
                 """,
