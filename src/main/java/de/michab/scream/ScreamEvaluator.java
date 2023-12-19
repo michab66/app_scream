@@ -51,6 +51,7 @@ import de.michab.scream.pops.SyntaxDo;
 import de.michab.scream.pops.SyntaxIf;
 import de.michab.scream.pops.SyntaxLambda;
 import de.michab.scream.pops.SyntaxLet;
+import de.michab.scream.pops.SyntaxLetValues;
 import de.michab.scream.pops.SyntaxOr;
 import de.michab.scream.pops.SyntaxQuote;
 import de.michab.scream.pops.SyntaxSyntax;
@@ -645,6 +646,8 @@ public final class ScreamEvaluator implements ScriptEngine
             result.setPrimitive( SyntaxLet.letAsteriskSyntax );
             result.setPrimitive( SyntaxLet.letSyntax );
             result.setPrimitive( SyntaxLet.letrecSyntax );
+            result.setPrimitive( SyntaxLetValues.letValuesSyntax );
+            result.setPrimitive( SyntaxLetValues.letAsteriskValuesSyntax );
             SyntaxOr.extendNullEnvironment( result );
             SyntaxQuote.extendNullEnvironment( result );
             SyntaxSyntax.extendNullEnvironment( result );

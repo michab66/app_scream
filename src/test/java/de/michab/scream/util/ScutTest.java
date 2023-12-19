@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 2022 Michael G. Binz
+ * Copyright © 2022-2023 Michael G. Binz
  */
 package de.michab.scream.util;
 
@@ -18,6 +18,8 @@ import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Number;
+import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.Symbol;
 
@@ -129,14 +131,31 @@ public class ScutTest extends ScreamBaseTest
     }
 
     @Test
-    public void unique() throws Exception
+    public void unique_numbers() throws Exception
     {
         var list = readSingleExpression( "(1 2 3)", Cons.class );
 
         Scut.checkUnique( list );
     }
+
     @Test
-    public void notUnique() throws Exception
+    public void unique_symbols() throws Exception
+    {
+        var list = readSingleExpression( "(a b c)", Cons.class );
+
+        Scut.checkUnique( list );
+    }
+
+    @Test
+    public void unique_mixed() throws Exception
+    {
+        var list = readSingleExpression( "(a 1 b 2)", Cons.class );
+
+        Scut.checkUnique( list );
+    }
+
+    @Test
+    public void notUnique_numbers() throws Exception
     {
         var list = readSingleExpression( "(1 2 3 1)", Cons.class );
 
@@ -151,6 +170,41 @@ public class ScutTest extends ScreamBaseTest
             assertEquals( i1, x.getArguments()[0] );
         }
     }
+
+    @Test
+    public void notUnique_symbols() throws Exception
+    {
+        var list = readSingleExpression( "(a b b a)", Cons.class );
+
+        try
+        {
+            Scut.checkUnique( list );
+            fail();
+        }
+        catch ( RuntimeX x )
+        {
+            assertEquals( Code.DUPLICATE_ELEMENT, x.getCode() );
+            assertEquals( s("b"), x.getArguments()[0] );
+        }
+    }
+
+    @Test
+    public void notUnique_mixed() throws Exception
+    {
+        var list = readSingleExpression( "(a 1 b 1)", Cons.class );
+
+        try
+        {
+            Scut.checkUnique( list );
+            fail();
+        }
+        catch ( RuntimeX x )
+        {
+            assertEquals( Code.DUPLICATE_ELEMENT, x.getCode() );
+            assertEquals( i(1), x.getArguments()[0] );
+        }
+    }
+
     @Test
     public void uniqueNotProper() throws Exception
     {
@@ -158,6 +212,7 @@ public class ScutTest extends ScreamBaseTest
 
         Scut.checkUnique( list );
     }
+
     @Test
     public void notUniqueNotProper() throws Exception
     {
@@ -193,6 +248,52 @@ public class ScutTest extends ScreamBaseTest
         {
             assertEquals( Code.DUPLICATE_ELEMENT, x.getCode() );
             assertEquals( i1, x.getArguments()[0] );
+        }
+    }
+
+    @Test
+    public void assertHomogeneous_integers() throws Exception
+    {
+        var list = readSingleExpression( "(1 2 3)", Cons.class );
+
+        Scut.assertHomogeneous( list, SchemeInteger.class );
+    }
+    @Test
+    public void assertHomogeneous_floats() throws Exception
+    {
+        var list = readSingleExpression( "(1. 2. 3.)", Cons.class );
+
+        Scut.assertHomogeneous( list, SchemeDouble.class );
+    }
+    @Test
+    public void assertHomogeneous_numbers() throws Exception
+    {
+        var list = readSingleExpression( "(1 2. 3)", Cons.class );
+
+        Scut.assertHomogeneous( list, Number.class );
+    }
+    @Test
+    public void assertHomogeneous_symbols() throws Exception
+    {
+        var list = readSingleExpression( "(tick trick track)", Cons.class );
+
+        Scut.assertHomogeneous( list, Symbol.class );
+    }
+    @Test
+    public void assertHomogeneous_fail_integers() throws Exception
+    {
+        var list = readSingleExpression( "(1 2. 3)", Cons.class );
+
+        try
+        {
+            Scut.assertHomogeneous( list, SchemeInteger.class );
+            fail();
+        }
+        catch ( RuntimeX x )
+        {
+            assertEquals( Code.TYPE_ERROR, x.getCode() );
+            assertEquals( SchemeInteger.class, x.getArguments()[0] );
+            assertEquals( SchemeDouble.class, x.getArguments()[1] );
         }
     }
 }

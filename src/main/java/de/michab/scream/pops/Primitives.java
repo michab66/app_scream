@@ -259,6 +259,53 @@ public class Primitives
     }
 
     /**
+     *
+     * @param target The environment to extend with the definitions.
+     * @param eval The environment used for the evaluation of the expression.
+     * @param values The values to be bound.
+     * @param expression The expression generating the values.
+     * @param c Returns Cons.NIL.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
+    public static Thunk _x_defineValues(
+            Environment target,
+            Environment eval,
+            Cons values,
+            FirstClassObject expression,
+            Cont<FirstClassObject> c ) throws RuntimeX
+    {
+        // Receives the values from the evaluation of the
+        // expression and sets the formals accordingly.
+        Cont<FirstClassObject> defineValues = v -> {
+            if ( ! FirstClassObject.is( Cons.class,v ) )
+                v = new Cons( v, Cons.NIL );
+
+            var receivedValueCount = Scut.as( Cons.class, v ).length();
+
+            if ( receivedValueCount != values.length() )
+                throw RuntimeX.mWrongNumberOfArguments(
+                        values.length(),
+                        receivedValueCount );
+
+            return Primitives._x_defineList(
+                    target,
+                    values,
+                    Scut.as( Cons.class, v ),
+                    // Constant result of the define-values procedure.
+                    ignored -> c.accept( Cons.NIL ) );
+        };
+
+        // Evaluate the expression,
+        // the resulting values are passed to
+        // defineValues above.
+        return Primitives._x_eval(
+                eval,
+                expression,
+                defineValues );
+    }
+
+    /**
      * Evaluate a list of expressions and return the value of the final element.
      *
      * @param e The environment for evaluation.
@@ -414,6 +461,71 @@ public class Primitives
         };
 
         return _x_eval( e, init, evalResult );
+    }
+
+    /*
+     * (
+     *   ((a b) (init1))
+     *   ((c d) (init2))
+     * )
+     */
+    private static Thunk _bindValues(
+            Environment e,
+            Environment extended,
+            Cons bindings,
+            Cont<Environment> c )
+                    throws RuntimeX
+    {
+        if ( bindings == Cons.NIL )
+            return c.accept( extended );
+
+        Cons currentBinding =
+                (Cons)bindings.getCar();
+        Cons remainingBindings =
+                (Cons)bindings.getCdr();
+
+        Cons values =
+                (Cons)currentBinding.listRef(0);
+        FirstClassObject init =
+                currentBinding.listRef(1);
+
+        return _x_defineValues(
+                extended,
+                e,
+                values,
+                init,
+                ignored -> _bindValues( e, extended, remainingBindings, c ) );
+    }
+
+    public static Thunk _x_bindValues(
+            Environment e,
+            Environment extended,
+            Cons bindings,
+            Cont<Environment> c )
+                    throws RuntimeX
+    {
+        return () -> _bindValues( e, extended, bindings, c );
+    }
+
+    public static Thunk _x_let_values(
+            Environment current,
+            Environment extended,
+            Cons bindings,
+            Cons body,
+            Cont<FirstClassObject> c ) throws RuntimeX
+    {
+        // Process the body with the extended environment.
+        Cont<Environment> begin =
+                ext -> _x_begin(
+                        ext,
+                        body,
+                        c );
+
+        return () -> _bindValues(
+                current,
+                extended,
+                bindings,
+                begin );
     }
 
     public static Thunk _x_let(

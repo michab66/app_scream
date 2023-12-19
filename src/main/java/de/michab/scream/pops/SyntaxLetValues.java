@@ -17,27 +17,26 @@ import de.michab.scream.util.Scut;
 import de.michab.scream.util.Scut.ConsumerX;
 
 /**
- * {code (let <bindings> <body>)} syntax<br>
- * {code (let* <bindings> <body>)} syntax<br>
- * {code (letrec <bindings> <body>)} syntax<br>
+ * {code (let-values <mv binding spec> <body>)} syntax<br>
+ * {code (let*-values <mv binding spec> <body>)} syntax<br>
  * <p>
- * {code r7rs 4.2.2 16}
+ * {code r7rs 4.2.2 17}
  */
-public abstract class SyntaxLet
+public abstract class SyntaxLetValues
     extends Syntax
 {
-    private SyntaxLet( String name )
+    private SyntaxLetValues( String name )
     {
         super( name );
     }
 
     /**
-     * A proper list with length greater than 0 of two element lists, each having
-     * a symbol as the first element.
+     * A proper list with length greater than 0 of two element lists, each
+     * having a symbol as the first element.
      *
      * @return A proper list of symbols that are assigned in the binding list.
      */
-    protected Cons validateBindings( Cons bindings ) throws RuntimeX
+    protected void validateBindings( Cons bindings ) throws RuntimeX
     {
         final var originalBindings = bindings;
         ConsumerX<Long> ic = s -> {
@@ -50,8 +49,6 @@ public abstract class SyntaxLet
                 Integer.MAX_VALUE,
                 ic ,
                 ic );
-
-        Cons result = Cons.NIL;
 
         for ( var c : bindings )
         {
@@ -69,27 +66,25 @@ public abstract class SyntaxLet
                     2,
                     ic,
                     ic );
-            // First element is symbol.
-            var symbol = Scut.as(
-                    Symbol.class,
+            // First element is a list.
+            var symbolList = Scut.as(
+                    Cons.class,
                     binding.getCar(),
                     s -> {
                         throw RuntimeX.mBadBinding( getName(), binding );
                     } );
-
-            result = new Cons( symbol, result );
+            // Must be proper.
+            if ( ! Cons.isProper( symbolList ) )
+                throw RuntimeX.mExpectedProperList();
+            Scut.checkUnique( symbolList );
+            Scut.assertHomogeneous( symbolList, Symbol.class );
         }
-
-        return result;
     }
 
     /**
-     * {@code (let <bindings> <body>) syntax r7rs, p16}
-     * <p>
-     * where bindings is ((variable1 init1) ...) and body is a sequence of
-     * expressions.
+     * {code (let-values <mv binding spec> <body>) syntax}
      */
-    static public final Syntax letSyntax = new SyntaxLet( "let" )
+    static public final Syntax letValuesSyntax = new SyntaxLetValues( "let-values" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
@@ -104,8 +99,9 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            return Primitives._x_let(
+            return Primitives._x_let_values(
                     e,
+                    e.extend( getName() ),
                     bindings,
                     body,
                     c);
@@ -113,12 +109,9 @@ public abstract class SyntaxLet
     };
 
     /**
-     * {@code (let* <bindings> <body>) syntax r7rs, p16}
-     * <p>
-     * where bindings is ((variable1 init1) ...) and body is a sequence of
-     * expressions.
+     * {code (let*-values <mv binding spec> <body>) syntax}
      */
-    static public final Syntax letAsteriskSyntax = new SyntaxLet( "let*" )
+    static public final Syntax letAsteriskValuesSyntax = new SyntaxLetValues( "let*-values" )
     {
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
@@ -133,39 +126,13 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            return Primitives._x_letStar(
-                    e,
+            var extended = e.extend( getName() );
+
+            return Primitives._x_let_values(
+                    extended,
+                    extended,
                     bindings,
                     body,
-                    c);
-        }
-    };
-
-    /**
-     * (letrec <bindings> <body>) syntax r5rs, 11
-     * where bindings is ((variable1 init1) ...) and body is a sequence of
-     * expressions.
-     */
-    static public final Syntax letrecSyntax = new SyntaxLet( "letrec" )
-    {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args,
-                Cont<FirstClassObject> c ) throws RuntimeX
-        {
-            checkArgumentCount( 2, Integer.MAX_VALUE, args );
-
-            var bindings =
-                    Scut.as( Cons.class, args.getCar() );
-            var body =
-                    Scut.as( Cons.class, args.getCdr() );
-
-            var symbols = validateBindings( bindings );
-
-            return Primitives._x_letRec(
-                    e,
-                    bindings,
-                    body,
-                    symbols,
                     c);
         }
     };
