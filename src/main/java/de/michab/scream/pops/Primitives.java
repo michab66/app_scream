@@ -155,7 +155,7 @@ public class Primitives
 
     /**
      * Defines a list of symbols in the passed environment.
-     * All symbols are defined to the same value.
+     * All symbols are bound to the same value.
      *
      * @param e The environment for evaluation.
      * @param symbols The symbols to define.
@@ -433,7 +433,7 @@ public class Primitives
     /**
      * Performs variable binding for the {@code let...} syntax.
      *
-     * @param e The environment used to evaluate the {@code <init>} expressions.
+     * @param eval The environment used to evaluate the {@code <init>} expressions.
      * @param extended The environment receiving the bound values.
      * @param bindings The list of bindings to process.
      * Format is like {@code ((<variable1> <init1>) ...)}.
@@ -441,8 +441,8 @@ public class Primitives
      * @return A thunk.
      * @throws RuntimeX
      */
-    private static Thunk _bindLet(
-            Environment e,
+    private static Thunk _bind(
+            Environment eval,
             Environment extended,
             Cons bindings,
             Cont<Environment> c )
@@ -457,10 +457,10 @@ public class Primitives
 
         Cont<FirstClassObject> evalResult = fco -> {
             extended.define( variable, fco );
-            return _bindLet( e, extended, (Cons)bindings.getCdr(), c );
+            return _bind( eval, extended, (Cons)bindings.getCdr(), c );
         };
 
-        return _x_eval( e, init, evalResult );
+        return _x_eval( eval, init, evalResult );
     }
 
     /*
@@ -528,8 +528,20 @@ public class Primitives
                 begin );
     }
 
+    /**
+     * Executes a let expression.
+     *
+     * @param e The environment used for evaluation of the expressions.
+     * @param extended The environment receiving the new bindings.
+     * @param bindings The bindings.
+     * @param body The body executed after the binding phase.
+     * @param c Returns the result of body evaluation.
+     * @return A think.
+     * @throws RuntimeX In case of failures.
+     */
     public static Thunk _x_let(
             Environment e,
+            Environment extended,
             Cons bindings,
             Cons body,
             Cont<FirstClassObject> c ) throws RuntimeX
@@ -540,30 +552,9 @@ public class Primitives
                         body,
                         c );
 
-        return () -> _bindLet(
+        return () -> _bind(
                 e,
-                e.extend( Symbol.createObject( "x_let" ) ),
-                bindings,
-                begin );
-    }
-
-    public static Thunk _x_letStar(
-            Environment e,
-            Cons bindings,
-            Cons body,
-            Cont<FirstClassObject> c ) throws RuntimeX
-    {
-        Cont<Environment> begin =
-                ext -> _x_begin(
-                        ext,
-                        body,
-                        c );
-
-        var extendedEnv = e.extend( Symbol.createObject( "x_let*" ) );
-
-        return () -> _bindLet(
-                extendedEnv,
-                extendedEnv,
+                extended,
                 bindings,
                 begin );
     }
@@ -593,7 +584,7 @@ public class Primitives
                         c );
 
         Cont<Environment> bind =
-                env -> _bindLet(
+                env -> _bind(
                         env,
                         env,
                         bindings,
@@ -715,7 +706,8 @@ public class Primitives
     }
 
     /**
-     * Evaluates the elements in the passed list.
+     * Evaluates the elements in the passed list and returns a list with the
+     * evaluation results to the passed continuation.
      *
      * @param e The environment used for evaluation.
      * @param l The list to be evaluated.
@@ -803,7 +795,7 @@ public class Primitives
                         commands,
                         c );
 
-        return () -> _bindLet(
+        return () -> _bind(
                 e,
                 e.extend( Symbol.createObject( "x_do" ) ),
                 inits,

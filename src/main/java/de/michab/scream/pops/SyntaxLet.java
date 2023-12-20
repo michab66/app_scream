@@ -21,7 +21,7 @@ import de.michab.scream.util.Scut.ConsumerX;
  * {code (let* <bindings> <body>)} syntax<br>
  * {code (letrec <bindings> <body>)} syntax<br>
  * <p>
- * {code r7rs 4.2.2 16}
+ * {code r7rs 4.2.2 p16}
  */
 public abstract class SyntaxLet
     extends Syntax
@@ -97,15 +97,17 @@ public abstract class SyntaxLet
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
-            var bindings =
+            Cons bindings =
                     Scut.as( Cons.class, args.getCar() );
             var body =
                     Scut.as( Cons.class, args.getCdr() );
 
-            validateBindings( bindings );
+            Scut.assertUnique(
+                    validateBindings( bindings ) );
 
             return Primitives._x_let(
                     e,
+                    e.extend( getName() ),
                     bindings,
                     body,
                     c);
@@ -133,8 +135,11 @@ public abstract class SyntaxLet
 
             validateBindings( bindings );
 
-            return Primitives._x_letStar(
-                    e,
+            var extended = e.extend( getName() );
+
+            return Primitives._x_let(
+                    extended,
+                    extended,
                     bindings,
                     body,
                     c);
@@ -142,9 +147,9 @@ public abstract class SyntaxLet
     };
 
     /**
-     * (letrec <bindings> <body>) syntax r5rs, 11
-     * where bindings is ((variable1 init1) ...) and body is a sequence of
-     * expressions.
+     * {code (letrec <bindings> <body>)} syntax<br>
+     * <p>
+     * {code r7rs 4.2.2 p16}
      */
     static public final Syntax letrecSyntax = new SyntaxLet( "letrec" )
     {

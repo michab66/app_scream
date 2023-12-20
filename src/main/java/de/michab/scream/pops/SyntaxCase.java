@@ -64,7 +64,7 @@ public class SyntaxCase extends Syntax
                     1,
                     Integer.MAX_VALUE,
                     cdatum );
-            Scut.checkUnique(
+            Scut.assertUnique(
                     unifier,
                     cdatum );
         }

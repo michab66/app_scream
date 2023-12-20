@@ -114,25 +114,42 @@ public class Scut
     }
 
     /**
-     * Check if the passed list contains no duplicate elements.
+     * Check if the passed list contains no duplicate elements. Supports
+     * improper lists.
      *
-     * @param c The list to check.
+     * @param cons The list to check.
+     * @return The passed list.
      * @throws RuntimeX mDuplicateElement if duplicate elements were found.
      */
-    public static void checkUnique( Cons c ) throws RuntimeX
+    public static Cons assertUnique( Cons cons ) throws RuntimeX
     {
-        var unifier = new HashSet<FirstClassObject>();
-        checkUnique( unifier, c );
+        return assertUnique(
+                new HashSet<FirstClassObject>(),
+                cons );
     }
 
-    public static void checkUnique(
+    /**
+     * Check if the passed list contains no duplicate elements. Supports
+     * improper lists.  This form can be used if uniqueness has to be checked
+     * across several lists by passing the same unifier in each call.
+     *
+     * @param unifier A has
+     * @param cons The list to check.
+     * @return The passed list.
+     *
+     * @throws RuntimeX mDuplicateElement if duplicate elements were found.
+     */
+    public static Cons assertUnique(
             HashSet<FirstClassObject> unifier,
-            Cons c ) throws RuntimeX
+            Cons cons )
+        throws RuntimeX
     {
+        final Cons result = cons;
+
         while ( true )
         {
-            var car = c.getCar();
-            var cdr = c.getCdr();
+            var car = cons.getCar();
+            var cdr = cons.getCdr();
 
             if ( ! unifier.add( car ) )
                 throw RuntimeX.mDuplicateElement( car );
@@ -141,7 +158,7 @@ public class Scut
                 break;
             if ( cdr instanceof Cons )
             {
-                c = (Cons)cdr;
+                cons = (Cons)cdr;
                 continue;
             }
 
@@ -149,6 +166,8 @@ public class Scut
                 throw RuntimeX.mDuplicateElement( cdr );
             break;
         }
+
+        return result;
     }
 
     public static int assertIndex( long idx ) throws RuntimeX

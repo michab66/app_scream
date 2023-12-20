@@ -135,7 +135,7 @@ public class ScutTest extends ScreamBaseTest
     {
         var list = parse( "(1 2 3)", Cons.class );
 
-        Scut.checkUnique( list );
+        Scut.assertUnique( list );
     }
 
     @Test
@@ -143,7 +143,15 @@ public class ScutTest extends ScreamBaseTest
     {
         var list = parse( "(a b c)", Cons.class );
 
-        Scut.checkUnique( list );
+        Scut.assertUnique( list );
+    }
+
+    @Test
+    public void unique_symbols_improper() throws Exception
+    {
+        var list = parse( "(a b c . rest)", Cons.class );
+
+        Scut.assertUnique( list );
     }
 
     @Test
@@ -151,7 +159,7 @@ public class ScutTest extends ScreamBaseTest
     {
         var list = parse( "(a 1 b 2)", Cons.class );
 
-        Scut.checkUnique( list );
+        Scut.assertUnique( list );
     }
 
     @Test
@@ -161,7 +169,7 @@ public class ScutTest extends ScreamBaseTest
 
         try
         {
-            Scut.checkUnique( list );
+            Scut.assertUnique( list );
             fail();
         }
         catch ( RuntimeX x )
@@ -178,7 +186,24 @@ public class ScutTest extends ScreamBaseTest
 
         try
         {
-            Scut.checkUnique( list );
+            Scut.assertUnique( list );
+            fail();
+        }
+        catch ( RuntimeX x )
+        {
+            assertEquals( Code.DUPLICATE_ELEMENT, x.getCode() );
+            assertEquals( s("b"), x.getArguments()[0] );
+        }
+    }
+
+    @Test
+    public void notUnique_symbols_improper() throws Exception
+    {
+        var list = parse( "(a b . b)", Cons.class );
+
+        try
+        {
+            Scut.assertUnique( list );
             fail();
         }
         catch ( RuntimeX x )
@@ -195,7 +220,7 @@ public class ScutTest extends ScreamBaseTest
 
         try
         {
-            Scut.checkUnique( list );
+            Scut.assertUnique( list );
             fail();
         }
         catch ( RuntimeX x )
@@ -210,7 +235,7 @@ public class ScutTest extends ScreamBaseTest
     {
         var list = parse( "(1 2 3 . 4)", Cons.class );
 
-        Scut.checkUnique( list );
+        Scut.assertUnique( list );
     }
 
     @Test
@@ -220,7 +245,7 @@ public class ScutTest extends ScreamBaseTest
 
         try
         {
-            Scut.checkUnique( list );
+            Scut.assertUnique( list );
             fail();
         }
         catch ( RuntimeX x )
@@ -240,8 +265,8 @@ public class ScutTest extends ScreamBaseTest
 
         try
         {
-            Scut.checkUnique( unifier, l1 );
-            Scut.checkUnique( unifier, l2 );
+            Scut.assertUnique( unifier, l1 );
+            Scut.assertUnique( unifier, l2 );
             fail();
         }
         catch ( RuntimeX x )

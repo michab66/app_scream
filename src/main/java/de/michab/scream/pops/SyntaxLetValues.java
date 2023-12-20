@@ -76,7 +76,7 @@ public abstract class SyntaxLetValues
             // Must be proper.
             if ( ! Cons.isProper( symbolList ) )
                 throw RuntimeX.mExpectedProperList();
-            Scut.checkUnique( symbolList );
+            Scut.assertUnique( symbolList );
             Scut.assertHomogeneous( symbolList, Symbol.class );
         }
     }
