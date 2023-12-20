@@ -83,4 +83,21 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
             """,
             parse( "(3 4)" ) );
     }
+
+    /**
+     * SO: https://stackoverflow.com/questions/31909121/how-does-the-named-let-in-the-form-of-a-loop-work
+     */
+    @Test
+    public void named_let_basic() throws Exception
+    {
+        expectFco(
+"""
+        (let ((loop 10))
+          (let loop ((n loop))
+            (if (zero? n)
+                '()
+                (cons n (loop (- n 1))))))
+""",
+        "(10 9 8 7 6 5 4 3 2 1)" );
+    }
 }
