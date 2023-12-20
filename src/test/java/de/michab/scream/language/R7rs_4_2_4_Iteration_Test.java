@@ -82,6 +82,32 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
     }
 
     /**
+     * r7rs p18
+     */
+    @Test
+    public void named_let_1() throws Exception
+    {
+        expectFco(
+"""
+        (let loop
+            ((numbers '(3 -2 1 6 -5))
+            (nonneg '())
+            (neg '()))
+          (cond
+            ((null? numbers) (list nonneg neg))
+            ((>= (car numbers) 0)
+                  (loop (cdr numbers)
+                        (cons (car numbers) nonneg)
+                        neg))
+            (else
+              (loop (cdr numbers)
+                    nonneg
+                    (cons (car numbers) neg)))))
+""",
+        "((6 1 3) (-5 -2))" );
+    }
+
+    /**
      * SO: https://stackoverflow.com/questions/31909121/how-does-the-named-let-in-the-form-of-a-loop-work
      */
     @Test
@@ -97,4 +123,5 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
 """,
         "(10 9 8 7 6 5 4 3 2 1)" );
     }
+
 }
