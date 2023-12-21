@@ -124,4 +124,26 @@ public class R7rs_4_2_4_Iteration_Test extends ScreamBaseTest
         "(10 9 8 7 6 5 4 3 2 1)" );
     }
 
+    /**
+     * SO: https://stackoverflow.com/questions/4261604/sorting-a-list-in-scheme
+     */
+    @Test
+    public void named_let_qsort() throws Exception
+    {
+        expectFco(
+"""
+        (define (qsort e)
+          (if (or (null? e) (<= (length e) 1)) e
+              (let loop ((left '()) (right '())
+                           (pivot (car e)) (rest (cdr e)))
+                    (if (null? rest)
+                        (append (append (qsort left) (list pivot)) (qsort right))
+                       (if (<= (car rest) pivot)
+                            (loop (append left (list (car rest))) right pivot (cdr rest))
+                            (loop left (append right (list (car rest))) pivot (cdr rest)))))))
+         (qsort  '(626 1 3 5 2 9 11 313 23 64 63 123 49 48 47 4 99 799 798 797 796 795 794 793 792))
+""",
+        "(1 2 3 4 5 9 11 23 47 48 49 63 64 99 123 313 626 792 793 794 795 796 797 798 799)" );
+    }
+
 }
