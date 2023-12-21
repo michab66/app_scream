@@ -10,6 +10,7 @@ import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Continuation.Thunk;
@@ -91,10 +92,65 @@ public abstract class SyntaxLet
      */
     static public final Syntax letSyntax = new SyntaxLet( "let" )
     {
+        private Thunk namedLet(
+                Environment e,
+                Cons args,
+                Cont<FirstClassObject> c )
+            throws RuntimeX
+        {
+            checkArgumentCount( 3, Integer.MAX_VALUE, args );
+
+            Symbol variable =
+                    Scut.as( Symbol.class, args.listRef( 0 ) );
+            Cons bindings =
+                    Scut.as( Cons.class, args.listRef( 1 ) );
+            var body =
+                    Scut.as( Cons.class, args.listTail( 2 ) );
+
+            var arguments = Scut.assertUnique(
+                    validateBindings( bindings ) ).reverse();
+
+            // TODO this is a testcase for #151
+            var array = bindings.asArray();
+            for ( int i = 0 ; i < array.length ; i++ )
+            {
+                array[i] = Scut.as( Cons.class, array[i] ).getCdr();
+                array[i] = Scut.as( Cons.class, array[i] ).getCar();
+            }
+            var ebindings = Cons.create( array );
+
+
+            var extended = e.extend( "named-let" );
+
+            var p = new Procedure(
+                    extended,
+                    arguments,
+                    body );
+            p.setName( variable );
+
+            extended.define( variable, p );
+
+            Cont<Cons> exec = evaluatedArguments -> {
+                return p.apply(
+                        extended,
+                        evaluatedArguments,
+                        c );
+            };
+
+            // Evaluate the arguments in the received environment.
+            return () -> Primitives._x_evalCons(
+                    e,
+                    ebindings,
+                    exec );
+        }
+
         @Override
         protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
+            if ( FirstClassObject.is( Symbol.class, args.getCar() ) )
+                return namedLet( e, args, c );
+
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
             Cons bindings =
