@@ -110,14 +110,15 @@ public abstract class SyntaxLet
             var arguments = Scut.assertUnique(
                     validateBindings( bindings ) ).reverse();
 
+            // TODO this is a testcase for #151
             var array = bindings.asArray();
             for ( int i = 0 ; i < array.length ; i++ )
             {
                 array[i] = Scut.as( Cons.class, array[i] ).getCdr();
                 array[i] = Scut.as( Cons.class, array[i] ).getCar();
             }
-
             var ebindings = Cons.create( array );
+
 
             var extended = e.extend( "named-let" );
 
@@ -136,7 +137,7 @@ public abstract class SyntaxLet
                         c );
             };
 
-            // Evaluate the arguments in the environment that we receive.
+            // Evaluate the arguments in the received environment.
             return () -> Primitives._x_evalCons(
                     e,
                     ebindings,
