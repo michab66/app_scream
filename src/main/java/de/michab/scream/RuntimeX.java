@@ -536,13 +536,17 @@ public class RuntimeX
     //    #
     //    TYPE_ERROR_2 = \
     //    11 : Argument has wrong type.  Expected {0} but found {1}.
-    public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
-    RuntimeX mTypeError( Class<T1> expected, Class<T2> found )
+    public static  <T extends FirstClassObject>
+    RuntimeX mTypeError( Class<T> expected, FirstClassObject fco )
     {
+        String msg = Cons.NIL == fco ?
+                FirstClassObject.toString( fco ) :
+                fco.typename() + "=" + fco.toString();
+
         return new RuntimeX(
                 Code.TYPE_ERROR,
-                expected,
-                found );
+                FirstClassObject.typename( expected ),
+                msg );
     }
 
     //    TYPE_ERROR_3 = \
@@ -552,8 +556,8 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.TYPE_ERROR,
-                expected,
-                found,
+                FirstClassObject.typename( expected ),
+                FirstClassObject.typename( found ),
                 argumentIdx );
     }
 

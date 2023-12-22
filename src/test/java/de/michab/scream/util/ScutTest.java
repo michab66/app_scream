@@ -125,7 +125,7 @@ public class ScutTest extends ScreamBaseTest
         {
             assertEquals( Code.TYPE_ERROR, rx.getCode() );
             assertEquals(
-                    Cons.NIL,
+                    FirstClassObject.toString( Cons.NIL ),
                     rx.getArgument(1) );
         }
     }
@@ -316,9 +316,15 @@ public class ScutTest extends ScreamBaseTest
         }
         catch ( RuntimeX x )
         {
-            assertEquals( Code.TYPE_ERROR, x.getCode() );
-            assertEquals( SchemeInteger.class, x.getArguments()[0] );
-            assertEquals( SchemeDouble.class, x.getArguments()[1] );
+            assertEquals(
+                    Code.TYPE_ERROR,
+                    x.getCode() );
+            assertEquals(
+                    FirstClassObject.typename( SchemeInteger.class ),
+                    x.getArguments()[0] );
+            assertEquals(
+                    FirstClassObject.typename( SchemeDouble.class ) + "=2.0",
+                    x.getArguments()[1] );
         }
     }
 }

@@ -88,7 +88,7 @@ public class Scut
     public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
     {
         FunctionX<FirstClassObject, T, RuntimeX> fail = (s) ->
-            { throw RuntimeX.mTypeError( c, s.getClass() );  };
+            { throw RuntimeX.mTypeError( c, s );  };
 
         return as(
                 c,
@@ -101,10 +101,10 @@ public class Scut
             throws RuntimeX
     {
         if ( Cons.NIL == v )
-            throw RuntimeX.mTypeError( c, null );
+            throw RuntimeX.mTypeError( c, Cons.NIL );
 
         FunctionX<FirstClassObject, T, RuntimeX> fail = (s) ->
-            { throw RuntimeX.mTypeError( c, s.getClass() );  };
+            { throw RuntimeX.mTypeError( c, s );  };
 
         return as(
                 c,

@@ -449,7 +449,7 @@ public abstract class FirstClassObject
             return c.cast( this );
         }
         catch (ClassCastException e) {
-            throw RuntimeX.mTypeError( c, getClass() );
+            throw RuntimeX.mTypeError( c, this );
         }
     }
 }
