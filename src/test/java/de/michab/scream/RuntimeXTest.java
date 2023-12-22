@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.frontend.Token;
@@ -279,11 +280,11 @@ public class RuntimeXTest extends ScreamBaseTest
     public void _11_typeError2() throws Exception
     {
         validateMessageAndType(
-                RuntimeX.mTypeError( Cons.class, SchemeDouble.class ),
+                RuntimeX.mTypeError( Cons.class, d(313) ),
                 Code.TYPE_ERROR,
                 11,
-                Cons.class,
-                SchemeDouble.class );
+                FirstClassObject.typename( Cons.class ),
+                FirstClassObject.typename( SchemeDouble.class ) + "=313.0" );
     }
     @Test
     public void _11_typeError3() throws Exception
@@ -292,8 +293,8 @@ public class RuntimeXTest extends ScreamBaseTest
                 RuntimeX.mTypeError( Cons.class, Port.class, 313 ),
                 Code.TYPE_ERROR,
                 11,
-                Cons.class,
-                Port.class,
+                FirstClassObject.typename( Cons.class ),
+                FirstClassObject.typename( Port.class ),
                 313 );
     }
     @Test

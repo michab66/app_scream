@@ -373,16 +373,13 @@ extends FirstClassObject
             Cons args,
             long argsLength,
             Cont<FirstClassObject> c )
+        throws RuntimeX
     {
-
-        return Primitives._x_evalCons(
+        return opr.perform(
                 e,
                 args,
-                cons -> opr.perform(
-                        e,
-                        cons,
-                        argsLength,
-                        c ) );
+                argsLength,
+                c );
     }
 
     /**
@@ -391,7 +388,6 @@ extends FirstClassObject
     static private Procedure addProc( Environment e )
     {
         return new Procedure( "+" )
-
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
