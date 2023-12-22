@@ -292,25 +292,18 @@ public class RuntimeX
         // the empty string.  See invariant in constructor.
         String messageId = super.getMessage();
 
-        if ( _errorArguments.length > 0 )
+        final var messageKey = _errorArguments.length > 0 ?
+                messageId + "_" + _errorArguments.length :
+                messageId;
+
+        if ( ErrorMessages.map.containsKey( messageKey ) )
         {
-            // Append the number of arguments to the message key.
-            String messageKey =
-                    messageId +
-                    "_" +
-                    _errorArguments.length;
-
-            var result = ErrorMessages.map.get( messageKey );
-
-            if ( result != null )
-                return getId() + " : " + MessageFormat.format(
-                    result,
+            return getId() + " : " + MessageFormat.format(
+                    ErrorMessages.map.get( messageKey ),
                     _errorArguments );
         }
 
         StringBuilder result =
-                ErrorMessages.map.containsKey( messageId ) ?
-                        new StringBuilder( ErrorMessages.map.get( messageId ) ) :
                         new StringBuilder( messageId );
 
         for ( var c : _errorArguments )
