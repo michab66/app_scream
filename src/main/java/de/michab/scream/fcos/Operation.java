@@ -10,7 +10,6 @@ import java.util.Set;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
-import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.ConversionFailedX;
@@ -400,36 +399,16 @@ extends FirstClassObject
             throws RuntimeX;
 
     /**
-     * Override if the compile environment is required.
-     * The default implementation forwards to {@link #_execute(Environment, Cons, Cont)}.
-     *
-     * @param compileEnv
-     * @param e
-     * @param args
-     * @param c
-     * @return
-     * @throws RuntimeX
-     */
-    private Thunk _execute( Environment compileEnv, Environment e, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX
-    {
-        return _execute( e, args, c );
-    }
-
-    /**
      * Returns A lambda that calls _execute.
      * @param env
      * @param args
      * @return
      * @throws RuntimeX
      */
-    protected Lambda _compile( Environment env, Cons args ) throws RuntimeX
+    protected final Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
-        L l = (e,c) -> _execute( env, e, args, c );
-
-        return new Lambda(
-                l,
-                this.toString() ).setInfo( args );
+        // See #160
+        throw RuntimeX.mInternalError( getClass() );
     }
 
     /**
