@@ -90,6 +90,22 @@ public class RuntimeXTest extends ScreamBaseTest
     }
 
     @Test
+    public void operationName() throws Exception
+    {
+        var se = RuntimeX.mDivisionByZero().setOperationName( s313 );
+
+        assertEquals(
+                Code.DIVISION_BY_ZERO.id(),
+                se.getId() );
+        assertEquals(
+                Code.DIVISION_BY_ZERO,
+                se.getCode() );
+
+        var splitMessage = se.getMessage().split( " : " );
+        assertEquals( s313.toString(), splitMessage[1] );
+    }
+
+    @Test
     public void unknownCode() throws Exception
     {
         var rx = new RuntimeX( "duck" );

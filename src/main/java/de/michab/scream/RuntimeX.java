@@ -292,19 +292,25 @@ public class RuntimeX
         // the empty string.  See invariant in constructor.
         String messageId = super.getMessage();
 
+        StringBuilder result = new StringBuilder().
+                append( getId() ).
+                append( " : " );
+
+        if ( getOperationName() != null )
+            result.append( getOperationName() ).append( " : " );
+
         final var messageKey = _errorArguments.length > 0 ?
                 messageId + "_" + _errorArguments.length :
                 messageId;
 
         if ( ErrorMessages.map.containsKey( messageKey ) )
         {
-            return getId() + " : " + MessageFormat.format(
+            return result.toString() + MessageFormat.format(
                     ErrorMessages.map.get( messageKey ),
                     _errorArguments );
         }
 
-        StringBuilder result =
-                        new StringBuilder( messageId );
+        result.append( messageId );
 
         for ( var c : _errorArguments )
         {
@@ -312,7 +318,7 @@ public class RuntimeX
             result.append( c );
         }
 
-        return getId() + " : " + result.toString();
+        return result.toString();
     }
 
     /**
