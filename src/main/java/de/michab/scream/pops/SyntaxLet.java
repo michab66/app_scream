@@ -110,16 +110,6 @@ public abstract class SyntaxLet
             var arguments = Scut.assertUnique(
                     validateBindings( bindings ) ).reverse();
 
-            // TODO this is a testcase for #151
-            var array = bindings.asArray();
-            for ( int i = 0 ; i < array.length ; i++ )
-            {
-                array[i] = Scut.as( Cons.class, array[i] ).getCdr();
-                array[i] = Scut.as( Cons.class, array[i] ).getCar();
-            }
-            var ebindings = Cons.create( array );
-
-
             var extended = e.extend( "named-let" );
 
             var p = new Procedure(
@@ -137,10 +127,18 @@ public abstract class SyntaxLet
                         c );
             };
 
+            // Get the init expressions out of the bindings.
+            // Equivalent to (map cadr bindings).
+
+            var array = bindings.asArray();
+            for ( int i = 0 ; i < array.length ; i++ )
+                array[i] = array[i].as( Cons.class ).getCdr().as( Cons.class ).getCar();
+            var initExpressions = Cons.create( array );
+
             // Evaluate the arguments in the received environment.
             return () -> Primitives._x_evalCons(
                     e,
-                    ebindings,
+                    initExpressions,
                     exec );
         }
 
