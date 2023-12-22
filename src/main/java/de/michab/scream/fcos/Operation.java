@@ -12,8 +12,8 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.pops.Primitives;
-import de.michab.scream.util.ConversionFailedX;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.ConversionFailedX;
 
 /**
  * Represents an abstract operation.  Is the base class for macros
@@ -317,7 +317,8 @@ extends FirstClassObject
         if ( formalCount < receivedCount && isVariadic() )
             return;
 
-        throw RuntimeX.mWrongNumberOfArguments( formalCount, receivedCount );
+        throw RuntimeX.mWrongNumberOfArguments( formalCount, receivedCount ).
+            setOperationName( getName() );
     }
 
     /**

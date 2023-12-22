@@ -10,6 +10,7 @@ import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.util.Continuation.Thunk;
@@ -802,4 +803,69 @@ public class Primitives
                 iteration );
     }
 
+    private static Thunk _mapImpl(
+            Environment env,
+            Procedure procedure,
+            Cons results,
+            Cons todo,
+            Cont<FirstClassObject> result )
+        throws RuntimeX
+    {
+        if ( Cons.NIL == todo )
+            return result.accept( Cons.reverse( results ) );
+
+        Cont<FirstClassObject> step = r -> {
+            return _mapImpl(
+                    env,
+                    procedure,
+                    new Cons( r, results ),
+                    Scut.as( Cons.class, todo.getCdr() ),
+                    result );
+        };
+
+        return procedure.apply(
+                env,
+                new Cons( todo.getCar() ),
+                step );
+    }
+
+    private static Thunk _map(
+            Environment env,
+            FirstClassObject procedure,
+            Cons list,
+            Cont<FirstClassObject> result )
+        throws RuntimeX
+    {
+        return _mapImpl(
+                env,
+                Scut.as( Procedure.class, procedure ),
+                Cons.NIL,
+                list,
+                result );
+    }
+
+    /**
+     * Maps a single-argument-procedure to each element in the passed list and
+     * returns the results for each call in its result list.
+     *
+     * @param e The environment used for evaluation.
+     * @param procedure A symbol that must evaluate to a procedure.
+     * @param list A list of argument lists for procedure.
+     * @param c Returns a list of the results.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
+    public static Thunk _x_map(
+            Environment e,
+            Symbol procedure,
+            Cons list,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        // TODO _x_eval -> _eval
+        return _x_eval(
+                e,
+                procedure,
+                proc -> _map( e, proc, list, c ) );
+    }
 }

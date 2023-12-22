@@ -5,6 +5,8 @@
  */
 package de.michab.scream.pops;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
@@ -113,5 +115,29 @@ public class PrimitivesTest extends ScreamBaseTest
         assertEqualq( expected, result );
         assertEqualq( e.get( s("a") ), i(1) );
         assertEqualq( e.get( s("b") ), i(2) );
+    }
+
+    @Test
+    public void x_map() throws Exception
+    {
+        try
+        {
+            var iev = scriptEngine().getInteraction();
+
+            Cons expected = parse( "(b d f)" ).as( Cons.class );
+
+            var result = toStack(
+                    cont -> Primitives._x_map(
+                            iev,
+                            s("cadr"),
+                            Scut.as( Cons.class, parse( "((a b)(c d)(e f))" ) ),
+                            cont ) );
+
+            assertEqualq( expected, result );
+        }
+        catch ( Exception e )
+        {
+            fail( e.toString() );
+        }
     }
 }
