@@ -112,34 +112,33 @@ public abstract class SyntaxLet
 
             var extended = e.extend( "named-let" );
 
-            var p = new Procedure(
+            var pbody = new Procedure(
                     extended,
                     arguments,
                     body );
-            p.setName( variable );
+            pbody.setName( variable );
 
-            extended.define( variable, p );
+            extended.define( variable, pbody );
 
-            Cont<Cons> exec = evaluatedArguments -> {
-                return p.apply(
+            // Receives the list of init expressions and calls
+            // the body.
+            Cont<Cons> exec = initList -> {
+                return pbody.apply(
                         extended,
-                        evaluatedArguments,
+                        initList,
                         c );
             };
 
-            // Get the init expressions out of the bindings.
-            // Equivalent to (map cadr bindings).
-
-            var array = bindings.asArray();
-            for ( int i = 0 ; i < array.length ; i++ )
-                array[i] = array[i].as( Cons.class ).getCdr().as( Cons.class ).getCar();
-            var initExpressions = Cons.create( array );
-
-            // Evaluate the arguments in the received environment.
-            return () -> Primitives._x_evalCons(
+            // Pulls the init expressions out of the bindings and
+            // executes the body.
+            return Primitives._x_map(
                     e,
-                    initExpressions,
-                    exec );
+                    Symbol.createObject( "cadr" ),
+                    bindings,
+                    mapped -> Primitives._x_evalCons(
+                            e,
+                            mapped.as( Cons.class ),
+                            exec ) );
         }
 
         @Override

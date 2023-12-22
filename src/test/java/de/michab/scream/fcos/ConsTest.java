@@ -72,6 +72,22 @@ public class ConsTest extends ScreamBaseTest
     }
 
     @Test
+    public void basic3() throws Exception
+    {
+        var one = i1;
+
+        Cons c1 = new Cons(
+                one );
+
+        assertEquals( one, c1.getCar() );
+        assertEquals( Cons.NIL, c1.getCdr() );
+        assertTrue( c1.isProperList() );
+        assertEquals( 1, c1.length() );
+        assertEquals( 1, c1.properLength() );
+        assertFalse( c1.isCircular() );
+    }
+
+    @Test
     public void consCreate() throws Exception
     {
         // Tests the create call.

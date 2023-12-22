@@ -70,6 +70,16 @@ public class Cons
     }
 
     /**
+     * Construct a {@code Cons} cell with a car element and a NIL cdr.
+     *
+     * @param car The car value for the new cons cell.
+     */
+    public Cons( FirstClassObject car )
+    {
+        this( car, Cons.NIL );
+    }
+
+    /**
      * Creates a newly allocated list from a Java array.  This is not available
      * to the public because we can't handle empty arrays within this
      * constructor.  So to create a {@code Cons} from an array the static

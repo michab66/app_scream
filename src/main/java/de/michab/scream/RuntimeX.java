@@ -228,10 +228,12 @@ public class RuntimeX
      * @param operation The name of the throwing operation.
      * @see ScreamException#getOperationName
      */
-    public void setOperationName( Symbol operation )
+    public RuntimeX setOperationName( Symbol operation )
     {
         if ( _operationName == null )
             _operationName = operation;
+
+        return this;
     }
 
     /**
