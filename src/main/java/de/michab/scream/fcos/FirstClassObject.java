@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -430,5 +430,26 @@ public abstract class FirstClassObject
             return false;
 
         return type.isAssignableFrom( fco.getClass() );
+    }
+
+    /**
+     * Convert to the passed class.
+     *
+     * @param <T> The target type.
+     * @param c The target class.
+     * @return The type-adjusted reference.
+     * @throws RuntimeX mTypeError
+     */
+    public <T extends FirstClassObject> T
+    as( Class<T> c )
+            throws RuntimeX
+    {
+        try
+        {
+            return c.cast( this );
+        }
+        catch (ClassCastException e) {
+            throw RuntimeX.mTypeError( c, getClass() );
+        }
     }
 }
