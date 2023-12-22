@@ -280,7 +280,7 @@ public class Primitives
         // expression and sets the formals accordingly.
         Cont<FirstClassObject> defineValues = v -> {
             if ( ! FirstClassObject.is( Cons.class,v ) )
-                v = new Cons( v, Cons.NIL );
+                v = new Cons( v );
 
             var receivedValueCount = Scut.as( Cons.class, v ).length();
 

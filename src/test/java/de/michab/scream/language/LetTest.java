@@ -7,7 +7,6 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
@@ -48,7 +47,6 @@ public class LetTest extends ScreamBaseTest
     }
 
     @Test
-    @Disabled
     public void letTest_3() throws Exception
     {
         var rx = expectError(

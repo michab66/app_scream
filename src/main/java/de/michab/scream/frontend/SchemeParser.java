@@ -277,19 +277,19 @@ public class SchemeParser
 
         case Quote:
             return new Cons( QUOTE_SYMBOL,
-                    new Cons( parseDatum(), Cons.NIL ) );
+                    new Cons( parseDatum() ) );
 
         case QuasiQuote:
             return new Cons( QUASIQUOTE_SYMBOL,
-                    new Cons( parseDatum(), Cons.NIL ) );
+                    new Cons( parseDatum() ) );
 
         case Unquote:
             return new Cons( UNQUOTE_SYMBOL,
-                    new Cons( parseDatum(), Cons.NIL ) );
+                    new Cons( parseDatum() ) );
 
         case UnquoteSplicing:
             return new Cons( UNQUOTE_SPLICING_SYMBOL,
-                    new Cons( parseDatum(), Cons.NIL ) );
+                    new Cons( parseDatum() ) );
 
         case Boolean:
             return SchemeBoolean.createObject( token.booleanValue() );

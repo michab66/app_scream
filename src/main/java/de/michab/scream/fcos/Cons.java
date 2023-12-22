@@ -678,8 +678,6 @@ public class Cons
      * Set the constantness of this {@code Cons}.  The new value is
      * propagated to the referenced car and cdr nodes.  Note that it is not
      * possible to switch the constantness from constant to changeable.
-     *
-     * @param what The new value for the constantness.
      */
     @Override
     public FirstClassObject setConstant()

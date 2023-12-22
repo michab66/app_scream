@@ -25,8 +25,9 @@ public class R7rs_4_2_8_Quasiquotation_Test extends ScreamBaseTest
     {
         expectFco(
                 "`(list ,(+ 1 2) 4)",
-                parse( "(list 3 4)" ));
+                "(list 3 4)" );
     }
+
     /**
      * p20
      */
@@ -35,8 +36,9 @@ public class R7rs_4_2_8_Quasiquotation_Test extends ScreamBaseTest
     {
         expectFco(
                 "(let ((name 'a)) `(list ,name ',name))",
-                parse( "(list a (quote a))" ));
+                "(list a (quote a))" );
     }
+
     /**
      * p20
      */
@@ -45,8 +47,9 @@ public class R7rs_4_2_8_Quasiquotation_Test extends ScreamBaseTest
     {
         expectFco(
                 "`(a ,(+ 1 2) ,@(map abs '(4 -5 6)) b)",
-                parse( "(a 3 4 5 6 b)" ));
+                "(a 3 4 5 6 b)" );
     }
+
     /**
      * p20
      */
@@ -55,19 +58,20 @@ public class R7rs_4_2_8_Quasiquotation_Test extends ScreamBaseTest
     {
         expectFco(
                 "`(( foo ,(- 10 3)) ,@(cdr '(c)) . ,(car '(cons)))",
-                parse( "((foo 7) . cons)" ));
+                "((foo 7) . cons)" );
     }
+
     /**
      * p20
      */
-    @Disabled( "repair sqrt" )
     @Test
     public void r7rs_20_5() throws Exception
     {
         expectFco(
                 "`#(10 5 ,(sqrt 4) ,@(map sqrt '(16 9)) 8)",
-                parse( "#(10 5 2 4 3 8)" ));
+                "#(10 5 2 4 3 8)" );
     }
+
     /**
      * p20
      */
