@@ -8,7 +8,6 @@ package de.michab.scream.fcos;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.smack.util.Holder;
 
@@ -17,8 +16,20 @@ import de.michab.scream.util.Continuation;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
+// TODO micbinz move to util tests.
 public class ContinuationTest extends ScreamBaseTest
 {
+    @SuppressWarnings("serial")
+    static class TotalX extends Exception
+    {
+        public final int _total;
+
+        public TotalX( int a, int b )
+        {
+            _total = a + b;
+        }
+    }
+
     private Thunk add( int a, int b, Cont<Integer> c )
     {
         return () -> c.accept( a + b );
@@ -74,8 +85,7 @@ public class ContinuationTest extends ScreamBaseTest
 
         int result = continuation.toStack(
                 cont-> add(3,4,cont),
-                null,
-                Exception.class );
+                null );
 
         assertEquals( 7, result );
     }
@@ -101,27 +111,34 @@ public class ContinuationTest extends ScreamBaseTest
             fail();
         }
     }
-    @Disabled
+
+    private Thunk addWithTotalX( int a, int b, Cont<Integer> c) throws TotalX
+    {
+        return () -> {
+            throw new TotalX( 3, 4 );
+            };
+    }
+
     @Test
     public void testException2() throws Exception
     {
-        Continuation<Integer, ArithmeticException> continuation =
-                new Continuation<>( ArithmeticException.class );
+        Continuation<Integer, TotalX> continuation =
+                new Continuation<>( TotalX.class );
 
-        Holder<ArithmeticException> aeh =
+        Holder<TotalX> aeh =
                 new Holder<>();
 
-        Cont<ArithmeticException> handler =
+        Cont<TotalX> handler =
                 ae -> {
                     aeh.set( ae );
                     return null;
                 };
 
-        int result = continuation.toStack(
-                cont-> addx(3,4,cont),
-                handler,
-                ArithmeticException.class );
+        Integer result = continuation.toStack(
+                cont -> addWithTotalX( 3, 4, cont ),
+                handler );
 
-        assertEquals( 7, result );
+        assertEquals( null, result );
+        assertEquals( 7, aeh.get()._total );
     }
 }
