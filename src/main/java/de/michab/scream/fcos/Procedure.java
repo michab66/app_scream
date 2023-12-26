@@ -90,7 +90,6 @@ public class Procedure
      */
     @Override
     protected final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX
     {
         // Execute in our _closure.
         Cont<Cons> cc = evaluated -> _executeImpl(
@@ -106,10 +105,9 @@ public class Procedure
     }
 
     public final Thunk apply( Environment e, Cons args, Cont<FirstClassObject> c  )
-            throws RuntimeX
     {
         // Do not evaluate the arguments.
-        return _executeImpl(
+        return () -> _executeImpl(
                 _closure,
                 args,
                 c );

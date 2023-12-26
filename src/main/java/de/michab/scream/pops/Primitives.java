@@ -99,7 +99,6 @@ public class Primitives
             Environment e,
             Cons expressions,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         return () -> _and(
                 e,
@@ -122,7 +121,6 @@ public class Primitives
             Symbol s,
             FirstClassObject o,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         Cont<FirstClassObject> next = v -> {
             e.assign( s, v );
@@ -343,7 +341,7 @@ public class Primitives
     public static Thunk _x_begin(
             Environment e,
             Cons body,
-            Cont<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c )
     {
         return () -> _begin(
                 e,
@@ -503,7 +501,6 @@ public class Primitives
             Environment extended,
             Cons bindings,
             Cont<Environment> c )
-                    throws RuntimeX
     {
         return () -> _bindValues( e, extended, bindings, c );
     }
@@ -513,7 +510,7 @@ public class Primitives
             Environment extended,
             Cons bindings,
             Cons body,
-            Cont<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c )
     {
         // Process the body with the extended environment.
         Cont<Environment> begin =
@@ -545,7 +542,7 @@ public class Primitives
             Environment extended,
             Cons bindings,
             Cons body,
-            Cont<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c )
     {
         Cont<Environment> begin =
                 ext -> _x_begin(
@@ -576,7 +573,6 @@ public class Primitives
             Cons body,
             Cons symbols,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         Cont<Environment> begin =
                 env -> _x_begin(
@@ -610,7 +606,6 @@ public class Primitives
             Environment e,
             FirstClassObject o,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         return () -> FirstClassObject.evaluate( o, e, c );
     }
@@ -659,7 +654,6 @@ public class Primitives
             Environment e,
             Cons expressions,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         return () -> _or(
                 e,
@@ -671,7 +665,7 @@ public class Primitives
     public static Thunk _x_quote(
             Environment e,
             FirstClassObject quote,
-            Cont<FirstClassObject> c) throws RuntimeX
+            Cont<FirstClassObject> c)
     {
         return () -> c.accept( quote );
     }
@@ -680,7 +674,6 @@ public class Primitives
             Environment e,
             Symbol o,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         return () -> c.accept( e.get( o ) );
     }
@@ -860,7 +853,6 @@ public class Primitives
             Symbol procedure,
             Cons list,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         // TODO _x_eval -> _eval
         return _x_eval(
