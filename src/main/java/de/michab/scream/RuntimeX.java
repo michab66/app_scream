@@ -330,7 +330,7 @@ public class RuntimeX
         return new Procedure( "error" )
         {
             @Override
-            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 checkArgumentCount( 1, Integer.MAX_VALUE, args );

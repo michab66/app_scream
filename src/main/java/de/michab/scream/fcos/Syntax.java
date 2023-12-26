@@ -64,7 +64,7 @@ public class Syntax
 
     @Override
     protected final Thunk _execute( Environment e, Cons args,
-            Cont<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c )
     {
         return _executeImpl( e, args, c );
     }

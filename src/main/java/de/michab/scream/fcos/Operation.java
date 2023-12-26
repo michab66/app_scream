@@ -368,7 +368,7 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+    protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         checkArgumentCount( args );
@@ -383,6 +383,19 @@ extends FirstClassObject
                 _formalArguments,
                 args,
                 env ->Primitives._x_begin( env, _body, c ) );
+    }
+
+    /**
+     * Holds the function implementation.  Override in Java-implemented Operations.
+     * @param e
+     * @param args
+     * @param c
+     * @return
+     * @throws RuntimeX
+     */
+    protected final Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+    {
+        return () -> __executeImpl( e, args, c );
     }
 
     /**

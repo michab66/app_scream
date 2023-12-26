@@ -87,7 +87,7 @@ public abstract class SyntaxLetValues
     static public final Syntax letValuesSyntax = new SyntaxLetValues( "let-values" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args,
+        protected Thunk __executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -114,7 +114,7 @@ public abstract class SyntaxLetValues
     static public final Syntax letAsteriskValuesSyntax = new SyntaxLetValues( "let*-values" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args,
+        protected Thunk __executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );

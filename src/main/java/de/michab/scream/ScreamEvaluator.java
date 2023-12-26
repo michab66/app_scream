@@ -484,7 +484,7 @@ public final class ScreamEvaluator implements ScriptEngine
     private final Syntax includeSyntax = new Syntax( "include" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, Integer.MAX_VALUE, args );
@@ -508,7 +508,7 @@ public final class ScreamEvaluator implements ScriptEngine
         return new Procedure( "eval" )
         {
             @Override
-            protected Thunk _executeImpl(
+            protected Thunk __executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -535,7 +535,7 @@ public final class ScreamEvaluator implements ScriptEngine
     private final Syntax evalSyntax = new Syntax( "scream:eval" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -555,7 +555,7 @@ public final class ScreamEvaluator implements ScriptEngine
         return new Procedure( "scream:apply" )
         {
             @Override
-            protected Thunk _executeImpl(
+            protected Thunk __executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )

@@ -39,7 +39,7 @@ public class Continuation extends Procedure
         return new Procedure( "call-with-current-continuation" )
         {
             @Override
-            protected Thunk _executeImpl(
+            protected Thunk __executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -69,7 +69,7 @@ public class Continuation extends Procedure
         {
 
             @Override
-            protected Thunk _executeImpl(
+            protected Thunk __executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -102,7 +102,7 @@ public class Continuation extends Procedure
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         var values = args.length() == 1 ?

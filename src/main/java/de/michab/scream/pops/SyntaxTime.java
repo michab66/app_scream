@@ -51,7 +51,7 @@ public class SyntaxTime extends Syntax
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 1, args );
