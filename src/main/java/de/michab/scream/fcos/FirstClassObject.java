@@ -25,7 +25,7 @@ public abstract class FirstClassObject
 {
     /**
      * Marks an fco as constant.  Constant objects cannot be modified.
-     * Non-modifieable objects are by default constant.
+     * Non-modifiable objects are by default constant.
      */
     private boolean _isConstant;
 
@@ -61,7 +61,6 @@ public abstract class FirstClassObject
     public Thunk evaluate(
         Environment e,
         Cont<FirstClassObject> c )
-            throws RuntimeX
     {
         return  () -> {
             if ( _compiled == null )

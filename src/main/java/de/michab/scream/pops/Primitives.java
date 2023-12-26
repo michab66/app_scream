@@ -36,22 +36,23 @@ public class Primitives
      * @param trueBranch Taken if test evaluates to true.
      * @param falseBranch Taken if test evaluates to false.
      * @return A thunk.
-     * @throws RuntimeX
      */
     public static Thunk _if(
             Environment e,
             FirstClassObject test,
             Cont<FirstClassObject> trueBranch,
-            Cont<FirstClassObject> falseBranch ) throws RuntimeX
+            Cont<FirstClassObject> falseBranch )
     {
-        Cont<FirstClassObject> branch = testResult ->
-        {
-            return SchemeBoolean.isTrue( testResult ) ?
-                    trueBranch.accept( testResult ) :
-                    falseBranch.accept( testResult );
-        };
+        return () -> {
+            Cont<FirstClassObject> branch = testResult ->
+            {
+                return SchemeBoolean.isTrue( testResult ) ?
+                        trueBranch.accept( testResult ) :
+                        falseBranch.accept( testResult );
+            };
 
-        return FirstClassObject.evaluate( test, e, branch );
+            return FirstClassObject.evaluate( test, e, branch );
+        };
     }
 
     /**
@@ -62,14 +63,12 @@ public class Primitives
      * @param previousResult The value of the previous test.
      * @param c The continuation.
      * @return A thunk.
-     * @throws RuntimeX In case of an error.
      */
     private static Thunk _and(
             Environment e,
             Cons expressions,
             FirstClassObject previousResult,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         if ( expressions == Cons.NIL )
             return () -> c.accept( previousResult );
@@ -93,7 +92,6 @@ public class Primitives
      * @param previousResult The value of the previous test.
      * @param c The continuation.
      * @return A thunk.
-     * @throws RuntimeX In case of an error.
      */
     public static Thunk _x_and(
             Environment e,
@@ -144,7 +142,6 @@ public class Primitives
             Symbol symbol,
             FirstClassObject value,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         return () -> {
             e.define( symbol, value );
@@ -167,20 +164,21 @@ public class Primitives
             Cons symbols,
             FirstClassObject o,
             Cont<Environment> c )
-                    throws RuntimeX
     {
-        var circular = new Cons( Cons.NIL, Cons.NIL );
-        circular.setCdr( circular );
+        return () -> {
+            var circular = new Cons( Cons.NIL, Cons.NIL );
+            circular.setCdr( circular );
 
-        Cont<FirstClassObject> done = ignored -> {
-            return c.accept( e );
+            Cont<FirstClassObject> done = ignored -> {
+                return c.accept( e );
+            };
+
+            return _defineList(
+                    e,
+                    symbols,
+                    circular,
+                    done );
         };
-
-        return _defineList(
-                e,
-                symbols,
-                circular,
-                done );
     }
 
     /**
@@ -195,38 +193,38 @@ public class Primitives
      *
      * @param c returns nil.
      * @return A thunk.
-     * @throws RuntimeX
      */
     private static Thunk _defineList(
             Environment e,
             Cons symbols,
             Cons values,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
-        if ( symbols == Cons.NIL )
-            return c.accept( e );
+        return () -> {
+            if ( symbols == Cons.NIL )
+                return c.accept( e );
 
-        var firstSymbol =
-                Scut.as( Symbol.class, symbols.getCar() );
-        var firstValue = values == Cons.NIL ?
-                Cons.NIL:
-                values.getCar();
+            var firstSymbol =
+                    Scut.as( Symbol.class, symbols.getCar() );
+            var firstValue = values == Cons.NIL ?
+                    Cons.NIL:
+                    values.getCar();
 
-        e.define( firstSymbol, firstValue );
+            e.define( firstSymbol, firstValue );
 
-        var restSymbols =
-                Scut.as( Cons.class, symbols.getCdr() );
-        var restValues =
-                values == Cons.NIL ?
-                        Cons.NIL :
-                        Scut.as( Cons.class, values.getCdr() );
+            var restSymbols =
+                    Scut.as( Cons.class, symbols.getCdr() );
+            var restValues =
+                    values == Cons.NIL ?
+                            Cons.NIL :
+                            Scut.as( Cons.class, values.getCdr() );
 
-        return _defineList(
-                e,
-                restSymbols,
-                restValues,
-                c );
+            return _defineList(
+                    e,
+                    restSymbols,
+                    restValues,
+                    c );
+        };
     }
 
     /**
@@ -240,16 +238,13 @@ public class Primitives
      * defined to {@code Cons.NIL}.
      * @param c Returns 'symbols'.
      * @return A thunk.
-     * @throws RuntimeX
      */
     public static Thunk _x_defineList(
             Environment e,
             Cons symbols,
             Cons values,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
-
         return _defineList(
                 e,
                 symbols,
@@ -265,14 +260,13 @@ public class Primitives
      * @param expression The expression generating the values.
      * @param c Returns Cons.NIL.
      * @return A thunk.
-     * @throws RuntimeX
      */
     public static Thunk _x_defineValues(
             Environment target,
             Environment eval,
             Cons values,
             FirstClassObject expression,
-            Cont<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c )
     {
         // Receives the values from the evaluation of the
         // expression and sets the formals accordingly.
@@ -312,21 +306,22 @@ public class Primitives
      * @param previousResult The result of the previous expression.
      * @param c The continuation receiving the result.
      * @return The thunk.
-     * @throws RuntimeX
      */
-    private static Thunk _begin(
+    private static Thunk _x_begin(
             Environment e,
             Cons body,
             FirstClassObject previousResult,
-            Cont<FirstClassObject> c ) throws RuntimeX
+            Cont<FirstClassObject> c )
     {
-        if ( body == Cons.NIL )
-            return c.accept( previousResult );
+        return () -> {
+            if ( body == Cons.NIL )
+                return c.accept( previousResult );
 
-        Cont<FirstClassObject> next =
-                (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
+            Cont<FirstClassObject> next =
+                    (fco) -> _x_begin( e, (Cons)body.getCdr(), fco, c);
 
-        return Primitives._x_eval( e, body.getCar(), next );
+            return Primitives._x_eval( e, body.getCar(), next );
+        };
     }
 
     /**
@@ -336,14 +331,13 @@ public class Primitives
      * @param body A list of expressions.
      * @param c The continuation receiving the result.
      * @return A thunk.
-     * @throws RuntimeX
      */
     public static Thunk _x_begin(
             Environment e,
             Cons body,
             Cont<FirstClassObject> c )
     {
-        return () -> _begin(
+        return _x_begin(
                 e,
                 body,
                 Cons.NIL,
@@ -358,32 +352,32 @@ public class Primitives
      * @param c The continuation receiving finally the environment
      * that contains the rebound bindings.
      * @return A thunk.
-     * @throws RuntimeX
      */
     private static Thunk _bindDoFinish(
             Environment e,
             Cons toBind,
             Cont<Environment> c )
-                    throws RuntimeX
     {
-        if ( Cons.NIL == toBind )
-            return c.accept( e );
+        return () -> {
+            if ( Cons.NIL == toBind )
+                return c.accept( e );
 
-        Cons current =
-                Scut.as( Cons.class, toBind.getCar() );
-        Symbol variable =
-                Scut.as( Symbol.class, current.getCar() );
-        FirstClassObject value =
-                current.getCdr();
+            Cons current =
+                    Scut.as( Cons.class, toBind.getCar() );
+            Symbol variable =
+                    Scut.as( Symbol.class, current.getCar() );
+            FirstClassObject value =
+                    current.getCdr();
 
-        e.assign(
-                variable,
-                value );
+            e.assign(
+                    variable,
+                    value );
 
-        return _bindDoFinish(
-                e,
-                Scut.as( Cons.class, toBind.getCdr() ),
-                c );
+            return _bindDoFinish(
+                    e,
+                    Scut.as( Cons.class, toBind.getCdr() ),
+                    c );
+        };
     }
 
     /**
@@ -396,37 +390,37 @@ public class Primitives
      * the evaluation results.
      * @param c A continuation that receives the extended environment.
      * @return A thunk.
-     * @throws RuntimeX
      */
     private static Thunk _bindDo(
             Environment e,
             Cons bindings,
             Cons temporaryBound,
             Cont<Environment> c )
-                    throws RuntimeX
     {
-        if ( bindings == Cons.NIL )
-            return _bindDoFinish( e, temporaryBound, c );
+        return () -> {
+            if ( bindings == Cons.NIL )
+                return _bindDoFinish( e, temporaryBound, c );
 
-        Cons current =
-                Scut.as( Cons.class, bindings.getCar() );
-        Symbol variable =
-                Scut.as( Symbol.class, current.listRef(0) );
-        FirstClassObject init =
-                current.listRef(1);
+            Cons current =
+                    Scut.as( Cons.class, bindings.getCar() );
+            Symbol variable =
+                    Scut.as( Symbol.class, current.listRef(0) );
+            FirstClassObject init =
+                    current.listRef(1);
 
-        Cont<FirstClassObject> evalResult = fco -> {
-            return _bindDo(
+            Cont<FirstClassObject> evalResult = fco -> {
+                return _bindDo(
+                        e,
+                        (Cons)bindings.getCdr(),
+                        new Cons( new Cons( variable, fco ), temporaryBound ),
+                        c );
+            };
+
+            return _x_eval(
                     e,
-                    (Cons)bindings.getCdr(),
-                    new Cons( new Cons( variable, fco ), temporaryBound ),
-                    c );
+                    init,
+                    evalResult );
         };
-
-        return _x_eval(
-                e,
-                init,
-                evalResult );
     }
 
     /**
@@ -438,28 +432,28 @@ public class Primitives
      * Format is like {@code ((<variable1> <init1>) ...)}.
      * @param c A continuation that receives the extended environment.
      * @return A thunk.
-     * @throws RuntimeX
      */
     private static Thunk _bind(
             Environment eval,
             Environment extended,
             Cons bindings,
             Cont<Environment> c )
-                    throws RuntimeX
     {
-        if ( bindings == Cons.NIL )
-            return c.accept( extended );
+        return () -> {
+            if ( bindings == Cons.NIL )
+                return c.accept( extended );
 
-        Cons bindingElement = (Cons)bindings.getCar();
-        Symbol variable = (Symbol)bindingElement.listRef(0);
-        FirstClassObject init = bindingElement.listRef(1);
+            Cons bindingElement = (Cons)bindings.getCar();
+            Symbol variable = (Symbol)bindingElement.listRef(0);
+            FirstClassObject init = bindingElement.listRef(1);
 
-        Cont<FirstClassObject> evalResult = fco -> {
-            extended.define( variable, fco );
-            return _bind( eval, extended, (Cons)bindings.getCdr(), c );
+            Cont<FirstClassObject> evalResult = fco -> {
+                extended.define( variable, fco );
+                return _bind( eval, extended, (Cons)bindings.getCdr(), c );
+            };
+
+            return _x_eval( eval, init, evalResult );
         };
-
-        return _x_eval( eval, init, evalResult );
     }
 
     /*
@@ -468,41 +462,33 @@ public class Primitives
      *   ((c d) (init2))
      * )
      */
-    private static Thunk _bindValues(
-            Environment e,
-            Environment extended,
-            Cons bindings,
-            Cont<Environment> c )
-                    throws RuntimeX
-    {
-        if ( bindings == Cons.NIL )
-            return c.accept( extended );
-
-        Cons currentBinding =
-                (Cons)bindings.getCar();
-        Cons remainingBindings =
-                (Cons)bindings.getCdr();
-
-        Cons values =
-                (Cons)currentBinding.listRef(0);
-        FirstClassObject init =
-                currentBinding.listRef(1);
-
-        return _x_defineValues(
-                extended,
-                e,
-                values,
-                init,
-                ignored -> _bindValues( e, extended, remainingBindings, c ) );
-    }
-
     public static Thunk _x_bindValues(
             Environment e,
             Environment extended,
             Cons bindings,
             Cont<Environment> c )
     {
-        return () -> _bindValues( e, extended, bindings, c );
+        return () -> {
+            if ( bindings == Cons.NIL )
+                return c.accept( extended );
+
+            Cons currentBinding =
+                    (Cons)bindings.getCar();
+            Cons remainingBindings =
+                    (Cons)bindings.getCdr();
+
+            Cons values =
+                    (Cons)currentBinding.listRef(0);
+            FirstClassObject init =
+                    currentBinding.listRef(1);
+
+            return _x_defineValues(
+                    extended,
+                    e,
+                    values,
+                    init,
+                    ignored -> _x_bindValues( e, extended, remainingBindings, c ) );
+        };
     }
 
     public static Thunk _x_let_values(
@@ -519,7 +505,7 @@ public class Primitives
                         body,
                         c );
 
-        return () -> _bindValues(
+        return () -> _x_bindValues(
                 current,
                 extended,
                 bindings,
@@ -535,7 +521,6 @@ public class Primitives
      * @param body The body executed after the binding phase.
      * @param c Returns the result of body evaluation.
      * @return A think.
-     * @throws RuntimeX In case of failures.
      */
     public static Thunk _x_let(
             Environment e,
@@ -565,7 +550,6 @@ public class Primitives
      * @param symbols
      * @param c
      * @return
-     * @throws RuntimeX
      */
     public static Thunk _x_letRec(
             Environment e,
@@ -618,14 +602,12 @@ public class Primitives
      * @param previousResult The value of the previous test.
      * @param c The continuation.
      * @return A thunk.
-     * @throws RuntimeX In case of an error.
      */
     private static Thunk _or(
             Environment e,
             Cons expressions,
             FirstClassObject previousResult,
             Cont<FirstClassObject> c )
-                    throws RuntimeX
     {
         if ( expressions == Cons.NIL )
             return () -> c.accept( previousResult );
@@ -648,14 +630,13 @@ public class Primitives
      * @param expressions The list of tests.
      * @param c The continuation.
      * @return A thunk.
-     * @throws RuntimeX In case of an error.
      */
     public static Thunk _x_or(
             Environment e,
             Cons expressions,
             Cont<FirstClassObject> c )
     {
-        return () -> _or(
+        return _or(
                 e,
                 expressions,
                 SchemeBoolean.F,
@@ -682,21 +663,23 @@ public class Primitives
             Environment e,
             Cons result,
             Cons current,
-            Cont<Cons> c ) throws RuntimeX
+            Cont<Cons> c )
     {
-        if ( Cons.NIL == current )
-            return c.accept( Cons.reverse( result ) );
+        return () -> {
+            if ( Cons.NIL == current )
+                return c.accept( Cons.reverse( result ) );
 
-        Cont<FirstClassObject> set = fco -> evalImpl(
+            Cont<FirstClassObject> set = fco -> evalImpl(
+                        e,
+                        new Cons( fco, result ),
+                        Scut.as( Cons.class, current.getCdr() ),
+                        c );
+
+            return FirstClassObject.evaluate(
+                    current.getCar(),
                     e,
-                    new Cons( fco, result ),
-                    Scut.as( Cons.class, current.getCdr() ),
-                    c );
-
-        return FirstClassObject.evaluate(
-                current.getCar(),
-                e,
-                set );
+                    set );
+        };
     }
 
     /**
@@ -711,7 +694,7 @@ public class Primitives
      */
     public static Thunk _x_evalCons( Environment e, Cons l, Cont<Cons> c )
     {
-        return () -> evalImpl(
+        return evalImpl(
                 e,
                 Cons.NIL,
                 l,
@@ -727,7 +710,6 @@ public class Primitives
      * @param commands
      * @param c
      * @return A thunk.
-     * @throws RuntimeX
      */
     private static Thunk _iteration(
             Environment e,
@@ -735,10 +717,10 @@ public class Primitives
             Cons steps,
             Cons commands,
             Cont<FirstClassObject> c
-            ) throws RuntimeX
+            )
     {
         Cont<FirstClassObject> finish =
-                trueValue -> _begin(
+                trueValue -> _x_begin(
                         e,
                         (Cons)test.getCdr(),
                         trueValue,
@@ -761,7 +743,7 @@ public class Primitives
 
         // Process the command list.
         Cont<FirstClassObject> loopPerform =
-                falseValue -> _begin(
+                falseValue -> _x_begin(
                         e,
                         commands,
                         Cons.NIL,
@@ -802,24 +784,25 @@ public class Primitives
             Cons results,
             Cons todo,
             Cont<FirstClassObject> result )
-        throws RuntimeX
     {
-        if ( Cons.NIL == todo )
-            return result.accept( Cons.reverse( results ) );
+        return () -> {
+            if ( Cons.NIL == todo )
+                return result.accept( Cons.reverse( results ) );
 
-        Cont<FirstClassObject> step = r -> {
-            return _mapImpl(
+            Cont<FirstClassObject> step = r -> {
+                return _mapImpl(
+                        env,
+                        procedure,
+                        new Cons( r, results ),
+                        Scut.as( Cons.class, todo.getCdr() ),
+                        result );
+            };
+
+            return procedure.apply(
                     env,
-                    procedure,
-                    new Cons( r, results ),
-                    Scut.as( Cons.class, todo.getCdr() ),
-                    result );
-        };
-
-        return procedure.apply(
-                env,
-                new Cons( todo.getCar() ),
-                step );
+                    new Cons( todo.getCar() ),
+                    step );
+            };
     }
 
     private static Thunk _map(
@@ -827,9 +810,8 @@ public class Primitives
             FirstClassObject procedure,
             Cons list,
             Cont<FirstClassObject> result )
-        throws RuntimeX
     {
-        return _mapImpl(
+        return () -> _mapImpl(
                 env,
                 Scut.as( Procedure.class, procedure ),
                 Cons.NIL,
@@ -846,7 +828,6 @@ public class Primitives
      * @param list A list of argument lists for procedure.
      * @param c Returns a list of the results.
      * @return A thunk.
-     * @throws RuntimeX
      */
     public static Thunk _x_map(
             Environment e,
