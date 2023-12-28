@@ -3,7 +3,7 @@
  *
  * Copyright © 1998-2023 Michael G. Binz
  */
-package de.michab.scream.fcos;
+package de.michab.scream.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -11,8 +11,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 import org.smack.util.Holder;
 
+import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.util.Continuation;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
@@ -140,5 +143,44 @@ public class ContinuationTest extends ScreamBaseTest
 
         assertEquals( null, result );
         assertEquals( 7, aeh.get()._total );
+    }
+
+    private Thunk addFco( SchemeInteger si1, SchemeInteger si2, Cont<FirstClassObject> cont )
+    {
+        return () -> cont.accept( si1.add( si2 ) );
+    }
+
+    @Test
+    public void testFcoFunc() throws Exception
+    {
+        Continuation<FirstClassObject, RuntimeX> cont = new Continuation<>( RuntimeX.class );
+
+        var fco = cont.toStack( continuation -> addFco( i1, i2, continuation ) );
+
+        assertEqualq( i3, fco );
+    }
+
+    private Thunk throwRtx( SchemeInteger si1, SchemeInteger si2, Cont<FirstClassObject> cont )
+            throws RuntimeX
+    {
+        return () -> { throw RuntimeX.mDivisionByZero(); };
+    }
+
+    @Test
+    public void testFcoException() throws Exception
+    {
+        Continuation<FirstClassObject, RuntimeX> cont = new Continuation<>( RuntimeX.class );
+
+        Continuation.ToStackOp<FirstClassObject> tsfco = c -> throwRtx( i1, i2, c );
+
+        try
+        {
+            cont.toStack( tsfco );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.DIVISION_BY_ZERO, rx.getCode() );
+        }
     }
 }

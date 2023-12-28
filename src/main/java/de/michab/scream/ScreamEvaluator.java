@@ -24,7 +24,6 @@ import javax.script.SimpleScriptContext;
 
 import org.smack.util.JavaUtil;
 
-import de.michab.scream.Scream.FcoOp;
 import de.michab.scream.binding.SchemeObject;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -58,7 +57,6 @@ import de.michab.scream.pops.SyntaxTime;
 import de.michab.scream.util.Continuation;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
-import de.michab.scream.util.Continuation.ToStackOp;
 import de.michab.scream.util.FunctionX;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.Scut;
@@ -78,7 +76,7 @@ public final class ScreamEvaluator implements ScriptEngine
     /**
      * The continuation processor.
      */
-    private final Continuation<FirstClassObject,RuntimeX> continuation =
+    private final Continuation<FirstClassObject,RuntimeX> _continuation =
             new Continuation<>( RuntimeX.class );
 
     /**
@@ -290,49 +288,23 @@ public final class ScreamEvaluator implements ScriptEngine
                 c );
     }
 
-    private static Cont<FirstClassObject> mapCont( Continuation.Cont<FirstClassObject> cont )
-    {
-        return  c -> {
-            try
-            {
-                return cont.accept( c );
-            }
-            catch ( Exception e )
-            {
-                throw new InternalError( "mapCont", e );
-            }
-        };
-    }
-
-    private static ToStackOp<FirstClassObject> mapOp( FcoOp op )
-    {
-        return c -> op.call( mapCont( c )  );
-    }
-
-    private FirstClassObject toStack( FcoOp op )
-            throws RuntimeX
-    {
-        ToStackOp<FirstClassObject> tso2 = mapOp( op );
-
-        try
-        {
-            return continuation.toStack( tso2 );
-        }
-        catch (Exception e) {
-            if ( RuntimeX.class.isAssignableFrom( e.getClass() ))
-                throw RuntimeX.class.cast( e );
-
-            throw RuntimeX.mInternalError( e );
-        }
-    }
-
     private FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl )
                     throws RuntimeX
     {
-        return toStack(
-                c -> evalImpl( env, spl, c ) );
+        try
+        {
+            return _continuation.toStack( c -> evalImpl( env, spl, c ) );
+        }
+        catch ( RuntimeX rx )
+        {
+            throw rx;
+        }
+        catch ( Exception x )
+        {
+            throw RuntimeX.mInternalError( x );
+        }
     }
 
     /**
