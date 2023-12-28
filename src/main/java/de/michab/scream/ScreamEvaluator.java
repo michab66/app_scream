@@ -24,7 +24,6 @@ import javax.script.SimpleScriptContext;
 
 import org.smack.util.JavaUtil;
 
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.Scream.FcoOp;
 import de.michab.scream.binding.SchemeObject;
 import de.michab.scream.fcos.Cons;
@@ -57,6 +56,7 @@ import de.michab.scream.pops.SyntaxQuote;
 import de.michab.scream.pops.SyntaxSyntax;
 import de.michab.scream.pops.SyntaxTime;
 import de.michab.scream.util.Continuation;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Continuation.ToStackOp;
 import de.michab.scream.util.FunctionX;

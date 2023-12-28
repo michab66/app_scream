@@ -19,6 +19,7 @@ import org.smack.util.resource.ResourceManager;
 import org.smack.util.resource.ResourceManager.Resource;
 
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.LogUtil;
 
@@ -77,17 +78,6 @@ public class Scream implements ScriptEngineFactory
     public interface FcoOp {
         Thunk call( Cont<FirstClassObject> c )
             throws RuntimeX;
-    }
-
-    /**
-     * A Scheme continuation.
-     * <p>
-     * {@code Thunk accept(R result) throws RuntimeX;}
-     * @param <R> The type accepted.
-     */
-    @FunctionalInterface
-    public static interface Cont<R> {
-        Thunk accept(R result);
     }
 
     /**

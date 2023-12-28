@@ -15,7 +15,6 @@ import java.util.Objects;
 
 import org.smack.util.CachedHolder;
 
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -24,6 +23,7 @@ import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.ErrorMessages;
 

@@ -10,13 +10,13 @@ import static org.junit.jupiter.api.Assertions.fail;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.Scream.FcoOp;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.util.Continuation;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.ToStackOp;
 import de.michab.scream.util.Scut;
 
