@@ -254,17 +254,27 @@ public final class ScreamEvaluator implements ScriptEngine
             Environment e,
             SupplierX<FirstClassObject,RuntimeX> s,
             FirstClassObject previousResult,
-            FirstClassObject newExpression,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
+        final var newExpression = s.get();
+
         if ( newExpression == Port.EOF )
             return c.accept( previousResult );
 
         return Primitives._x_eval(
                 e,
                 newExpression,
-                fco -> evalImpl_( e, s, fco, s.get(), c ) );
+                fco -> _thunked_evalImpl_( e, s, fco, c ) );
+    }
+
+    private static Thunk _thunked_evalImpl_(
+            Environment e,
+            SupplierX<FirstClassObject,RuntimeX> s,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c )
+    {
+        return () -> evalImpl_( e, s, previousResult, c );
     }
 
     private static Thunk evalImpl(
@@ -277,7 +287,6 @@ public final class ScreamEvaluator implements ScriptEngine
                 e,
                 s,
                 Cons.NIL,
-                s.get(),
                 c );
     }
 
@@ -434,11 +443,11 @@ public final class ScreamEvaluator implements ScriptEngine
 
 
         Cont<FirstClassObject> next =
-                (fco) -> _apply(
+                (fco) -> _thunked_apply(
                         elementType,
                         operation,
                         e,
-                        Scut.as( Cons.class, args.getCdr() ),
+                        args.getCdr(),
                         fco,
                         c );
 
@@ -446,6 +455,24 @@ public final class ScreamEvaluator implements ScriptEngine
                 e,
                 operation.apply( Scut.as( elementType, args.getCar() ) ),
                 next );
+    }
+
+    private static <T extends FirstClassObject>
+    Thunk _thunked_apply(
+            Class<T> elementType,
+            FunctionX<T, FirstClassObject, RuntimeX> operation,
+            Environment e,
+            FirstClassObject args,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c )
+    {
+        return () -> _apply(
+                elementType,
+                operation,
+                e,
+                Scut.as( Cons.class, args ),
+                previousResult,
+                c );
     }
 
     /**

@@ -87,7 +87,7 @@ public class Scream implements ScriptEngineFactory
      */
     @FunctionalInterface
     public static interface Cont<R> {
-        Thunk accept(R result) throws RuntimeX;
+        Thunk accept(R result);
     }
 
     /**
