@@ -58,12 +58,11 @@ public class SyntaxDefine extends Syntax
             return Primitives._x_eval(
                     e,
                     rest.getCar(),
-                    fco -> Primitives._x_define(
+                    fco -> Primitives._define(
                             e,
                             (Symbol)variableSlot,
                             fco,
-                            c ) );
-
+                            ignored -> c.accept( Cons.NIL ) ) );
         }
 
         // This is a lambda define...
@@ -92,7 +91,11 @@ public class SyntaxDefine extends Syntax
                     e,
                     parameterList,
                     body ).setName( name );
-            return Primitives._x_define( e, name, value, c );
+            return Primitives._define(
+                    e,
+                    name,
+                    value,
+                    ignore -> c.accept( Cons.NIL ) );
         };
     }
 

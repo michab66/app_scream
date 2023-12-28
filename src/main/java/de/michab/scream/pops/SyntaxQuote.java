@@ -33,8 +33,7 @@ public class SyntaxQuote extends Syntax
 
         var quoted = args.getCar();
 
-        return Primitives._x_quote(
-                        e,
+        return Primitives._quote(
                         FirstClassObject.setConstant( quoted ),
                         c );
     }

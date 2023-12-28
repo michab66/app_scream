@@ -365,8 +365,7 @@ public abstract class FirstClassObject
     }
 
     private static Lambda _NIL = new Lambda(
-            (e,c) -> Primitives._x_quote(
-                    e,
+            (e,c) -> Primitives._quote(
                     Cons.NIL,
                     c ),
             "NIL" );
@@ -383,8 +382,7 @@ public abstract class FirstClassObject
         throws RuntimeX
     {
         return new Lambda(
-                (e,c) -> Primitives._x_quote(
-                        e,
+                (e,c) -> Primitives._quote(
                         this,
                         c ),
                 this.toString() );

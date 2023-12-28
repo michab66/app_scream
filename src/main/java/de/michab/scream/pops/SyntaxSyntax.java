@@ -58,7 +58,11 @@ public class SyntaxSyntax extends Syntax
             var value = new Syntax(
                     parameterList,
                     body ).setName( name );
-            return Primitives._x_define( e, name, value, c );
+            return Primitives._define(
+                    e,
+                    name,
+                    value,
+                    ignore -> Primitives._quote( Cons.NIL, c ) );
         };
     }
 

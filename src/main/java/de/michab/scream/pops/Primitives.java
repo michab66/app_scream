@@ -144,28 +144,6 @@ public class Primitives
      *
      * @param e The environment receiving the definition.
      * @param symbol The symbol to set.
-     * @param value The value.  Not evaluated.
-     * @param c A continuation receiving NIL.
-     * @return A thunk.
-     */
-    @Deprecated
-    public static Thunk _x_define(
-            Environment e,
-            Symbol symbol,
-            FirstClassObject value,
-            Cont<FirstClassObject> c )
-    {
-        return () -> {
-            e.define( symbol, value );
-            return c.accept( Cons.NIL );
-        };
-    }
-
-    /**
-     * Define a new value.
-     *
-     * @param e The environment receiving the definition.
-     * @param symbol The symbol to set.
      * @param value The value.
      * @param c A continuation receiving the value.
      * @return A thunk.
@@ -683,8 +661,7 @@ public class Primitives
                 c );
     }
 
-    public static Thunk _x_quote(
-            Environment e,
+    public static Thunk _quote(
             FirstClassObject quote,
             Cont<FirstClassObject> c)
     {

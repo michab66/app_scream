@@ -138,13 +138,13 @@ extends FirstClassObject
         var zero = SchemeInteger.createObject( 0 );
 
         if ( listLength == 0 )
-            return () -> Primitives._x_quote( e, zero, c );
+            return () -> Primitives._quote( zero, c );
 
-            return () -> _add(
-                    e,
-                    zero,
-                    list,
-                    c );
+        return () -> _add(
+                e,
+                zero,
+                list,
+                c );
     }
 
     /**
@@ -225,13 +225,13 @@ extends FirstClassObject
         var one = SchemeInteger.createObject( 1 );
 
         if ( listLength == 0 )
-            return () -> Primitives._x_quote( e, one, c );
+            return () -> Primitives._quote( one, c );
 
-            return () -> _multiply(
-                    e,
-                    one,
-                    list,
-                    c );
+        return () -> _multiply(
+                e,
+                one,
+                list,
+                c );
     }
 
     /**
