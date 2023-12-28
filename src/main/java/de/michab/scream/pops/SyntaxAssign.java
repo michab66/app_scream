@@ -42,7 +42,7 @@ public final class SyntaxAssign extends Syntax
                 e,
                 symbol,
                 value,
-                c);
+                ignored -> c.accept( Cons.NIL ));
     }
 
     /**

@@ -111,7 +111,7 @@ public class Primitives
      * @param e The environment for evaluation.
      * @param s The symbol to set.
      * @param o The object to evaluate.
-     * @param c A continuation receiving NIL.
+     * @param c A continuation receiving the evaluation result.
      * @return The thunk.
      */
     public static Thunk _x_assign(
@@ -120,12 +120,23 @@ public class Primitives
             FirstClassObject o,
             Cont<FirstClassObject> c )
     {
+
         Cont<FirstClassObject> next = v -> {
-            e.assign( s, v );
-            return c.accept( Cons.NIL );
+            return _assign( e, s, v, c );
         };
 
         return () -> _x_eval( e, o, next );
+    }
+    public static Thunk _assign(
+            Environment e,
+            Symbol s,
+            FirstClassObject o,
+            Cont<FirstClassObject> c )
+    {
+        return () -> {
+            e.assign( s, o );
+            return c.accept( o );
+        };
     }
 
     /**
