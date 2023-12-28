@@ -145,6 +145,15 @@ public class SyntaxCase extends Syntax
                 c );
     }
 
+    private static Thunk _thunked_caseImpl(
+            Environment e,
+            FirstClassObject key,
+            Cons clauses,
+            Cont<FirstClassObject> c)
+    {
+        return () -> _caseImpl( e, key, clauses, c );
+    }
+
     private static Thunk _case(
             Environment e,
             FirstClassObject key,
@@ -154,9 +163,9 @@ public class SyntaxCase extends Syntax
         if ( Cons.NIL == clauses )
             return c.accept( Cons.NIL );
 
-        Cont<FirstClassObject> next = (fco) -> _caseImpl(
+        Cont<FirstClassObject> next = result -> _thunked_caseImpl(
                 e,
-                fco,
+                result,
                 clauses,
                 c );
 

@@ -50,6 +50,14 @@ public class SyntaxTime extends Syntax
         return c.accept( result );
     }
 
+    private Thunk _thunked_finish(
+            TimeProbe tp,
+            FirstClassObject evalResult,
+            Cont<FirstClassObject> c )
+    {
+        return () -> finish( tp, evalResult, c );
+    }
+
     @Override
     protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
@@ -64,7 +72,7 @@ public class SyntaxTime extends Syntax
             return Primitives._x_eval(
                     e,
                     expression,
-                    fco -> finish( tp, fco, c ) );
+                    fco -> _thunked_finish( tp, fco, c ) );
         };
     }
 

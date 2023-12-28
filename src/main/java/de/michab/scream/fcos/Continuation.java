@@ -60,6 +60,16 @@ public class Continuation extends Procedure
         }.setClosure( e );
     }
 
+    static private <T extends FirstClassObject> Thunk _cast( Class<T> cl, FirstClassObject fco, Cont<T> c )
+        throws RuntimeX
+    {
+        return c.accept( Scut.as( cl, fco ) );
+    }
+    static private <T extends FirstClassObject> Thunk _thunked_cast( Class<T> cl, FirstClassObject fco, Cont<T> c )
+    {
+        return () -> _cast( cl, fco, c );
+    }
+
     /**
      * (call-with-current-continuation ...
      */
@@ -85,18 +95,21 @@ public class Continuation extends Procedure
                         Procedure.class,
                         args.listRef(1) );
 
-                Cont<FirstClassObject> branch = values ->
+                Cont<Cons> branch = values ->
                 {
                     return consumer._execute(
                             e,
-                            Scut.as( Cons.class, values ),
+                            values,
                             c );
                 };
 
                 return producer._execute(
                         e,
                         Cons.NIL,
-                        branch );
+                        values -> _thunked_cast(
+                                Cons.class,
+                                values,
+                                branch ) );
             }
         }.setClosure( e );
     }
