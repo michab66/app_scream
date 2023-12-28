@@ -129,13 +129,13 @@ public class Primitives
     }
     public static Thunk _assign(
             Environment e,
-            Symbol s,
-            FirstClassObject o,
+            Symbol symbol,
+            FirstClassObject value,
             Cont<FirstClassObject> c )
     {
         return () -> {
-            e.assign( s, o );
-            return c.accept( o );
+            e.assign( symbol, value );
+            return c.accept( value );
         };
     }
 
@@ -148,6 +148,7 @@ public class Primitives
      * @param c A continuation receiving NIL.
      * @return A thunk.
      */
+    @Deprecated
     public static Thunk _x_define(
             Environment e,
             Symbol symbol,
@@ -161,6 +162,27 @@ public class Primitives
     }
 
     /**
+     * Define a new value.
+     *
+     * @param e The environment receiving the definition.
+     * @param symbol The symbol to set.
+     * @param value The value.
+     * @param c A continuation receiving the value.
+     * @return A thunk.
+     */
+    public static Thunk _define(
+            Environment e,
+            Symbol symbol,
+            FirstClassObject value,
+            Cont<FirstClassObject> c )
+    {
+        return () -> {
+            e.define( symbol, value );
+            return c.accept( value );
+        };
+    }
+
+    /**
      * Defines a list of symbols in the passed environment.
      * All symbols are bound to the same value.
      *
@@ -170,7 +192,7 @@ public class Primitives
      * @param c The resulting extended environment.
      * @return The thunk.
      */
-    private static Thunk _define(
+    private static Thunk _defineSymbols(
             Environment e,
             Cons symbols,
             FirstClassObject o,
@@ -451,12 +473,20 @@ public class Primitives
             Symbol variable = (Symbol)bindingElement.listRef(0);
             FirstClassObject init = bindingElement.listRef(1);
 
-            Cont<FirstClassObject> evalResult = fco -> {
-                extended.define( variable, fco );
-                return _bind( eval, extended, (Cons)bindings.getCdr(), c );
-            };
+            Cons next = Scut.as( Cons.class, bindings.getCdr() );
 
-            return _x_eval( eval, init, evalResult );
+            return _x_eval(
+                    eval,
+                    init,
+                    result -> _define(
+                            extended,
+                            variable,
+                            result,
+                            value -> _bind(
+                                    eval,
+                                    extended,
+                                    next,
+                                    c ) ) );
         };
     }
 
@@ -581,7 +611,7 @@ public class Primitives
                         bindings,
                         begin );
 
-        return () -> _define(
+        return () -> _defineSymbols(
                 e.extend( Symbol.createObject( "x_letrec" ) ),
                 symbols,
                 Cons.NIL,
