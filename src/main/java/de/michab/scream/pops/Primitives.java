@@ -679,11 +679,14 @@ public class Primitives
             if ( Cons.NIL == current )
                 return c.accept( Cons.reverse( result ) );
 
+            Cons next =
+                    Scut.as( Cons.class, current.getCdr() );
+
             Cont<FirstClassObject> set = fco -> evalImpl(
-                        e,
-                        new Cons( fco, result ),
-                        Scut.as( Cons.class, current.getCdr() ),
-                        c );
+                    e,
+                    new Cons( fco, result ),
+                    next,
+                    c );
 
             return FirstClassObject.evaluate(
                     current.getCar(),
@@ -799,12 +802,14 @@ public class Primitives
             if ( Cons.NIL == todo )
                 return result.accept( Cons.reverse( results ) );
 
+            Cons next = Scut.as( Cons.class, todo.getCdr() );
+
             Cont<FirstClassObject> step = r -> {
                 return _mapImpl(
                         env,
                         procedure,
                         new Cons( r, results ),
-                        Scut.as( Cons.class, todo.getCdr() ),
+                        next,
                         result );
             };
 
