@@ -42,7 +42,10 @@ public class Primitives
      * @param c The continuation receiving the cast object.
      * @return The thunk.
      */
-    static public <T extends FirstClassObject> Thunk _cast( Class<T> cl, FirstClassObject fco, Cont<T> c )
+    static public <T extends FirstClassObject> Thunk _cast(
+            Class<T> cl,
+            FirstClassObject fco,
+            Cont<T> c )
     {
         return () -> _castImpl( cl, fco, c );
     }
