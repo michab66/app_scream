@@ -7,6 +7,7 @@ package de.michab.scream.fcos;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.Scream.Cont;
+import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
@@ -60,16 +61,6 @@ public class Continuation extends Procedure
         }.setClosure( e );
     }
 
-    static private <T extends FirstClassObject> Thunk _cast( Class<T> cl, FirstClassObject fco, Cont<T> c )
-        throws RuntimeX
-    {
-        return c.accept( Scut.as( cl, fco ) );
-    }
-    static private <T extends FirstClassObject> Thunk _thunked_cast( Class<T> cl, FirstClassObject fco, Cont<T> c )
-    {
-        return () -> _cast( cl, fco, c );
-    }
-
     /**
      * (call-with-current-continuation ...
      */
@@ -106,7 +97,7 @@ public class Continuation extends Procedure
                 return producer._execute(
                         e,
                         Cons.NIL,
-                        values -> _thunked_cast(
+                        values -> Primitives._cast(
                                 Cons.class,
                                 values,
                                 branch ) );

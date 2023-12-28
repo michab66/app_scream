@@ -424,12 +424,23 @@ public class Cons
     {
         try
         {
-            return ((Operation)op)._execute( e, args, c );
+            return Scut.asNotNil(
+                    Operation.class,
+                    op )._execute( e, args, c );
         }
-        catch ( NullPointerException | ClassCastException x )
+        catch ( RuntimeX rx )
         {
-            throw RuntimeX.mCalledNonProcedural( op ).addCause( x );
+            throw RuntimeX.mCalledNonProcedural( op ).addCause( rx );
         }
+    }
+
+    private Thunk _thunked_performInvocation(
+            Environment e,
+            FirstClassObject  op,
+            Cons args,
+            Cont<FirstClassObject> c )
+    {
+        return () -> performInvocation( e, op, args, c );
     }
 
     @Override
@@ -445,7 +456,7 @@ public class Cons
             return FirstClassObject.evaluate(
                     car,
                     e,
-                    op -> performInvocation( e, op, cdr, c ) );
+                    op -> _thunked_performInvocation( e, op, cdr, c ) );
         };
 
         return new Lambda( l, this.toString()  );

@@ -135,10 +135,10 @@ public abstract class SyntaxLet
                     e,
                     Symbol.createObject( "cadr" ),
                     bindings,
-                    mapped -> Primitives._x_evalCons(
-                            e,
-                            mapped.as( Cons.class ),
-                            exec ) );
+                    mapped -> Primitives._cast(
+                            Cons.class,
+                            mapped,
+                            cons -> Primitives._x_evalCons( e, cons, exec ) ) );
         }
 
         @Override
