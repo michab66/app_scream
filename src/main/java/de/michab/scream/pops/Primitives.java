@@ -264,49 +264,42 @@ public class Primitives
     }
 
     /**
-     *
-     * @param target The environment to extend with the definitions.
-     * @param eval The environment used for the evaluation of the expression.
-     * @param values The values to be bound.
-     * @param expression The expression generating the values.
-     * @param c Returns Cons.NIL.
-     * @return A thunk.
-     */
-    public static Thunk _x_defineValues(
+    *
+    * @param target The environment to extend with the definitions.
+    * @param symbols The values to be bound.
+    * @param evalResult The evaluated values.
+    * @param c Returns Cons.NIL.
+    * @return A thunk.
+    */
+    static public Thunk _x_defineValues(
             Environment target,
-            Environment eval,
-            Cons values,
-            FirstClassObject expression,
-            Cont<FirstClassObject> c )
+            Cons symbols,
+            FirstClassObject evalResult,
+            Cont<FirstClassObject> c)
     {
-        // Receives the values from the evaluation of the
-        // expression and sets the formals accordingly.
-        Cont<FirstClassObject> defineValues = v -> {
-            if ( ! FirstClassObject.is( Cons.class,v ) )
-                v = new Cons( v );
+        return () -> {
+            // Make a list from the evaluation result.
+            Cons v_ = ! FirstClassObject.is( Cons.class, evalResult ) ?
+                // We received only a single value, transform to a
+                // single-element list.
+                new Cons( evalResult ) :
+                // Was already a list.
+                Scut.as( Cons.class, evalResult );
 
-            var receivedValueCount = Scut.as( Cons.class, v ).length();
+            var receivedValueCount = v_.length();
 
-            if ( receivedValueCount != values.length() )
+            if ( receivedValueCount != symbols.length() )
                 throw RuntimeX.mWrongNumberOfArguments(
-                        values.length(),
+                        symbols.length(),
                         receivedValueCount );
 
             return Primitives._x_defineList(
                     target,
-                    values,
-                    Scut.as( Cons.class, v ),
+                    symbols,
+                    v_,
                     // Constant result of the define-values procedure.
                     ignored -> c.accept( Cons.NIL ) );
         };
-
-        // Evaluate the expression,
-        // the resulting values are passed to
-        // defineValues above.
-        return Primitives._x_eval(
-                eval,
-                expression,
-                defineValues );
     }
 
     /**
@@ -493,12 +486,18 @@ public class Primitives
             FirstClassObject init =
                     currentBinding.listRef(1);
 
-            return _x_defineValues(
-                    extended,
+            return Primitives._x_eval(
                     e,
-                    values,
                     init,
-                    ignored -> _x_bindValues( e, extended, remainingBindings, c ) );
+                    result -> _x_defineValues(
+                            extended,
+                            values,
+                            result,
+                            ignored -> _x_bindValues(
+                                    e,
+                                    extended,
+                                    remainingBindings,
+                                    c ) ) );
         };
     }
 
