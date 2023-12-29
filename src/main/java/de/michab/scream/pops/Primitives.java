@@ -94,9 +94,13 @@ public class Primitives
             return () -> c.accept( previousResult );
 
         Cont<FirstClassObject> next =
-                (fco) -> _and( e, (Cons)expressions.getCdr(), fco, c);
+                fco -> _and(
+                        e,
+                        (Cons)expressions.getCdr(),
+                        fco,
+                        c);
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 expressions.getCar(),
                 next );
@@ -111,7 +115,7 @@ public class Primitives
      * @param c The continuation.
      * @return A thunk.
      */
-    public static Thunk _x_and(
+    public static Thunk _and(
             Environment e,
             Cons expressions,
             Cont<FirstClassObject> c )
@@ -128,23 +132,11 @@ public class Primitives
      *
      * @param e The environment for evaluation.
      * @param s The symbol to set.
-     * @param o The object to evaluate.
-     * @param c A continuation receiving the evaluation result.
-     * @return The thunk.
+     * @param o The value to assign.  This is not evaluated, but assigned as-is.
+     * @param c A continuation receiving the assigned value.
+     * @return A thunk.
+     * @see #_define(Environment, Symbol, FirstClassObject, Cont)
      */
-    public static Thunk _x_assign(
-            Environment e,
-            Symbol s,
-            FirstClassObject o,
-            Cont<FirstClassObject> c )
-    {
-
-        Cont<FirstClassObject> next = v -> {
-            return _assign( e, s, v, c );
-        };
-
-        return () -> _x_eval( e, o, next );
-    }
     public static Thunk _assign(
             Environment e,
             Symbol symbol,
@@ -198,15 +190,11 @@ public class Primitives
             var circular = new Cons( Cons.NIL, Cons.NIL );
             circular.setCdr( circular );
 
-            Cont<FirstClassObject> done = ignored -> {
-                return c.accept( e );
-            };
-
             return _defineList(
                     e,
                     symbols,
                     circular,
-                    done );
+                    c );
         };
     }
 
@@ -220,14 +208,14 @@ public class Primitives
      * than the list of symbols, then the symbols to the end of the list are
      * defined to {@code Cons.NIL}.
      *
-     * @param c returns nil.
+     * @param c returns the passed environment.
      * @return A thunk.
      */
-    private static Thunk _defineList(
+    static Thunk _defineList(
             Environment e,
             Cons symbols,
             Cons values,
-            Cont<FirstClassObject> c )
+            Cont<Environment> c )
     {
         return () -> {
             if ( symbols == Cons.NIL )
@@ -238,9 +226,6 @@ public class Primitives
             var firstValue = values == Cons.NIL ?
                     Cons.NIL:
                     values.getCar();
-
-            e.define( firstSymbol, firstValue );
-
             var restSymbols =
                     Scut.as( Cons.class, symbols.getCdr() );
             var restValues =
@@ -248,48 +233,30 @@ public class Primitives
                             Cons.NIL :
                             Scut.as( Cons.class, values.getCdr() );
 
-            return _defineList(
+            return _define(
                     e,
-                    restSymbols,
-                    restValues,
-                    c );
+                    firstSymbol,
+                    firstValue,
+                    ignored -> _defineList(
+                            e,
+                            restSymbols,
+                            restValues,
+                            c ) );
         };
     }
 
     /**
-     * Defines a list of symbols in the passed environment and returns the
-     * passed list of symbols.
+     * Define the values for a multi-value operation.
      *
-     * @param e The environment receiving the definitions.
-     * @param symbols The symbols to define.
-     * @param values The values to define.  If the list of values is shorter
-     * than the list of symbols, then the symbols to the end of the list are
-     * defined to {@code Cons.NIL}.
-     * @param c Returns 'symbols'.
+     * @param target The environment to extend with the definitions.
+     * @param symbols The symbols to be bound.
+     * @param evalResult The evaluated values.  If this is a single fco, it is
+     * placed in a single element list.  If this is already a list it is not changed.
+     * The list length must correspond to the length of {@code symbols}.
+     * @param c Returns Cons.NIL.
      * @return A thunk.
      */
-    public static Thunk _x_defineList(
-            Environment e,
-            Cons symbols,
-            Cons values,
-            Cont<FirstClassObject> c )
-    {
-        return _defineList(
-                e,
-                symbols,
-                values,
-                ignored -> c.accept( symbols ) );
-    }
-
-    /**
-    *
-    * @param target The environment to extend with the definitions.
-    * @param symbols The values to be bound.
-    * @param evalResult The evaluated values.
-    * @param c Returns Cons.NIL.
-    * @return A thunk.
-    */
-    static public Thunk _x_defineValues(
+    static public Thunk _defineValues(
             Environment target,
             Cons symbols,
             FirstClassObject evalResult,
@@ -311,7 +278,7 @@ public class Primitives
                         symbols.length(),
                         receivedValueCount );
 
-            return Primitives._x_defineList(
+            return Primitives._defineList(
                     target,
                     symbols,
                     v_,
@@ -329,7 +296,7 @@ public class Primitives
      * @param c The continuation receiving the result.
      * @return The thunk.
      */
-    private static Thunk _x_begin(
+    private static Thunk _begin(
             Environment e,
             Cons body,
             FirstClassObject previousResult,
@@ -340,9 +307,9 @@ public class Primitives
                 return c.accept( previousResult );
 
             Cont<FirstClassObject> next =
-                    (fco) -> _x_begin( e, (Cons)body.getCdr(), fco, c);
+                    (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
 
-            return Primitives._x_eval( e, body.getCar(), next );
+            return Primitives._eval( e, body.getCar(), next );
         };
     }
 
@@ -354,12 +321,12 @@ public class Primitives
      * @param c The continuation receiving the result.
      * @return A thunk.
      */
-    public static Thunk _x_begin(
+    public static Thunk _begin(
             Environment e,
             Cons body,
             Cont<FirstClassObject> c )
     {
-        return _x_begin(
+        return _begin(
                 e,
                 body,
                 Cons.NIL,
@@ -438,7 +405,7 @@ public class Primitives
                         c );
             };
 
-            return _x_eval(
+            return _eval(
                     e,
                     init,
                     evalResult );
@@ -471,7 +438,7 @@ public class Primitives
 
             Cons next = Scut.as( Cons.class, bindings.getCdr() );
 
-            return _x_eval(
+            return _eval(
                     eval,
                     init,
                     result -> _define(
@@ -512,10 +479,10 @@ public class Primitives
             FirstClassObject init =
                     currentBinding.listRef(1);
 
-            return Primitives._x_eval(
+            return Primitives._eval(
                     e,
                     init,
-                    result -> _x_defineValues(
+                    result -> _defineValues(
                             extended,
                             values,
                             result,
@@ -536,7 +503,7 @@ public class Primitives
     {
         // Process the body with the extended environment.
         Cont<Environment> begin =
-                ext -> _x_begin(
+                ext -> _begin(
                         ext,
                         body,
                         c );
@@ -566,7 +533,7 @@ public class Primitives
             Cont<FirstClassObject> c )
     {
         Cont<Environment> begin =
-                ext -> _x_begin(
+                ext -> _begin(
                         ext,
                         body,
                         c );
@@ -595,7 +562,7 @@ public class Primitives
             Cont<FirstClassObject> c )
     {
         Cont<Environment> begin =
-                env -> _x_begin(
+                env -> _begin(
                         env,
                         body,
                         c );
@@ -622,7 +589,7 @@ public class Primitives
      * @param c The continuation receiving the result.
      * @return The thunk.
      */
-    public static Thunk _x_eval(
+    public static Thunk _eval(
             Environment e,
             FirstClassObject o,
             Cont<FirstClassObject> c )
@@ -653,7 +620,7 @@ public class Primitives
         Cont<FirstClassObject> next =
                 (fco) -> _or( e, (Cons)expressions.getCdr(), fco, c);
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 expressions.getCar(),
                 next );
@@ -758,7 +725,7 @@ public class Primitives
             )
     {
         Cont<FirstClassObject> finish =
-                trueValue -> _x_begin(
+                trueValue -> _begin(
                         e,
                         (Cons)test.getCdr(),
                         trueValue,
@@ -781,7 +748,7 @@ public class Primitives
 
         // Process the command list.
         Cont<FirstClassObject> loopPerform =
-                falseValue -> _x_begin(
+                falseValue -> _begin(
                         e,
                         commands,
                         Cons.NIL,
@@ -875,8 +842,7 @@ public class Primitives
             Cons list,
             Cont<FirstClassObject> c )
     {
-        // TODO _x_eval -> _eval
-        return _x_eval(
+        return _eval(
                 e,
                 procedure,
                 proc -> _map( e, proc, list, c ) );

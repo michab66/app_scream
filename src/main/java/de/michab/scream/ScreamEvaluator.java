@@ -260,7 +260,7 @@ public final class ScreamEvaluator implements ScriptEngine
         if ( newExpression == Port.EOF )
             return c.accept( previousResult );
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 newExpression,
                 fco -> _thunked_evalImpl_( e, s, fco, c ) );
@@ -423,7 +423,7 @@ public final class ScreamEvaluator implements ScriptEngine
                         fco,
                         c );
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 operation.apply( Scut.as( elementType, args.getCar() ) ),
                 next );
@@ -541,11 +541,11 @@ public final class ScreamEvaluator implements ScriptEngine
 
             // (2) Evaluates the quoted expression.
             Cont<FirstClassObject> second = fco -> {
-                return Primitives._x_eval( e, fco, c );
+                return Primitives._eval( e, fco, c );
             };
 
             // (1) Evaluate the quote expression.
-            return Primitives._x_eval( e, args.getCar(), second );
+            return Primitives._eval( e, args.getCar(), second );
         }
     };
 

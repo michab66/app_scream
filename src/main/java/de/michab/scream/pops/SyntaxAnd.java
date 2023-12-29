@@ -31,7 +31,7 @@ public class SyntaxAnd extends Syntax
     {
         checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-        return Primitives._x_and(
+        return Primitives._and(
                 e,
                 args,
                 c);

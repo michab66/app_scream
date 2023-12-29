@@ -124,7 +124,7 @@ public class SyntaxCase extends Syntax
 
         if ( Symbol.createObject( "else" ).equals( currentClause.getCar() ))
         {
-            return Primitives._x_begin(
+            return Primitives._begin(
                     e,
                     Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
@@ -132,7 +132,7 @@ public class SyntaxCase extends Syntax
         var datums = Scut.as( Cons.class, currentClause.getCar() );
         if ( SchemeBoolean.isTrue( datums.member( key ) ) )
         {
-            return Primitives._x_begin(
+            return Primitives._begin(
                     e,
                     Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
@@ -169,7 +169,7 @@ public class SyntaxCase extends Syntax
                 clauses,
                 c );
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 key,
                 next );

@@ -30,7 +30,7 @@ public class SyntaxBegin extends Syntax
     protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
-        return Primitives._x_begin( e, args, c );
+        return Primitives._begin( e, args, c );
     }
 
     /**

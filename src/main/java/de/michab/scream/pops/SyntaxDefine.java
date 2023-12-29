@@ -55,7 +55,7 @@ public class SyntaxDefine extends Syntax
 
         if ( variableSlot instanceof Symbol ) {
             checkArgumentCount( 1, rest );
-            return Primitives._x_eval(
+            return Primitives._eval(
                     e,
                     rest.getCar(),
                     fco -> Primitives._define(

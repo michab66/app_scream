@@ -38,11 +38,14 @@ public final class SyntaxAssign extends Syntax
                 args.getCar() );
         var value = args.listRef( 1 );
 
-        return Primitives._x_assign(
+        return Primitives._eval(
                 e,
-                symbol,
                 value,
-                ignored -> c.accept( Cons.NIL ));
+                result -> Primitives._assign(
+                        e,
+                        symbol,
+                        result,
+                        ignored -> c.accept( Cons.NIL ) ) );
     }
 
     /**

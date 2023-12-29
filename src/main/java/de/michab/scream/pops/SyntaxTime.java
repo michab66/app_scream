@@ -69,7 +69,7 @@ public class SyntaxTime extends Syntax
         return () -> {
             TimeProbe tp =
                     new TimeProbe( getName().toString() ).start();
-            return Primitives._x_eval(
+            return Primitives._eval(
                     e,
                     expression,
                     fco -> _thunked_finish( tp, fco, c ) );

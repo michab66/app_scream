@@ -255,7 +255,7 @@ public class SchemeObject
             Symbol symbol = (Symbol)args0;
             var args1 = args.listRef( 1 );
 
-            return Primitives._x_eval(
+            return Primitives._eval(
                     e,
                     args1,
                     fco -> _processAttributeSet( symbol, fco, c ) );

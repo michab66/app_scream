@@ -46,10 +46,10 @@ public class SyntaxDefineValues extends Syntax
         var expression =
                 args.listRef( 1 );
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 expression,
-                fco -> Primitives._x_defineValues( e, formals, fco, c ) );
+                fco -> Primitives._defineValues( e, formals, fco, c ) );
     }
 
     /**

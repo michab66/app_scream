@@ -41,7 +41,7 @@ public class SyntaxIf extends Syntax
 
         return () -> {
             Cont<FirstClassObject> pos =
-                    fco -> Primitives._x_eval( e, cpositive, c );
+                    fco -> Primitives._eval( e, cpositive, c );
             Cont<FirstClassObject> neg =
                     falseObject -> c.accept( falseObject );
 
@@ -67,9 +67,9 @@ public class SyntaxIf extends Syntax
 
         return () -> {
             Cont<FirstClassObject> pos =
-                    fco -> Primitives._x_eval( e, cpositive, c );
+                    fco -> Primitives._eval( e, cpositive, c );
             Cont<FirstClassObject> neg =
-                    fco -> Primitives._x_eval( e, cnegative, c );
+                    fco -> Primitives._eval( e, cnegative, c );
 
             return Primitives._if(
                     e,

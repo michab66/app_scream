@@ -55,6 +55,65 @@ public class PrimitivesTest extends ScreamBaseTest
     }
 
     @Test
+    public void _if_true() throws Exception
+    {
+        Environment env =
+                new Environment( getClass().getSimpleName() );
+
+        // Everything is true, but false.
+
+        assertEqualq(
+                bTrue,
+                cont().toStack(
+                        cont -> Primitives._if(
+                                env,
+                                bTrue,
+                                trueResult -> Primitives._quote( trueResult, cont ),
+                                falseResult -> Primitives._quote( s("error"), cont ) ) ) );
+        assertEqualq(
+                Cons.NIL,
+                cont().toStack(
+                        cont -> Primitives._if(
+                                env,
+                                Cons.NIL,
+                                trueResult -> Primitives._quote( trueResult, cont ),
+                                falseResult -> Primitives._quote( s("error"), cont ) ) ) );
+        assertEqualq(
+                i313,
+                cont().toStack(
+                        cont -> Primitives._if(
+                                env,
+                                i313,
+                                trueResult -> Primitives._quote( trueResult, cont ),
+                                falseResult -> Primitives._quote( s("error"), cont ) ) ) );
+        env.define( s313, s313 );
+        assertEqualq(
+                s313,
+                cont().toStack(
+                        cont -> Primitives._if(
+                                env,
+                                s313,
+                                trueResult -> Primitives._quote( trueResult, cont ),
+                                falseResult -> Primitives._quote( s("error"), cont ) ) ) );
+    }
+
+    @Test
+    public void _if_false() throws Exception
+    {
+        Environment env =
+                new Environment( getClass().getSimpleName() );
+
+        var result = cont().toStack(
+                cont -> Primitives._if(
+                        env,
+                        bFalse,
+                        trueResult -> Primitives._quote( s("error"), cont ),
+                        falseResult -> Primitives._quote( falseResult, cont ) ) );
+
+        assertEquals( bFalse, result );
+    }
+
+    @Test
     public void defineList() throws Exception
     {
         Environment e = new Environment( getClass().getSimpleName() );
@@ -62,30 +121,33 @@ public class PrimitivesTest extends ScreamBaseTest
         Cons expected = Scut.as( Cons.class, parse( "(a b c)" ) );
 
         var result = cont().toStack(
-                cont -> Primitives._x_defineList(
+                cont -> Primitives._defineList(
                         e,
                         expected,
                         Scut.as( Cons.class, parse( "(1 2 3)" ) ),
-                        cont ) );
+                        env -> cont.accept( env ) ) );
 
-        assertEqualq( expected, result );
+        assertEqualq( e, result );
+        assertEqualq( e.get( s("a") ), i(1) );
+        assertEqualq( e.get( s("b") ), i(2) );
+        assertEqualq( e.get( s("c") ), i(3) );
     }
 
     @Test
-    public void defineList_lessValues() throws Exception
+    public void defineList_lessValuesThanSymbols() throws Exception
     {
         Environment e = new Environment( getClass().getSimpleName() );
 
         Cons expected = Scut.as( Cons.class, parse( "(a b)" ) );
 
         var result = cont().toStack(
-                cont -> Primitives._x_defineList(
+                cont -> Primitives._defineList(
                         e,
                         expected,
                         Scut.as( Cons.class, parse( "(1)" ) ),
-                        cont ) );
+                        env -> cont.accept( env ) ) );
 
-        assertEqualq( expected, result );
+        assertEqualq( e, result );
         assertEqualq( e.get( s("a") ), i(1) );
         assertEqualq( e.get( s("b") ), Cons.NIL );
     }
@@ -93,18 +155,19 @@ public class PrimitivesTest extends ScreamBaseTest
     @Test
     public void defineList_moreValues() throws Exception
     {
-        Environment e = new Environment( getClass().getSimpleName() );
-
-        Cons expected = Scut.as( Cons.class, parse( "(a b)" ) );
+        Environment e =
+                new Environment( getClass().getSimpleName() );
+        Cons expected =
+                Scut.as( Cons.class, parse( "(a b)" ) );
 
         var result = cont().toStack(
-                cont -> Primitives._x_defineList(
+                cont -> Primitives._defineList(
                         e,
                         expected,
                         Scut.as( Cons.class, parse( "(1 2 3 4 5)" ) ),
-                        cont ) );
+                        env -> cont.accept( env ) ) );
 
-        assertEqualq( expected, result );
+        assertEqualq( e, result );
         assertEqualq( e.get( s("a") ), i(1) );
         assertEqualq( e.get( s("b") ), i(2) );
     }

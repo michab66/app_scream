@@ -382,7 +382,7 @@ extends FirstClassObject
                 ex,
                 _formalArguments,
                 args,
-                env ->Primitives._x_begin( env, _body, c ) );
+                env ->Primitives._begin( env, _body, c ) );
     }
 
     /**
