@@ -62,7 +62,7 @@ extends FirstClassObject
     {
         return new Lambda(
                 (e,c) ->
-                    Primitives._x_resolve( e, this, c ),
+                    Primitives._resolve( e, this, c ),
                 "resolve " + toString() );
     }
 

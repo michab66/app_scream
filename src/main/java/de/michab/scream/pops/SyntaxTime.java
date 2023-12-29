@@ -8,12 +8,12 @@ package de.michab.scream.pops;
 import org.smack.util.TimeProbe;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.Syntax;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
@@ -50,8 +50,16 @@ public class SyntaxTime extends Syntax
         return c.accept( result );
     }
 
+    private Thunk _thunked_finish(
+            TimeProbe tp,
+            FirstClassObject evalResult,
+            Cont<FirstClassObject> c )
+    {
+        return () -> finish( tp, evalResult, c );
+    }
+
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 1, args );
@@ -61,10 +69,10 @@ public class SyntaxTime extends Syntax
         return () -> {
             TimeProbe tp =
                     new TimeProbe( getName().toString() ).start();
-            return Primitives._x_eval(
+            return Primitives._eval(
                     e,
                     expression,
-                    fco -> finish( tp, fco, c ) );
+                    fco -> _thunked_finish( tp, fco, c ) );
         };
     }
 

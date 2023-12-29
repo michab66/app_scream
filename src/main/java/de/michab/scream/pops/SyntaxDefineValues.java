@@ -6,11 +6,11 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Syntax;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
@@ -27,7 +27,7 @@ public class SyntaxDefineValues extends Syntax
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -46,12 +46,10 @@ public class SyntaxDefineValues extends Syntax
         var expression =
                 args.listRef( 1 );
 
-        return Primitives._x_defineValues(
+        return Primitives._eval(
                 e,
-                e,
-                formals,
                 expression,
-                ignored -> c.accept( Cons.NIL ) );
+                fco -> Primitives._defineValues( e, formals, fco, c ) );
     }
 
     /**

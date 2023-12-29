@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.HashSet;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
@@ -19,6 +20,7 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Number;
+import de.michab.scream.fcos.Operation;
 import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.Symbol;
@@ -119,6 +121,24 @@ public class ScutTest extends ScreamBaseTest
             FirstClassObject fco = Cons.NIL;
 
             Scut.asNotNil( SchemeInteger.class, fco );
+            fail();
+        }
+        catch ( RuntimeX rx )
+        {
+            assertEquals( Code.TYPE_ERROR, rx.getCode() );
+            assertEquals(
+                    FirstClassObject.toString( Cons.NIL ),
+                    rx.getArgument(1) );
+        }
+    }
+
+    @Disabled( "Think ..." )
+    @Test
+    public void asOperationNil() throws Exception
+    {
+        try
+        {
+            Scut.as( Operation.class, Cons.NIL );
             fail();
         }
         catch ( RuntimeX rx )

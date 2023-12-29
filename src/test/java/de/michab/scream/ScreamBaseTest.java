@@ -26,6 +26,7 @@ import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
+import de.michab.scream.util.Continuation;
 
 /**
  * scream test support.
@@ -252,5 +253,10 @@ public class ScreamBaseTest
         finally {
             f.delete();
         }
+    }
+
+    protected Continuation<FirstClassObject,RuntimeX> cont()
+    {
+        return new Continuation<FirstClassObject,RuntimeX>( RuntimeX.class );
     }
 }

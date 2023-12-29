@@ -6,12 +6,12 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.Scut.ConsumerX;
@@ -87,7 +87,7 @@ public abstract class SyntaxLetValues
     static public final Syntax letValuesSyntax = new SyntaxLetValues( "let-values" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args,
+        protected Thunk __executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -99,7 +99,7 @@ public abstract class SyntaxLetValues
 
             validateBindings( bindings );
 
-            return Primitives._x_let_values(
+            return Primitives._let_values(
                     e,
                     e.extend( getName() ),
                     bindings,
@@ -114,7 +114,7 @@ public abstract class SyntaxLetValues
     static public final Syntax letAsteriskValuesSyntax = new SyntaxLetValues( "let*-values" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args,
+        protected Thunk __executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -128,7 +128,7 @@ public abstract class SyntaxLetValues
 
             var extended = e.extend( getName() );
 
-            return Primitives._x_let_values(
+            return Primitives._let_values(
                     extended,
                     extended,
                     bindings,

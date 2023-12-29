@@ -6,7 +6,7 @@
 package de.michab.scream.fcos;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
@@ -52,9 +52,8 @@ public class Lambda extends FirstClassObject
 
     @Override
     public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
-            throws RuntimeX
     {
-        return _l.accept( e, c );
+        return () -> _l.accept( e, c );
     }
 
     @Override

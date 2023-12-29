@@ -8,13 +8,13 @@ package de.michab.scream.pops;
 import java.util.HashSet;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
@@ -71,7 +71,7 @@ public class SyntaxCase extends Syntax
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -124,7 +124,7 @@ public class SyntaxCase extends Syntax
 
         if ( Symbol.createObject( "else" ).equals( currentClause.getCar() ))
         {
-            return Primitives._x_begin(
+            return Primitives._begin(
                     e,
                     Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
@@ -132,7 +132,7 @@ public class SyntaxCase extends Syntax
         var datums = Scut.as( Cons.class, currentClause.getCar() );
         if ( SchemeBoolean.isTrue( datums.member( key ) ) )
         {
-            return Primitives._x_begin(
+            return Primitives._begin(
                     e,
                     Scut.as( Cons.class, currentClause.getCdr() ),
                     c );
@@ -145,6 +145,15 @@ public class SyntaxCase extends Syntax
                 c );
     }
 
+    private static Thunk _thunked_caseImpl(
+            Environment e,
+            FirstClassObject key,
+            Cons clauses,
+            Cont<FirstClassObject> c)
+    {
+        return () -> _caseImpl( e, key, clauses, c );
+    }
+
     private static Thunk _case(
             Environment e,
             FirstClassObject key,
@@ -154,13 +163,13 @@ public class SyntaxCase extends Syntax
         if ( Cons.NIL == clauses )
             return c.accept( Cons.NIL );
 
-        Cont<FirstClassObject> next = (fco) -> _caseImpl(
+        Cont<FirstClassObject> next = result -> _thunked_caseImpl(
                 e,
-                fco,
+                result,
                 clauses,
                 c );
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 key,
                 next );

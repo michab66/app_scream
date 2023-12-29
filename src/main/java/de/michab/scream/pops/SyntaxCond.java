@@ -6,13 +6,13 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
@@ -31,7 +31,7 @@ public class SyntaxCond extends Syntax
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 1, Integer.MAX_VALUE, args );
@@ -77,10 +77,10 @@ public class SyntaxCond extends Syntax
             if ( Cons.NIL == afterTest )
                 return c.accept( s );
 
-            return Primitives._x_begin( e, (Cons)clause.getCdr(), c );
+            return Primitives._begin( e, (Cons)clause.getCdr(), c );
         };
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 clause.getCar(),
                 next );

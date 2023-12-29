@@ -46,7 +46,7 @@ public class Continuation<T, X extends Exception>
 
     @FunctionalInterface
     public static interface Cont<R> {
-        Thunk accept(R result) throws Exception;
+        Thunk accept(R result);
     }
 
     @FunctionalInterface
@@ -65,8 +65,7 @@ public class Continuation<T, X extends Exception>
      */
     private void trampoline(
             Thunk t,
-            Cont<X> xCont,
-            Class<X> xClass )
+            Cont<X> xCont )
                     throws Exception
     {
         while ( t != null )
@@ -80,11 +79,11 @@ public class Continuation<T, X extends Exception>
             catch ( Exception e )
             {
                 // If the exception is of type xClass ...
-                if ( xClass.isAssignableFrom( e.getClass() ) )
+                if ( _exceptionClass.isAssignableFrom( e.getClass() ) )
                     // ... then the passed exception continuation is called.
                     // If this in turn throws an exception then thunk processing
                     // is terminated.
-                    t = xCont.accept( xClass.cast( e ) );
+                    t = xCont.accept( _exceptionClass.cast( e ) );
                 else
                     // Otherwise terminate.
                     throw e;
@@ -132,14 +131,12 @@ public class Continuation<T, X extends Exception>
     public
     T toStack(
             ToStackOp<T> op,
-            Cont<X> exceptionHandler,
-            Class<X> exceptionClass )
+            Cont<X> exceptionHandler )
         throws Exception
     {
         trampoline(
                 op.call( endCall( s -> _result.set( s ) ) ),
-                exceptionHandler,
-                exceptionClass );
+                exceptionHandler );
 
         return _result.get();
     }
@@ -168,8 +165,7 @@ public class Continuation<T, X extends Exception>
 
         trampoline(
                 op.call( endCall( s -> _result.set( s ) ) ),
-                handler,
-                _exceptionClass );
+                handler );
 
         if ( _exception.get() != null )
             throw _exception.get();

@@ -6,12 +6,12 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
@@ -28,7 +28,7 @@ public final class SyntaxAssign extends Syntax
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, args );
@@ -38,11 +38,14 @@ public final class SyntaxAssign extends Syntax
                 args.getCar() );
         var value = args.listRef( 1 );
 
-        return Primitives._x_assign(
+        return Primitives._eval(
                 e,
-                symbol,
                 value,
-                c);
+                result -> Primitives._assign(
+                        e,
+                        symbol,
+                        result,
+                        ignored -> c.accept( Cons.NIL ) ) );
     }
 
     /**

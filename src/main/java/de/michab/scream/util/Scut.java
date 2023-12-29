@@ -93,8 +93,7 @@ public class Scut
         return as(
                 c,
                 v,
-                fail
-                );
+                fail );
     }
 
     public static <T extends FirstClassObject> T asNotNil( Class<T> c, FirstClassObject v )
@@ -103,14 +102,7 @@ public class Scut
         if ( Cons.NIL == v )
             throw RuntimeX.mTypeError( c, Cons.NIL );
 
-        FunctionX<FirstClassObject, T, RuntimeX> fail = (s) ->
-            { throw RuntimeX.mTypeError( c, s );  };
-
-        return as(
-                c,
-                v,
-                fail
-                );
+        return as( c, v );
     }
 
     /**

@@ -8,8 +8,8 @@ package de.michab.scream.fcos;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
@@ -90,7 +90,6 @@ public class Procedure
      */
     @Override
     protected final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX
     {
         // Execute in our _closure.
         Cont<Cons> cc = evaluated -> _executeImpl(
@@ -99,17 +98,16 @@ public class Procedure
                 c );
 
         // Evaluate the arguments in the environment that we receive.
-        return () -> Primitives._x_evalCons(
+        return () -> Primitives._evalCons(
                 e,
                 args,
                 cc );
     }
 
     public final Thunk apply( Environment e, Cons args, Cont<FirstClassObject> c  )
-            throws RuntimeX
     {
         // Do not evaluate the arguments.
-        return _executeImpl(
+        return () -> _executeImpl(
                 _closure,
                 args,
                 c );

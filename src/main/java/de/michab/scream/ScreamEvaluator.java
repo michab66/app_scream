@@ -24,8 +24,6 @@ import javax.script.SimpleScriptContext;
 
 import org.smack.util.JavaUtil;
 
-import de.michab.scream.Scream.Cont;
-import de.michab.scream.Scream.FcoOp;
 import de.michab.scream.binding.SchemeObject;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -57,8 +55,8 @@ import de.michab.scream.pops.SyntaxQuote;
 import de.michab.scream.pops.SyntaxSyntax;
 import de.michab.scream.pops.SyntaxTime;
 import de.michab.scream.util.Continuation;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
-import de.michab.scream.util.Continuation.ToStackOp;
 import de.michab.scream.util.FunctionX;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.Scut;
@@ -78,7 +76,7 @@ public final class ScreamEvaluator implements ScriptEngine
     /**
      * The continuation processor.
      */
-    private final Continuation<FirstClassObject,RuntimeX> continuation =
+    private final Continuation<FirstClassObject,RuntimeX> _continuation =
             new Continuation<>( RuntimeX.class );
 
     /**
@@ -254,17 +252,27 @@ public final class ScreamEvaluator implements ScriptEngine
             Environment e,
             SupplierX<FirstClassObject,RuntimeX> s,
             FirstClassObject previousResult,
-            FirstClassObject newExpression,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
+        final var newExpression = s.get();
+
         if ( newExpression == Port.EOF )
             return c.accept( previousResult );
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 newExpression,
-                fco -> evalImpl_( e, s, fco, s.get(), c ) );
+                fco -> _thunked_evalImpl_( e, s, fco, c ) );
+    }
+
+    private static Thunk _thunked_evalImpl_(
+            Environment e,
+            SupplierX<FirstClassObject,RuntimeX> s,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c )
+    {
+        return () -> evalImpl_( e, s, previousResult, c );
     }
 
     private static Thunk evalImpl(
@@ -277,44 +285,7 @@ public final class ScreamEvaluator implements ScriptEngine
                 e,
                 s,
                 Cons.NIL,
-                s.get(),
                 c );
-    }
-
-    private static Cont<FirstClassObject> mapCont( Continuation.Cont<FirstClassObject> cont )
-    {
-        return  c -> {
-            try
-            {
-                return cont.accept( c );
-            }
-            catch ( Exception e )
-            {
-                throw new InternalError( "mapCont", e );
-            }
-        };
-    }
-
-    private static ToStackOp<FirstClassObject> mapOp( FcoOp op )
-    {
-        return c -> op.call( mapCont( c )  );
-    }
-
-    private FirstClassObject toStack( FcoOp op )
-            throws RuntimeX
-    {
-        ToStackOp<FirstClassObject> tso2 = mapOp( op );
-
-        try
-        {
-            return continuation.toStack( tso2 );
-        }
-        catch (Exception e) {
-            if ( RuntimeX.class.isAssignableFrom( e.getClass() ))
-                throw RuntimeX.class.cast( e );
-
-            throw RuntimeX.mInternalError( e );
-        }
     }
 
     private FirstClassObject evalImpl(
@@ -322,8 +293,18 @@ public final class ScreamEvaluator implements ScriptEngine
             SupplierX<FirstClassObject,RuntimeX> spl )
                     throws RuntimeX
     {
-        return toStack(
-                c -> evalImpl( env, spl, c ) );
+        try
+        {
+            return _continuation.toStack( c -> evalImpl( env, spl, c ) );
+        }
+        catch ( RuntimeX rx )
+        {
+            throw rx;
+        }
+        catch ( Exception x )
+        {
+            throw RuntimeX.mInternalError( x );
+        }
     }
 
     /**
@@ -434,18 +415,36 @@ public final class ScreamEvaluator implements ScriptEngine
 
 
         Cont<FirstClassObject> next =
-                (fco) -> _apply(
+                (fco) -> _thunked_apply(
                         elementType,
                         operation,
                         e,
-                        Scut.as( Cons.class, args.getCdr() ),
+                        args.getCdr(),
                         fco,
                         c );
 
-        return Primitives._x_eval(
+        return Primitives._eval(
                 e,
                 operation.apply( Scut.as( elementType, args.getCar() ) ),
                 next );
+    }
+
+    private static <T extends FirstClassObject>
+    Thunk _thunked_apply(
+            Class<T> elementType,
+            FunctionX<T, FirstClassObject, RuntimeX> operation,
+            Environment e,
+            FirstClassObject args,
+            FirstClassObject previousResult,
+            Cont<FirstClassObject> c )
+    {
+        return () -> _apply(
+                elementType,
+                operation,
+                e,
+                Scut.as( Cons.class, args ),
+                previousResult,
+                c );
     }
 
     /**
@@ -484,7 +483,7 @@ public final class ScreamEvaluator implements ScriptEngine
     private final Syntax includeSyntax = new Syntax( "include" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, Integer.MAX_VALUE, args );
@@ -508,7 +507,7 @@ public final class ScreamEvaluator implements ScriptEngine
         return new Procedure( "eval" )
         {
             @Override
-            protected Thunk _executeImpl(
+            protected Thunk __executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -535,18 +534,18 @@ public final class ScreamEvaluator implements ScriptEngine
     private final Syntax evalSyntax = new Syntax( "scream:eval" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );
 
             // (2) Evaluates the quoted expression.
             Cont<FirstClassObject> second = fco -> {
-                return Primitives._x_eval( e, fco, c );
+                return Primitives._eval( e, fco, c );
             };
 
             // (1) Evaluate the quote expression.
-            return Primitives._x_eval( e, args.getCar(), second );
+            return Primitives._eval( e, args.getCar(), second );
         }
     };
 
@@ -555,7 +554,7 @@ public final class ScreamEvaluator implements ScriptEngine
         return new Procedure( "scream:apply" )
         {
             @Override
-            protected Thunk _executeImpl(
+            protected Thunk __executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )

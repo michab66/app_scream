@@ -6,11 +6,11 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Syntax;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
@@ -41,7 +41,7 @@ public class SyntaxIf extends Syntax
 
         return () -> {
             Cont<FirstClassObject> pos =
-                    fco -> Primitives._x_eval( e, cpositive, c );
+                    fco -> Primitives._eval( e, cpositive, c );
             Cont<FirstClassObject> neg =
                     falseObject -> c.accept( falseObject );
 
@@ -67,9 +67,9 @@ public class SyntaxIf extends Syntax
 
         return () -> {
             Cont<FirstClassObject> pos =
-                    fco -> Primitives._x_eval( e, cpositive, c );
+                    fco -> Primitives._eval( e, cpositive, c );
             Cont<FirstClassObject> neg =
-                    fco -> Primitives._x_eval( e, cnegative, c );
+                    fco -> Primitives._eval( e, cnegative, c );
 
             return Primitives._if(
                     e,
@@ -80,7 +80,7 @@ public class SyntaxIf extends Syntax
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         long argsLen =

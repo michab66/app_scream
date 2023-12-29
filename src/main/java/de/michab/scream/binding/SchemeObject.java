@@ -17,7 +17,6 @@ import java.util.logging.Logger;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
@@ -32,6 +31,7 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.fcos.Vector;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.ConversionFailedX;
 import de.michab.scream.util.Scut;
@@ -205,6 +205,16 @@ public class SchemeObject
                     className + "<init>"  );
         }
     }
+    private static Thunk _createObject(
+            String className,
+            Cons ctorArgs,
+            Cont<FirstClassObject> c )
+    {
+        return () -> createObject(
+                className,
+                Cons.asArray( ctorArgs ),
+                c );
+    }
 
     /**
      * Return the Java object that corresponds to the Scheme object.
@@ -217,7 +227,7 @@ public class SchemeObject
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         long argsLen =
@@ -245,10 +255,10 @@ public class SchemeObject
             Symbol symbol = (Symbol)args0;
             var args1 = args.listRef( 1 );
 
-            return Primitives._x_eval(
+            return Primitives._eval(
                     e,
                     args1,
-                    fco -> processAttributeSet( symbol, fco, c ) );
+                    fco -> _processAttributeSet( symbol, fco, c ) );
         }
 
         throw RuntimeX.mInternalError( SchemeObject.class.toString() );
@@ -581,6 +591,14 @@ public class SchemeObject
             throw RuntimeX.mIllegalAccess( methodName );
         }
     }
+    private Thunk _processInvocationImpl(
+            Environment env,
+            String methodName,
+            Cons list,
+            Cont<FirstClassObject> c )
+    {
+        return () -> processInvocationImpl( env, methodName, list, c );
+    }
 
     /**
      * Processes a procedure invocation.
@@ -601,10 +619,10 @@ public class SchemeObject
         var rest = Scut.as(
                 Cons.class, list.getCdr() );
 
-        return Primitives._x_evalCons(
+        return Primitives._evalCons(
                 env,
                 rest,
-                evaluated -> processInvocationImpl(
+                evaluated -> _processInvocationImpl(
                         env,
                         symbol.toString(),
                         evaluated,
@@ -671,7 +689,13 @@ public class SchemeObject
             throw RuntimeX.mIllegalAccess( attribute.toString() );
         }
     }
-
+    private Thunk _processAttributeSet(
+            Symbol attribute,
+            FirstClassObject value,
+            Cont<FirstClassObject> c )
+    {
+        return () -> processAttributeSet( attribute, value, c );
+    }
     /**
      * Test for equality based on the embedded instance.  If we have no instance
      * which is the case for class representatives test if the same
@@ -728,7 +752,7 @@ public class SchemeObject
     static private Syntax constructObjectSyntax = new Syntax( "make-object" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args,
+        protected Thunk __executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -749,13 +773,13 @@ public class SchemeObject
                     Symbol.class,
                     cons.getCar() );
 
-            return Primitives._x_evalCons(
+            return Primitives._evalCons(
                     e,
                     arguments,
                     evaluated ->
-                            createObject(
+                            _createObject(
                                     name.toString(),
-                                    Cons.asArray( evaluated ),
+                                    evaluated,
                                     c) );
         }
     };
@@ -768,7 +792,7 @@ public class SchemeObject
         return new Procedure( "object" )
         {
             @Override
-            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 checkArgumentCount( 1, args );
@@ -793,7 +817,7 @@ public class SchemeObject
         return new Procedure( "object?" )
         {
             @Override
-            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 checkArgumentCount( 1, args );

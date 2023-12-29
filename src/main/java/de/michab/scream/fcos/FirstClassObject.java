@@ -8,8 +8,8 @@ package de.michab.scream.fcos;
 import java.util.Objects;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
@@ -25,7 +25,7 @@ public abstract class FirstClassObject
 {
     /**
      * Marks an fco as constant.  Constant objects cannot be modified.
-     * Non-modifieable objects are by default constant.
+     * Non-modifiable objects are by default constant.
      */
     private boolean _isConstant;
 
@@ -61,7 +61,6 @@ public abstract class FirstClassObject
     public Thunk evaluate(
         Environment e,
         Cont<FirstClassObject> c )
-            throws RuntimeX
     {
         return  () -> {
             if ( _compiled == null )
@@ -366,8 +365,7 @@ public abstract class FirstClassObject
     }
 
     private static Lambda _NIL = new Lambda(
-            (e,c) -> Primitives._x_quote(
-                    e,
+            (e,c) -> Primitives._quote(
                     Cons.NIL,
                     c ),
             "NIL" );
@@ -384,8 +382,7 @@ public abstract class FirstClassObject
         throws RuntimeX
     {
         return new Lambda(
-                (e,c) -> Primitives._x_quote(
-                        e,
+                (e,c) -> Primitives._quote(
                         this,
                         c ),
                 this.toString() );

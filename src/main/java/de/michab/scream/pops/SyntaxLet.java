@@ -6,13 +6,13 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 import de.michab.scream.util.Scut.ConsumerX;
@@ -131,18 +131,18 @@ public abstract class SyntaxLet
 
             // Pulls the init expressions out of the bindings and
             // executes the body.
-            return Primitives._x_map(
+            return Primitives._map(
                     e,
                     Symbol.createObject( "cadr" ),
                     bindings,
-                    mapped -> Primitives._x_evalCons(
-                            e,
-                            mapped.as( Cons.class ),
-                            exec ) );
+                    mapped -> Primitives._cast(
+                            Cons.class,
+                            mapped,
+                            cons -> Primitives._evalCons( e, cons, exec ) ) );
         }
 
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args,
+        protected Thunk __executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             if ( FirstClassObject.is( Symbol.class, args.getCar() ) )
@@ -158,7 +158,7 @@ public abstract class SyntaxLet
             Scut.assertUnique(
                     validateBindings( bindings ) );
 
-            return Primitives._x_let(
+            return Primitives._let(
                     e,
                     e.extend( getName() ),
                     bindings,
@@ -176,7 +176,7 @@ public abstract class SyntaxLet
     static public final Syntax letAsteriskSyntax = new SyntaxLet( "let*" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args,
+        protected Thunk __executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -190,7 +190,7 @@ public abstract class SyntaxLet
 
             var extended = e.extend( getName() );
 
-            return Primitives._x_let(
+            return Primitives._let(
                     extended,
                     extended,
                     bindings,
@@ -207,7 +207,7 @@ public abstract class SyntaxLet
     static public final Syntax letrecSyntax = new SyntaxLet( "letrec" )
     {
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args,
+        protected Thunk __executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -219,7 +219,7 @@ public abstract class SyntaxLet
 
             var symbols = validateBindings( bindings );
 
-            return Primitives._x_letRec(
+            return Primitives._letRec(
                     e,
                     bindings,
                     body,

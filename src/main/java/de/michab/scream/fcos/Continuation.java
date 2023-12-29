@@ -6,7 +6,8 @@
 package de.michab.scream.fcos;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.Scream.Cont;
+import de.michab.scream.pops.Primitives;
+import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
@@ -39,7 +40,7 @@ public class Continuation extends Procedure
         return new Procedure( "call-with-current-continuation" )
         {
             @Override
-            protected Thunk _executeImpl(
+            protected Thunk __executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -69,7 +70,7 @@ public class Continuation extends Procedure
         {
 
             @Override
-            protected Thunk _executeImpl(
+            protected Thunk __executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -85,24 +86,27 @@ public class Continuation extends Procedure
                         Procedure.class,
                         args.listRef(1) );
 
-                Cont<FirstClassObject> branch = values ->
+                Cont<Cons> branch = values ->
                 {
                     return consumer._execute(
                             e,
-                            Scut.as( Cons.class, values ),
+                            values,
                             c );
                 };
 
                 return producer._execute(
                         e,
                         Cons.NIL,
-                        branch );
+                        values -> Primitives._cast(
+                                Cons.class,
+                                values,
+                                branch ) );
             }
         }.setClosure( e );
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
+    protected Thunk __executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         var values = args.length() == 1 ?
