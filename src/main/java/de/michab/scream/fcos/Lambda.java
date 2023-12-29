@@ -53,9 +53,7 @@ public class Lambda extends FirstClassObject
     @Override
     public Thunk evaluate( Environment e, Cont<FirstClassObject> c )
     {
-        return () -> {
-            return _l.accept( e, c );
-        };
+        return () -> _l.accept( e, c );
     }
 
     @Override
