@@ -98,7 +98,7 @@ public class Procedure
                 c );
 
         // Evaluate the arguments in the environment that we receive.
-        return () -> Primitives._x_evalCons(
+        return () -> Primitives._evalCons(
                 e,
                 args,
                 cc );

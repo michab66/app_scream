@@ -31,7 +31,7 @@ public class SyntaxOr extends Syntax
     {
         checkArgumentCount( 0, Integer.MAX_VALUE, args );
 
-        return Primitives._x_or(
+        return Primitives._or(
                 e,
                 args,
                 c);

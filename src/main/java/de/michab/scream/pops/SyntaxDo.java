@@ -92,7 +92,7 @@ public class SyntaxDo extends Syntax
         checkArgumentCount( 1, Integer.MAX_VALUE, test );
 
 
-        return Primitives._x_do(
+        return Primitives._do(
                         e,
                         (Cons)setup.getCar(),
                         (Cons)setup.getCdr(),

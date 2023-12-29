@@ -459,7 +459,7 @@ public class Primitives
      *   ((c d) (init2))
      * )
      */
-    public static Thunk _x_bindValues(
+    public static Thunk _bindValues(
             Environment e,
             Environment extended,
             Cons bindings,
@@ -470,12 +470,11 @@ public class Primitives
                 return c.accept( extended );
 
             Cons currentBinding =
-                    (Cons)bindings.getCar();
+                    Scut.as( Cons.class, bindings.getCar());
             Cons remainingBindings =
-                    (Cons)bindings.getCdr();
-
+                    Scut.as( Cons.class, bindings.getCdr());
             Cons values =
-                    (Cons)currentBinding.listRef(0);
+                    Scut.as( Cons.class, currentBinding.listRef(0) );
             FirstClassObject init =
                     currentBinding.listRef(1);
 
@@ -486,7 +485,7 @@ public class Primitives
                             extended,
                             values,
                             result,
-                            ignored -> _x_bindValues(
+                            ignored -> _bindValues(
                                     e,
                                     extended,
                                     remainingBindings,
@@ -494,7 +493,7 @@ public class Primitives
         };
     }
 
-    public static Thunk _x_let_values(
+    public static Thunk _let_values(
             Environment current,
             Environment extended,
             Cons bindings,
@@ -508,7 +507,7 @@ public class Primitives
                         body,
                         c );
 
-        return () -> _x_bindValues(
+        return () -> _bindValues(
                 current,
                 extended,
                 bindings,
@@ -525,7 +524,7 @@ public class Primitives
      * @param c Returns the result of body evaluation.
      * @return A think.
      */
-    public static Thunk _x_let(
+    public static Thunk _let(
             Environment e,
             Environment extended,
             Cons bindings,
@@ -554,7 +553,7 @@ public class Primitives
      * @param c
      * @return
      */
-    public static Thunk _x_letRec(
+    public static Thunk _letRec(
             Environment e,
             Cons bindings,
             Cons body,
@@ -634,7 +633,7 @@ public class Primitives
      * @param c The continuation.
      * @return A thunk.
      */
-    public static Thunk _x_or(
+    public static Thunk _or(
             Environment e,
             Cons expressions,
             Cont<FirstClassObject> c )
@@ -653,15 +652,24 @@ public class Primitives
         return () -> c.accept( quote );
     }
 
-    public static Thunk _x_resolve(
+    /**
+     * Resolves the passed symbol in the passed environment and passes
+     * the result to it continuation.
+     *
+     * @param e The environment to use.
+     * @param symbol The symbol to resolve.
+     * @param c Receives the result of the resolution.
+     * @return A thunk.
+     */
+    public static Thunk _resolve(
             Environment e,
-            Symbol o,
+            Symbol symbol,
             Cont<FirstClassObject> c )
     {
-        return () -> c.accept( e.get( o ) );
+        return () -> c.accept( e.get( symbol ) );
     }
 
-    private static Thunk evalImpl(
+    private static Thunk _evalCons(
             Environment e,
             Cons result,
             Cons current,
@@ -674,7 +682,7 @@ public class Primitives
             Cons next =
                     Scut.as( Cons.class, current.getCdr() );
 
-            Cont<FirstClassObject> set = fco -> evalImpl(
+            Cont<FirstClassObject> set = fco -> _evalCons(
                     e,
                     new Cons( fco, result ),
                     next,
@@ -697,9 +705,9 @@ public class Primitives
      * the evaluated elements.
      * @return A thunk.
      */
-    public static Thunk _x_evalCons( Environment e, Cons l, Cont<Cons> c )
+    public static Thunk _evalCons( Environment e, Cons l, Cont<Cons> c )
     {
-        return evalImpl(
+        return _evalCons(
                 e,
                 Cons.NIL,
                 l,
@@ -760,7 +768,7 @@ public class Primitives
                 loopPerform );
     }
 
-    public static Thunk _x_do(
+    public static Thunk _do(
             Environment e,
             Cons inits,
             Cons steps,
@@ -783,21 +791,21 @@ public class Primitives
                 iteration );
     }
 
-    private static Thunk _mapImpl(
+    private static Thunk _map(
             Environment env,
             Procedure procedure,
             Cons results,
-            Cons todo,
+            Cons remaining,
             Cont<FirstClassObject> result )
     {
         return () -> {
-            if ( Cons.NIL == todo )
+            if ( Cons.NIL == remaining )
                 return result.accept( Cons.reverse( results ) );
 
-            Cons next = Scut.as( Cons.class, todo.getCdr() );
+            Cons next = Scut.as( Cons.class, remaining.getCdr() );
 
             Cont<FirstClassObject> step = r -> {
-                return _mapImpl(
+                return _map(
                         env,
                         procedure,
                         new Cons( r, results ),
@@ -807,23 +815,9 @@ public class Primitives
 
             return procedure.apply(
                     env,
-                    new Cons( todo.getCar() ),
+                    new Cons( remaining.getCar() ),
                     step );
             };
-    }
-
-    private static Thunk _map(
-            Environment env,
-            FirstClassObject procedure,
-            Cons list,
-            Cont<FirstClassObject> result )
-    {
-        return () -> _mapImpl(
-                env,
-                Scut.as( Procedure.class, procedure ),
-                Cons.NIL,
-                list,
-                result );
     }
 
     /**
@@ -836,7 +830,7 @@ public class Primitives
      * @param c Returns a list of the results.
      * @return A thunk.
      */
-    public static Thunk _x_map(
+    public static Thunk _map(
             Environment e,
             Symbol procedure,
             Cons list,
@@ -845,6 +839,13 @@ public class Primitives
         return _eval(
                 e,
                 procedure,
-                proc -> _map( e, proc, list, c ) );
+                fco -> _cast(
+                        Procedure.class,
+                        fco,
+                        proc -> _map(
+                                e,
+                                proc,
+                                Cons.NIL,
+                                list, c )   ) );
     }
 }

@@ -182,7 +182,7 @@ public class PrimitivesTest extends ScreamBaseTest
             Cons expected = parse( "(b d f)" ).as( Cons.class );
 
             var result = cont().toStack(
-                    cont -> Primitives._x_map(
+                    cont -> Primitives._map(
                             iev,
                             s("cadr"),
                             Scut.as( Cons.class, parse( "((a b)(c d)(e f))" ) ),

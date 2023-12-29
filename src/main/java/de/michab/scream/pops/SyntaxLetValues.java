@@ -99,7 +99,7 @@ public abstract class SyntaxLetValues
 
             validateBindings( bindings );
 
-            return Primitives._x_let_values(
+            return Primitives._let_values(
                     e,
                     e.extend( getName() ),
                     bindings,
@@ -128,7 +128,7 @@ public abstract class SyntaxLetValues
 
             var extended = e.extend( getName() );
 
-            return Primitives._x_let_values(
+            return Primitives._let_values(
                     extended,
                     extended,
                     bindings,

@@ -131,14 +131,14 @@ public abstract class SyntaxLet
 
             // Pulls the init expressions out of the bindings and
             // executes the body.
-            return Primitives._x_map(
+            return Primitives._map(
                     e,
                     Symbol.createObject( "cadr" ),
                     bindings,
                     mapped -> Primitives._cast(
                             Cons.class,
                             mapped,
-                            cons -> Primitives._x_evalCons( e, cons, exec ) ) );
+                            cons -> Primitives._evalCons( e, cons, exec ) ) );
         }
 
         @Override
@@ -158,7 +158,7 @@ public abstract class SyntaxLet
             Scut.assertUnique(
                     validateBindings( bindings ) );
 
-            return Primitives._x_let(
+            return Primitives._let(
                     e,
                     e.extend( getName() ),
                     bindings,
@@ -190,7 +190,7 @@ public abstract class SyntaxLet
 
             var extended = e.extend( getName() );
 
-            return Primitives._x_let(
+            return Primitives._let(
                     extended,
                     extended,
                     bindings,
@@ -219,7 +219,7 @@ public abstract class SyntaxLet
 
             var symbols = validateBindings( bindings );
 
-            return Primitives._x_letRec(
+            return Primitives._letRec(
                     e,
                     bindings,
                     body,

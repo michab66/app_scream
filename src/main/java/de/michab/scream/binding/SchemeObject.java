@@ -619,7 +619,7 @@ public class SchemeObject
         var rest = Scut.as(
                 Cons.class, list.getCdr() );
 
-        return Primitives._x_evalCons(
+        return Primitives._evalCons(
                 env,
                 rest,
                 evaluated -> _processInvocationImpl(
@@ -773,7 +773,7 @@ public class SchemeObject
                     Symbol.class,
                     cons.getCar() );
 
-            return Primitives._x_evalCons(
+            return Primitives._evalCons(
                     e,
                     arguments,
                     evaluated ->
