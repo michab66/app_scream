@@ -26,12 +26,6 @@ import de.michab.scream.util.Scut;
  */
 public class Primitives
 {
-    static private <T extends FirstClassObject> Thunk _castImpl( Class<T> cl, FirstClassObject fco, Cont<T> c )
-            throws RuntimeX
-    {
-        return c.accept( Scut.as( cl, fco ) );
-    }
-
     /**
      * Casts a FirstClassObject to a certain class and passes the casted object
      * to its continuation.
@@ -47,7 +41,7 @@ public class Primitives
             FirstClassObject fco,
             Cont<T> c )
     {
-        return () -> _castImpl( cl, fco, c );
+        return () -> c.accept( Scut.as( cl, fco ) );
     }
 
     /**
