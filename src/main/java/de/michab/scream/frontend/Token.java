@@ -1,11 +1,11 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2023 Michael G. Binz
  */
 package de.michab.scream.frontend;
 
-import org.smack.util.EnumArray;
+import org.smack.util.StringUtil;
 
 import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.fcos.SchemeInteger;
@@ -44,13 +44,6 @@ public class Token
     }
 
     /**
-     * Used to implement a flyweight scheme for value-less Tokens.
-     * @see createToken
-     */
-    static private EnumArray<Tk, Token> _flyweights =
-            new EnumArray<Tk, Token>( Tk.class, null );
-
-    /**
      * The type of the token.  The possible types are defined as constants in the
      * SchemeParser.
      * @see de.michab.scream.frontend.SchemeParser
@@ -64,13 +57,18 @@ public class Token
      */
     private final Object _value;
 
+    private final int _line;
+    private final int _column;
+
     /**
      * Creates a new Token for the given type.
      */
-    public Token( Tk type )
+    public Token( Tk type, int line, int column )
     {
         _type = type;
         _value = Void.class;
+        _line = line;
+        _column = column;
     }
 
     /**
@@ -82,7 +80,7 @@ public class Token
      * @param value The token's value.
      * @throws IllegalArgumentException Wrong value for the type parameter.
      */
-    public Token( Tk type, String value )
+    public Token( Tk type, String value, int line, int column )
     {
         if ( type != Tk.String &&
                 type != Tk.Symbol )
@@ -90,75 +88,52 @@ public class Token
 
         _type = type;
         _value = value;
+        _line = line;
+        _column = column;
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( long value )
+    public Token( SchemeInteger value, int line, int column )
     {
         _type = Tk.Integer;
-        _value = SchemeInteger.createObject( value );
-    }
-    public Token( SchemeInteger value )
-    {
-        _type = Tk.Integer;
-        _value = value ;
+        _value = value;
+        _line = line;
+        _column = column;
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( char value )
+    public Token( char value, int line, int column )
     {
         _type = Tk.Char;
         _value = Character.valueOf( value );
+        _line = line;
+        _column = column;
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( boolean value )
+    public Token( boolean value, int line, int column )
     {
         _type = Tk.Boolean;
         _value = Boolean.valueOf( value );
+        _line = line;
+        _column = column;
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( double value )
-    {
-        _type = Tk.Double;
-        _value = SchemeDouble.createObject( value );
-    }
-    public Token( SchemeDouble value )
+    public Token( SchemeDouble value, int line, int column )
     {
         _type = Tk.Double;
         _value = value;
-    }
-
-    /**
-     * Create a token that holds only type information.  This can be used for
-     * tokens representing keywords.  In that case a token has to carry no
-     * additional information besides its token type.</br>
-     * This factory method ensures that only a single instance per token type
-     * will be created.
-     */
-    public synchronized static Token createToken( Tk type )
-    {
-        // Access the table.
-        Token result = _flyweights.get( type );
-        // Check if we received a token...
-        if ( result == null )
-        {
-            // ...and create one if not...
-            result = new Token( type );
-            // ...and put that into the flyweight table.
-            _flyweights.set( type, result );
-        }
-
-        return result;
+        _line = line;
+        _column = column;
     }
 
     /**
@@ -212,7 +187,7 @@ public class Token
             break;
         }
 
-        return result;
+        return result + StringUtil.EOL + _line + ", " + _column;
     }
 
     /**

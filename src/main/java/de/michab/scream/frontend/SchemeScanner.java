@@ -39,7 +39,7 @@ public class SchemeScanner
     {
         // No scanner means that we reached the end of input.
         if ( _scanner == null )
-            return Token.createToken( Tk.Eof );
+            return new Token( Tk.Eof, -1, -1 );
 
         try
         {
