@@ -260,7 +260,7 @@ decimal_10 =
   {sign}? {uinteger_10} \. {uinteger_10}? {suffix}?
 
 REAL =
-  {decimal_10}
+  {exactness}? {decimal_10}
 
 STARTLIST =
   "("
@@ -384,6 +384,9 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     if ( exact )
         matched = matched.replace( "#e", "" );
 
+    if ( inexact && exact )
+        throw new InternalError( "inexact && exact" );
+        
     boolean r2 = matched.contains( "#b" );
     boolean r8 = matched.contains( "#o" );
     boolean r10 = matched.contains( "#d" );
@@ -423,9 +426,22 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   }
 
   {REAL} {
+    var matched = yytext();
+    
+    boolean inexact = matched.contains( "#i" );
+    boolean exact = matched.contains( "#e" );
+
+    if ( inexact )
+        matched = matched.replace( "#i", "" );
+    if ( exact )
+        matched = matched.replace( "#e", "" );
+
+    if ( inexact && exact )
+        throw new InternalError( "inexact && exact" );
+
     try
     {
-      return new Token( Double.valueOf( yytext() ).doubleValue() );
+      return new Token( Double.valueOf( matched ).doubleValue() );
     }
     catch ( NumberFormatException e )
     {

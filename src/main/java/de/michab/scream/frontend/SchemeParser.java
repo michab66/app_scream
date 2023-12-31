@@ -16,8 +16,6 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.SchemeCharacter;
-import de.michab.scream.fcos.SchemeDouble;
-import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Vector;
@@ -179,7 +177,7 @@ public class SchemeParser
                 throw RuntimeX.mParseExpected( Tk.Integer );
 
             collector.add(
-                    Scut.assertByte( token.integerValue() ) );
+                    Scut.assertByte( token.integerValue().asLong() ) );
         }
 
         // Consume the End token.
@@ -261,10 +259,10 @@ public class SchemeParser
             return Symbol.createObject( token.stringValue() );
 
         case Integer:
-            return SchemeInteger.createObject( token.integerValue() );
+            return token.integerValue();
 
         case Double:
-            return SchemeDouble.createObject( token.doubleValue() );
+            return token.doubleValue();
 
         case Array:
             return parseArray();

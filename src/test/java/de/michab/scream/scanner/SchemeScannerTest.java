@@ -14,11 +14,12 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
+import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.frontend.SchemeScanner7;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
 
-public class SchemeScannerTest
+public class SchemeScannerTest extends ScreamBaseTest
 {
     @Test
     public void empty() throws Exception
@@ -184,7 +185,7 @@ public class SchemeScannerTest
         var t = s.getNextToken();
 
         assertEquals( Token.Tk.Integer, t.getType() );
-        assertEquals( 313, t.integerValue() );
+        assertEquals( 313, t.integerValue().asLong() );
     }
 
     @Test
@@ -303,7 +304,7 @@ public class SchemeScannerTest
         var t = s.getNextToken();
 
         assertEquals( Token.Tk.Integer, t.getType() );
-        assertEquals( expected, t.integerValue() );
+        assertEquals( expected, t.integerValue().asLong() );
     }
 
     @Test
@@ -311,6 +312,7 @@ public class SchemeScannerTest
     {
         testInteger( "313", 313 );
         testInteger( "#e313", 313 );
+        testInteger( "#i313", 313 );
         testInteger( "-313", -313 );
 
         testInteger( "#b10", 2 );
@@ -359,9 +361,11 @@ public class SchemeScannerTest
         SchemeScanner7 s = new SchemeScanner7( input );
 
         var t = s.getNextToken();
+        // Ensure that the whole expression got consumed.
+        assertEquals( Token.Tk.Eof, s.getNextToken().getType() );
 
         assertEquals( Token.Tk.Double, t.getType() );
-        assertEquals( expected, t.doubleValue() );
+        assertEquals( expected, t.doubleValue().asDouble() );
     }
 
     @Test
@@ -378,5 +382,15 @@ public class SchemeScannerTest
         testFloat( "-313.0e-1", -31.3d );
         testFloat( "-313.0e2", -31300d );
         testFloat( ".313e3", 313d );
+    }
+
+    @Test
+    public void numberDoubleExact() throws Exception
+    {
+        expectFco(
+                "#e313.0",
+                d(313.0) );
+        testFloat( "#e313.0", 313d );
+        testFloat( "#i313.0", 313d );
     }
 }

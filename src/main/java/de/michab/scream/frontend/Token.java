@@ -7,6 +7,9 @@ package de.michab.scream.frontend;
 
 import org.smack.util.EnumArray;
 
+import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.SchemeInteger;
+
 /**
  * Represents a Token in Scream's front end.  This is independent of the
  * concrete scanner generator used.
@@ -95,7 +98,12 @@ public class Token
     public Token( long value )
     {
         _type = Tk.Integer;
-        _value = Long.valueOf( value );
+        _value = SchemeInteger.createObject( value );
+    }
+    public Token( SchemeInteger value )
+    {
+        _type = Tk.Integer;
+        _value = value ;
     }
 
     /**
@@ -122,7 +130,12 @@ public class Token
     public Token( double value )
     {
         _type = Tk.Double;
-        _value = Double.valueOf( value );
+        _value = SchemeDouble.createObject( value );
+    }
+    public Token( SchemeDouble value )
+    {
+        _type = Tk.Double;
+        _value = value;
     }
 
     /**
@@ -235,11 +248,11 @@ public class Token
      * of type SchemeParser.TkDouble.  If that is not the case, the program
      * will be stopped.
      */
-    public double doubleValue()
+    public SchemeDouble doubleValue()
     {
         try
         {
-            return ((Double)_value).doubleValue();
+            return (SchemeDouble)_value;
         }
         catch ( ClassCastException e )
         {
@@ -269,11 +282,11 @@ public class Token
      * of type SchemeParser.TkInteger.  If that is not the case, the program
      * will be stopped.
      */
-    public long integerValue()
+    public SchemeInteger integerValue()
     {
         try
         {
-            return ((Long)_value).longValue();
+            return (SchemeInteger)_value;
         }
         catch ( ClassCastException e )
         {
