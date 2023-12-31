@@ -26,9 +26,9 @@ public class SchemeScanner
     /**
      * Create a new scanner on the passed <code>Reader</code>.
      */
-    public SchemeScanner( Reader source )
+    public SchemeScanner( Reader source, String filename )
     {
-        _scanner = new SchemeScanner7( source );
+        _scanner = new SchemeScanner7( source ).setFilename( filename );
     }
 
     /**
@@ -39,7 +39,7 @@ public class SchemeScanner
     {
         // No scanner means that we reached the end of input.
         if ( _scanner == null )
-            return new Token( Tk.Eof, -1, -1 );
+            return new Token( Tk.Eof, -1, -1, "SchemeScanner.getNextToken()" );
 
         try
         {

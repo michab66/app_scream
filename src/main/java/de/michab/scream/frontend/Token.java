@@ -5,8 +5,6 @@
  */
 package de.michab.scream.frontend;
 
-import org.smack.util.StringUtil;
-
 import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.fcos.SchemeInteger;
 
@@ -16,7 +14,7 @@ import de.michab.scream.fcos.SchemeInteger;
  *
  * @see de.michab.scream.frontend.SchemeParser
  */
-public class Token
+public final class Token
 {
     /**
      * The Scheme tokens used by the frontend.
@@ -44,31 +42,47 @@ public class Token
     }
 
     /**
-     * The type of the token.  The possible types are defined as constants in the
-     * SchemeParser.
-     * @see de.michab.scream.frontend.SchemeParser
+     * The type of the token.
      */
     private final Tk _type;
 
     /**
      * The token's value.  This corresponds to the type of the token.  For
-     * tokens without a value this is set to the Void.class, so this will
-     * never be <code>null</code>.
+     * tokens without a value this is set to the Void.class,
+     * never <code>null</code>.
      */
     private final Object _value;
 
+    /**
+     * The file containing the token definition.
+     */
+    private final String _filename;
+
+    /**
+     * The line where the token is defined.
+     */
     private final int _line;
+
+    /**
+     * The column where the token is defined.
+     */
     private final int _column;
+
+    private Token( Tk type, Object value, int line, int column, String filename )
+    {
+        _type = type;
+        _value = value;
+        _line = line;
+        _column = column;
+        _filename = filename;
+    }
 
     /**
      * Creates a new Token for the given type.
      */
-    public Token( Tk type, int line, int column )
+    public Token( Tk type, int line, int column, String filename )
     {
-        _type = type;
-        _value = Void.class;
-        _line = line;
-        _column = column;
+        this( type, Void.class, line, column, filename );
     }
 
     /**
@@ -80,60 +94,45 @@ public class Token
      * @param value The token's value.
      * @throws IllegalArgumentException Wrong value for the type parameter.
      */
-    public Token( Tk type, String value, int line, int column )
+    public Token( Tk type, String value, int line, int column, String filename )
     {
+        this( type, (Object)value, line, column, filename );
+
         if ( type != Tk.String &&
                 type != Tk.Symbol )
             throw new IllegalArgumentException( "Type neither string nor symbol." );
-
-        _type = type;
-        _value = value;
-        _line = line;
-        _column = column;
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( SchemeInteger value, int line, int column )
+    public Token( SchemeInteger value, int line, int column, String filename )
     {
-        _type = Tk.Integer;
-        _value = value;
-        _line = line;
-        _column = column;
+        this( Tk.Integer, value, line, column, filename );
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( char value, int line, int column )
+    public Token( char value, int line, int column, String filename )
     {
-        _type = Tk.Char;
-        _value = Character.valueOf( value );
-        _line = line;
-        _column = column;
+        this( Tk.Char, Character.valueOf( value ), line, column, filename );
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( boolean value, int line, int column )
+    public Token( boolean value, int line, int column, String filename )
     {
-        _type = Tk.Boolean;
-        _value = Boolean.valueOf( value );
-        _line = line;
-        _column = column;
+        this( Tk.Boolean, Boolean.valueOf( value ), line, column, filename );
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( SchemeDouble value, int line, int column )
+    public Token( SchemeDouble value, int line, int column, String filename )
     {
-        _type = Tk.Double;
-        _value = value;
-        _line = line;
-        _column = column;
+        this( Tk.Double, value, line, column, filename );
     }
 
     /**
@@ -165,7 +164,7 @@ public class Token
             result = "TkEnd";
             break;
         case String:
-            result = "TkString( " + _value + " )";
+            result = "TkString( \"" + _value + "\" )";
             break;
         case Quote:
             result = "TkQuote";
@@ -187,7 +186,12 @@ public class Token
             break;
         }
 
-        return result + StringUtil.EOL + _line + ", " + _column;
+        return String.format(
+                "%s%n%s( %d, %d )",
+                result,
+                _filename,
+                _line,
+                _column );
     }
 
     /**

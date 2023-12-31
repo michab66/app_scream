@@ -39,15 +39,23 @@ import de.michab.scream.frontend.Token.Tk;
 %column
 
 %{
-int commentNestCount = 0;
+private int commentNestCount = 0;
 
-int getLine()
+private int getLine()
 {
   return yyline+1;
 }
-int getColumn()
+private int getColumn()
 {
   return yycolumn+1;
+}
+
+private String _filename = "unset";
+
+public SchemeScanner7 setFilename( String filename )
+{
+    _filename = filename;
+    return this;
 }
 
 %}
@@ -302,20 +310,20 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
 <YYINITIAL> {
   {IDENTIFIER} {
-    return new Token( Tk.Symbol, yytext(), getLine(), getColumn() );
+    return new Token( Tk.Symbol, yytext(), getLine(), getColumn(), _filename );
   }
 
   {DOT} {
-    return new Token( Tk.Dot, getLine(), getColumn() );
+    return new Token( Tk.Dot, getLine(), getColumn(), _filename );
   }
 
   {BOOLEAN} {
     return new Token(
-     yytext().toLowerCase().startsWith( "#t" ), getLine(), getColumn() );
+     yytext().toLowerCase().startsWith( "#t" ), getLine(), getColumn(), _filename );
   }
 
   {CHARACTER} {
-    return new Token( yycharat( 2 ), getLine(), getColumn() );
+    return new Token( yycharat( 2 ), getLine(), getColumn(), _filename );
   }
 
   {CHARACTER_HEX} {
@@ -327,7 +335,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
       var value = Integer.parseInt( matched, 16 );
 
       if ( value > 0 && value < 0xffff )
-        return new Token( (char)value, getLine(), getColumn() );
+        return new Token( (char)value, getLine(), getColumn(), _filename );
     }
     catch ( Exception e )
     {
@@ -344,45 +352,45 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     switch ( matched )
     {
       case "alarm":
-        return new Token( (char)0x07, getLine(), getColumn() );
+        return new Token( (char)0x07, getLine(), getColumn(), _filename );
       case "backspace":
-        return new Token( (char)0x08, getLine(), getColumn() );
+        return new Token( (char)0x08, getLine(), getColumn(), _filename );
       case "delete":
-        return new Token( (char)0x7f, getLine(), getColumn() );
+        return new Token( (char)0x7f, getLine(), getColumn(), _filename );
       case "escape":
-        return new Token( (char)0x1b, getLine(), getColumn() );
+        return new Token( (char)0x1b, getLine(), getColumn(), _filename );
       case "newline":
-        return new Token( (char)0x0a, getLine(), getColumn() );
+        return new Token( (char)0x0a, getLine(), getColumn(), _filename );
       case "null":
-        return new Token( (char)0x00, getLine(), getColumn() );
+        return new Token( (char)0x00, getLine(), getColumn(), _filename );
       case "return":
-        return new Token( (char)0x0d, getLine(), getColumn() );
+        return new Token( (char)0x0d, getLine(), getColumn(), _filename );
       case "space":
-        return new Token( ' ', getLine(), getColumn() );
+        return new Token( ' ', getLine(), getColumn(), _filename );
       case "tab":
-        return new Token( '\t', getLine(), getColumn() );
+        return new Token( '\t', getLine(), getColumn(), _filename );
       default:
         throw RuntimeX.mScanUnexpectedCharacter( getLine(), getColumn(), yytext() );
     }
   }
 
   {LABEL} {
-    return new Token( Tk.Label, getLine(), getColumn() );
+    return new Token( Tk.Label, getLine(), getColumn(), _filename );
   }
   
   {LABEL_REFERENCE} {
-    return new Token( Tk.LabelReference, getLine(), getColumn() );
+    return new Token( Tk.LabelReference, getLine(), getColumn(), _filename );
   }
 
   {START_BYTEVECTOR} {
-    return new Token( Tk.Bytevector, getLine(), getColumn() );
+    return new Token( Tk.Bytevector, getLine(), getColumn(), _filename );
   }
 
   {STRING} {
     // Remove the double quotes.
     String image = yytext();
     String noQuote = image.substring( 1, image.length()-1 );
-    return new Token( Tk.String, noQuote, getLine(), getColumn() );
+    return new Token( Tk.String, noQuote, getLine(), getColumn(), _filename );
   }
 
   {INTEGER} {
@@ -397,7 +405,12 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
         matched = matched.replace( "#e", "" );
 
     if ( inexact && exact )
-        throw new InternalError( "inexact && exact" );
+        throw new FrontendX(
+            getLine(),
+            getColumn(),
+            _filename,
+            Code.INTERNAL_ERROR,
+            "inexact && exact : " + yytext() );
         
     boolean r2 = matched.contains( "#b" );
     boolean r8 = matched.contains( "#o" );
@@ -432,11 +445,17 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
         return new Token(
             SchemeInteger.createObject( Long.parseLong( matched, radix ) ),
             getLine(),
-            getColumn() );
+            getColumn(),
+            _filename );
     }
     catch ( NumberFormatException e )
     {
-        throw new FrontendX( Code.INTERNAL_ERROR, e.getMessage() );
+        throw new FrontendX(
+            getLine(),
+            getColumn(),
+            _filename,
+            Code.INTERNAL_ERROR,
+            e.getMessage() );
     }
   }
 
@@ -452,44 +471,55 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
         matched = matched.replace( "#e", "" );
 
     if ( inexact && exact )
-        throw new InternalError( "inexact && exact" );
+        throw new FrontendX(
+            getLine(),
+            getColumn(),
+            _filename,
+            Code.INTERNAL_ERROR,
+            "inexact && exact : " + yytext() );
 
     try
     {
         return new Token(
             SchemeDouble.createObject( Double.parseDouble( matched ) ),
             getLine(),
-            getColumn() );
+            getColumn(),
+            _filename );
     }
     catch ( NumberFormatException e )
     {
-        throw new FrontendX( Code.INTERNAL_ERROR, e.getMessage() );
+        throw new FrontendX(
+            getLine(),
+            getColumn(),
+            _filename,
+            Code.INTERNAL_ERROR,
+            e.getMessage() );
     }
   }
 
   {STARTLIST} {
-    return new Token( Tk.List, getLine(), getColumn() );
+    return new Token( Tk.List, getLine(), getColumn(), _filename );
   }
 
   {STARTARRAY} {
-    return new Token( Tk.Array, getLine(), getColumn() );
+    return new Token( Tk.Array, getLine(), getColumn(), _filename );
   }
 
   {END} {
-    return new Token( Tk.End, getLine(), getColumn() );
+    return new Token( Tk.End, getLine(), getColumn(), _filename );
   }
 
   {QUOTE} {
-    return new Token( Tk.Quote, getLine(), getColumn() );
+    return new Token( Tk.Quote, getLine(), getColumn(), _filename );
   }
   {QUASIQUOTE} {
-    return new Token( Tk.QuasiQuote, getLine(), getColumn() );
+    return new Token( Tk.QuasiQuote, getLine(), getColumn(), _filename );
   }
   {UNQUOTE} {
-    return new Token( Tk.Unquote, getLine(), getColumn() );
+    return new Token( Tk.Unquote, getLine(), getColumn(), _filename );
   }
   {UNQUOTE_SPLICING} {
-    return new Token( Tk.UnquoteSplicing, getLine(), getColumn() );
+    return new Token( Tk.UnquoteSplicing, getLine(), getColumn(), _filename );
   }
 
   {SINGLE_LINE_COMMENT} { /* ignore */ }
@@ -502,7 +532,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   }
 
   {DATUM_COMMENT} {
-      return new Token( Tk.DatumComment, getLine(), getColumn() );
+      return new Token( Tk.DatumComment, getLine(), getColumn(), _filename );
   }
 
   /*
@@ -511,12 +541,17 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
   // Catch unbalanced double quotes
   \"({stringelement})*{line_ending} {
-    throw new FrontendX( getLine(), getColumn(), Code.SCAN_UNBALANCED_QUOTE );
+    throw new FrontendX( getLine(), getColumn(), _filename, Code.SCAN_UNBALANCED_QUOTE );
   }
 
   // Catch unmatched characters.
   . {
-    throw new FrontendX( getLine(), getColumn(), Code.SCAN_UNEXPECTED_CHAR, yytext() );
+    throw new FrontendX( 
+        getLine(),
+        getColumn(),
+        _filename,
+        Code.SCAN_UNEXPECTED_CHAR,
+        yytext() );
   }
 
   // Catch unmatched nested comments.  An NC_END token must never
@@ -563,5 +598,5 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   // If we reached EOF, we close the reader...
   yyreset( null );
   // ...before doing business as usual.
-  return new Token( Tk.Eof, getLine(), getColumn() );
+  return new Token( Tk.Eof, getLine(), getColumn(), _filename );
 }

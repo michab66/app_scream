@@ -233,7 +233,9 @@ public final class ScreamEvaluator implements ScriptEngine
     {
         return evalImpl(
                 _interaction,
-                new SchemeParser( reader )::getExpression );
+                new SchemeParser(
+                        reader,
+                        "ScreamEvaluator.evalFco(...)" )::getExpression );
     }
 
     /**
@@ -379,7 +381,7 @@ public final class ScreamEvaluator implements ScriptEngine
         try ( var reader  = LoadContext.getReader( file ) )
         {
             SchemeParser parser =
-                    new SchemeParser( reader );
+                    new SchemeParser( reader, file.toString() );
 
             return evalImpl( e, parser::getExpression );
         }

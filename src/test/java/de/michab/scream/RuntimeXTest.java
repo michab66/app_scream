@@ -615,7 +615,7 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void _38_parseUnexpected1() throws Exception
     {
-        var token = new Token( Token.Tk.Dot, -1, -1 );
+        var token = new Token( Token.Tk.Dot, -1, -1, "_38_parseUnexpected1" );
 
         validateMessageAndType(
                 RuntimeX.mParseUnexpected( token ),

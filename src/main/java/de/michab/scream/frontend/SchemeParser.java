@@ -75,9 +75,9 @@ public class SchemeParser
      *
      * @param source A reader that delivers the parser input.
      */
-    public SchemeParser( Reader source )
+    public SchemeParser( Reader source, String filename )
     {
-        _scanner = new SchemeScanner( source );
+        _scanner = new SchemeScanner( source, filename );
     }
 
     /**
@@ -85,9 +85,13 @@ public class SchemeParser
      *
      * @param source The string to parse.
      */
+    public SchemeParser( String source, String filename )
+    {
+        this( new StringReader( source ), filename );
+    }
     public SchemeParser( String source )
     {
-        this( new StringReader( source ) );
+        this( new StringReader( source ), "SchemeParser<init>(String)" );
     }
 
     /**
