@@ -23,6 +23,11 @@ import de.michab.scream.util.Scut;
 
 public class PrimitivesTest extends ScreamBaseTest
 {
+    private Environment makeEnvironment()
+    {
+        return new Environment( getClass().getSimpleName() );
+    }
+
     @Test
     public void _cast() throws Exception
     {
@@ -52,6 +57,26 @@ public class PrimitivesTest extends ScreamBaseTest
                         } );
 
         assertEquals( Code.TYPE_ERROR, rx.getCode() );
+    }
+
+    @Test
+    public void _defineSymbols() throws Exception
+    {
+        var env = makeEnvironment();
+
+        Cons expected = Scut.as( Cons.class, parse( "(a b c d e f)" ) );
+
+        var result = cont().toStack(
+                cont -> Primitives._defineSymbols(
+                        env,
+                        expected,
+                        i313,
+                        next -> cont.accept( next ) ) );
+
+        assertEquals( env, result );
+        for ( var symbol : expected )
+            assertEqualq( i313, env.get( symbol.as( Symbol.class ) ) );
+        assertEquals( expected.length(), env.size() );
     }
 
     @Test
