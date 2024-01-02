@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -97,6 +97,14 @@ public final class Environment
     public Environment extend( String name )
     {
         return extend( Symbol.createObject( name ) );
+    }
+
+    /**
+     * @return The number of symbols defined in the environment.
+     */
+    public long size()
+    {
+        return _symbolMap.size();
     }
 
     /**

@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 2022-2023 Michael G. Binz
+ * Copyright © 2022-2024 Michael G. Binz
  */
 package de.michab.scream.pops;
 
@@ -171,23 +171,22 @@ public class Primitives
     }
 
     /**
-     * Defines a list of symbols in the passed environment.
-     * All symbols are bound to the same value.
+     * Bonds a list of symbols in the passed environment to a value.
      *
-     * @param e The environment for evaluation.
-     * @param symbols The symbols to define.
-     * @param o The value to set.
+     * @param e The environment receiving the bindings.
+     * @param symbols The symbols to bind.
+     * @param value The value to bind.
      * @param c The resulting extended environment.
      * @return The thunk.
      */
-    private static Thunk _defineSymbols(
+    static Thunk _defineSymbols(
             Environment e,
             Cons symbols,
-            FirstClassObject o,
+            FirstClassObject value,
             Cont<Environment> c )
     {
         return () -> {
-            var circular = new Cons( Cons.NIL, Cons.NIL );
+            var circular = new Cons( value, Cons.NIL );
             circular.setCdr( circular );
 
             return _defineList(

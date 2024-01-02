@@ -23,6 +23,11 @@ import de.michab.scream.util.Scut;
 
 public class PrimitivesTest extends ScreamBaseTest
 {
+    private Environment makeEnvironment()
+    {
+        return new Environment( getClass().getSimpleName() );
+    }
+
     @Test
     public void _cast() throws Exception
     {
@@ -55,10 +60,30 @@ public class PrimitivesTest extends ScreamBaseTest
     }
 
     @Test
+    public void _defineSymbols() throws Exception
+    {
+        var env = makeEnvironment();
+
+        Cons expected = Scut.as( Cons.class, parse( "(a b c d e f)" ) );
+
+        var result = cont().toStack(
+                cont -> Primitives._defineSymbols(
+                        env,
+                        expected,
+                        i313,
+                        next -> cont.accept( next ) ) );
+
+        assertEquals( env, result );
+        for ( var symbol : expected )
+            assertEqualq( i313, env.get( symbol.as( Symbol.class ) ) );
+        assertEquals( expected.length(), env.size() );
+    }
+
+    @Test
     public void _if_true() throws Exception
     {
         Environment env =
-                new Environment( getClass().getSimpleName() );
+                makeEnvironment();
 
         // Everything is true, but false.
 
@@ -101,7 +126,7 @@ public class PrimitivesTest extends ScreamBaseTest
     public void _if_false() throws Exception
     {
         Environment env =
-                new Environment( getClass().getSimpleName() );
+                makeEnvironment();
 
         var result = cont().toStack(
                 cont -> Primitives._if(
@@ -136,7 +161,7 @@ public class PrimitivesTest extends ScreamBaseTest
     @Test
     public void defineList_lessValuesThanSymbols() throws Exception
     {
-        Environment e = new Environment( getClass().getSimpleName() );
+        Environment e = makeEnvironment();
 
         Cons expected = Scut.as( Cons.class, parse( "(a b)" ) );
 
@@ -156,7 +181,7 @@ public class PrimitivesTest extends ScreamBaseTest
     public void defineList_moreValues() throws Exception
     {
         Environment e =
-                new Environment( getClass().getSimpleName() );
+                makeEnvironment();
         Cons expected =
                 Scut.as( Cons.class, parse( "(a b)" ) );
 
