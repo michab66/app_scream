@@ -1,12 +1,15 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.frontend;
 
+import java.util.Objects;
+
 import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.util.SourcePosition;
 
 /**
  * Represents a Token in Scream's front end.  This is independent of the
@@ -54,35 +57,24 @@ public final class Token
     private final Object _value;
 
     /**
-     * The file containing the token definition.
+     * The token's source code position.
      */
-    private final String _filename;
+    private final SourcePosition _sourcePosition;
 
-    /**
-     * The line where the token is defined.
-     */
-    private final int _line;
-
-    /**
-     * The column where the token is defined.
-     */
-    private final int _column;
-
-    private Token( Tk type, Object value, int line, int column, String filename )
+    private Token( Tk type, Object value, SourcePosition sourcePosition )
     {
         _type = type;
         _value = value;
-        _line = line;
-        _column = column;
-        _filename = filename;
+
+        _sourcePosition = Objects.requireNonNull( sourcePosition );
     }
 
     /**
      * Creates a new Token for the given type.
      */
-    public Token( Tk type, int line, int column, String filename )
+    public Token( Tk type, SourcePosition sourcePosition )
     {
-        this( type, Void.class, line, column, filename );
+        this( type, Void.class, sourcePosition );
     }
 
     /**
@@ -94,9 +86,9 @@ public final class Token
      * @param value The token's value.
      * @throws IllegalArgumentException Wrong value for the type parameter.
      */
-    public Token( Tk type, String value, int line, int column, String filename )
+    public Token( Tk type, String value, SourcePosition sourcePosition )
     {
-        this( type, (Object)value, line, column, filename );
+        this( type, (Object)value, sourcePosition );
 
         if ( type != Tk.String &&
                 type != Tk.Symbol )
@@ -106,33 +98,33 @@ public final class Token
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( SchemeInteger value, int line, int column, String filename )
+    public Token( SchemeInteger value, SourcePosition sourcePosition  )
     {
-        this( Tk.Integer, value, line, column, filename );
+        this( Tk.Integer, value, sourcePosition );
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( char value, int line, int column, String filename )
+    public Token( char value, SourcePosition sourcePosition )
     {
-        this( Tk.Char, Character.valueOf( value ), line, column, filename );
+        this( Tk.Char, Character.valueOf( value ), sourcePosition );
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( boolean value, int line, int column, String filename )
+    public Token( boolean value, SourcePosition sourcePosition )
     {
-        this( Tk.Boolean, Boolean.valueOf( value ), line, column, filename );
+        this( Tk.Boolean, Boolean.valueOf( value ), sourcePosition);
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( SchemeDouble value, int line, int column, String filename )
+    public Token( SchemeDouble value, SourcePosition sourcePosition )
     {
-        this( Tk.Double, value, line, column, filename );
+        this( Tk.Double, value, sourcePosition );
     }
 
     /**
@@ -187,11 +179,9 @@ public final class Token
         }
 
         return String.format(
-                "%s%n%s( %d, %d )",
+                "%s%n%s",
                 result,
-                _filename,
-                _line,
-                _column );
+                _sourcePosition );
     }
 
     /**
