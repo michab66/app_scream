@@ -413,9 +413,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
     if ( inexact && exact )
         throw new FrontendX(
-            getLine(),
-            getColumn(),
-            _filename,
+            sourcePosition(),
             Code.INTERNAL_ERROR,
             "inexact && exact : " + yytext() );
 
@@ -462,9 +460,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     catch ( NumberFormatException e )
     {
         throw new FrontendX(
-            getLine(),
-            getColumn(),
-            _filename,
+            sourcePosition(),
             Code.INTERNAL_ERROR,
             e.getMessage() );
     }
@@ -483,9 +479,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
     if ( inexact && exact )
         throw new FrontendX(
-            getLine(),
-            getColumn(),
-            _filename,
+            sourcePosition(),
             Code.INTERNAL_ERROR,
             "inexact && exact : " + yytext() );
 
@@ -504,9 +498,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     catch ( NumberFormatException e )
     {
         throw new FrontendX(
-            getLine(),
-            getColumn(),
-            _filename,
+            sourcePosition(),
             Code.INTERNAL_ERROR,
             e.getMessage() );
     }
@@ -556,15 +548,13 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
   // Catch unbalanced double quotes
   \"({stringelement})*{line_ending} {
-    throw new FrontendX( getLine(), getColumn(), _filename, Code.SCAN_UNBALANCED_QUOTE );
+    throw new FrontendX( sourcePosition(), Code.SCAN_UNBALANCED_QUOTE );
   }
 
   // Catch unmatched characters.
   . {
     throw new FrontendX( 
-        getLine(),
-        getColumn(),
-        _filename,
+        sourcePosition(),
         Code.SCAN_UNEXPECTED_CHAR,
         yytext() );
   }

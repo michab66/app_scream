@@ -1,11 +1,12 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.frontend;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.util.SourcePosition;
 
 /**
  * A exception common for all frontend related errors thrown by the scanning
@@ -21,44 +22,43 @@ public class FrontendX
      * and {@code yytext} parameters are internally added to the argument
      * list used in exception resolution and message generation.
      *
-     * @param line The error's line number.  Line counting begins with 1.
-     * @param column The error's column number.  Column counting begins with 1.
+     * @param sp The current source code position.
      * @param yytext The offending part of the source file.
      * @param key  The message key.  See
      *             {@link de.michab.scream.ScreamException ScreamException}
      *             for further explanation of message key resolution.
      */
-    public FrontendX( int line, int column, String filename, Code key, String yytext )
+    public FrontendX( SourcePosition sp, Code key, String yytext )
     {
-        super( key, new Object[]{ "" + line, "" + column, yytext } );
+        super( key, new Object[]{ "" + sp.line(), "" + sp.column(), yytext } );
     }
 
     /**
      * Creates a frontend exception.  The {@code line} and
-     * {@code column} parameters are internally added to the argument
+     * {@code column} parameters are internally appended to the argument
      * list used in exception resolution and message generation.
      *
-     * @param line The error's line number.  Line counting begins with 1.
-     * @param column The error's column number.  Column counting begins with 1.
+     * @param sp The current source code position.
      * @param key  The message key.  See
      *             {@link de.michab.scream.ScreamException ScreamException}
      *             for further explanation of message key resolution.
      */
-    public FrontendX( int line, int column, String filename, Code key )
+    public FrontendX( SourcePosition sp, Code key )
     {
-        super( key, new Object[]{ "" + line, "" + column } );
+        super( key, new Object[]{ "" + sp.line(), "" + sp.column() } );
     }
 
     /**
      * Creates a frontend exception.  The passed argument list is used in
      * exception resolution and message generation.
      *
+     * @param sp The current source code position.
      * @param key  The message key.  See
      *             {@link de.michab.scream.ScreamException ScreamException}
      *             for further explanation of message key resolution.
      * @param args The exception's arguments.
      */
-    public FrontendX( int line, int column, String filename, Code key, Object ... args )
+    public FrontendX( SourcePosition sp, Code key, Object ... args )
     {
         super( key, args );
     }
