@@ -6,6 +6,8 @@
 package de.michab.scream.scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -334,10 +336,48 @@ public class SchemeScannerTest extends ScreamBaseTest
     @Test
     public void numberDoubleExact() throws Exception
     {
-        expectFco(
-                "#e313.0",
-                d(313.0) );
-        testFloat( "#e313.0", 313d );
-        testFloat( "#i313.0", 313d );
+        // Default.  Exactness not specified.
+        {
+            var t = toToken( "313.0" );
+            assertEquals( Tk.Double, t.getType() );
+            // By default inexact.
+            assertFalse( t.doubleValue().isExact() );
+        }
+        // Explicitly exact.
+        {
+            var t = toToken( "#e313.0" );
+            assertEquals( Tk.Double, t.getType() );
+            assertTrue( t.doubleValue().isExact() );
+        }
+        // Explicitly inexact.
+        {
+            var t = toToken( "#i313.0" );
+            assertEquals( Tk.Double, t.getType() );
+            assertFalse( t.doubleValue().isExact() );
+        }
+    }
+
+    @Test
+    public void numberIntegerExact() throws Exception
+    {
+        // Default.  Exactness not specified.
+        {
+            var t = toToken( "313" );
+            assertEquals( Tk.Integer, t.getType() );
+            // By default exact.
+            assertTrue( t.integerValue().isExact() );
+        }
+        // Explicitly exact.
+        {
+            var t = toToken( "#e313" );
+            assertEquals( Tk.Integer, t.getType() );
+            assertTrue( t.integerValue().isExact() );
+        }
+        // Explicitly inexact.
+        {
+            var t = toToken( "#i313" );
+            assertEquals( Tk.Integer, t.getType() );
+            assertFalse( t.integerValue().isExact() );
+        }
     }
 }

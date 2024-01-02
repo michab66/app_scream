@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 
 //
@@ -418,7 +418,13 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
             _filename,
             Code.INTERNAL_ERROR,
             "inexact && exact : " + yytext() );
-        
+
+    if ( ! exact && ! inexact )
+        // Default is exact.
+    	exact = true;
+    else if ( inexact )
+        exact = false;
+
     boolean r2 = matched.contains( "#b" );
     boolean r8 = matched.contains( "#o" );
     boolean r10 = matched.contains( "#d" );
@@ -450,7 +456,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     try
     {
         return new Token(
-            SchemeInteger.createObject( Long.parseLong( matched, radix ) ),
+            SchemeInteger.createObject( Long.parseLong( matched, radix ), exact ),
             sourcePosition() );
     }
     catch ( NumberFormatException e )
@@ -483,10 +489,16 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
             Code.INTERNAL_ERROR,
             "inexact && exact : " + yytext() );
 
+    if ( ! exact && ! inexact )
+        // Default is inexact.
+    	exact = false;
+    else if ( inexact )
+        exact = false;
+
     try
     {
         return new Token(
-            SchemeDouble.createObject( Double.parseDouble( matched ) ),
+            SchemeDouble.createObject( Double.parseDouble( matched ), exact ),
             sourcePosition() );
     }
     catch ( NumberFormatException e )

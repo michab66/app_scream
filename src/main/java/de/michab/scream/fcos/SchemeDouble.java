@@ -5,8 +5,6 @@
  */
 package de.michab.scream.fcos;
 
-import org.smack.util.collections.WeakMapWithProducer;
-
 import de.michab.scream.RuntimeX;
 
 /**
@@ -28,27 +26,23 @@ public class SchemeDouble extends
     private final double _value;
 
     /**
-     *
-     */
-    private static WeakMapWithProducer<Double, SchemeDouble> _flyweights =
-            new WeakMapWithProducer<>( c -> new SchemeDouble( c ) );
-
-    /**
-     * A factory for scheme doubles.  Used for limiting generation for well
-     * known instances as for 1.0, 2.0, ... of this type.
+     * A factory for scheme doubles.
      */
     static public SchemeDouble createObject( double v )
     {
-        return _flyweights.get( v );
+        return new SchemeDouble( v, false );
+    }
+    static public SchemeDouble createObject( double v, boolean exact )
+    {
+        return new SchemeDouble( v, exact );
     }
 
     /**
-     * Create a new SchemeDouble.  This is only accessible via createObject to
-     * allow for caching well known instances like 1.0 etc.
+     * Create a new SchemeDouble.
      */
-    private SchemeDouble( double v )
+    private SchemeDouble( double v, boolean exact )
     {
-        super( false );
+        super( exact );
 
         _value = v;
     }
