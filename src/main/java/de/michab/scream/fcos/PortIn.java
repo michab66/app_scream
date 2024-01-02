@@ -13,7 +13,6 @@ import java.io.Reader;
 import java.util.Objects;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.frontend.FrontendX;
 import de.michab.scream.frontend.SchemeParser;
 
 /**
@@ -104,17 +103,9 @@ public class PortIn
         // In case no parser exists...
         if ( null == _parser )
             // ...create one.
-            _parser = new SchemeParser( stream() );
+            _parser = new SchemeParser( stream(), name() );
 
-        try
-        {
-            return _parser.getExpression();
-        }
-        catch ( FrontendX e )
-        {
-            e.setFilename( name() );
-            throw e;
-        }
+        return _parser.getExpression();
     }
 
     /**

@@ -25,6 +25,7 @@ import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.ErrorMessages;
+import de.michab.scream.util.SourcePosition;
 
 public class RuntimeXTest extends ScreamBaseTest
 {
@@ -615,7 +616,9 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void _38_parseUnexpected1() throws Exception
     {
-        var token = Token.createToken( Token.Tk.Dot );
+        var token = new Token(
+                Token.Tk.Dot,
+                new SourcePosition( -1, -1, "_38_parseUnexpected1" ) );
 
         validateMessageAndType(
                 RuntimeX.mParseUnexpected( token ),

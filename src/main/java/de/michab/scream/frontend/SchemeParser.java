@@ -16,8 +16,6 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.SchemeCharacter;
-import de.michab.scream.fcos.SchemeDouble;
-import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Vector;
@@ -77,9 +75,9 @@ public class SchemeParser
      *
      * @param source A reader that delivers the parser input.
      */
-    public SchemeParser( Reader source )
+    public SchemeParser( Reader source, String filename )
     {
-        _scanner = new SchemeScanner( source );
+        _scanner = new SchemeScanner( source, filename );
     }
 
     /**
@@ -87,9 +85,13 @@ public class SchemeParser
      *
      * @param source The string to parse.
      */
+    public SchemeParser( String source, String filename )
+    {
+        this( new StringReader( source ), filename );
+    }
     public SchemeParser( String source )
     {
-        this( new StringReader( source ) );
+        this( new StringReader( source ), "SchemeParser<init>(String)" );
     }
 
     /**
@@ -179,7 +181,7 @@ public class SchemeParser
                 throw RuntimeX.mParseExpected( Tk.Integer );
 
             collector.add(
-                    Scut.assertByte( token.integerValue() ) );
+                    Scut.assertByte( token.integerValue().asLong() ) );
         }
 
         // Consume the End token.
@@ -261,10 +263,10 @@ public class SchemeParser
             return Symbol.createObject( token.stringValue() );
 
         case Integer:
-            return SchemeInteger.createObject( token.integerValue() );
+            return token.integerValue();
 
         case Double:
-            return SchemeDouble.createObject( token.doubleValue() );
+            return token.doubleValue();
 
         case Array:
             return parseArray();

@@ -97,7 +97,9 @@ public abstract class Port<T extends Closeable>
         try
         {
             return FirstClassObject.setConstant(
-                    new SchemeParser( "#(EOF)" ).getExpression() );
+                    new SchemeParser(
+                            "#(EOF)",
+                            "Port.makeEofObject()" ).getExpression() );
         }
         catch (Exception e) {
             throw new InternalError( e );

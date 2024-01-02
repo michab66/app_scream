@@ -1,11 +1,15 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.frontend;
 
-import org.smack.util.EnumArray;
+import java.util.Objects;
+
+import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.util.SourcePosition;
 
 /**
  * Represents a Token in Scream's front end.  This is independent of the
@@ -13,7 +17,7 @@ import org.smack.util.EnumArray;
  *
  * @see de.michab.scream.frontend.SchemeParser
  */
-public class Token
+public final class Token
 {
     /**
      * The Scheme tokens used by the frontend.
@@ -41,33 +45,36 @@ public class Token
     }
 
     /**
-     * Used to implement a flyweight scheme for value-less Tokens.
-     * @see createToken
-     */
-    static private EnumArray<Tk, Token> _flyweights =
-            new EnumArray<Tk, Token>( Tk.class, null );
-
-    /**
-     * The type of the token.  The possible types are defined as constants in the
-     * SchemeParser.
-     * @see de.michab.scream.frontend.SchemeParser
+     * The type of the token.
      */
     private final Tk _type;
 
     /**
      * The token's value.  This corresponds to the type of the token.  For
-     * tokens without a value this is set to the Void.class, so this will
-     * never be <code>null</code>.
+     * tokens without a value this is set to the Void.class,
+     * never <code>null</code>.
      */
     private final Object _value;
 
     /**
-     * Creates a new Token for the given type.
+     * The token's source code position.
      */
-    public Token( Tk type )
+    private final SourcePosition _sourcePosition;
+
+    private Token( Tk type, Object value, SourcePosition sourcePosition )
     {
         _type = type;
-        _value = Void.class;
+        _value = value;
+
+        _sourcePosition = Objects.requireNonNull( sourcePosition );
+    }
+
+    /**
+     * Creates a new Token for the given type.
+     */
+    public Token( Tk type, SourcePosition sourcePosition )
+    {
+        this( type, Void.class, sourcePosition );
     }
 
     /**
@@ -79,73 +86,45 @@ public class Token
      * @param value The token's value.
      * @throws IllegalArgumentException Wrong value for the type parameter.
      */
-    public Token( Tk type, String value )
+    public Token( Tk type, String value, SourcePosition sourcePosition )
     {
+        this( type, (Object)value, sourcePosition );
+
         if ( type != Tk.String &&
                 type != Tk.Symbol )
             throw new IllegalArgumentException( "Type neither string nor symbol." );
-
-        _type = type;
-        _value = value;
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( long value )
+    public Token( SchemeInteger value, SourcePosition sourcePosition  )
     {
-        _type = Tk.Integer;
-        _value = Long.valueOf( value );
+        this( Tk.Integer, value, sourcePosition );
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( char value )
+    public Token( char value, SourcePosition sourcePosition )
     {
-        _type = Tk.Char;
-        _value = Character.valueOf( value );
+        this( Tk.Char, Character.valueOf( value ), sourcePosition );
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( boolean value )
+    public Token( boolean value, SourcePosition sourcePosition )
     {
-        _type = Tk.Boolean;
-        _value = Boolean.valueOf( value );
+        this( Tk.Boolean, Boolean.valueOf( value ), sourcePosition);
     }
 
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( double value )
+    public Token( SchemeDouble value, SourcePosition sourcePosition )
     {
-        _type = Tk.Double;
-        _value = Double.valueOf( value );
-    }
-
-    /**
-     * Create a token that holds only type information.  This can be used for
-     * tokens representing keywords.  In that case a token has to carry no
-     * additional information besides its token type.</br>
-     * This factory method ensures that only a single instance per token type
-     * will be created.
-     */
-    public synchronized static Token createToken( Tk type )
-    {
-        // Access the table.
-        Token result = _flyweights.get( type );
-        // Check if we received a token...
-        if ( result == null )
-        {
-            // ...and create one if not...
-            result = new Token( type );
-            // ...and put that into the flyweight table.
-            _flyweights.set( type, result );
-        }
-
-        return result;
+        this( Tk.Double, value, sourcePosition );
     }
 
     /**
@@ -177,7 +156,7 @@ public class Token
             result = "TkEnd";
             break;
         case String:
-            result = "TkString( " + _value + " )";
+            result = "TkString( \"" + _value + "\" )";
             break;
         case Quote:
             result = "TkQuote";
@@ -199,7 +178,10 @@ public class Token
             break;
         }
 
-        return result;
+        return String.format(
+                "%s%n%s",
+                result,
+                _sourcePosition );
     }
 
     /**
@@ -235,11 +217,11 @@ public class Token
      * of type SchemeParser.TkDouble.  If that is not the case, the program
      * will be stopped.
      */
-    public double doubleValue()
+    public SchemeDouble doubleValue()
     {
         try
         {
-            return ((Double)_value).doubleValue();
+            return (SchemeDouble)_value;
         }
         catch ( ClassCastException e )
         {
@@ -269,11 +251,11 @@ public class Token
      * of type SchemeParser.TkInteger.  If that is not the case, the program
      * will be stopped.
      */
-    public long integerValue()
+    public SchemeInteger integerValue()
     {
         try
         {
-            return ((Long)_value).longValue();
+            return (SchemeInteger)_value;
         }
         catch ( ClassCastException e )
         {

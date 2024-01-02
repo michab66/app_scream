@@ -10,6 +10,7 @@ import java.io.Reader;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.frontend.Token.Tk;
+import de.michab.scream.util.SourcePosition;
 
 /**
  * The scanner implementation.  Works as one would expect.  Text from the input
@@ -26,9 +27,9 @@ public class SchemeScanner
     /**
      * Create a new scanner on the passed <code>Reader</code>.
      */
-    public SchemeScanner( Reader source )
+    public SchemeScanner( Reader source, String filename )
     {
-        _scanner = new SchemeScanner7( source );
+        _scanner = new SchemeScanner7( source, filename );
     }
 
     /**
@@ -39,7 +40,7 @@ public class SchemeScanner
     {
         // No scanner means that we reached the end of input.
         if ( _scanner == null )
-            return Token.createToken( Tk.Eof );
+            return new Token( Tk.Eof, new SourcePosition( -1, -1, "SchemeScanner.getNextToken()" ) );
 
         try
         {

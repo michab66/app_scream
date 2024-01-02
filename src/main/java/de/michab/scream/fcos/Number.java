@@ -54,8 +54,6 @@ extends FirstClassObject
         return _isExact;
     }
 
-
-
     /**
      * Create a number instance with a given exactness.
      *

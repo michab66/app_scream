@@ -1,33 +1,61 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import java.io.IOException;
 import java.io.StringReader;
 
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
+import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.frontend.SchemeScanner7;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
 
-public class SchemeScannerTest
+public class SchemeScannerTest extends ScreamBaseTest
 {
+    private SchemeScanner7 makeScanner( String script )
+    {
+        return new SchemeScanner7(
+                new StringReader( script ),
+                getClass().getSimpleName() );
+    }
+
+    /**
+     * Returns the next token from the passed script text and checks
+     * if this is followed by EOF.
+     *
+     * @param script The script to scan.
+     * @return The next token.
+     */
+    private Token toToken( String script ) throws RuntimeX, IOException
+    {
+        var scanner = makeScanner( script );
+        var result = scanner.getNextToken();
+        // Ensure that the whole expression got consumed.
+        assertEquals( Token.Tk.Eof, scanner.getNextToken().getType() );
+
+        return result;
+    }
+
     @Test
     public void empty() throws Exception
     {
-        StringReader input = new StringReader( "" );
+        // Note that toToken implicitly checks the follow-up token.
+        // In this special case that ensures that the scanner
+        // returns Tk.Eof repeatedly.
 
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( "" );
 
         assertEquals( Token.Tk.Eof, t.getType() );
     }
@@ -35,23 +63,16 @@ public class SchemeScannerTest
     @Test
     public void character_plus() throws Exception
     {
-        StringReader input = new StringReader( "#\\+" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( "#\\+" );
 
         assertEquals( Token.Tk.Char, t.getType() );
         assertEquals( '+', t.characterValue() );
     }
+
     @Test
     public void character_lambda() throws Exception
     {
-        StringReader input = new StringReader( "#\\λ" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( "#\\λ" );
 
         assertEquals( Token.Tk.Char, t.getType() );
         assertEquals( 'λ', t.characterValue() );
@@ -59,11 +80,7 @@ public class SchemeScannerTest
     @Test
     public void characterHex_lambda() throws Exception
     {
-        StringReader input = new StringReader( "#\\x03BB" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( "#\\x03BB" );
 
         assertEquals( Token.Tk.Char, t.getType() );
         assertEquals( 'λ', t.characterValue() );
@@ -71,13 +88,9 @@ public class SchemeScannerTest
     @Test
     public void characterHex_ffff1() throws Exception
     {
-        StringReader input = new StringReader( "#\\xFFFF1" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
         try
         {
-          s.getNextToken();
+          toToken( "#\\xFFFF1" );
           fail();
         }
         catch ( RuntimeX rx )
@@ -89,15 +102,11 @@ public class SchemeScannerTest
     @Test
     public void characterHex_syntax() throws Exception
     {
-        // Actually matched as a bad character-name followed by number 1.
-        StringReader input = new StringReader( "#\\xFFFyF1" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
         try
         {
-          s.getNextToken();
-          fail();
+            // Actually matched as a bad character-name followed by number 1.
+            toToken( "#\\xFFFyF1" );
+            fail();
         }
         catch ( RuntimeX rx )
         {
@@ -108,11 +117,7 @@ public class SchemeScannerTest
     @Test
     public void characterName_space() throws Exception
     {
-        StringReader input = new StringReader( "#\\space" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( "#\\space" );
 
         assertEquals( Token.Tk.Char, t.getType() );
         assertEquals( ' ', t.characterValue() );
@@ -120,30 +125,22 @@ public class SchemeScannerTest
     @Test
     public void characterName_error() throws Exception
     {
-        StringReader input = new StringReader( "#\\error" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
         try
         {
-          s.getNextToken();
-          fail();
+            toToken( "#\\error" );
+            fail();
         }
         catch ( RuntimeX rx )
         {
-          assertEquals( Code.SCAN_UNEXPECTED_CHAR, rx.getCode() );
-          assertEquals( "#\\error", rx.getArgument( 2 ) );
+            assertEquals( Code.SCAN_UNEXPECTED_CHAR, rx.getCode() );
+            assertEquals( "#\\error", rx.getArgument( 2 ) );
         }
     }
 
     @Test
     public void symbol() throws Exception
     {
-        StringReader input = new StringReader( "+" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( "+" );
 
         assertEquals( Token.Tk.Symbol, t.getType() );
         assertEquals( "+", t.stringValue() );
@@ -152,11 +149,7 @@ public class SchemeScannerTest
     @Test
     public void vector() throws Exception
     {
-        StringReader input = new StringReader( "#(" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( "#(" );
 
         assertEquals( Token.Tk.Array, t.getType() );
     }
@@ -164,11 +157,7 @@ public class SchemeScannerTest
     @Test
     public void byteVector() throws Exception
     {
-        StringReader input = new StringReader( " #u8(" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( " #u8(" );
 
         assertEquals( Token.Tk.Bytevector, t.getType() );
     }
@@ -176,26 +165,18 @@ public class SchemeScannerTest
     @Test
     public void lineComment_plain() throws Exception
     {
-        StringReader input = new StringReader(
+        var t = toToken(
                 ";  #| special comment characters  # | |# \n 313" );
 
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
-
         assertEquals( Token.Tk.Integer, t.getType() );
-        assertEquals( 313, t.integerValue() );
+        assertEquals( 313, t.integerValue().asLong() );
     }
 
     @Test
     public void datumComment_plain() throws Exception
     {
-        StringReader input = new StringReader(
+        var t = toToken(
                 "#;" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
 
         assertEquals( Tk.DatumComment, t.getType() );
     }
@@ -203,40 +184,30 @@ public class SchemeScannerTest
     @Test
     public void nestedComment_plain() throws Exception
     {
-        StringReader input = new StringReader(
+        var t = toToken(
                 "#| special comment characters  # | |# 313" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
 
         assertEquals( Token.Tk.Integer, t.getType() );
     }
+
     @Test
     public void nestedComment_plain_multiline() throws Exception
     {
-        StringReader input = new StringReader(
+        var t = toToken(
 """
 #|
  | Durch diese hohle Gasse muss er kommen.
  |# 313
 """ );
 
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
-
         assertEquals( Token.Tk.Integer, t.getType() );
     }
+
     @Test
     public void nestedComment_nested() throws Exception
     {
-        StringReader input = new StringReader(
+        var t = toToken(
                 "#| #| #| #| #| #| #|  |<-comment-># | |# |# |# |# |# |# |# 313" );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
 
         assertEquals( Token.Tk.Integer, t.getType() );
     }
@@ -244,13 +215,9 @@ public class SchemeScannerTest
     @Test
     public void nestedComment_error_unclosed() throws Exception
     {
-        StringReader input = new StringReader( "#|  #| b |# ... 313" );
-
-        var s = new SchemeScanner7( input );
-
         try
         {
-            s.getNextToken();
+            toToken( "#|  #| b |# ... 313" );
             fail();
         }
         catch ( RuntimeX rx )
@@ -262,13 +229,9 @@ public class SchemeScannerTest
     @Test
     public void nestedComment_error_unopened() throws Exception
     {
-        StringReader input = new StringReader( " |# 313 " );
-
-        var s = new SchemeScanner7( input );
-
         try
         {
-            s.getNextToken();
+            toToken( " |# 313 " );
             fail();
         }
         catch ( RuntimeX rx )
@@ -276,16 +239,13 @@ public class SchemeScannerTest
             assertEquals( Code.SCAN_UNBALANCED_COMMENT, rx.getCode() );
         }
     }
+
     @Test
     public void nestedComment_error_doublyClosed() throws Exception
     {
-        StringReader input = new StringReader( "#| comment |# |# 313 " );
-
-        var s = new SchemeScanner7( input );
-
         try
         {
-            s.getNextToken();
+            toToken( "#| comment |# |# 313 " );
             fail();
         }
         catch ( RuntimeX rx )
@@ -296,14 +256,10 @@ public class SchemeScannerTest
 
     private void testInteger( String code, long expected ) throws Exception
     {
-        StringReader input = new StringReader( code );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( code );
 
         assertEquals( Token.Tk.Integer, t.getType() );
-        assertEquals( expected, t.integerValue() );
+        assertEquals( expected, t.integerValue().asLong() );
     }
 
     @Test
@@ -311,6 +267,7 @@ public class SchemeScannerTest
     {
         testInteger( "313", 313 );
         testInteger( "#e313", 313 );
+        testInteger( "#i313", 313 );
         testInteger( "-313", -313 );
 
         testInteger( "#b10", 2 );
@@ -354,14 +311,10 @@ public class SchemeScannerTest
 
     private void testFloat( String code, double expected ) throws Exception
     {
-        StringReader input = new StringReader( code );
-
-        SchemeScanner7 s = new SchemeScanner7( input );
-
-        var t = s.getNextToken();
+        var t = toToken( code );
 
         assertEquals( Token.Tk.Double, t.getType() );
-        assertEquals( expected, t.doubleValue() );
+        assertEquals( expected, t.doubleValue().asDouble() );
     }
 
     @Test
@@ -378,5 +331,53 @@ public class SchemeScannerTest
         testFloat( "-313.0e-1", -31.3d );
         testFloat( "-313.0e2", -31300d );
         testFloat( ".313e3", 313d );
+    }
+
+    @Test
+    public void numberDoubleExact() throws Exception
+    {
+        // Default.  Exactness not specified.
+        {
+            var t = toToken( "313.0" );
+            assertEquals( Tk.Double, t.getType() );
+            // By default inexact.
+            assertFalse( t.doubleValue().isExact() );
+        }
+        // Explicitly exact.
+        {
+            var t = toToken( "#e313.0" );
+            assertEquals( Tk.Double, t.getType() );
+            assertTrue( t.doubleValue().isExact() );
+        }
+        // Explicitly inexact.
+        {
+            var t = toToken( "#i313.0" );
+            assertEquals( Tk.Double, t.getType() );
+            assertFalse( t.doubleValue().isExact() );
+        }
+    }
+
+    @Test
+    public void numberIntegerExact() throws Exception
+    {
+        // Default.  Exactness not specified.
+        {
+            var t = toToken( "313" );
+            assertEquals( Tk.Integer, t.getType() );
+            // By default exact.
+            assertTrue( t.integerValue().isExact() );
+        }
+        // Explicitly exact.
+        {
+            var t = toToken( "#e313" );
+            assertEquals( Tk.Integer, t.getType() );
+            assertTrue( t.integerValue().isExact() );
+        }
+        // Explicitly inexact.
+        {
+            var t = toToken( "#i313" );
+            assertEquals( Tk.Integer, t.getType() );
+            assertFalse( t.integerValue().isExact() );
+        }
     }
 }

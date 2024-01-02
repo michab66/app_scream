@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 
 //
@@ -11,8 +11,11 @@
 package de.michab.scream.frontend;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.RuntimeX.Code;
+import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.frontend.Token.Tk;
+import de.michab.scream.util.SourcePosition;
 
 %%
 
@@ -20,6 +23,10 @@ import de.michab.scream.RuntimeX.Code;
 %class SchemeScanner7
 %public
 %final
+%ctorarg String filename
+%init{
+  _filename = filename;
+%init}
 
 // Create a main function in the scanner class for testing purposes.
 // %debug
@@ -37,7 +44,27 @@ import de.michab.scream.RuntimeX.Code;
 %column
 
 %{
-int commentNestCount = 0;
+private int commentNestCount = 0;
+
+private int getLine()
+{
+  return yyline+1;
+}
+private int getColumn()
+{
+  return yycolumn+1;
+}
+
+private final String _filename;
+
+private SourcePosition sourcePosition()
+{
+    return new SourcePosition( 
+        getLine(),
+        getColumn(),
+        _filename );
+}
+
 %}
 
 %states NESTED_COMMENT
@@ -260,7 +287,7 @@ decimal_10 =
   {sign}? {uinteger_10} \. {uinteger_10}? {suffix}?
 
 REAL =
-  {decimal_10}
+  {exactness}? {decimal_10}
 
 STARTLIST =
   "("
@@ -290,20 +317,20 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
 <YYINITIAL> {
   {IDENTIFIER} {
-    return new Token( Tk.Symbol, yytext() );
+    return new Token( Tk.Symbol, yytext(), sourcePosition() );
   }
 
   {DOT} {
-    return Token.createToken( Tk.Dot );
+    return new Token( Tk.Dot, sourcePosition() );
   }
 
   {BOOLEAN} {
     return new Token(
-     yytext().toLowerCase().startsWith( "#t" ) );
+     yytext().toLowerCase().startsWith( "#t" ), sourcePosition() );
   }
 
   {CHARACTER} {
-    return new Token( yycharat( 2 ) );
+    return new Token( yycharat( 2 ), sourcePosition() );
   }
 
   {CHARACTER_HEX} {
@@ -315,13 +342,13 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
       var value = Integer.parseInt( matched, 16 );
 
       if ( value > 0 && value < 0xffff )
-        return new Token( (char)value );
+        return new Token( (char)value, sourcePosition() );
     }
     catch ( Exception e )
     {
     }
     
-    throw RuntimeX.mScanUnexpectedCharacter( yyline+1, yycolumn+1, yytext() );
+    throw RuntimeX.mScanUnexpectedCharacter( getLine(), getColumn(), yytext() );
   }
 
   {CHARACTER_NAME} {
@@ -332,45 +359,45 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     switch ( matched )
     {
       case "alarm":
-        return new Token( (char)0x07 );
+        return new Token( (char)0x07, sourcePosition() );
       case "backspace":
-        return new Token( (char)0x08 );
+        return new Token( (char)0x08, sourcePosition() );
       case "delete":
-        return new Token( (char)0x7f );
+        return new Token( (char)0x7f, sourcePosition() );
       case "escape":
-        return new Token( (char)0x1b );
+        return new Token( (char)0x1b, sourcePosition() );
       case "newline":
-        return new Token( (char)0x0a );
+        return new Token( (char)0x0a, sourcePosition() );
       case "null":
-        return new Token( (char)0x00 );
+        return new Token( (char)0x00, sourcePosition() );
       case "return":
-        return new Token( (char)0x0d );
+        return new Token( (char)0x0d, sourcePosition() );
       case "space":
-        return new Token( ' ' );
+        return new Token( ' ', sourcePosition() );
       case "tab":
-        return new Token( '\t' );
+        return new Token( '\t', sourcePosition() );
       default:
-        throw RuntimeX.mScanUnexpectedCharacter( yyline+1, yycolumn+1, yytext() );
+        throw RuntimeX.mScanUnexpectedCharacter( getLine(), getColumn(), yytext() );
     }
   }
 
   {LABEL} {
-    return new Token( Tk.Label );
+    return new Token( Tk.Label, sourcePosition() );
   }
   
   {LABEL_REFERENCE} {
-    return new Token( Tk.LabelReference );
+    return new Token( Tk.LabelReference, sourcePosition() );
   }
 
   {START_BYTEVECTOR} {
-    return new Token( Tk.Bytevector );
+    return new Token( Tk.Bytevector, sourcePosition() );
   }
 
   {STRING} {
     // Remove the double quotes.
     String image = yytext();
     String noQuote = image.substring( 1, image.length()-1 );
-    return new Token( Tk.String, noQuote );
+    return new Token( Tk.String, noQuote, sourcePosition() );
   }
 
   {INTEGER} {
@@ -383,6 +410,18 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
         matched = matched.replace( "#i", "" );
     if ( exact )
         matched = matched.replace( "#e", "" );
+
+    if ( inexact && exact )
+        throw new FrontendX(
+            sourcePosition(),
+            Code.INTERNAL_ERROR,
+            "inexact && exact : " + yytext() );
+
+    if ( ! exact && ! inexact )
+        // Default is exact.
+    	exact = true;
+    else if ( inexact )
+        exact = false;
 
     boolean r2 = matched.contains( "#b" );
     boolean r8 = matched.contains( "#o" );
@@ -414,48 +453,80 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
     try
     {
-      return new Token( Long.parseLong( matched, radix ) );
+        return new Token(
+            SchemeInteger.createObject( Long.parseLong( matched, radix ), exact ),
+            sourcePosition() );
     }
     catch ( NumberFormatException e )
     {
-      throw new FrontendX( Code.INTERNAL_ERROR, e.getMessage() );
+        throw new FrontendX(
+            sourcePosition(),
+            Code.INTERNAL_ERROR,
+            e.getMessage() );
     }
   }
 
   {REAL} {
+    var matched = yytext();
+    
+    boolean inexact = matched.contains( "#i" );
+    boolean exact = matched.contains( "#e" );
+
+    if ( inexact )
+        matched = matched.replace( "#i", "" );
+    if ( exact )
+        matched = matched.replace( "#e", "" );
+
+    if ( inexact && exact )
+        throw new FrontendX(
+            sourcePosition(),
+            Code.INTERNAL_ERROR,
+            "inexact && exact : " + yytext() );
+
+    if ( ! exact && ! inexact )
+        // Default is inexact.
+    	exact = false;
+    else if ( inexact )
+        exact = false;
+
     try
     {
-      return new Token( Double.valueOf( yytext() ).doubleValue() );
+        return new Token(
+            SchemeDouble.createObject( Double.parseDouble( matched ), exact ),
+            sourcePosition() );
     }
     catch ( NumberFormatException e )
     {
-      throw new FrontendX( Code.INTERNAL_ERROR, e.getMessage() );
+        throw new FrontendX(
+            sourcePosition(),
+            Code.INTERNAL_ERROR,
+            e.getMessage() );
     }
   }
 
   {STARTLIST} {
-    return Token.createToken( Tk.List );
+    return new Token( Tk.List, sourcePosition() );
   }
 
   {STARTARRAY} {
-    return Token.createToken( Tk.Array );
+    return new Token( Tk.Array, sourcePosition() );
   }
 
   {END} {
-    return Token.createToken( Tk.End );
+    return new Token( Tk.End, sourcePosition() );
   }
 
   {QUOTE} {
-    return Token.createToken( Tk.Quote );
+    return new Token( Tk.Quote, sourcePosition() );
   }
   {QUASIQUOTE} {
-    return Token.createToken( Tk.QuasiQuote );
+    return new Token( Tk.QuasiQuote, sourcePosition() );
   }
   {UNQUOTE} {
-    return Token.createToken( Tk.Unquote );
+    return new Token( Tk.Unquote, sourcePosition() );
   }
   {UNQUOTE_SPLICING} {
-    return Token.createToken( Tk.UnquoteSplicing );
+    return new Token( Tk.UnquoteSplicing, sourcePosition() );
   }
 
   {SINGLE_LINE_COMMENT} { /* ignore */ }
@@ -468,7 +539,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   }
 
   {DATUM_COMMENT} {
-      return Token.createToken( Tk.DatumComment );
+      return new Token( Tk.DatumComment, sourcePosition() );
   }
 
   /*
@@ -477,18 +548,21 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
   // Catch unbalanced double quotes
   \"({stringelement})*{line_ending} {
-    throw new FrontendX( yyline+1, yycolumn+1, Code.SCAN_UNBALANCED_QUOTE );
+    throw new FrontendX( sourcePosition(), Code.SCAN_UNBALANCED_QUOTE );
   }
 
   // Catch unmatched characters.
   . {
-    throw new FrontendX( yyline+1, yycolumn+1, Code.SCAN_UNEXPECTED_CHAR, yytext() );
+    throw new FrontendX( 
+        sourcePosition(),
+        Code.SCAN_UNEXPECTED_CHAR,
+        yytext() );
   }
 
   // Catch unmatched nested comments.  An NC_END token must never
   // be visible in YYINITIAL.
   {NC_END} {
-      throw RuntimeX.mScanUnbalancedComment( yyline+1, yycolumn+1 );
+      throw RuntimeX.mScanUnbalancedComment( getLine(), getColumn() );
   }
 }
 
@@ -506,7 +580,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     else if ( commentNestCount > 0 )
       ;
     else
-      throw RuntimeX.mScanUnbalancedComment( yyline+1, yycolumn+1 );
+      throw RuntimeX.mScanUnbalancedComment( getLine(), getColumn() );
   }
 
   /* The first pattern consumes everything but the characters
@@ -524,10 +598,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
 <<EOF>> {
   if ( commentNestCount > 0 )
-      throw RuntimeX.mScanUnbalancedComment( yyline+1, yycolumn+1 );
+      throw RuntimeX.mScanUnbalancedComment( getLine(), getColumn() );
 
-  // If we reached EOF, we close the reader...
-  yyreset( null );
-  // ...before doing business as usual.
-  return Token.createToken( Tk.Eof );
+  return new Token( Tk.Eof, sourcePosition() );
 }

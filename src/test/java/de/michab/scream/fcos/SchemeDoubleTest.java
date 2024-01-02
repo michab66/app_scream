@@ -51,7 +51,7 @@ public class SchemeDoubleTest extends ScreamBaseTest
 
         var d2 = SchemeDouble.createObject( d.asDouble() );
 
-        assertTrue( d == d2 );
+        assertEqualq( d, d2 );
     }
 
     @Test
@@ -71,6 +71,11 @@ public class SchemeDoubleTest extends ScreamBaseTest
             throws X;
     }
 
+    /**
+     * Checks if the operation can be applied on a symbol.
+     * @param op
+     * @throws Exception fails it can be applied to a symbol.
+     */
     private void typeFailureTest( FuncX<FirstClassObject, Number, Exception> op ) throws Exception
     {
         var symbol = Symbol.createObject( "313" );
@@ -102,7 +107,7 @@ public class SchemeDoubleTest extends ScreamBaseTest
         var three = SchemeDouble.createObject( 3.0 );
 
         var sum = one.add( two );
-        assertEquals( three, sum );
+        assertEqualq( three, sum );
 
         typeFailureTest( one::add );
     }
@@ -114,8 +119,9 @@ public class SchemeDoubleTest extends ScreamBaseTest
         var two = SchemeDouble.createObject( 2.0 );
         var three = SchemeDouble.createObject( 3.0 );
 
-        var v = three.subtract( two );
-        assertEquals( one, v );
+        assertEqualq(
+                one,
+                three.subtract( two ) );
 
         typeFailureTest( one::subtract );
     }
@@ -127,7 +133,7 @@ public class SchemeDoubleTest extends ScreamBaseTest
         var three = SchemeDouble.createObject( 3.0 );
 
         var v = three.multiply( two );
-        assertEquals( SchemeDouble.createObject( 6.0 ), v );
+        assertEqualq( SchemeDouble.createObject( 6.0 ), v );
 
         typeFailureTest( two::multiply );
     }
@@ -140,7 +146,7 @@ public class SchemeDoubleTest extends ScreamBaseTest
         var div = SchemeDouble.createObject( 1.5 );
 
         var v = three.divide( two );
-        assertEquals( div, v );
+        assertEqualq( div, v );
 
         typeFailureTest( two::divide );
     }

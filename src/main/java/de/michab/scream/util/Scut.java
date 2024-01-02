@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 2022 Michael G. Binz
+ * Copyright © 2022-2024 Michael G. Binz
  */
 package de.michab.scream.util;
 
@@ -43,15 +43,6 @@ public class Scut
             above.accept( length );
 
         return length;
-    }
-
-    public static long checkProperLength(
-            Cons cons,
-            long expected,
-            ConsumerX<Long> fail )
-        throws RuntimeX
-    {
-        return checkProperLength( cons, expected, expected, fail, fail );
     }
 
     /**

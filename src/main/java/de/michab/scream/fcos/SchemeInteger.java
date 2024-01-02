@@ -37,23 +37,30 @@ public class SchemeInteger
      */
     static public SchemeInteger createObject( long v )
     {
+        return createObject( v, true );
+    }
+    static public SchemeInteger createObject( long v, boolean exact )
+    {
+        if ( ! exact )
+            return new SchemeInteger( v, exact );
+
         if ( v >= CACHE_MIN && v <= CACHE_MAX )
         {
             int cacheIdx = (int)(v - CACHE_MIN);
             if ( null == _cache[ cacheIdx ] )
-                _cache[ cacheIdx ] = new SchemeInteger( v );
+                _cache[ cacheIdx ] = new SchemeInteger( v, exact );
             return _cache[ cacheIdx ];
         }
-        else
-            return new SchemeInteger( v );
+
+        return new SchemeInteger( v, exact );
     }
 
     /**
-     *
+     * Make an instance.
      */
-    private SchemeInteger( long v )
+    private SchemeInteger( long v, boolean exact )
     {
-        super( false );
+        super( exact );
 
         _value = v;
     }
