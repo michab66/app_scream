@@ -364,20 +364,6 @@ public abstract class FirstClassObject
         return _isConstant;
     }
 
-    private static Lambda _NIL = new Lambda(
-            (e,c) -> Primitives._quote(
-                    Cons.NIL,
-                    c ),
-            "NIL" );
-
-    public static Lambda _compile( FirstClassObject fco, Environment env )
-            throws RuntimeX
-    {
-        if ( fco == Cons.NIL )
-            return _NIL;
-        return fco._compile( env );
-    }
-
     protected Lambda _compile( Environment env )
         throws RuntimeX
     {
