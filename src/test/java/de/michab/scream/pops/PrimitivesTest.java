@@ -83,7 +83,7 @@ public class PrimitivesTest extends ScreamBaseTest
     public void _if_true() throws Exception
     {
         Environment env =
-                new Environment( getClass().getSimpleName() );
+                makeEnvironment();
 
         // Everything is true, but false.
 
@@ -126,7 +126,7 @@ public class PrimitivesTest extends ScreamBaseTest
     public void _if_false() throws Exception
     {
         Environment env =
-                new Environment( getClass().getSimpleName() );
+                makeEnvironment();
 
         var result = cont().toStack(
                 cont -> Primitives._if(
@@ -161,7 +161,7 @@ public class PrimitivesTest extends ScreamBaseTest
     @Test
     public void defineList_lessValuesThanSymbols() throws Exception
     {
-        Environment e = new Environment( getClass().getSimpleName() );
+        Environment e = makeEnvironment();
 
         Cons expected = Scut.as( Cons.class, parse( "(a b)" ) );
 
@@ -181,7 +181,7 @@ public class PrimitivesTest extends ScreamBaseTest
     public void defineList_moreValues() throws Exception
     {
         Environment e =
-                new Environment( getClass().getSimpleName() );
+                makeEnvironment();
         Cons expected =
                 Scut.as( Cons.class, parse( "(a b)" ) );
 
