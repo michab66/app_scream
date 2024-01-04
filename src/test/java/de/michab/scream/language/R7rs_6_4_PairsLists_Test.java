@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.language;
 
@@ -27,13 +27,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeListNotation_1() throws Exception
     {
         expectFco(
-            """
-            (equal?
-              '(a b c d e)
-              '(a . (b . (c . (d . (e . ())))))
-            )
-            """,
-            SchemeBoolean.T );
+            "'(a . (b . (c . (d . (e . ())))))",
+            "(a b c d e)" );
     }
 
     /**
@@ -43,13 +38,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeListNotation_2() throws Exception
     {
         expectFco(
-            """
-            (equal?
-              '(a b c . d)
-              '(a . (b . (c . d)))
-            )
-            """,
-            SchemeBoolean.T );
+            "'(a . (b . (c . d)))",
+            "(a b c . d)" );
     }
 
     /**
@@ -59,10 +49,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemePair_1() throws Exception
     {
         expectFco(
-                """
-                (pair? '(a . b))
-                """,
-                SchemeBoolean.T );
+            "(pair? '(a . b))",
+            bTrue );
     }
 
     /**
@@ -72,10 +60,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemePair_2() throws Exception
     {
         expectFco(
-                """
-                (pair? '(a b c))
-                """,
-                SchemeBoolean.T );
+                "(pair? '(a b c))",
+                bTrue );
     }
 
     /**
@@ -85,10 +71,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemePair_3() throws Exception
     {
         expectFco(
-                """
-                (pair? '())
-                """,
-                SchemeBoolean.F );
+                "(pair? '())",
+                bFalse );
     }
 
     /**
@@ -98,10 +82,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemePair_4() throws Exception
     {
         expectFco(
-                """
-                (pair? '#(a b))
-                """,
-                SchemeBoolean.F );
+                "(pair? '#(a b))",
+                bFalse );
     }
 
     /**
@@ -111,13 +93,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeCons_1() throws Exception
     {
         expectFco(
-                """
-                (equal?
-                        '(a)
-                        (cons 'a '())
-                )
-                """,
-                SchemeBoolean.T );
+                "(cons 'a '())",
+                "(a)" );
     }
 
     /**
@@ -127,13 +104,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeCons_2() throws Exception
     {
         expectFco(
-                """
-                (equal?
-                        '((a) b c d)
-                        (cons '(a) '(b c d))
-                )
-                """,
-                SchemeBoolean.T );
+                "(cons '(a) '(b c d))",
+                "((a) b c d)" );
     }
 
     /**
@@ -144,12 +116,10 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     {
         expectFco(
                 """
-                (equal?
-                        '("a" b c)
-                        (cons "a" '(b c))
-                )
-                """,
-                SchemeBoolean.T );
+                (cons "a" '(b c))
+                ""","""
+                ("a" b c)
+                """ );
     }
 
     /**
@@ -159,13 +129,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeCons_4() throws Exception
     {
         expectFco(
-                """
-                (equal?
-                        '(a . 3)
-                        (cons 'a 3)
-                )
-                """,
-                SchemeBoolean.T );
+                "(cons 'a 3)",
+                "(a . 3)" );
     }
 
     /**
@@ -175,13 +140,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeCons_5() throws Exception
     {
         expectFco(
-                """
-                (equal?
-                        '((a b) . c)
-                        (cons '(a b) 'c)
-                )
-                """,
-                SchemeBoolean.T );
+                "(cons '(a b) 'c)",
+                "((a b) . c)" );
     }
 
     /**
@@ -191,10 +151,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeNull_x1() throws Exception
     {
         expectFco(
-                """
-                (null? '(a b c))
-                """,
-                SchemeBoolean.F );
+                "(null? '(a b c))",
+                bFalse );
     }
 
     /**
@@ -501,13 +459,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeReverse_1() throws Exception
     {
         expectFco(
-            """
-            (equal?
-                    '(c b a)
-                    (reverse '(a b c))
-            )
-            """,
-            SchemeBoolean.T );
+            "(reverse '(a b c))",
+            "(c b a)" );
     }
 
     /**
@@ -517,13 +470,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeReverse_2() throws Exception
     {
         expectFco(
-            """
-            (equal?
-                    '((e (f)) d (b c) a)
-                    (reverse '(a (b c) d (e (f))))
-            )
-            """,
-            SchemeBoolean.T );
+            "(reverse '(a (b c) d (e (f))))",
+            "((e (f)) d (b c) a)" );
     }
 
     /**
@@ -533,13 +481,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeReverse_x1() throws Exception
     {
         expectFco(
-            """
-            (equal?
-                    '()
-                    (reverse '())
-            )
-            """,
-            SchemeBoolean.T );
+            "(reverse '())",
+            Cons.NIL );
     }
 
     /**
@@ -549,13 +492,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeReverse_x2() throws Exception
     {
         expectFco(
-            """
-            (equal?
-                    '(313)
-                    (reverse '(313))
-            )
-            """,
-            SchemeBoolean.T );
+            "(reverse '(313))",
+            "(313)" );
     }
 
     /**
@@ -565,13 +503,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeList_Tail_x1() throws Exception
     {
         expectFco(
-           """
-           (equal?
-                   '(c d)
-                   (list-tail '(a b c d) 2)
-           )
-           """,
-           SchemeBoolean.T );
+           "(list-tail '(a b c d) 2)",
+           "(c d)" );
     }
 
     /**
@@ -581,13 +514,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeList_Tail_x2() throws Exception
     {
         expectFco(
-              """
-              (equal?
-                '(a b c d)
-                (list-tail '(a b c d) 0)
-              )
-              """,
-              SchemeBoolean.T );
+              "(list-tail '(a b c d) 0)",
+              "(a b c d)" );
     }
 
     /**
@@ -597,13 +525,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void schemeList_Tail_x3() throws Exception
     {
         expectFco(
-             """
-             (equal?
-               '()
-               (list-tail '(a b c d) 4)
-             )
-             """,
-             SchemeBoolean.T );
+             "(list-tail '(a b c d) 4)",
+             Cons.NIL );
     }
 
     /**
@@ -612,13 +535,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void schemeList_Ref_1() throws Exception
     {
-        expectFco( """
-                (equal?
-                'c
-                (list-ref '(a b c d) 2)
-                )
-                """,
-                SchemeBoolean.T );
+        expectFco( "(list-ref '(a b c d) 2)",
+                "c" );
     }
 
     /**
@@ -634,7 +552,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
                 (list-ref '(a b c d) (exact (round 1.8)))
                 )
                 """,
-                SchemeBoolean.T );
+                bTrue );
     }
 
     /**
@@ -644,10 +562,19 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     public void memq_1() throws Exception
     {
         expectFco(
-                """
-                (memq 'a '(a b c))
-                """,
+                "(memq 'a '(a b c))",
                 "(a b c)" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memq_empty() throws Exception
+    {
+        expectFco(
+                "(memq 'a '())",
+                bFalse );
     }
 
     /**
@@ -656,9 +583,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void memq_2() throws Exception
     {
-        expectFco( """
-                (memq 'b '(a b c))
-                """,
+        expectFco( "(memq 'b '(a b c))",
                 "(b c)" );
     }
 
@@ -668,10 +593,9 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void memq_3() throws Exception
     {
-        expectFco( """
-                (memq 'a '(b c d))
-                """,
-                SchemeBoolean.F );
+        expectFco(
+                "(memq 'a '(b c d))",
+                bFalse );
     }
 
     /**
@@ -680,10 +604,78 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void memq_4() throws Exception
     {
-        expectFco( """
-                (memq (list 'a) '(b (a) c))
+        expectFco(
+                "(memq (list 'a) '(b (a) c))",
+                bFalse );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memq_4_error() throws Exception
+    {
+        expectError( """
+                (memq 'a 0)
                 """,
-                SchemeBoolean.F );
+                Code.TYPE_ERROR );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memv_empty() throws Exception
+    {
+        expectFco(
+                "(memv 101 '())",
+                bFalse );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memv_1() throws Exception
+    {
+        expectFco( """
+                (memv 101 '(100 101 102))
+                """,
+                "(101 102)" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void memv_error() throws Exception
+    {
+        expectError( """
+                (memv 101 "(100 101 102)")
+                """,
+                Code.TYPE_ERROR );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void member_empty() throws Exception
+    {
+        expectFco(
+                "(member 0 '())",
+                bFalse );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void member_empty_comp() throws Exception
+    {
+        expectFco(
+                "(member 0 '() =)",
+                bFalse );
     }
 
     /**
@@ -703,19 +695,62 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p43
      */
     @Test
-    @Disabled("not implemented")
     public void member_2() throws Exception
     {
-        var result = scriptEngine().evalFco( """
+        expectFco( """
+                (member "B"
+                 '("a" "b" "c")
+                 string-ci=?)
+                """,
+                """
+                 ("b" "c")
+                """ );
+    }
+
+    /**
+     * p43
+     *
+     * TODO this is an example where the error message should
+     * refer to the offending operation (in this case
+     * (string-ci=? ...)).
+     */
+    @Test
+    public void member_1_error() throws Exception
+    {
+        expectError( """
                 (member "B"
                  '("a", "b", "c")
                  string-ci=?)
-                """ );
-        assertEqualq( parse(
-                """
-                 ("b", "c")
                 """,
-                Cons.class ), result );
+                Code.TYPE_ERROR );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void member_2_error() throws Exception
+    {
+        expectError( """
+                (member "B"
+                 'donald
+                 string-ci=?)
+                """,
+                Code.TYPE_ERROR);
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void member_3_error() throws Exception
+    {
+        expectError( """
+                (member "B"
+                 'donald
+                 7)
+                """,
+                Code.TYPE_ERROR );
     }
 
     /**
@@ -726,19 +761,8 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     {
         expectFco( """
                 (memq 101 '(100 101 102))
-                """, SchemeBoolean.F );
-    }
-
-    /**
-     * p43
-     */
-    @Test
-    public void memv_1() throws Exception
-    {
-        expectFco( """
-                (memv 101 '(100 101 102))
                 """,
-                "(101 102)" );
+                bFalse );
     }
 
     /**

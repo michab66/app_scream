@@ -24,6 +24,18 @@
       ((object list) (isCircular)))))
  
 
+(define (scream:memx obj list compare)
+  (cond
+    ((not (procedure? compare))
+      (error "TYPE_ERROR" scream:type-procedure compare))
+    ((null? list)
+      #f)
+    ((compare obj (car list))
+      list)
+    (else
+      (scream:memx obj (cdr list) compare))))
+
+      
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -243,34 +255,19 @@
 ;; (memq obj list) library procedure; r5rs 27
 ;;
 (define (memq obj list)
-  (if (list? list)
-    ((object list) (memq obj))
-    (error "TYPE_ERROR"
-           %type-cons
-           (%typename list)
-           2)))
+  (scream:memx obj list eq?))
 
 ;;
 ;; (memv obj list) library procedure; r5rs 27
 ;;
 (define (memv obj list)
-  (if (list? list)
-    ((object list) (memv obj))
-    (error "TYPE_ERROR"
-           %type-cons
-           (%typename list)
-           2)))
+  (scream:memx obj list eqv?))
 
-;;
-;; (member obj list) library procedure; r5rs 27
-;;
-(define (member obj list)
-  (if (list? list)
-    ((object list) (member obj))
-    (error "TYPE_ERROR"
-           %type-cons
-           (%typename list)
-           2)))
+#|
+ | (member obj list) procedure; r7rs 6.4 p43
+ | (member obj list compare) procedure; r7rs 6.4 p43
+ |#
+; => cons-delayed.s
 
 ;;
 ;; (assq obj alist) library procedure; r5rs 27

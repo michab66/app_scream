@@ -228,11 +228,13 @@
     (error "TYPE_ERROR" %type-string (%typename s1) 2))
   (= 0 ((object s1) (compareTo s2))))
 
+; Note that this operation was fixed but the others
+; remain with errors, 
 (define (string-ci=? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" scream:type-string s1 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" scream:type-string s2 2))
   (= 0 ((object s1) (compareToIgnoreCase s2))))
 
 (define (string<? s1 s2)
