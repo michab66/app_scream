@@ -267,7 +267,6 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     /**
      * p42
      */
-    @Disabled( "make-list not implemented." )
     @Test
     public void schemeMake_List_1() throws Exception
     {
@@ -279,13 +278,22 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     /**
      * p42
      */
-    @Disabled( "make-list not implemented." )
     @Test
     public void schemeMake_List_x1() throws Exception
     {
         expectFco(
                 "(make-list 2)",
                 "(() ())" );
+    }
+    /**
+     * p42
+     */
+    @Test
+    public void schemeMake_List_error_1() throws Exception
+    {
+        expectError(
+                "(make-list 'symbol)",
+                Code.TYPE_ERROR );
     }
 
     /**
