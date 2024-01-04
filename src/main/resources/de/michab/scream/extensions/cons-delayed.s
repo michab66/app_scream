@@ -32,3 +32,24 @@
 
   )) ; <--
 )
+
+#|
+ | (member obj list) procedure; r7rs 6.4 p43
+ | (member obj list compare) procedure; r7rs 6.4 p43
+ |#
+(define member
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((obj list)
+      (member obj list equal?))
+
+    ((obj list compare)
+      (scream:memx obj list compare))
+
+  ) ; case-lambda
+
+  )) ; <--
+)
