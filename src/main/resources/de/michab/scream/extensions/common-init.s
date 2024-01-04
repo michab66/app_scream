@@ -20,4 +20,5 @@
   "string.s"
   "object.s"
   "bytevector.s"
+  "cons-delayed.s"
 )

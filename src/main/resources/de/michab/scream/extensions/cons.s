@@ -3,7 +3,7 @@
 ; Copyright © 1998-2023 Michael G. Binz
 
 ;;
-;; r7rs 6.4 p40
+;; r7rs 6.4 Pairs and lists, p40
 ;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -21,16 +21,16 @@
     ((not (pair? list))
       (error "TYPE_ERROR" scream:type-cons list))
     (else
-      ((object list) (isCircular))))) 
+      ((object list) (isCircular)))))
  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;
-;; (pair? obj) procedure p41
-;;
+#|
+ | (pair? obj) procedure p41
+ |#
 (define pair?
   (typePredicateGenerator "de.michab.scream.fcos.Cons" #t))
 
@@ -40,14 +40,28 @@
 (define (cons obj1 obj2)
   (make-object (de.michab.scream.fcos.Cons obj1 obj2)))
 
-;;
-;; (null? obj)      library procedure; r5rs 26
-;;
-(define (null? obj)
-  (eqv? () obj))
+#|
+ | (car pair) procedure p41
+ |#
+(define (car pair)
+  (if (pair? pair)
+    ((object pair) (getCar))
+    (error "TYPE_ERROR"
+           %type-cons
+           (%typename pair))))
+
+#|
+ | (cdr pair) procedure p41
+ |#
+(define (cdr pair)
+  (if (pair? pair)
+    ((object pair) (getCdr))
+    (error "TYPE_ERROR"
+           %type-cons
+           (%typename pair))))
 
 ;;
-;; (set-car! pair new-car)       procedure; r5rs 26
+;; (set-car! pair new-car) procedure p41
 ;;
 (define (set-car! pair new-car)
   (if (pair? pair)
@@ -58,7 +72,7 @@
            1)))
 
 ;;
-;; (set-cdr! pair new-cdr)       procedure; r5rs 26
+;; (set-cdr! pair new-cdr) procedure p41
 ;;
 (define (set-cdr! pair new-cdr)
   (if (pair? pair)
@@ -69,26 +83,10 @@
            1)))
 
 ;;
-;; (car pair)           procedure; r5rs 26
-;; (cdr pair)           procedure; r5rs 26
-;; (caar pair)
+;; (caar pair) p42
 ;; ...
 ;; (cddddr pair) library
 ;;
-(define (car pair)
-  (if (pair? pair)
-    ((object pair) (getCar))
-    (error "TYPE_ERROR"
-           %type-cons
-           (%typename pair))))
-
-(define (cdr pair)
-  (if (pair? pair)
-    ((object pair) (getCdr))
-    (error "TYPE_ERROR"
-           %type-cons
-           (%typename pair))))
-
 (define (caar pair) (car (car pair)))
 (define (cadr pair) (car (cdr pair)))
 (define (cdar pair) (cdr (car pair)))
@@ -121,7 +119,13 @@
 (define (cddddr pair) (cdr (cdr (cdr (cdr pair)))))
 
 ;;
-;; (list? obj) library procedure; r5rs 26
+;; (null? obj) procedure p42
+;;
+(define (null? obj)
+  (eqv? '() obj))
+
+;;
+;; (list? obj) procedure p42
 ;;
 (define (list? obj)
   (or
@@ -130,14 +134,20 @@
       (pair? obj)
       ((object obj) (isProperList)))))
 
+#|
+ | (make-list k) procedure; r7rs 6.4 p42
+ | (make-list k fill) procedure; r7rs 6.4 p42
+ |#
+; => cons-delayed.s
+
 ;;
-;; (list obj ...) library procedure; r5rs 27
+;; (list obj ...) procedure; r7rs 6.4 p42
 ;;
 (define (list . elements)
   elements)
 
 ;;
-;; (length list) library procedure; r5rs 27
+;; (length list) procedure; r7rs 6.4 p42
 ;;
 (define (length list)
   (cond
@@ -153,21 +163,7 @@
       (error "EXPECTED_PROPER_LIST"))))
 
 ;;
-;; (reverse list) library procedure; r7rs 42
-;;
-(define (reverse list)
-  (cond
-    ((equal? list ()) 
-      ())
-    ((list? list)
-      ((object list) (reverse)))
-    (else
-      (error "EXPECTED_PROPER_LIST"))
-  )
-)
-
-;;
-;; (append list ...) procedure; r7rs 42
+;; (append list ...) procedure; r7rs 6.4 p42
 ;;
 (define (append . list)
   ; Remove a leading empty list element from the arguments.
@@ -208,7 +204,21 @@
 ) ; define
 
 ;;
-;; (list-tail list k) library procedure; r5rs 27
+;; (reverse list) procedure; r7rs 6.4 p42
+;;
+(define (reverse list)
+  (cond
+    ((equal? list ()) 
+      ())
+    ((list? list)
+      ((object list) (reverse)))
+    (else
+      (error "EXPECTED_PROPER_LIST"))
+  )
+)
+
+;;
+;; (list-tail list k) procedure; r7rs p42
 ;;
 (define (list-tail list k)
   (if (pair? list)
@@ -219,7 +229,7 @@
            1)))
 
 ;;
-;; (list-ref list k) library procedure; r5rs 27
+;; (list-ref list k) procedure; r7rs 6.4 p42
 ;;
 (define (list-ref list k)
   (if (pair? list)
@@ -266,12 +276,6 @@
 ;; (assq obj alist) library procedure; r5rs 27
 ;; (assv obj alist) library procedure; r5rs 27
 ;; (assoc obj alist) library procedure; r5rs 27
-;;
-;; Alist (for "association list") must be a list of pairs. These procedures
-;; find the first pair in alist whose car field is obj, and returns that pair.
-;; If no pair in alist has obj as its car, then #f (not the empty list) is
-;; returned. Assq uses eq? to compare obj with the car fields of the pairs in
-;; alist, while assv uses eqv? and assoc uses equal?.
 ;;
 (define (assq obj alist)
   (if (list? alist)
