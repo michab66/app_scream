@@ -53,3 +53,24 @@
 
   )) ; <--
 )
+
+#|
+ | (assoc obj alist) procedure; r7rs 6.4 p43
+ | (assoc obj alist compare) procedure; r7rs 6.4 p43
+ |#
+(define assoc
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((obj list)
+      (assoc obj list equal?))
+
+    ((obj list compare)
+      (scream:assx obj list compare))
+
+  ) ; case-lambda
+
+  )) ; <--
+)

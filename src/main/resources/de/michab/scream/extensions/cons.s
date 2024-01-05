@@ -1,6 +1,6 @@
 ; Scream @ https://github.com/urschleim/scream
 ;
-; Copyright © 1998-2023 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
 
 ;;
 ;; r7rs 6.4 Pairs and lists, p40
@@ -14,6 +14,11 @@
 (define scream:type-cons
   ((make-object de.michab.scream.fcos.Cons) TYPE_NAME))
 
+#|
+ | (circular? list)
+ |
+ | Returns #T if the passed list is circular.
+ |#
 (define (circular? list)
   (cond
     ((null? list)
@@ -24,6 +29,11 @@
       ((object list) (isCircular)))))
  
 
+#|
+ | (scream:memx obj list compare)
+ |
+ | Implements the basic functionality for the memx... operations.
+ |#
 (define (scream:memx obj list compare)
   (cond
     ((not (procedure? compare))
@@ -35,7 +45,22 @@
     (else
       (scream:memx obj (cdr list) compare))))
 
-      
+#|
+ | (scream:assx obj alist compare)
+ |
+ | Implements the basic functionality for the assx... operations.
+ |#
+(define (scream:assx obj alist compare)
+  (cond
+    ((not (procedure? compare))
+      (error "TYPE_ERROR" scream:type-procedure compare))
+    ((null? alist)
+      #f)
+    ((compare obj (caar alist))
+      (car alist))
+    (else
+      (scream:assx obj (cdr alist) compare))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -46,9 +71,9 @@
 (define pair?
   (typePredicateGenerator "de.michab.scream.fcos.Cons" #t))
 
-;;
-;; (cons obj1 obj2) procedure p41
-;;
+#|
+ | (cons obj1 obj2) procedure p41
+ |#
 (define (cons obj1 obj2)
   (make-object (de.michab.scream.fcos.Cons obj1 obj2)))
 
@@ -72,9 +97,9 @@
            %type-cons
            (%typename pair))))
 
-;;
-;; (set-car! pair new-car) procedure p41
-;;
+#|
+ | (set-car! pair new-car) procedure p41
+ |#
 (define (set-car! pair new-car)
   (if (pair? pair)
     ((object pair) (setCar new-car))
@@ -83,9 +108,9 @@
            (%typename pair)
            1)))
 
-;;
-;; (set-cdr! pair new-cdr) procedure p41
-;;
+#|
+ | (set-cdr! pair new-cdr) procedure p41
+ |#
 (define (set-cdr! pair new-cdr)
   (if (pair? pair)
     ((object pair) (setCdr new-cdr))
@@ -94,11 +119,11 @@
            (%typename pair)
            1)))
 
-;;
-;; (caar pair) p42
-;; ...
-;; (cddddr pair) library
-;;
+#|
+ | (caar pair) p42
+ | ...
+ | (cddddr pair) library procedures
+ |#
 (define (caar pair) (car (car pair)))
 (define (cadr pair) (car (cdr pair)))
 (define (cdar pair) (cdr (car pair)))
@@ -130,15 +155,15 @@
 (define (cdddar pair) (cdr (cdr (cdr (car pair)))))
 (define (cddddr pair) (cdr (cdr (cdr (cdr pair)))))
 
-;;
-;; (null? obj) procedure p42
-;;
+#|
+ | (null? obj) procedure p42
+ |#
 (define (null? obj)
   (eqv? '() obj))
 
-;;
-;; (list? obj) procedure p42
-;;
+#|
+ | (list? obj) procedure p42
+ |#
 (define (list? obj)
   (or
     (eqv? obj ())
@@ -152,15 +177,15 @@
  |#
 ; => cons-delayed.s
 
-;;
-;; (list obj ...) procedure; r7rs 6.4 p42
-;;
+#|
+ | (list obj ...) procedure; r7rs 6.4 p42
+ |#
 (define (list . elements)
   elements)
 
-;;
-;; (length list) procedure; r7rs 6.4 p42
-;;
+#|
+ | (length list) procedure; r7rs 6.4 p42
+ |#
 (define (length list)
   (cond
     ;; If list argument is nil...
@@ -174,9 +199,9 @@
     (else
       (error "EXPECTED_PROPER_LIST"))))
 
-;;
-;; (append list ...) procedure; r7rs 6.4 p42
-;;
+#|
+ | (append list ...) procedure; r7rs 6.4 p42
+ |#
 (define (append . list)
   ; Remove a leading empty list element from the arguments.
   ; This strategy is from Chez-Scheme.
@@ -215,9 +240,9 @@
   ) ; cond
 ) ; define
 
-;;
-;; (reverse list) procedure; r7rs 6.4 p42
-;;
+#|
+ | (reverse list) procedure; r7rs 6.4 p42
+ |#
 (define (reverse list)
   (cond
     ((equal? list ()) 
@@ -229,9 +254,9 @@
   )
 )
 
-;;
-;; (list-tail list k) procedure; r7rs p42
-;;
+#|
+ | (list-tail list k) procedure; r7rs p42
+ |#
 (define (list-tail list k)
   (if (pair? list)
     ((object list) (listTail k))
@@ -240,9 +265,9 @@
            (%typename list)
            1)))
 
-;;
-;; (list-ref list k) procedure; r7rs 6.4 p42
-;;
+#|
+ | (list-ref list k) procedure; r7rs 6.4 p42
+ |#
 (define (list-ref list k)
   (if (pair? list)
     ((object list) (listRef k))
@@ -250,16 +275,21 @@
            %type-cons
            (%typename list)
            1)))
+#|
+ | (list-set! list k obj) procedure r7rs 6.4 p43
+ |#
+(define (list-set! list k obj)
+  (error "NOT_IMPLEMENTED" 'list-set!))
 
-;;
-;; (memq obj list) library procedure; r5rs 27
-;;
+#|
+ | (memq obj list) procedure; r7rs p43
+ |#
 (define (memq obj list)
   (scream:memx obj list eq?))
 
-;;
-;; (memv obj list) library procedure; r5rs 27
-;;
+#|
+ | (memv obj list)  procedure; r7rs p43
+ |#
 (define (memv obj list)
   (scream:memx obj list eqv?))
 
@@ -269,34 +299,23 @@
  |#
 ; => cons-delayed.s
 
-;;
-;; (assq obj alist) library procedure; r5rs 27
-;; (assv obj alist) library procedure; r5rs 27
-;; (assoc obj alist) library procedure; r5rs 27
-;;
+#|
+ | (assq obj alist) procedure; r7rs p43
+ |#
 (define (assq obj alist)
-  (if (list? alist)
-    ((object alist) (assq obj))
-    (error "TYPE_ERROR"
-           %type-cons
-           (%typename alist)
-           2)))
+  (scream:assx obj alist eq?))
 
+#|
+ | (assv obj alist) procedure; r7rs p43
+ |#
 (define (assv obj alist)
-  (if (list? alist)
-    ((object alist) (assv obj))
-    (error "TYPE_ERROR"
-           %type-cons
-           (%typename alist)
-           2)))
+  (scream:assx obj alist eqv?))
 
-(define (assoc obj alist)
-  (if (list? alist)
-    ((object alist) (assoc obj))
-    (error "TYPE_ERROR"
-           %type-cons
-           (%typename alist)
-           2)))
+#|
+ | (assoc obj alist) procedure; r7rs 6.4 p43
+ | (assoc obj alist compare) procedure; r7rs 6.4 p43
+ |#
+; => cons-delayed.s
 
 #|
  | (list-copy obj) procedure r7rs 6.4 p43
