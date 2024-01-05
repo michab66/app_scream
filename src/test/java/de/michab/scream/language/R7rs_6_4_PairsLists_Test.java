@@ -769,6 +769,78 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p43
      */
     @Test
+    public void assq_1() throws Exception
+    {
+        expectFco( """
+                (define e '((a 1)(b 2)(c 3)))
+                (assq 'a e)
+                """,
+                "(a 1)" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void assq_2() throws Exception
+    {
+        expectFco( """
+                (define e '((a 1)(b 2)(c 3)))
+                (assq 'b e)
+                """,
+                "(b 2)" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void assq_3() throws Exception
+    {
+        expectFco( """
+                (define e '((a 1)(b 2)(c 3)))
+                (assq 'd e)
+                """,
+                bFalse );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void assv_1() throws Exception
+    {
+        expectFco(
+                "(assv 5 '((2 3)(5 7) (11 13)))",
+                "(5 7)" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void assoc_1() throws Exception
+    {
+        expectFco(
+                "(assoc (list 'a) '(((a)) ((b)) ((c))))",
+                "((a))" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void assoc_2() throws Exception
+    {
+        expectFco(
+                "(assoc 2.0 '((1 1) (2 4) (3 9)) =)",
+                "(2 4)" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
     public void list_copy() throws Exception
     {
         expectError(
