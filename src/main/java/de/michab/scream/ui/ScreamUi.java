@@ -134,6 +134,16 @@ public class ScreamUi extends SingleFrameApplication
                     "text",
                     ServiceManager.getApplicationService( org.smack.util.converters.StringConverter.class ) );
 
+    /**
+     * A persistent property for the text in the composition area.
+     */
+    private PersistentJavaBeanProperty<Integer, JTextArea> compositionCaretPosition =
+            new PersistentJavaBeanProperty<>(
+                    _textArea,
+                    0,
+                    "caretPosition",
+                    ServiceManager.getApplicationService( org.smack.util.converters.StringConverter.class ) );
+
     private final JXConsole _console =
             new JXConsole();
     private final JXConsole _stderr =
@@ -262,6 +272,7 @@ public class ScreamUi extends SingleFrameApplication
     protected void startup()
     {
         _textArea.setText( compositionText.get() );
+        _textArea.setCaretPosition( compositionCaretPosition.get() );
 
         var COMMIT_ACTION = "commit";
 
@@ -321,6 +332,7 @@ public class ScreamUi extends SingleFrameApplication
 
         // Save text from the composition area for the next run.
         compositionText.set( _textArea.getText() );
+        compositionCaretPosition.set( _textArea.getCaretPosition() );
 
         // Save the multiSplitLayout for the next run.
         {
