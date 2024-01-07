@@ -26,11 +26,6 @@ public class Continuation<T, X extends Exception>
     private final Holder<T> _result = new Holder<>();
 
     /**
-     * Will receive the exception for all continuation invocations.
-     */
-    private final Holder<X> _exception = new Holder<>();
-
-    /**
      * Hide ctor.
      */
     public Continuation( Class<X>  exceptionClass )
@@ -134,6 +129,7 @@ public class Continuation<T, X extends Exception>
             Cont<X> exceptionHandler )
         throws Exception
     {
+        _result.set( null );
         trampoline(
                 op.call( endCall( s -> _result.set( s ) ) ),
                 exceptionHandler );
@@ -154,21 +150,18 @@ public class Continuation<T, X extends Exception>
     T toStack( ToStackOp<T> op )
         throws Exception
     {
-        _exception.set( null );
-        _result.set( null );
+        Holder<X> exception = new Holder<>();
 
         Cont<X> handler =
                 ae -> {
-                    _exception.set( ae );
+                    exception.set( ae );
                     return null;
                 };
 
-        trampoline(
-                op.call( endCall( s -> _result.set( s ) ) ),
-                handler );
+        toStack( op, handler );
 
-        if ( _exception.get() != null )
-            throw _exception.get();
+        if ( exception.get() != null )
+            throw exception.get();
 
         return _result.get();
     }
