@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.ui;
 
@@ -37,6 +37,7 @@ import org.smack.swing.swingx.multisplitpane.MultiSplitLayout.Column;
 import org.smack.swing.swingx.multisplitpane.MultiSplitLayout.Leaf;
 import org.smack.swing.swingx.multisplitpane.MultiSplitLayout.Row;
 import org.smack.swing.swingx.multisplitpane.MultiSplitLayout.Split;
+import org.smack.util.Duration;
 import org.smack.util.JavaUtil;
 import org.smack.util.ServiceManager;
 import org.smack.util.StringUtil;
@@ -61,7 +62,6 @@ public class ScreamUi extends SingleFrameApplication
     private JToolBar _toolbar =
             new JToolBar();
     private final ScriptEngine _scream;
-
 
     /**
      * The top-level multi split pane.
@@ -168,7 +168,11 @@ public class ScreamUi extends SingleFrameApplication
     {
         try
         {
-            var result = _scream.eval( text );
+            TimeProbe tp =
+                    new TimeProbe().start();
+            var result =
+                    _scream.eval( text );
+            tp.stop();
 
             Writer w = new OutputStreamWriter( _console.getOut() );
 
@@ -177,6 +181,8 @@ public class ScreamUi extends SingleFrameApplication
             else
                 w.write( result.toString() );
 
+            w.write( StringUtil.EOL );
+            w.write( "t=" + new Duration( tp.duration() ) );
             w.write( StringUtil.EOL );
 
             w.flush();
