@@ -6,7 +6,7 @@
 package de.michab.scream.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 import org.smack.util.Holder;
@@ -19,7 +19,6 @@ import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
-// TODO micbinz move to util tests.
 public class ContinuationTest extends ScreamBaseTest
 {
     @SuppressWarnings("serial")
@@ -87,8 +86,7 @@ public class ContinuationTest extends ScreamBaseTest
                 new Continuation<>( Exception.class );
 
         int result = continuation.toStack(
-                cont-> add(3,4,cont),
-                null );
+                cont-> add(3,4,cont) );
 
         assertEquals( 7, result );
     }
@@ -98,21 +96,11 @@ public class ContinuationTest extends ScreamBaseTest
     {
         Continuation<Integer, Exception> continuation =
                 new Continuation<>( Exception.class );
-        try
-        {
-            @SuppressWarnings("unused")
-            int result = continuation.toStack(
-                    cont-> addx(3,4,cont) );
-            fail();
-        }
-        catch ( ArithmeticException e )
-        {
-            // Expected.
-        }
-        catch ( Exception e )
-        {
-            fail();
-        }
+
+        assertThrows(
+                ArithmeticException.class,
+                () -> continuation.toStack(
+                    cont-> addx(3,4,cont) ) );
     }
 
     private Thunk addWithTotalX( int a, int b, Cont<Integer> c) throws TotalX
@@ -173,14 +161,9 @@ public class ContinuationTest extends ScreamBaseTest
 
         Continuation.ToStackOp<FirstClassObject> tsfco = c -> throwRtx( i1, i2, c );
 
-        try
-        {
-            cont.toStack( tsfco );
-            fail();
-        }
-        catch ( RuntimeX rx )
-        {
-            assertEquals( Code.DIVISION_BY_ZERO, rx.getCode() );
-        }
+        var rx = assertThrows(
+                RuntimeX.class,
+                () -> cont.toStack( tsfco ) );
+        assertEquals( Code.DIVISION_BY_ZERO, rx.getCode() );
     }
 }

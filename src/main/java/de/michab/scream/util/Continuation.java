@@ -1,10 +1,12 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 2022-2023 Michael G. Binz
+ * Copyright © 2022-2024 Michael G. Binz
  */
 package de.michab.scream.util;
 
+import java.util.Objects;
+import java.util.Stack;
 import java.util.function.Consumer;
 
 import org.smack.util.Holder;
@@ -16,7 +18,7 @@ import org.smack.util.Holder;
  */
 public class Continuation<T, X extends Exception>
 {
-    private int _thunkCount;
+    private long _thunkCount;
 
     private final Class<X> _exceptionClass;
 
@@ -26,7 +28,9 @@ public class Continuation<T, X extends Exception>
     private final Holder<T> _result = new Holder<>();
 
     /**
-     * Hide ctor.
+     * Create an instance.
+     *
+     * @param exceptionClass The class of the handled exception type.
      */
     public Continuation( Class<X>  exceptionClass )
     {
@@ -49,6 +53,8 @@ public class Continuation<T, X extends Exception>
         Thunk run() throws Exception;
     }
 
+    private Stack<Cont<X>> _exceptionHandlers = new Stack<>();
+
     /**
      *
      * @param <X>
@@ -59,8 +65,7 @@ public class Continuation<T, X extends Exception>
      * xCont threw an exception.
      */
     private void trampoline(
-            Thunk t,
-            Cont<X> xCont )
+            Thunk t )
                     throws Exception
     {
         while ( t != null )
@@ -78,7 +83,7 @@ public class Continuation<T, X extends Exception>
                     // ... then the passed exception continuation is called.
                     // If this in turn throws an exception then thunk processing
                     // is terminated.
-                    t = xCont.accept( _exceptionClass.cast( e ) );
+                    t = _exceptionHandlers.peek().accept( _exceptionClass.cast( e ) );
                 else
                     // Otherwise terminate.
                     throw e;
@@ -94,9 +99,10 @@ public class Continuation<T, X extends Exception>
     }
 
     /**
-     * @return The current value of the thunk counter.
+     * @return The current value of the thunk counter. Used
+     * in testing.
      */
-    public int thunkCount()
+    public long thunkCount()
     {
         return _thunkCount;
     }
@@ -118,7 +124,8 @@ public class Continuation<T, X extends Exception>
      * @param <T> The result type.
      * @param <X> The type of the exception that is handled.
      * @param op The operation to execute.
-     * @param exceptionHandler The exception handler.
+     * @param exceptionHandler The exception handler.  Must not
+     * be {@code null}.
      * @param exceptionClass The type of the exception that is handled.
      * @return The result of the passed operation.
      * @throws Exception
@@ -129,12 +136,22 @@ public class Continuation<T, X extends Exception>
             Cont<X> exceptionHandler )
         throws Exception
     {
-        _result.set( null );
-        trampoline(
-                op.call( endCall( s -> _result.set( s ) ) ),
-                exceptionHandler );
+        Objects.requireNonNull( exceptionHandler );
 
-        return _result.get();
+        _result.set( null );
+
+        try
+        {
+            pushExceptionHandler( exceptionHandler );
+
+            trampoline(
+                    op.call( endCall( s -> _result.set( s ) ) ) );
+
+            return _result.get();
+        }
+        finally {
+            popExceptionHandler();
+        }
     }
 
     /**
@@ -164,5 +181,16 @@ public class Continuation<T, X extends Exception>
             throw exception.get();
 
         return _result.get();
+    }
+
+    public void pushExceptionHandler( Cont<X> handler )
+    {
+        _exceptionHandlers.push(
+                Objects.requireNonNull( handler ) );
+    }
+
+    public Cont<X> popExceptionHandler()
+    {
+        return _exceptionHandlers.pop();
     }
 }

@@ -19,9 +19,6 @@ import de.michab.scream.util.Scut;
 /**
  * Implementations of the interpreter primitives.
  *
- * public _x_... are externally visible primitives.
- * These always return an indirect thunk () -> ...
- *
  * @author micbinz
  */
 public class Primitives
