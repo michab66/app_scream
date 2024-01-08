@@ -295,9 +295,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void call_cc_restart_2() throws Exception
     {
-        var se = scriptEngine();
-
-        var result = se.evalFco(
+        var se = expectFco(
 """
         (define return #f)
 
@@ -305,11 +303,9 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
                 (lambda (cont)
                     (set! return cont)
                     1)))
+""",
+        i2 );
 
-        (return 312)
-"""  );
-
-        assertEquals( i(313), result );
         assertEqualq( i(1), se.evalFco( "(return 0)" ) );
         assertEqualq( i(2), se.evalFco( "(return 1)" ) );
         assertEqualq( i(3), se.evalFco( "(return 2)" ) );
