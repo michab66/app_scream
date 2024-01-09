@@ -63,19 +63,11 @@ public class Syntax
     }
 
     @Override
-    protected final Thunk _execute( Environment e, Cons args,
+    protected final Thunk _execute(
+            Environment e,
+            Cons args,
             Cont<FirstClassObject> c )
     {
         return _executeImpl( e, args, c );
-    }
-
-    /**
-     * @return A string representation for this syntax.
-     * @see FirstClassObject#toString
-     */
-    @Override
-    public String toString()
-    {
-        return "<Syntax " + getName() + ">";
     }
 }

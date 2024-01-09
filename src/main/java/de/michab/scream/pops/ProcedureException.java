@@ -28,7 +28,8 @@ public abstract class ProcedureException extends Procedure
         super( name );
     }
 
-    static public final Procedure withExceptionHandlerProcedure = new ProcedureException( "with-exception-handler" )
+    static public final Procedure withExceptionHandlerProcedure =
+            new ProcedureException( "with-exception-handler" )
     {
         @Override
         protected Thunk __executeImpl( Environment e, Cons args,

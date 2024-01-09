@@ -138,7 +138,8 @@ public class RuntimeX
         EXPECTED_TEXTUAL_PORT,
         SCAN_UNBALANCED_COMMENT,
         RANGE_EXCEEDED,
-        RAISE;
+        RAISE,
+        NOT_CONTINUABLE;
 
         public int id()
         {
@@ -1034,5 +1035,14 @@ public class RuntimeX
                 Code.RAISE,
                 environment,
                 fco );
+    }
+
+    // TODO
+    // RAISE_1 = \
+    // 51 : Range exceeded. Actual {0}, expected {1}.
+    public static RuntimeX mNotContinuable()
+    {
+        return new RuntimeX(
+                Code.NOT_CONTINUABLE );
     }
 }

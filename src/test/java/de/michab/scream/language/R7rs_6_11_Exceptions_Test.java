@@ -14,17 +14,17 @@ import org.smack.util.io.Redirect.StdStream;
 import de.michab.scream.ScreamBaseTest;
 
 /**
- * rsr7 6.11 Exceptions, p50
+ * rsr7 6.11 Exceptions, p54
  *
  * @author micbinz
  */
 public class R7rs_6_11_Exceptions_Test extends ScreamBaseTest
 {
     /**
-     * p50
+     * p54
      */
     @Test
-    public void withExcepionHandler() throws Exception
+    public void withExceptionHandler() throws Exception
     {
         try ( var x = new Redirect( StdStream.out ) )
         {
