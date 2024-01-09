@@ -38,6 +38,7 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.ProcedureException;
 import de.michab.scream.pops.SyntaxAnd;
 import de.michab.scream.pops.SyntaxAssign;
 import de.michab.scream.pops.SyntaxBegin;
@@ -290,11 +291,18 @@ public final class ScreamEvaluator implements ScriptEngine
                 c );
     }
 
+    // Check if this is a good position.
+    public static ThreadLocal<Continuation<FirstClassObject,RuntimeX>> CONT =
+            new ThreadLocal<>();
+
     private FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl )
                     throws RuntimeX
     {
+        // Makes the continuation available in the interpreter.
+        CONT.set( _continuation );
+
         try
         {
             return _continuation.toStack( c -> evalImpl( env, spl, c ) );
@@ -603,6 +611,7 @@ public final class ScreamEvaluator implements ScriptEngine
             de.michab.scream.fcos.Continuation.extendTopLevelEnvironment( result );
             Number.extendTopLevelEnvironment( result );
             SchemeObject.extendTopLevelEnvironment( result );
+            ProcedureException.extendNullEnvironment( result );
         }
         catch ( Exception e )
         {
@@ -612,11 +621,6 @@ public final class ScreamEvaluator implements ScriptEngine
                     e.getCause() );
             throw new InternalError( e );
         }
-
-//        // Load extensions defined in scheme source files.
-//        addExtensions(
-//                result,
-//                schemeExtensions );
 
         return FirstClassObject.setConstant( result );
     }

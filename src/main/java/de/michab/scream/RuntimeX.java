@@ -137,7 +137,8 @@ public class RuntimeX
         EXPECTED_BINARY_PORT,
         EXPECTED_TEXTUAL_PORT,
         SCAN_UNBALANCED_COMMENT,
-        RANGE_EXCEEDED;
+        RANGE_EXCEEDED,
+        RAISE;
 
         public int id()
         {
@@ -1022,5 +1023,16 @@ public class RuntimeX
                 Code.RANGE_EXCEEDED,
                 fco,
                 rangeDescription );
+    }
+
+    // TODO
+    // RAISE_1 = \
+    // 51 : Range exceeded. Actual {0}, expected {1}.
+    public static RuntimeX mRaise( Environment environment, FirstClassObject fco )
+    {
+        return new RuntimeX(
+                Code.RAISE,
+                environment,
+                fco );
     }
 }

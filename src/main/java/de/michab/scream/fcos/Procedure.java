@@ -62,7 +62,7 @@ public class Procedure
     /**
      * Constructor used to create Scheme-defined procedures.
      *
-     * @param e The environment to be used by the new procedure.
+     * @param e The new procedure's closure.
      * @param args The list of formal arguments.
      * @param body The body of the new procedure.
      * @throws RuntimeX In case an error occurred.
@@ -97,7 +97,7 @@ public class Procedure
                 evaluated,
                 c );
 
-        // Evaluate the arguments in the environment that we receive.
+        // Evaluate the arguments in the received environment.
         return () -> Primitives._evalCons(
                 e,
                 args,
