@@ -124,7 +124,6 @@ public abstract class SyntaxLet
             // the body.
             Cont<Cons> exec = initList -> {
                 return pbody.apply(
-                        extended,
                         initList,
                         c );
             };

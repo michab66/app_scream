@@ -62,15 +62,12 @@ public class Procedure
     }
 
     /**
-     * Evaluates the arguments in the received environment and passes on to
-     * {@link #_executeImpl(Environment, Cons, Cont)} for execution of the
-     * _body in the procedure's closure.
+     * Evaluates the arguments in the received environment and executes
+     * the Procedure.
      *
-     * @param e
-     * @param args
-     * @param c
-     * @return
-     * @throws RuntimeX
+     * @param args The arguments for the execution.
+     * @param c Receives the result.
+     * @return A thunk.
      */
     @Override
     protected final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -79,10 +76,18 @@ public class Procedure
         return () -> Primitives._evalCons(
                 e,
                 args,
-                evaluated -> apply( e, evaluated, c ) );
+                evaluated -> apply( evaluated, c ) );
     }
 
-    public final Thunk apply( Environment e, Cons args, Cont<FirstClassObject> c  )
+    /**
+     * Executes this Procedure with the passed arguments.
+     * The arguments are not evaluated.
+     *
+     * @param args The arguments for the execution.
+     * @param c Receives the result.
+     * @return A thunk.
+     */
+    public final Thunk apply( Cons args, Cont<FirstClassObject> c  )
     {
         // Do not evaluate the arguments.
         return () -> _executeImpl(

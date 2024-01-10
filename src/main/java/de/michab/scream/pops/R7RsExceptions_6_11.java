@@ -50,7 +50,6 @@ public abstract class R7RsExceptions_6_11
                     if ( rx.getCode() == Code.RAISE )
                     {
                         return handler.apply(
-                                (Environment)rx.getArgument( 0 ),
                                 new Cons( (FirstClassObject)rx.getArgument(1) ),
                                 _exit );
                     }
@@ -60,7 +59,7 @@ public abstract class R7RsExceptions_6_11
 
                 ScreamEvaluator.CONT.get().pushExceptionHandler( _handler );
 
-                return thunk.apply( e, Cons.NIL, _exit );
+                return thunk.apply( Cons.NIL, _exit );
             }
         };
     }

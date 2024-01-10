@@ -810,7 +810,6 @@ public class Primitives
             };
 
             return procedure.apply(
-                    env,
                     new Cons( remaining.getCar() ),
                     step );
             };

@@ -579,7 +579,7 @@ public final class ScreamEvaluator implements ScriptEngine
                         Cons.class,
                         args.listRef( 1 ) );
 
-                return proc.apply( e, list, c );
+                return proc.apply( list, c );
             }
         };
     }
