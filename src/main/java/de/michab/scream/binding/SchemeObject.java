@@ -439,7 +439,7 @@ public class SchemeObject
 
     /**
      * This method is responsible for handling
-     * } {@code InvocationTargetException}s.  Basically this means that in
+     * {@code InvocationTargetException}s.  This means that in
      * case the exception embedded in an {@code InvocationTargetException}
      * is a {@code RuntimeX} then this method unpacks and returns this.  In
      * the other case a new {@code RuntimeX} is created and returned.

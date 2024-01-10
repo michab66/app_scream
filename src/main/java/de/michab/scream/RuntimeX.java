@@ -26,6 +26,7 @@ import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.ErrorMessages;
+import de.michab.scream.util.Scut;
 
 /**
  * An exception to be thrown at run-time of a Scheme program.
@@ -336,9 +337,9 @@ public class RuntimeX
                     throws RuntimeX
             {
                 checkArgumentCount( 1, Integer.MAX_VALUE, args );
-                checkArgument( 1, SchemeString.class, args.listRef( 0 ) );
 
-                String message = createReadable( args.listRef( 0 ) );
+                String message = createReadable(
+                        Scut.asNotNil( SchemeString.class, args.listRef( 0 ) ) );
 
                 Object[] arguments = new Object[ (int)(args.length() -1) ];
                 for ( int i = 1 ; i < (int)(args.length()) ; i++ )

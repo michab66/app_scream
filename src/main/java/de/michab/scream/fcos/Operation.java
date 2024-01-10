@@ -12,7 +12,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
-import de.michab.scream.util.ConversionFailedX;
+import de.michab.scream.util.Scut;
 
 /**
  * Represents an abstract operation.  Is the base class for macros
@@ -331,16 +331,13 @@ extends FirstClassObject
      */
     static final protected void checkArgument(
             int position,
-            Class<?> formal,
+            Class<? extends FirstClassObject> formal,
             FirstClassObject received )
                     throws RuntimeX
     {
-        if ( received == Cons.NIL ||
-                ! formal.isAssignableFrom( received.getClass() ) )
-        {
-            throw new ConversionFailedX( received, formal, position );
-        }
+        Scut.asNotNil( formal, received );
     }
+    
     /**
      * Checks if the passed formals represent a valid argument list.
      * <p>
