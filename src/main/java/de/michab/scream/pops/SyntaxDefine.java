@@ -31,7 +31,7 @@ public class SyntaxDefine extends Syntax
     }
 
     @Override
-    protected Thunk __executeImpl( Environment e, Cons args,
+    protected Thunk _executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );

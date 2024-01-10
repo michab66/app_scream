@@ -297,7 +297,8 @@ extends FirstClassObject
     }
 
     /**
-     * Checks if the length of the actual argument list is the length we expect.
+     * Checks if the length of the actual argument list is the length
+     * we expect.
      *
      * @param expected The expected number of arguments.
      * @param received The array of arguments received.
@@ -361,14 +362,16 @@ extends FirstClassObject
     }
 
     /**
-     * Holds the function implementation.  Override in Java-implemented Operations.
+     * Holds the function implementation.
+     * Override in Java-implemented Operations.
+     *
      * @param e
      * @param args
      * @param c
      * @return
      * @throws RuntimeX
      */
-    protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+    protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         checkArgumentCount( args );
@@ -386,21 +389,8 @@ extends FirstClassObject
     }
 
     /**
-     * Holds the function implementation.  Override in Java-implemented Operations.
-     * @param e
-     * @param args
-     * @param c
-     * @return
-     * @throws RuntimeX
-     */
-    protected final Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-    {
-        return () -> __executeImpl( e, args, c );
-    }
-
-    /**
-     * Holds the function implementation. This must be only overridden by the Procedure-
-     * implementation.
+     * Holds the function implementation. This must be only overridden by the
+     * implementation of Procedure.
      *
      * @param e
      * @param args
@@ -408,8 +398,13 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    abstract protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX;
+    protected Thunk _execute(
+            Environment e,
+            Cons args,
+            Cont<FirstClassObject> c )
+    {
+        return () -> _executeImpl( e, args, c );
+    }
 
     /**
      * Returns A lambda that calls _execute.

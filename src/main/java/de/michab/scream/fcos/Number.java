@@ -388,7 +388,7 @@ extends FirstClassObject
         return new Procedure( "+" )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
@@ -411,7 +411,7 @@ extends FirstClassObject
         return new Procedure( "-" )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
@@ -434,7 +434,7 @@ extends FirstClassObject
         return new Procedure( "*" )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
@@ -457,7 +457,7 @@ extends FirstClassObject
         return new Procedure( "/" )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );

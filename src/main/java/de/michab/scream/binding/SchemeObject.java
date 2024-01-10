@@ -227,7 +227,7 @@ public class SchemeObject
     }
 
     @Override
-    protected Thunk __executeImpl( Environment e, Cons args,
+    protected Thunk _executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         long argsLen =
@@ -752,7 +752,7 @@ public class SchemeObject
     static private Syntax constructObjectSyntax = new Syntax( "make-object" )
     {
         @Override
-        protected Thunk __executeImpl( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -792,7 +792,7 @@ public class SchemeObject
         return new Procedure( "object" )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 checkArgumentCount( 1, args );
@@ -817,7 +817,7 @@ public class SchemeObject
         return new Procedure( "object?" )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 checkArgumentCount( 1, args );

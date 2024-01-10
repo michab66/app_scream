@@ -6,8 +6,6 @@
 package de.michab.scream.fcos;
 
 import de.michab.scream.RuntimeX;
-import de.michab.scream.util.Continuation.Cont;
-import de.michab.scream.util.Continuation.Thunk;
 
 /**
  * Followed the scheme spec in naming this class.  An alternate name would be
@@ -60,14 +58,5 @@ public class Syntax
                     throws RuntimeX
     {
         super( args, body );
-    }
-
-    @Override
-    protected final Thunk _execute(
-            Environment e,
-            Cons args,
-            Cont<FirstClassObject> c )
-    {
-        return _executeImpl( e, args, c );
     }
 }

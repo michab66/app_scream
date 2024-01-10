@@ -91,17 +91,11 @@ public class Procedure
     @Override
     protected final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
     {
-        // Execute in our _closure.
-        Cont<Cons> cc = evaluated -> _executeImpl(
-                _closure,
-                evaluated,
-                c );
-
         // Evaluate the arguments in the received environment.
         return () -> Primitives._evalCons(
                 e,
                 args,
-                cc );
+                evaluated -> apply( e, evaluated, c ) );
     }
 
     public final Thunk apply( Environment e, Cons args, Cont<FirstClassObject> c  )

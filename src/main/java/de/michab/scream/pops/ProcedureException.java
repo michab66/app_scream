@@ -32,7 +32,7 @@ public abstract class ProcedureException extends Procedure
             new ProcedureException( "with-exception-handler" )
     {
         @Override
-        protected Thunk __executeImpl( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, args );
@@ -68,7 +68,7 @@ public abstract class ProcedureException extends Procedure
     static public final Procedure raise = new ProcedureException( "raise" )
     {
         @Override
-        protected Thunk __executeImpl( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 1, args );
