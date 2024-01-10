@@ -72,8 +72,7 @@ public class Procedure
     @Override
     protected final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
     {
-        // Evaluate the arguments in the received environment.
-        return () -> Primitives._evalCons(
+        return Primitives._evalCons(
                 e,
                 args,
                 evaluated -> apply( evaluated, c ) );
@@ -89,7 +88,6 @@ public class Procedure
      */
     public final Thunk apply( Cons args, Cont<FirstClassObject> c  )
     {
-        // Do not evaluate the arguments.
         return () -> _executeImpl(
                 _closure,
                 args,
