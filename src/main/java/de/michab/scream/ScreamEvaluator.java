@@ -38,7 +38,7 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
-import de.michab.scream.pops.ProcedureException;
+import de.michab.scream.pops.R7RsExceptions_6_11;
 import de.michab.scream.pops.SyntaxAnd;
 import de.michab.scream.pops.SyntaxAssign;
 import de.michab.scream.pops.SyntaxBegin;
@@ -514,7 +514,7 @@ public final class ScreamEvaluator implements ScriptEngine
      */
     static private Procedure evalProcedure( Environment e )
     {
-        return new Procedure( "eval" )
+        return new Procedure( "eval", e )
         {
             @Override
             protected Thunk _executeImpl(
@@ -533,7 +533,7 @@ public final class ScreamEvaluator implements ScriptEngine
 
                 return expOrDef.evaluate( environment, c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -561,7 +561,7 @@ public final class ScreamEvaluator implements ScriptEngine
 
     static private Procedure applyProcedure( Environment e )
     {
-        return new Procedure( "scream:apply" )
+        return new Procedure( "scream:apply", e )
         {
             @Override
             protected Thunk _executeImpl(
@@ -581,7 +581,7 @@ public final class ScreamEvaluator implements ScriptEngine
 
                 return proc.apply( e, list, c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -611,7 +611,7 @@ public final class ScreamEvaluator implements ScriptEngine
             de.michab.scream.fcos.Continuation.extendTopLevelEnvironment( result );
             Number.extendTopLevelEnvironment( result );
             SchemeObject.extendTopLevelEnvironment( result );
-            ProcedureException.extendNullEnvironment( result );
+            R7RsExceptions_6_11.extendEnvironment( result );
         }
         catch ( Exception e )
         {

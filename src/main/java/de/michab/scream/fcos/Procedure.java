@@ -5,15 +5,13 @@
  */
 package de.michab.scream.fcos;
 
-import org.smack.util.JavaUtil;
-
 import de.michab.scream.RuntimeX;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
- * Represents a scheme procedure.
+ * Represents a Scheme procedure.
  */
 public class Procedure
     extends Operation
@@ -30,33 +28,18 @@ public class Procedure
      *
      * @label effective environment
      */
-    private Environment _closure;
+    private final Environment _closure;
 
     /**
-     * Default constructor.  Used for Java-defined specialisations.
+     * A constructor for Java-defined procedures.
      *
      * @param name The symbolic name for the new procedure.
      */
-    protected Procedure( Symbol name )
+    protected Procedure( String name, Environment closure )
     {
-        super( name );
-        _closure = null;
-    }
-    public Procedure setClosure( Environment closure )
-    {
-        JavaUtil.Assert( _closure == null );
+        super( Symbol.createObject( name ) );
+
         _closure = closure;
-        return this;
-    }
-
-    /**
-     * Default constructor.  Used for Java defined specialisations.
-     *
-     * @param name The symbolic name for the new procedure.
-     */
-    protected Procedure( String name )
-    {
-        this( Symbol.createObject( name ) );
     }
 
     /**
@@ -74,6 +57,7 @@ public class Procedure
                     throws RuntimeX
     {
         super( args, body );
+
         _closure = e;
     }
 

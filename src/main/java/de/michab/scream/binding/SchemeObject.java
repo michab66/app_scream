@@ -789,7 +789,7 @@ public class SchemeObject
      */
     static private Procedure wrapObjectProcedure( Environment e )
     {
-        return new Procedure( "object" )
+        return new Procedure( "object", e )
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -806,7 +806,7 @@ public class SchemeObject
 
                 return c.accept( new SchemeObject( a0 ) );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -814,7 +814,7 @@ public class SchemeObject
      */
     static private Procedure objectPredicateProcedure( Environment e )
     {
-        return new Procedure( "object?" )
+        return new Procedure( "object?", e )
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -825,7 +825,7 @@ public class SchemeObject
                 return () -> c.accept(
                         SchemeBoolean.createObject( args.getCar() instanceof SchemeObject ) );
             }
-        }.setClosure( e );
+        };
     }
 
 //    /**

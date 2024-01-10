@@ -385,7 +385,7 @@ extends FirstClassObject
      */
     static private Procedure addProc( Environment e )
     {
-        return new Procedure( "+" )
+        return new Procedure( "+", e )
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -400,7 +400,7 @@ extends FirstClassObject
                         len,
                         c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -408,7 +408,7 @@ extends FirstClassObject
      */
     static private Procedure subtractProc( Environment e )
     {
-        return new Procedure( "-" )
+        return new Procedure( "-", e )
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -423,7 +423,7 @@ extends FirstClassObject
                         len,
                         c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -431,7 +431,7 @@ extends FirstClassObject
      */
     static private Procedure multiplyProc( Environment e )
     {
-        return new Procedure( "*" )
+        return new Procedure( "*", e )
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -447,14 +447,14 @@ extends FirstClassObject
                         c );
             }
 
-        }.setClosure( e );
+        };
     }
 
     /**
      * (/ ...
      */
     static private Procedure divideProc( Environment e ) {
-        return new Procedure( "/" )
+        return new Procedure( "/", e )
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -469,7 +469,7 @@ extends FirstClassObject
                         len,
                         c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**

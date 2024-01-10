@@ -329,7 +329,7 @@ public class RuntimeX
      */
     static private Procedure errorProcedure( Environment e )
     {
-        return new Procedure( "error" )
+        return new Procedure( "error", e )
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -367,7 +367,7 @@ public class RuntimeX
 
                 return result;
             }
-        }.setClosure( e );
+        };
     }
 
     /**

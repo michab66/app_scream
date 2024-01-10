@@ -26,9 +26,11 @@ public class Continuation extends Procedure
      *
      * @param continuation The continuation to execute.
      */
-    public Continuation( Cont<FirstClassObject> continuation )
+    private Continuation(
+            Cont<FirstClassObject> continuation,
+            Environment closure )
     {
-        super( "callcc" );
+        super( "callcc", closure );
         _cont = continuation;
     }
 
@@ -37,7 +39,7 @@ public class Continuation extends Procedure
      */
     static private Procedure callccProc( Environment e )
     {
-        return new Procedure( "call-with-current-continuation" )
+        return new Procedure( "call-with-current-continuation", e )
         {
             @Override
             protected Thunk _executeImpl(
@@ -55,10 +57,10 @@ public class Continuation extends Procedure
                 return proc._execute(
                         e,
                         Cons.create(
-                                new Continuation( c ) ),
+                                new Continuation( c, e ) ),
                         c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -66,7 +68,7 @@ public class Continuation extends Procedure
      */
     static private Procedure callWithValuesProc( Environment e )
     {
-        return new Procedure( "call-with-values" )
+        return new Procedure( "call-with-values", e )
         {
 
             @Override
@@ -102,7 +104,7 @@ public class Continuation extends Procedure
                                 values,
                                 branch ) );
             }
-        }.setClosure( e );
+        };
     }
 
     @Override
