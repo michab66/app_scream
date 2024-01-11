@@ -70,7 +70,7 @@ public class Procedure
      * @return A thunk.
      */
     @Override
-    protected final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+    public final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
     {
         return Primitives._evalCons(
                 e,
