@@ -42,19 +42,36 @@ public abstract class R7RsExceptions_6_11
                 Procedure thunk =
                         Scut.as( Procedure.class, args.listRef( 1 ) );
 
-                Cont<FirstClassObject> _exit = result -> {
-                    return () -> { throw RuntimeX.mNotContinuable(); };
-                };
 
                 Cont<RuntimeX> _handler = rx -> {
+                    // Pop the exception handler so that errors in the
+                    // handler procedure propagate to the parent exception
+                    // handler. Note that this pop returns a reference to
+                    // ourself that is used in case of continuable
+                    // exceptions.
+                    final var previousHandler =
+                            ScreamEvaluator.CONT.get().popExceptionHandler();
+
                     if ( rx.getCode() == Code.RAISE )
                     {
-                        // Pop the exception handler so that errors in the
-                        // handler procedure propagate to the parent exception
-                        // handler.
-                        ScreamEvaluator.CONT.get().popExceptionHandler();
-                        return handler.execute(
-                                (Environment)rx.getArgument( 0 ),
+                        // The continuation to use if we are continuable. This
+                        // may be null if the exception is not continuable.
+                        @SuppressWarnings("unchecked")
+                        final Cont<FirstClassObject> continuableContinuation =
+                                (Cont<FirstClassObject>)rx.getArgument( 0 );
+
+                        Cont<FirstClassObject> _exit = result -> {
+                            return () -> {
+                                if ( continuableContinuation == null )
+                                    throw RuntimeX.mNotContinuable();
+
+                                ScreamEvaluator.CONT.get().pushExceptionHandler( previousHandler );
+
+                                return continuableContinuation.accept( result );
+                            };
+                        };
+
+                        return handler.apply(
                                 (Cons)rx.getArgument(1),
                                 _exit );
                     }
@@ -78,16 +95,36 @@ public abstract class R7RsExceptions_6_11
 
     static public final Procedure raiseProc( Environment e )
     {
-
         return new Procedure( "raise", e )
         {
             @Override
-            public Thunk _execute( Environment e, Cons args,
-                    Cont<FirstClassObject> c ) throws RuntimeX
+            public Thunk _apply(
+                    Cons args,
+                    Cont<FirstClassObject> c )
+                            throws RuntimeX
             {
                 checkArgumentCount( 1, args );
 
-                return () ->  { throw RuntimeX.mRaise( e, args ); };
+                // Non-continuable.
+                return () ->  { throw RuntimeX.mRaise( null, args ); };
+            }
+        };
+    }
+
+    static private final Procedure raiseContinuableProc( Environment e )
+    {
+        return new Procedure( "raise-continuable", e )
+        {
+            @Override
+            public Thunk _apply(
+                    Cons args,
+                    Cont<FirstClassObject> c )
+                            throws RuntimeX
+            {
+                checkArgumentCount( 1, args );
+
+                // Non-continuable.
+                return () ->  { throw RuntimeX.mRaise( c, args ); };
             }
         };
     }
@@ -103,6 +140,7 @@ public abstract class R7RsExceptions_6_11
     {
         tle.setPrimitive( withExceptionHandlerProc( tle ) );
         tle.setPrimitive( raiseProc( tle ) );
+        tle.setPrimitive( raiseContinuableProc( tle ) );
 
         return tle;
     }
