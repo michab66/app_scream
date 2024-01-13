@@ -62,11 +62,13 @@ public class Procedure
     }
 
     /**
+     * A template function to be overridden instead of
+     * {@link #execute(Environment, Cons, Cont)}.
      *
-     * @param e
-     * @param args
-     * @param c
-     * @return
+     * @param e The environment used for argument evaluation.
+     * @param args The arguments for the execution.
+     * @param c Receives the result.
+     * @return A thunk.
      * @throws RuntimeX
      */
     public Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
@@ -82,18 +84,22 @@ public class Procedure
      * Evaluates the arguments in the received environment and executes
      * the Procedure.
      *
+     * @param e The environment used for argument evaluation.
      * @param args The arguments for the execution.
      * @param c Receives the result.
      * @return A thunk.
      */
     @Override
-    public Thunk execute( Environment e, Cons args, Cont<FirstClassObject> c )
+    public final Thunk execute( Environment e, Cons args, Cont<FirstClassObject> c )
     {
         return () -> _execute( e, args, c );
     }
 
     /**
-     * A template function to be overridden.
+     * Executes this Procedure with the passed arguments.
+     * The arguments are expected to be already evaluated.
+     * No environment needed since the Procedure is executed
+     * in its closure.
      *
      * @param args The already evaluated arguments.
      * @param c The result.
@@ -112,6 +118,9 @@ public class Procedure
     /**
      * Executes this Procedure with the passed arguments.
      * The arguments are expected to be already evaluated.
+     * No environment needed since the Procedure is executed
+     * in its closure.
+     * <p>
      * Override {@link #_apply(Cons, Cont)} instead of this
      * operation.
      *

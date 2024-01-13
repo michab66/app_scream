@@ -29,19 +29,41 @@ public class R7rs_6_11_Exceptions_Test extends ScreamBaseTest
         try ( var x = new Redirect( StdStream.out ) )
         {
             expectFco(
-                "(call-with-current-continuation\n"
-                + "  (lambda (k)\n"
-                + "    (with-exception-handler\n"
-                + "      (lambda (x)\n"
-                + "        (display \"condition: \")\n"
-                + "        (write x)\n"
-                + "        (newline)\n"
-                + "        (k 'exception))\n"
-                + "      (lambda () \n"
-                + "        (+ 1 (raise 'an-error))))))",
+"""
+            (call-with-current-continuation
+              (lambda (k)
+                (with-exception-handler
+                  (lambda (x)
+                    (display "condition: ")
+                    (write x)
+                    (newline)
+                    (k 'exception))
+              (lambda ()
+                (+ 1 (raise 'an-error))))))
+""",
                 "exception" );
 
             assertEquals( "condition: an-error", x.content().get( 0 ) );
         }
+    }
+
+    /**
+     * https://www.scheme.com/tspl4/exceptions.html
+     */
+    @Test
+    public void schemeCom_11_1_RaisingAndHandlingExceptions() throws Exception
+    {
+            expectFco(
+"""
+            (list
+              (call/cc
+                (lambda (k)
+                  (vector
+                    (with-exception-handler
+                      (lambda (x) (k (+ x 5)))
+                      (lambda () (+ (raise 17) 8)))))))
+""",
+                "(22)" );
+
     }
 }
