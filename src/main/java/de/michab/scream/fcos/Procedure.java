@@ -62,15 +62,15 @@ public class Procedure
     }
 
     /**
-     * Evaluates the arguments in the received environment and executes
-     * the Procedure.
      *
-     * @param args The arguments for the execution.
-     * @param c Receives the result.
-     * @return A thunk.
+     * @param e
+     * @param args
+     * @param c
+     * @return
+     * @throws RuntimeX
      */
-    @Override
-    public final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+    public Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+        throws RuntimeX
     {
         return Primitives._evalCons(
                 e,
@@ -79,8 +79,41 @@ public class Procedure
     }
 
     /**
+     * Evaluates the arguments in the received environment and executes
+     * the Procedure.
+     *
+     * @param args The arguments for the execution.
+     * @param c Receives the result.
+     * @return A thunk.
+     */
+    @Override
+    public Thunk execute( Environment e, Cons args, Cont<FirstClassObject> c )
+    {
+        return () -> _execute( e, args, c );
+    }
+
+    /**
+     * A template function to be overridden.
+     *
+     * @param args The already evaluated arguments.
+     * @param c The result.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
+    public Thunk _apply( Cons args, Cont<FirstClassObject> c  )
+            throws RuntimeX
+    {
+        return _executeImpl(
+                _closure,
+                args,
+                c );
+    }
+
+    /**
      * Executes this Procedure with the passed arguments.
-     * The arguments are not evaluated.
+     * The arguments are expected to be already evaluated.
+     * Override {@link #_apply(Cons, Cont)} instead of this
+     * operation.
      *
      * @param args The arguments for the execution.
      * @param c Receives the result.
@@ -88,8 +121,7 @@ public class Procedure
      */
     public final Thunk apply( Cons args, Cont<FirstClassObject> c  )
     {
-        return () -> _executeImpl(
-                _closure,
+        return () -> _apply(
                 args,
                 c );
     }

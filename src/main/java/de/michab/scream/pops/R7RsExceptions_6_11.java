@@ -31,8 +31,9 @@ public abstract class R7RsExceptions_6_11
         return new Procedure( "with-exception-handler", closure )
         {
             @Override
-            protected Thunk _executeImpl( Environment e, Cons args,
-                    Cont<FirstClassObject> c ) throws RuntimeX
+            public Thunk _apply( Cons args,
+                    Cont<FirstClassObject> c )
+                throws RuntimeX
             {
                 checkArgumentCount( 2, args );
 
@@ -49,8 +50,10 @@ public abstract class R7RsExceptions_6_11
                 Cont<RuntimeX> _handler = rx -> {
                     if ( rx.getCode() == Code.RAISE )
                     {
-                        return handler.apply(
-                                new Cons( (FirstClassObject)rx.getArgument(1) ),
+                        ScreamEvaluator.CONT.get().popExceptionHandler();
+                        return handler.execute(
+                                (Environment)rx.getArgument( 0 ),
+                                (Cons)rx.getArgument(1),
                                 _exit );
                     }
 
@@ -66,17 +69,27 @@ public abstract class R7RsExceptions_6_11
 
     static public final Procedure raiseProc( Environment e )
     {
+
         return new Procedure( "raise", e )
         {
+            private Thunk dolit( Environment env, FirstClassObject arg )
+            {
+                return () ->  { throw RuntimeX.mRaise( env, arg ); };
+            }
+
             @Override
-            protected Thunk _executeImpl( Environment e, Cons args,
+            public Thunk _execute( Environment e, Cons args,
                     Cont<FirstClassObject> c ) throws RuntimeX
             {
                 checkArgumentCount( 1, args );
 
-                return () -> {
-                    throw RuntimeX.mRaise( e, args.getCar() );
-                };
+                return dolit( e, args );
+//                return Primitives._eval(
+//                        e,
+//                        args.getCar(),
+//                        result -> {
+//                            return dolit( e, result );
+//                        });
             }
         };
     }

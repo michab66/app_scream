@@ -395,7 +395,7 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    protected Thunk _execute(
+    protected Thunk execute(
             Environment e,
             Cons args,
             Cont<FirstClassObject> c )

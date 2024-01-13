@@ -54,7 +54,7 @@ public class Continuation extends Procedure
                         Procedure.class,
                         args.getCar() );
 
-                return proc._execute(
+                return proc.execute(
                         e,
                         Cons.create(
                                 new Continuation( c, e ) ),
@@ -90,13 +90,13 @@ public class Continuation extends Procedure
 
                 Cont<Cons> branch = values ->
                 {
-                    return consumer._execute(
+                    return consumer.execute(
                             e,
                             values,
                             c );
                 };
 
-                return producer._execute(
+                return producer.execute(
                         e,
                         Cons.NIL,
                         values -> Primitives._cast(
