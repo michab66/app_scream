@@ -43,13 +43,15 @@ public abstract class R7RsExceptions_6_11
                         Scut.as( Procedure.class, args.listRef( 1 ) );
 
                 Cont<FirstClassObject> _exit = result -> {
-                    ScreamEvaluator.CONT.get().popExceptionHandler();
-                    return c.accept( result );
+                    return () -> { throw RuntimeX.mNotContinuable(); };
                 };
 
                 Cont<RuntimeX> _handler = rx -> {
                     if ( rx.getCode() == Code.RAISE )
                     {
+                        // Pop the exception handler so that errors in the
+                        // handler procedure propagate to the parent exception
+                        // handler.
                         ScreamEvaluator.CONT.get().popExceptionHandler();
                         return handler.execute(
                                 (Environment)rx.getArgument( 0 ),
@@ -62,7 +64,14 @@ public abstract class R7RsExceptions_6_11
 
                 ScreamEvaluator.CONT.get().pushExceptionHandler( _handler );
 
-                return thunk.apply( Cons.NIL, _exit );
+                return thunk.apply(
+                        Cons.NIL,
+                        // This is the continuation taken if the
+                        // thunk terminated without throwing.
+                        result -> {
+                            ScreamEvaluator.CONT.get().popExceptionHandler();
+                            return c.accept( result );
+                        });
             }
         };
     }
@@ -72,24 +81,13 @@ public abstract class R7RsExceptions_6_11
 
         return new Procedure( "raise", e )
         {
-            private Thunk dolit( Environment env, FirstClassObject arg )
-            {
-                return () ->  { throw RuntimeX.mRaise( env, arg ); };
-            }
-
             @Override
             public Thunk _execute( Environment e, Cons args,
                     Cont<FirstClassObject> c ) throws RuntimeX
             {
                 checkArgumentCount( 1, args );
 
-                return dolit( e, args );
-//                return Primitives._eval(
-//                        e,
-//                        args.getCar(),
-//                        result -> {
-//                            return dolit( e, result );
-//                        });
+                return () ->  { throw RuntimeX.mRaise( e, args ); };
             }
         };
     }

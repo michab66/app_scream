@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.smack.util.io.Redirect;
 import org.smack.util.io.Redirect.StdStream;
 
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 
 /**
@@ -21,12 +22,12 @@ import de.michab.scream.ScreamBaseTest;
 public class R7rs_6_11_Exceptions_Test extends ScreamBaseTest
 {
     /**
-     * p54
+     * r7rs 6.11 p54
      */
     @Test
     public void withExceptionHandler() throws Exception
     {
-        try ( var x = new Redirect( StdStream.out ) )
+        try ( var stdout = new Redirect( StdStream.out ) )
         {
             expectFco(
 """
@@ -43,7 +44,33 @@ public class R7rs_6_11_Exceptions_Test extends ScreamBaseTest
 """,
                 "exception" );
 
-            assertEquals( "condition: an-error", x.content().get( 0 ) );
+            assertEquals(
+                    "condition: an-error",
+                    stdout.content().get( 0 ) );
+        }
+    }
+
+    /**
+     * r7rs 6.11 p54
+     */
+    @Test
+    public void withExceptionHandler2() throws Exception
+    {
+        try ( var stdout = new Redirect( StdStream.out ) )
+        {
+            expectError(
+"""
+            (with-exception-handler
+              (lambda (x)
+                (display "something went wrong\\n"))
+              (lambda ()
+                (+ 1 (raise 'an-error))))
+""",
+              Code.NOT_CONTINUABLE );
+
+            assertEquals(
+                    "something went wrong",
+                    stdout.content().get( 0 ) );
         }
     }
 
