@@ -58,7 +58,7 @@ public class R7rs_6_11_Exceptions_Test extends ScreamBaseTest
     {
         try ( var stdout = new Redirect( StdStream.out ) )
         {
-            var x = expectError(
+            expectError(
 """
             (with-exception-handler
               (lambda (x)
