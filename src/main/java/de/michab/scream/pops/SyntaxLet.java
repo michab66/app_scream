@@ -124,7 +124,6 @@ public abstract class SyntaxLet
             // the body.
             Cont<Cons> exec = initList -> {
                 return pbody.apply(
-                        extended,
                         initList,
                         c );
             };
@@ -142,7 +141,7 @@ public abstract class SyntaxLet
         }
 
         @Override
-        protected Thunk __executeImpl( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             if ( FirstClassObject.is( Symbol.class, args.getCar() ) )
@@ -176,7 +175,7 @@ public abstract class SyntaxLet
     static public final Syntax letAsteriskSyntax = new SyntaxLet( "let*" )
     {
         @Override
-        protected Thunk __executeImpl( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );
@@ -207,7 +206,7 @@ public abstract class SyntaxLet
     static public final Syntax letrecSyntax = new SyntaxLet( "letrec" )
     {
         @Override
-        protected Thunk __executeImpl( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 2, Integer.MAX_VALUE, args );

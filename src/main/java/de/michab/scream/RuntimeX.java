@@ -26,6 +26,7 @@ import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.ErrorMessages;
+import de.michab.scream.util.Scut;
 
 /**
  * An exception to be thrown at run-time of a Scheme program.
@@ -56,7 +57,7 @@ import de.michab.scream.util.ErrorMessages;
  * <p>
  *
  * If the above did not result in a message the plain error message
- * is used and the arror arguments are appended as space-delimited
+ * is used and the error arguments are appended as space-delimited
  * strings and returned.
  *
  * @author Michael Binz
@@ -137,7 +138,9 @@ public class RuntimeX
         EXPECTED_BINARY_PORT,
         EXPECTED_TEXTUAL_PORT,
         SCAN_UNBALANCED_COMMENT,
-        RANGE_EXCEEDED;
+        RANGE_EXCEEDED,
+        RAISE,
+        NOT_CONTINUABLE;
 
         public int id()
         {
@@ -226,7 +229,6 @@ public class RuntimeX
      * set by the first call to this method.
      *
      * @param operation The name of the throwing operation.
-     * @see ScreamException#getOperationName
      */
     public RuntimeX setOperationName( Symbol operation )
     {
@@ -238,7 +240,6 @@ public class RuntimeX
 
     /**
      * @return The symbolic name of the operation that reported the exception.
-     * @see ScreamException#setOperationName
      */
     public Symbol getOperationName()
     {
@@ -327,16 +328,16 @@ public class RuntimeX
      */
     static private Procedure errorProcedure( Environment e )
     {
-        return new Procedure( "error" )
+        return new Procedure( "error", e )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 checkArgumentCount( 1, Integer.MAX_VALUE, args );
-                checkArgument( 1, SchemeString.class, args.listRef( 0 ) );
 
-                String message = createReadable( args.listRef( 0 ) );
+                String message = createReadable(
+                        Scut.asNotNil( SchemeString.class, args.listRef( 0 ) ) );
 
                 Object[] arguments = new Object[ (int)(args.length() -1) ];
                 for ( int i = 1 ; i < (int)(args.length()) ; i++ )
@@ -365,7 +366,7 @@ public class RuntimeX
 
                 return result;
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -1022,5 +1023,42 @@ public class RuntimeX
                 Code.RANGE_EXCEEDED,
                 fco,
                 rangeDescription );
+    }
+
+    /**
+     * RAISE is a special exception used in the implementation of the
+     * r7rs 6.11 {@code (raise obj)} and {@code (raise-continuable)}
+     * implementations.
+     * <p>
+     * The continuable parameter may be {@code null}, resulting in a
+     * non-continuable exception.  If a continuation is passed then the
+     * exception is continuable and the result of the exception handler
+     * defined by {@code (with-exception-handler ...)} will be passed.
+     *
+     * @param continuable The continuation hat handles the raise result if
+     * continuable or {@code null} if the exception is non-continuable.
+     * @param fco The raise procedure's parameter.
+     * @return The initialized exception.
+     */
+    // RAISE_1 = \
+    // 51 : ...
+    public static RuntimeX mRaise( Cont<FirstClassObject> continuable, FirstClassObject fco )
+    {
+        return new RuntimeX(
+                Code.RAISE,
+                continuable,
+                fco );
+    }
+
+    /**
+     * The exception that is finally thrown when the exception
+     * handler of a (raise ...)-call finished.
+     * @return The initialized exception.
+     */
+    // 52 : ...
+    public static RuntimeX mNotContinuable()
+    {
+        return new RuntimeX(
+                Code.NOT_CONTINUABLE );
     }
 }

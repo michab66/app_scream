@@ -385,10 +385,10 @@ extends FirstClassObject
      */
     static private Procedure addProc( Environment e )
     {
-        return new Procedure( "+" )
+        return new Procedure( "+", e )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
@@ -400,7 +400,7 @@ extends FirstClassObject
                         len,
                         c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -408,10 +408,10 @@ extends FirstClassObject
      */
     static private Procedure subtractProc( Environment e )
     {
-        return new Procedure( "-" )
+        return new Procedure( "-", e )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
@@ -423,7 +423,7 @@ extends FirstClassObject
                         len,
                         c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -431,10 +431,10 @@ extends FirstClassObject
      */
     static private Procedure multiplyProc( Environment e )
     {
-        return new Procedure( "*" )
+        return new Procedure( "*", e )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
@@ -447,17 +447,17 @@ extends FirstClassObject
                         c );
             }
 
-        }.setClosure( e );
+        };
     }
 
     /**
      * (/ ...
      */
     static private Procedure divideProc( Environment e ) {
-        return new Procedure( "/" )
+        return new Procedure( "/", e )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
@@ -469,7 +469,7 @@ extends FirstClassObject
                         len,
                         c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**

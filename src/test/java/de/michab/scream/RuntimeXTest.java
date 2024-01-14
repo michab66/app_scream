@@ -75,6 +75,50 @@ public class RuntimeXTest extends ScreamBaseTest
     }
 
     @Test
+    public void undefinedName() throws Exception
+    {
+        var se = new RuntimeX( "Gobbledigoog" );
+
+        assertEquals(
+                Code.ERROR,
+                se.getCode() );
+        assertNotNull(
+                se.getArguments() );
+    }
+
+    @Test
+    public void undefinedNameAndIrritants() throws Exception
+    {
+        var se = new RuntimeX(
+                "Gobbledigoog",
+                i313,
+                i1,
+                s313,
+                str( "A string." ) );
+
+        assertEquals(
+                Code.ERROR,
+                se.getCode() );
+
+        var irritants = se.getArguments();
+
+        assertEquals(
+                4, irritants.length );
+        assertEqualq(
+                i313,
+                (FirstClassObject)irritants[0] );
+        assertEqualq(
+                i1,
+                (FirstClassObject)irritants[1] );
+        assertEqualq(
+                s313,
+                (FirstClassObject)irritants[2] );
+        assertEqualq(
+                str("A string."),
+                (FirstClassObject)irritants[3] );
+    }
+
+    @Test
     public void _16_badBinding() throws Exception
     {
         var se = new RuntimeX( Code.BAD_BINDING.name(), "a1", "a2" );

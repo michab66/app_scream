@@ -26,9 +26,11 @@ public class Continuation extends Procedure
      *
      * @param continuation The continuation to execute.
      */
-    public Continuation( Cont<FirstClassObject> continuation )
+    private Continuation(
+            Cont<FirstClassObject> continuation,
+            Environment closure )
     {
-        super( "callcc" );
+        super( "callcc", closure );
         _cont = continuation;
     }
 
@@ -37,10 +39,10 @@ public class Continuation extends Procedure
      */
     static private Procedure callccProc( Environment e )
     {
-        return new Procedure( "call-with-current-continuation" )
+        return new Procedure( "call-with-current-continuation", e )
         {
             @Override
-            protected Thunk __executeImpl(
+            protected Thunk _executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -52,13 +54,13 @@ public class Continuation extends Procedure
                         Procedure.class,
                         args.getCar() );
 
-                return proc._execute(
+                return proc.execute(
                         e,
                         Cons.create(
-                                new Continuation( c ) ),
+                                new Continuation( c, e ) ),
                         c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -66,11 +68,11 @@ public class Continuation extends Procedure
      */
     static private Procedure callWithValuesProc( Environment e )
     {
-        return new Procedure( "call-with-values" )
+        return new Procedure( "call-with-values", e )
         {
 
             @Override
-            protected Thunk __executeImpl(
+            protected Thunk _executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -88,13 +90,13 @@ public class Continuation extends Procedure
 
                 Cont<Cons> branch = values ->
                 {
-                    return consumer._execute(
+                    return consumer.execute(
                             e,
                             values,
                             c );
                 };
 
-                return producer._execute(
+                return producer.execute(
                         e,
                         Cons.NIL,
                         values -> Primitives._cast(
@@ -102,11 +104,11 @@ public class Continuation extends Procedure
                                 values,
                                 branch ) );
             }
-        }.setClosure( e );
+        };
     }
 
     @Override
-    protected Thunk __executeImpl( Environment e, Cons args,
+    protected Thunk _executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         var values = args.length() == 1 ?

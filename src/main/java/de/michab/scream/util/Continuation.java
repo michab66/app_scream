@@ -149,7 +149,8 @@ public class Continuation<T, X extends Exception>
 
             return _result.get();
         }
-        finally {
+        finally
+        {
             popExceptionHandler();
         }
     }

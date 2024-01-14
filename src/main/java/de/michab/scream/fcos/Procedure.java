@@ -5,15 +5,13 @@
  */
 package de.michab.scream.fcos;
 
-import org.smack.util.JavaUtil;
-
 import de.michab.scream.RuntimeX;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
 /**
- * Represents a scheme procedure.
+ * Represents a Scheme procedure.
  */
 public class Procedure
     extends Operation
@@ -30,39 +28,24 @@ public class Procedure
      *
      * @label effective environment
      */
-    private Environment _closure;
+    private final Environment _closure;
 
     /**
-     * Default constructor.  Used for Java-defined specialisations.
+     * A constructor for Java-defined procedures.
      *
      * @param name The symbolic name for the new procedure.
      */
-    protected Procedure( Symbol name )
+    protected Procedure( String name, Environment closure )
     {
-        super( name );
-        _closure = null;
-    }
-    public Procedure setClosure( Environment closure )
-    {
-        JavaUtil.Assert( _closure == null );
+        super( Symbol.createObject( name ) );
+
         _closure = closure;
-        return this;
-    }
-
-    /**
-     * Default constructor.  Used for Java defined specialisations.
-     *
-     * @param name The symbolic name for the new procedure.
-     */
-    protected Procedure( String name )
-    {
-        this( Symbol.createObject( name ) );
     }
 
     /**
      * Constructor used to create Scheme-defined procedures.
      *
-     * @param e The environment to be used by the new procedure.
+     * @param e The new procedure's closure.
      * @param args The list of formal arguments.
      * @param body The body of the new procedure.
      * @throws RuntimeX In case an error occurred.
@@ -74,41 +57,80 @@ public class Procedure
                     throws RuntimeX
     {
         super( args, body );
+
         _closure = e;
     }
 
     /**
-     * Evaluates the arguments in the received environment and passes on to
-     * {@link #_executeImpl(Environment, Cons, Cont)} for execution of the
-     * _body in the procedure's closure.
+     * A template function to be overridden instead of
+     * {@link #execute(Environment, Cons, Cont)}.
      *
-     * @param e
-     * @param args
-     * @param c
-     * @return
+     * @param e The environment used for argument evaluation.
+     * @param args The arguments for the execution.
+     * @param c Receives the result.
+     * @return A thunk.
      * @throws RuntimeX
      */
-    @Override
-    protected final Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+    public Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
+        throws RuntimeX
     {
-        // Execute in our _closure.
-        Cont<Cons> cc = evaluated -> _executeImpl(
-                _closure,
-                evaluated,
-                c );
-
-        // Evaluate the arguments in the environment that we receive.
-        return () -> Primitives._evalCons(
+        return Primitives._evalCons(
                 e,
                 args,
-                cc );
+                evaluated -> apply( evaluated, c ) );
     }
 
-    public final Thunk apply( Environment e, Cons args, Cont<FirstClassObject> c  )
+    /**
+     * Evaluates the arguments in the received environment and executes
+     * the Procedure.
+     *
+     * @param e The environment used for argument evaluation.
+     * @param args The arguments for the execution.
+     * @param c Receives the result.
+     * @return A thunk.
+     */
+    @Override
+    public final Thunk execute( Environment e, Cons args, Cont<FirstClassObject> c )
     {
-        // Do not evaluate the arguments.
-        return () -> _executeImpl(
+        return () -> _execute( e, args, c );
+    }
+
+    /**
+     * Executes this Procedure with the passed arguments.
+     * The arguments are expected to be already evaluated.
+     * No environment needed since the Procedure is executed
+     * in its closure.
+     *
+     * @param args The already evaluated arguments.
+     * @param c The result.
+     * @return A thunk.
+     * @throws RuntimeX
+     */
+    public Thunk _apply( Cons args, Cont<FirstClassObject> c  )
+            throws RuntimeX
+    {
+        return _executeImpl(
                 _closure,
+                args,
+                c );
+    }
+
+    /**
+     * Executes this Procedure with the passed arguments.
+     * The arguments are expected to be already evaluated.
+     * No environment needed since the Procedure is executed
+     * in its closure.
+     * <p>
+     * Override {@link #_apply(Cons, Cont)} instead of this
+     * operation.
+     *
+     * @param args The arguments for the execution.
+     * @param c Receives the result.
+     * @return A thunk.
+     */
+    public final Thunk apply( Cons args, Cont<FirstClassObject> c  )
+    {
+        return () -> _apply(
                 args,
                 c );
     }

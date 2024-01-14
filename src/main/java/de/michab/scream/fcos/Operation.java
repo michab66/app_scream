@@ -12,7 +12,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
-import de.michab.scream.util.ConversionFailedX;
+import de.michab.scream.util.Scut;
 
 /**
  * Represents an abstract operation.  Is the base class for macros
@@ -297,7 +297,8 @@ extends FirstClassObject
     }
 
     /**
-     * Checks if the length of the actual argument list is the length we expect.
+     * Checks if the length of the actual argument list is the length
+     * we expect.
      *
      * @param expected The expected number of arguments.
      * @param received The array of arguments received.
@@ -330,16 +331,13 @@ extends FirstClassObject
      */
     static final protected void checkArgument(
             int position,
-            Class<?> formal,
+            Class<? extends FirstClassObject> formal,
             FirstClassObject received )
                     throws RuntimeX
     {
-        if ( received == Cons.NIL ||
-                ! formal.isAssignableFrom( received.getClass() ) )
-        {
-            throw new ConversionFailedX( received, formal, position );
-        }
+        Scut.asNotNil( formal, received );
     }
+    
     /**
      * Checks if the passed formals represent a valid argument list.
      * <p>
@@ -361,14 +359,16 @@ extends FirstClassObject
     }
 
     /**
-     * Holds the function implementation.  Override in Java-implemented Operations.
+     * Holds the function implementation.
+     * Override in Java-implemented Operations.
+     *
      * @param e
      * @param args
      * @param c
      * @return
      * @throws RuntimeX
      */
-    protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+    protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
             throws RuntimeX
     {
         checkArgumentCount( args );
@@ -386,21 +386,8 @@ extends FirstClassObject
     }
 
     /**
-     * Holds the function implementation.  Override in Java-implemented Operations.
-     * @param e
-     * @param args
-     * @param c
-     * @return
-     * @throws RuntimeX
-     */
-    protected final Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-    {
-        return () -> __executeImpl( e, args, c );
-    }
-
-    /**
-     * Holds the function implementation. This must be only overridden by the Procedure-
-     * implementation.
+     * Holds the function implementation. This must be only overridden by the
+     * implementation of Procedure.
      *
      * @param e
      * @param args
@@ -408,8 +395,13 @@ extends FirstClassObject
      * @return
      * @throws RuntimeX
      */
-    abstract protected Thunk _execute( Environment e, Cons args, Cont<FirstClassObject> c )
-            throws RuntimeX;
+    protected Thunk execute(
+            Environment e,
+            Cons args,
+            Cont<FirstClassObject> c )
+    {
+        return () -> _executeImpl( e, args, c );
+    }
 
     /**
      * Returns A lambda that calls _execute.

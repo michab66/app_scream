@@ -38,6 +38,7 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.R7RsExceptions_6_11;
 import de.michab.scream.pops.SyntaxAnd;
 import de.michab.scream.pops.SyntaxAssign;
 import de.michab.scream.pops.SyntaxBegin;
@@ -290,11 +291,18 @@ public final class ScreamEvaluator implements ScriptEngine
                 c );
     }
 
+    // Check if this is a good position.
+    public static ThreadLocal<Continuation<FirstClassObject,RuntimeX>> CONT =
+            new ThreadLocal<>();
+
     private FirstClassObject evalImpl(
             Environment env,
             SupplierX<FirstClassObject,RuntimeX> spl )
                     throws RuntimeX
     {
+        // Makes the continuation available in the interpreter.
+        CONT.set( _continuation );
+
         try
         {
             return _continuation.toStack( c -> evalImpl( env, spl, c ) );
@@ -485,7 +493,7 @@ public final class ScreamEvaluator implements ScriptEngine
     private final Syntax includeSyntax = new Syntax( "include" )
     {
         @Override
-        protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, Integer.MAX_VALUE, args );
@@ -506,10 +514,10 @@ public final class ScreamEvaluator implements ScriptEngine
      */
     static private Procedure evalProcedure( Environment e )
     {
-        return new Procedure( "eval" )
+        return new Procedure( "eval", e )
         {
             @Override
-            protected Thunk __executeImpl(
+            protected Thunk _executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -525,7 +533,7 @@ public final class ScreamEvaluator implements ScriptEngine
 
                 return expOrDef.evaluate( environment, c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -536,7 +544,7 @@ public final class ScreamEvaluator implements ScriptEngine
     private final Syntax evalSyntax = new Syntax( "scream:eval" )
     {
         @Override
-        protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -553,10 +561,10 @@ public final class ScreamEvaluator implements ScriptEngine
 
     static private Procedure applyProcedure( Environment e )
     {
-        return new Procedure( "scream:apply" )
+        return new Procedure( "scream:apply", e )
         {
             @Override
-            protected Thunk __executeImpl(
+            protected Thunk _executeImpl(
                     Environment e,
                     Cons args,
                     Cont<FirstClassObject> c )
@@ -571,9 +579,9 @@ public final class ScreamEvaluator implements ScriptEngine
                         Cons.class,
                         args.listRef( 1 ) );
 
-                return proc.apply( e, list, c );
+                return proc.apply( list, c );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -603,6 +611,7 @@ public final class ScreamEvaluator implements ScriptEngine
             de.michab.scream.fcos.Continuation.extendTopLevelEnvironment( result );
             Number.extendTopLevelEnvironment( result );
             SchemeObject.extendTopLevelEnvironment( result );
+            R7RsExceptions_6_11.extendEnvironment( result );
         }
         catch ( Exception e )
         {
@@ -612,11 +621,6 @@ public final class ScreamEvaluator implements ScriptEngine
                     e.getCause() );
             throw new InternalError( e );
         }
-
-//        // Load extensions defined in scheme source files.
-//        addExtensions(
-//                result,
-//                schemeExtensions );
 
         return FirstClassObject.setConstant( result );
     }

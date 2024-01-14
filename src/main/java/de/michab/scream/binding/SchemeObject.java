@@ -227,7 +227,7 @@ public class SchemeObject
     }
 
     @Override
-    protected Thunk __executeImpl( Environment e, Cons args,
+    protected Thunk _executeImpl( Environment e, Cons args,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         long argsLen =
@@ -439,7 +439,7 @@ public class SchemeObject
 
     /**
      * This method is responsible for handling
-     * } {@code InvocationTargetException}s.  Basically this means that in
+     * {@code InvocationTargetException}s.  This means that in
      * case the exception embedded in an {@code InvocationTargetException}
      * is a {@code RuntimeX} then this method unpacks and returns this.  In
      * the other case a new {@code RuntimeX} is created and returned.
@@ -752,7 +752,7 @@ public class SchemeObject
     static private Syntax constructObjectSyntax = new Syntax( "make-object" )
     {
         @Override
-        protected Thunk __executeImpl( Environment e, Cons args,
+        protected Thunk _executeImpl( Environment e, Cons args,
                 Cont<FirstClassObject> c ) throws RuntimeX
         {
             checkArgumentCount( 1, args );
@@ -789,10 +789,10 @@ public class SchemeObject
      */
     static private Procedure wrapObjectProcedure( Environment e )
     {
-        return new Procedure( "object" )
+        return new Procedure( "object", e )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 checkArgumentCount( 1, args );
@@ -806,7 +806,7 @@ public class SchemeObject
 
                 return c.accept( new SchemeObject( a0 ) );
             }
-        }.setClosure( e );
+        };
     }
 
     /**
@@ -814,10 +814,10 @@ public class SchemeObject
      */
     static private Procedure objectPredicateProcedure( Environment e )
     {
-        return new Procedure( "object?" )
+        return new Procedure( "object?", e )
         {
             @Override
-            protected Thunk __executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
                 checkArgumentCount( 1, args );
@@ -825,7 +825,7 @@ public class SchemeObject
                 return () -> c.accept(
                         SchemeBoolean.createObject( args.getCar() instanceof SchemeObject ) );
             }
-        }.setClosure( e );
+        };
     }
 
 //    /**

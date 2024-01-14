@@ -426,7 +426,7 @@ public class Cons
         {
             return Scut.asNotNil(
                     Operation.class,
-                    op )._execute( e, args, c );
+                    op ).execute( e, args, c );
         }
         catch ( RuntimeX rx )
         {

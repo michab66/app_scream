@@ -97,6 +97,7 @@
           (error "TYPE_ERROR" scream:type-output-port port))
         (else
           (write-char #\newline port)
+          (flush-output-port port)
           scream:unspecified)
       ) ; cond
     )
