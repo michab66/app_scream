@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
 
-public class R7rs_4_2_3_SequencingTest extends ScreamBaseTest
+public class R7rs_4_2_3_Sequencing_Test extends ScreamBaseTest
 {
     @Test
     public void beginTest_1() throws Exception

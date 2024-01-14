@@ -16,7 +16,7 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Cons;
 
-public class R7rs_4_2_9_CaseLambdaTest extends ScreamBaseTest
+public class R7rs_4_2_9_CaseLambda_Test extends ScreamBaseTest
 {
     @Test
     public void exists() throws Exception

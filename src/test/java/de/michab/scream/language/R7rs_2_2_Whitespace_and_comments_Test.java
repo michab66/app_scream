@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
 
-public class R7rs_2_2_Whitespace_and_comments extends ScreamBaseTest
+public class R7rs_2_2_Whitespace_and_comments_Test extends ScreamBaseTest
 {
     /**
      * r7rs 2.2 p8
