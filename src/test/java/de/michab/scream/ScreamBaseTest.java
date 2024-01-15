@@ -142,6 +142,29 @@ public class ScreamBaseTest
                 expected );
     }
 
+    /**
+     * Evaluate a script and check whether the result is
+     * (equal? ...) to a given value.
+     *
+     * @param script The script to execute.
+     * @param expected The expected result as Scheme definition.
+     * @return The script engine used in the test.
+     */
+    protected ScreamEvaluator expectFco(
+            String script,
+            String expected )
+                    throws RuntimeX
+    {
+        return expectFco( script, parse(expected) );
+    }
+
+    /**
+     * Creates a consumer that performs {@link #expectFco(String, FirstClassObject)}
+     * on the passed parameters.  Used if state should be kept between
+     * tests.
+     *
+     * @return A consumer.
+     */
     protected BiConsumer<String, FirstClassObject>
     expectFcoConsumer()
     {
@@ -158,22 +181,6 @@ public class ScreamBaseTest
                 fail( e );
             }
         };
-    }
-
-    /**
-     * Evaluate a script and check whether the result is
-     * (equal? ...) to a given value.
-     *
-     * @param script The script to execute.
-     * @param expected The expected result as Scheme definition.
-     * @return The script engine used in the test.
-     */
-    protected ScreamEvaluator expectFco(
-            String script,
-            String expected )
-                    throws RuntimeX
-    {
-        return expectFco( script, parse(expected) );
     }
 
     /**
