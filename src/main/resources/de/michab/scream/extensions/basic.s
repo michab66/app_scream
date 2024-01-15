@@ -163,17 +163,6 @@
 
 
 ;;
-;; Regression test support.
-;;
-(%syntax (%positive-test src-fil number expression expected-result)
-  (if (not (equal? (evaluate expression) expected-result))
-    (error "TEST_FAILED" (evaluate src-fil) (evaluate number))))
-
-(%syntax (%negative-test src-fil number expression expected-error)
-  (if (not (equal? (%error-catch (evaluate expression)) expected-error))
-    (error "TEST_FAILED" (evaluate src-fil) (evaluate number))))
-
-;;
 ;;
 ;;
 (define %type-symbol

@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.smack.util.FunctionalUtil.ConsumerTX;
@@ -139,6 +140,24 @@ public class ScreamBaseTest
                 scriptEngine(),
                 script,
                 expected );
+    }
+
+    protected BiConsumer<String, FirstClassObject>
+    expectFcoConsumer()
+    {
+        ScreamEvaluator se = scriptEngine();
+
+        return (expression, expected) ->
+        {
+            try
+            {
+                expectFco( se, expression, expected );
+            }
+            catch ( RuntimeX e )
+            {
+                fail( e );
+            }
+        };
     }
 
     /**

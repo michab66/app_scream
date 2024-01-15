@@ -200,7 +200,7 @@
 ;;
 (define (string-copy string)
   (if (string? string)
-    ((object string) (clone))
+    ((object string) (copy))
     (error "TYPE_ERROR" %type-string (%typename string))))
 
 
