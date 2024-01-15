@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -12,6 +12,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.smack.util.FunctionalUtil.ConsumerTX;
@@ -155,6 +156,31 @@ public class ScreamBaseTest
                     throws RuntimeX
     {
         return expectFco( script, parse(expected) );
+    }
+
+    /**
+     * Creates a consumer that performs {@link #expectFco(String, FirstClassObject)}
+     * on the passed parameters.  Used if state should be kept between
+     * tests.
+     *
+     * @return A consumer.
+     */
+    protected BiConsumer<String, FirstClassObject>
+    expectFcoConsumer()
+    {
+        ScreamEvaluator se = scriptEngine();
+
+        return (expression, expected) ->
+        {
+            try
+            {
+                expectFco( se, expression, expected );
+            }
+            catch ( RuntimeX e )
+            {
+                fail( e );
+            }
+        };
     }
 
     /**

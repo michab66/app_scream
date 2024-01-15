@@ -86,4 +86,27 @@ public class R7rs_4_2_8_Quasiquotation_Test extends ScreamBaseTest
 """ ,
                parse( "(list foo bar baz)" ) );
     }
+
+    /**
+     *
+     */
+    @Test
+    public void scream_1() throws Exception
+    {
+        expectFco(
+                "`(a `(b ,(+ 1 2) ,(foo ,(+ 1 3) d) e) f)",
+                "(a `(b ,(+ 1 2) ,(foo 4 d) e) f)" );
+    }
+
+    @Test
+    public void scream_2() throws Exception
+    {
+        expectFco(
+                """
+                (let ((name1 'x)
+                        (name2 'y))
+                    `(a `(b ,,name1 ,',name2 d) e))
+                """,
+                "(a `(b ,x ,'y d) e)" );
+    }
 }
