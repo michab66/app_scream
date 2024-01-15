@@ -141,11 +141,6 @@ public class RuntimeX
         RANGE_EXCEEDED,
         RAISE,
         NOT_CONTINUABLE;
-
-        public int id()
-        {
-            return ordinal() -1;
-        }
     }
 
     private static final CachedHolder<Map<String,Code>>
@@ -259,14 +254,6 @@ public class RuntimeX
     }
 
     /**
-     * @return The numeric error id.
-     */
-    public int getId()
-    {
-        return _code.id();
-    }
-
-    /**
      * @return The exception's code.
      */
     public Code getCode()
@@ -294,7 +281,7 @@ public class RuntimeX
         String messageId = super.getMessage();
 
         StringBuilder result = new StringBuilder().
-                append( getId() ).
+                append( getCode() ).
                 append( " : " );
 
         if ( getOperationName() != null )
@@ -352,7 +339,7 @@ public class RuntimeX
 
             /**
              * Makes a human readable string from a FirstClassObject.  That means for
-             * a scheme string that the double quotes are removed -- gnah instead
+             * a Scheme string that the double quotes are removed -- gnah instead
              * of "gnah" -- and that for all other cases the FCO.toString is called.
              */
             private String createReadable( FirstClassObject o )
