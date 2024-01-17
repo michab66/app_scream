@@ -195,6 +195,16 @@ public class RuntimeX
                     args;
     }
 
+    /**
+     * @return The unformatted message as passed in the first constructor
+     * argument. If the constructor was called with a {@link Code} then
+     * the literal enumeration name is returned.
+     */
+    public String getRawMessage()
+    {
+        return super.getMessage();
+    }
+
     public RuntimeX addCause( Throwable cause )
     {
         super.initCause( cause );

@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -45,7 +45,7 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void paramMismatch() throws Exception
     {
-        // BAD_BINDING is only defined by BAD_BINDING_2,  this
+        // BAD_BINDING is only defined by BAD_BINDING_2, this
         // tests the fallback to BAD_BINDING.
         assertFalse(
                 ErrorMessages.map.containsKey( Code.BAD_BINDING.toString() )
@@ -71,13 +71,18 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void undefinedName() throws Exception
     {
-        var se = new RuntimeX( "Gobbledigoog" );
+        final var name = "Gobbledigoog";
+
+        var se = new RuntimeX( name );
 
         assertEquals(
                 Code.ERROR,
                 se.getCode() );
         assertNotNull(
                 se.getArguments() );
+        assertEquals(
+                name,
+                se.getRawMessage() );
     }
 
     @Test
@@ -113,13 +118,19 @@ public class RuntimeXTest extends ScreamBaseTest
     }
 
     @Test
-    public void _16_badBinding() throws Exception
+    public void _badBinding() throws Exception
     {
         var se = new RuntimeX( Code.BAD_BINDING.name(), "a1", "a2" );
 
         assertEquals(
                 Code.BAD_BINDING,
                 se.getCode() );
+        assertEquals(
+                Code.BAD_BINDING,
+                se.getCode() );
+        assertEquals(
+                Code.BAD_BINDING.toString(),
+                se.getRawMessage() );
 
         assertTrue( se.getMessage().contains( "a1" ) );
         assertTrue( se.getMessage().contains( "a2" ) );
