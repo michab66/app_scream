@@ -7,6 +7,7 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
@@ -162,8 +163,9 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     {
         expectFco(
                 "(map cadr '((a b)(d e)(g h)))",
-                parse( "(b e h)" ) );
+                "(b e h)" );
     }
+
     /**
      * p51
      */
@@ -172,8 +174,9 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     {
         expectFco(
                 "(map (lambda (n) (expt n n))  '(1 2 3 4 5))",
-                parse( "(1 4 27 256 3125)" ) );
+                "(1 4 27 256 3125)" );
     }
+
     /**
      * p51
      */
@@ -182,7 +185,49 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     {
         expectFco(
                 "(map + '(1 2 3) '(4 5 6 7))",
-                parse( "(5 7 9)" ) );
+                "(5 7 9)" );
+    }
+
+    /**
+     * p51
+     */
+    @Test
+    public void string_map_1() throws Exception
+    {
+        expectFco(
+                "(string-map char-upcase \"donald\")",
+                str( "DONALD" ) );
+    }
+
+    /**
+     * p51
+     */
+    @Test
+    @Disabled( "https://github.com/urschleim/scream/issues/281" )
+    public void string_map_2() throws Exception
+    {
+        expectFco(
+                """
+                (string-map
+                  (lambda (c)
+                    (integer->char (+ 1 (char->integer c))))
+                  \"HAL\" )
+                """,
+                str( "IBM" ) );
+    }
+
+    public void string_map_3() throws Exception
+    {
+        expectFco(
+                """
+                (string-map
+                    (lambda (c k)
+                        ((if (eqv? k #\\u) char-upcase char-downcase)
+                        c))
+                    "studlycaps xxx"
+                    "ululululul")
+                """,
+                str( "StUdLyCaPs" ) );
     }
 
     /**

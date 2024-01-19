@@ -55,14 +55,33 @@
            (apply transitiver (proc2 a b) rest)))
     transitiver)
 
-;;
-;; Displays a debug message with carriage return.
-;;
-(define (%println message)
-  (%print message)
-  (%print #\newline))
+#|
+ | (scream:display-ln  ...)
+ |
+ | Displays the passed arguments space delimited on stdout
+ | and prints a newline after the last argument.
+ |# 
+(define (scream:display-ln . rest)
+  (if (null? rest)
+    (newline)
+    (begin
+      (display (car rest))
+      (display #\space)
+      (apply scream:display-ln (cdr rest))
+)))
 
-
+#|
+ | (scream:transform proc list)
+ |
+ | Applies the passed procedure to the elements of
+ | the list and returns the results in order.
+ |# 
+(define (scream:transform proc list)
+  (if (null? list)
+    '()
+    (cons
+      (proc (car list))
+      (scream:transform proc (cdr list)))))
 
 ;;
 ;; Exits the interpreter.  Note that this implementation is *very* straight-
@@ -145,6 +164,29 @@
         ; two entries of the remaining argument list.
         (set! result (proc (car args) (cadr args))))))
 
+#|
+ | Takes a single argument predicate and creates a predicate that
+ | allows n arguments.
+ | (define numbers? (scream:make-transitive number?)
+ | (numbers? 1 2 3 4 5) => #t
+ | (numbers?) => #f
+ | (numbers? 1 'a 3 4 5) => #f
+ |#
+(define (scream:make-transitive proc)
+  (define (_make-transitive . rest)
+    ; (display rest)(newline)
+    (if (null? rest)
+      #t
+      (if (proc (car rest))
+        (apply _make-transitive (cdr rest))
+        #f)))
+
+  (lambda list 
+    ; (display list)(newline)
+    ; Returns #f if called with an empty list.
+    (if (null? list)
+      #f
+      (apply _make-transitive list))))
 
 ;;
 ;; Deprecated, use scream:typename
