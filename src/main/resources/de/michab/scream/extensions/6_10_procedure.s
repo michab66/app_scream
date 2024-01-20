@@ -78,6 +78,54 @@
  | (string-map proc string1 string2 ... ) r7rs 6.10 p51 procedure
  |#
 (define (string-map proc . strings)
+;  (scream:display-ln 'string-map strings)
+ 
+  ; r7rs string-copy is currently not implemented.
+  ; Switch as soon this is available.
+  (define (_string-copy string start)
+    (substring string start (string-length string)))
+
+  (define (has-content? string)
+    (< 0 (string-length string)))
+
+  (define have-content?
+    (scream:make-transitive has-content?))
+
+  ; Accepts a list of strings, returns a list containing
+  ; the first characters of the strings.
+  (define (strings-first strings)
+;    (scream:display-ln "strings-first" strings)
+    (scream:transform
+      (lambda (string) (string-ref string 0))
+      strings))
+
+  ; Accepts a list of strings, returns a list containing
+  ; the strings with the first characters removed.
+  (define (strings-rest strings)
+;    (scream:display-ln "strings-rest" strings)
+    (scream:transform
+      (lambda (string) (_string-copy string 1))
+      strings))
+
+  ; maps proc on the passed strings, returns a list of characters.
+  (define (_string-map result strings)
+ ;   (scream:display-ln '_string-map result strings)
+    (if (apply have-content? strings)
+        (_string-map
+          (cons (apply proc (strings-first strings)) result)
+          (strings-rest strings))
+        (apply string (reverse result))))
+
+  (cond
+    ((procedure? proc)
+      (_string-map '() strings))
+    (else
+      (error "TYPE_ERROR" scream:type-procedure proc))))
+
+#|
+ | (vector-map proc vector₁ string2 ... ) r7rs 6.10 p51 procedure
+ |#
+(define (vector-map proc . strings)
   (scream:display-ln 'string-map strings)
  
   ; r7rs string-copy is currently not implemented.
@@ -122,9 +170,6 @@
     (else
       (error "TYPE_ERROR" scream:type-procedure proc))))
 
-#|
- | (vector-map proc vector₁ string2 ... ) r7rs 6.10 p51 procedure
- |#
 
 ;;
 ;; (for-each proc list1 list2 ... ) library procedure
