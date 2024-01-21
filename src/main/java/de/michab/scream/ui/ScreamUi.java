@@ -5,6 +5,7 @@
  */
 package de.michab.scream.ui;
 
+import java.awt.Font;
 import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.io.Writer;
@@ -84,6 +85,8 @@ public class ScreamUi extends SingleFrameApplication
         var result = new JTextArea();
 
         result.setName( "compositionArea" );
+
+        result.setFont( new Font( "Courier", 0, 14 ) );
 
         final JPopupMenu contextMenu = new JPopupMenu();
 

@@ -216,6 +216,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
                 str( "IBM" ) );
     }
 
+    @Test
     public void string_map_3() throws Exception
     {
         expectFco(
@@ -228,6 +229,16 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
                     "ululululul")
                 """,
                 str( "StUdLyCaPs" ) );
+    }
+
+    @Test
+    public void vector_map_1() throws Exception
+    {
+        expectFco(
+                """
+                (vector-map + '#(1 2 3) '#(4 5 6 7))
+                """,
+                "#(5 7 9)" );
     }
 
     /**
