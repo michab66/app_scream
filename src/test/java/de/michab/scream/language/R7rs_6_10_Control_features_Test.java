@@ -236,9 +236,46 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     {
         expectFco(
                 """
+                (vector-map cadr '#((a b)(d e)(g h)))
+                """,
+                "#(b e h)" );
+    }
+
+    @Test
+    public void vector_map_2() throws Exception
+    {
+        expectFco(
+                """
+                (vector-map (lambda (n) (expt n n))
+                '#(1 2 3 4 5))
+                """,
+                "#(1 4 27 256 3125)" );
+    }
+
+    @Test
+    public void vector_map_3() throws Exception
+    {
+        expectFco(
+                """
                 (vector-map + '#(1 2 3) '#(4 5 6 7))
                 """,
                 "#(5 7 9)" );
+    }
+
+    @Test
+    public void vector_map_4() throws Exception
+    {
+        expectFco(
+                """
+                (let ((count 0))
+                  (vector-map
+                    (lambda (ignored)
+                      (set! count (+ count 1))
+                      count)
+                    '#(a b)))
+                """,
+                // scream processes the map-calls left to right.
+                "#(1 2)" );
     }
 
     /**
