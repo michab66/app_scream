@@ -123,67 +123,69 @@
       (error "TYPE_ERROR" scream:type-procedure proc))))
 
 
-;
-; vector-map
-; 
-(define (valid-vector-index? k vector)
-  (scream:display-ln 'valid-vector-index k vector)
-  
-  (and 
-    (>= k 0)
-    (< k (vector-length vector))))
-;
-(define (valid-vectors-index? k vectors)
-  (scream:display-ln 'valid-vectors-index k vectors)
-  (if (null? vectors)
-    #t
-    (if (valid-vector-index? k (car vectors))
-      (valid-vectors-index? k (cdr vectors))
-      #f)))
-
-(define (slice-vectors k vectors)
-  (scream:display-ln 'slice-vectors k vectors)
-
-  (define (_slice-vectors result vectors)
-    (if (null? vectors)
-      (reverse result)
-      (_slice-vectors
-        (cons (vector-ref (car vectors) k) result)
-        (cdr vectors))))
-
-  (_slice-vectors '() vectors))
-
-(define (vector-slicer . vectors)
-
-  (let (
-         (current-position -1)
-       )
-       
-    (scream:display-ln 'make-vector-slicer current-position vectors)
-    
-    (lambda ()
-      (set! current-position (+ 1 current-position))
-      
-      (scream:display-ln 'vector-slicer current-position vectors)
-      
-      (let (
-             (valid? (valid-vectors-index? current-position vectors))
-           )
-        (scream:display-ln 'slicer 'valid? valid?)
-        
-        ; is current position after the end of a vector?
-        (if (not valid?)
-        ;  yes: return the empty list
-          '()
-        ;  no: collect all elements at this position and return this as the result.
-          (slice-vectors current-position vectors))))))
-
 #|
- | (vector-map proc vector₁ string2 ... ) r7rs 6.10 p51 procedure
+ | (vector-map proc vector₁ vector₂ ... ) r7rs 6.10 p51 procedure
  |#
 (define (vector-map proc . vectors)
-  (scream:display-ln 'vector-map vectors)
+;  (scream:display-ln 'vector-map vectors)
+
+  ; Returns true if the passed index k is a valid index in the
+  ; passed vector.
+  (define (valid-vector-index? k vector)
+;    (scream:display-ln 'valid-vector-index k vector)
   
+    (and 
+      (>= k 0)
+      (< k (vector-length vector))))
+
+  ; Returns true if k is a valid index in all vectors.
+  (define (valid-vectors-index? k vectors)
+;    (scream:display-ln 'valid-vectors-index k vectors)
+    (if (null? vectors)
+      #t
+      (if (valid-vector-index? k (car vectors))
+        (valid-vectors-index? k (cdr vectors))
+        #f)))
+
+  ; Returns a cons-slice of the values at position k of
+  ; the passed vectors.
+  (define (slice-vectors k vectors)
+;    (scream:display-ln 'slice-vectors k vectors)
+
+    (define (_slice-vectors result vectors)
+      (if (null? vectors)
+        (reverse result)
+        (_slice-vectors
+          (cons (vector-ref (car vectors) k) result)
+          (cdr vectors))))
+
+    (_slice-vectors '() vectors))
+
+  ; Returns a engine-expression returning slices at index 0 1 ...
+  ; from the passed vectors.  If no further slice can be returned
+  ; returns the empty list.
+  (define (vector-slicer . vectors)
+    (let ((current-position -1))
+;      (scream:display-ln 'make-vector-slicer current-position vectors)
+
+      (lambda ()
+        (set! current-position (+ 1 current-position))
+      
+;        (scream:display-ln 'vector-slicer current-position vectors)
+      
+        (let (
+               (valid? (valid-vectors-index? current-position vectors))
+             )
+;          (scream:display-ln 'slicer 'valid? valid?)
+        
+          ; is current position after the end of a vector?
+          (if (not valid?)
+          ;  yes: return the empty list
+            '()
+          ;  no: collect all elements at this position and return this as the result.
+            (slice-vectors current-position vectors))))))
+  
+  ; Entry point of vector-map.
   (let (
          (slicer (apply vector-slicer vectors))
        )
