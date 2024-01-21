@@ -16,7 +16,7 @@
   "boolean.s"
   "math.s"
   "char.s"
-  "6_10_procedure.s"
+  "6_10_Control_features.s"
   "string.s"
   "object.s"
   "bytevector.s"
