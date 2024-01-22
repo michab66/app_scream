@@ -124,7 +124,7 @@
 
 
 #|
- | (vector-map proc vector₁ vector₂ ... ) r7rs 6.10 p51 procedure
+ | (vector-map proc vector₁ vector₂ ...) r7rs 6.10 p51 procedure
  |#
 (define (vector-map proc . vectors)
 ;  (scream:display-ln 'vector-map vectors)
@@ -199,9 +199,83 @@
     (_vector-map '())))
 
 ;;
-;; (for-each proc list1 list2 ... ) library procedure
+;; (for-each proc list₁ list₂ ...)) r7rs 6.10 p51 procedure
 ;;
-(define for-each map)
+(define (xlice . lists)
+    (scream:display-ln 'xlice lists)
+
+    (define (_xlice result-car result-cdr lists)
+      (scream:display-ln '_xlice lists)
+      (if (null? lists)
+
+        (values (reverse result-car) (reverse result-cdr))
+
+        (_xlice
+          (cons (caar lists) result-car)
+          (cons (cdar lists) result-cdr)
+          (cdr lists))))
+
+    (_xlice '() '() lists))
+    
+  ; Returns true if the passed list is not null.
+  (define (valid-slice-element? list)
+    (scream:display-ln 'valid-slice-element? list)  
+    (not (null? list)))
+
+  ; Returns true if all passed lists are not null.
+  (define valid-slice?
+    (scream:make-transitive valid-slice-element?))
+
+  ; Returns a cons-slice of the car values of the passed lists.
+  #;(define (slice lists)
+    (scream:display-ln 'slice lists)
+
+    (define (_slice result lists)
+      (scream:display-ln '_slice lists)
+      (if (null? lists)
+        (reverse result)
+        (_slice
+          (cons (car lists) result)
+          (cdr lists))))
+
+    (_slice '() lists))
+
+  ; Returns an engine-expression returning slices from the lists.  If no
+  ; further slice can be returned returns the empty list.
+  (define (slicer . lists)
+    (let ((lists (list-copy lists)))
+      (scream:display-ln 'slicer lists)
+
+      (lambda ()
+        (scream:display-ln 'slicer lists)
+      
+        (let (
+               (valid? (apply valid-slice? lists))
+             )
+          (scream:display-ln 'slicer 'valid? valid?)
+        
+          (if (not valid?)
+            '()
+            (let-values (((cars rests) (apply xlice lists)))
+              (scream:display-ln 'cars cars)
+              (scream:display-ln 'rests rests)
+              (set! lists rests)
+              cars))))))
+
+(define (for-each proc . lists)
+  (scream:display-ln 'for-each lists)
+
+  ; Entry point of for-each.
+  (let ((slicer (apply slicer lists)))
+
+    (define (_for-each result)
+      (let ((current (slicer)))
+        (if (null? current)
+          (reverse result)
+          (_for-each 
+            (cons (apply proc current) result)))))
+
+    (_for-each '())))
 
 #|
  | (values obj ...) r7rs 6.10 p53 procedure
