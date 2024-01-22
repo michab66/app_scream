@@ -21,6 +21,29 @@ import de.michab.scream.fcos.Cons;
 public class Scream_Extensions_Test extends ScreamBaseTest
 {
     @Test
+    public void cons_s_scream$circularq()
+            throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(define circular0 (scream:make-circular! (list 1)))",
+                Cons.NIL );
+        t.expectFco(
+                "(scream:circular? circular0)",
+                bTrue );
+        t.expectFco(
+                "(define circular1 (scream:make-circular! (list 2)))",
+                Cons.NIL );
+        t.expectFco(
+                "(scream:circular? circular0 circular1)",
+                bTrue );
+        t.expectFco(
+                "(scream:circular? circular0 circular1 (list 3))",
+                bFalse );
+    }
+
+    @Test
     public void basic_s_scream$display_ln()
             throws Exception
     {
@@ -34,26 +57,6 @@ public class Scream_Extensions_Test extends ScreamBaseTest
                     "1 \n".getBytes(),
                     stdout.contentRaw() );
         }
-    }
-
-    @Test
-    public void basic_s_scream$make_transitive()
-            throws Exception
-    {
-        var t = makeTester();
-
-        t.expectFco(
-                "(define numbers? (scream:make-transitive number?))",
-                Cons.NIL );
-        t.expectFco(
-                "(numbers? 1 2 3 4 5)",
-                bTrue );
-        t.expectFco(
-                "(numbers?)",
-                bFalse );
-        t.expectFco(
-                "(numbers? 1 'a 3 4 5)",
-                bFalse );
     }
 
     @Test
@@ -94,5 +97,25 @@ public class Scream_Extensions_Test extends ScreamBaseTest
         t.expectFco(
                 "(scream:transform plus1 '())",
                 Cons.NIL );
+    }
+
+    @Test
+    public void basic_s_scream$make_transitive()
+            throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(define numbers? (scream:make-transitive number?))",
+                Cons.NIL );
+        t.expectFco(
+                "(numbers? 1 2 3 4 5)",
+                bTrue );
+        t.expectFco(
+                "(numbers?)",
+                bFalse );
+        t.expectFco(
+                "(numbers? 1 'a 3 4 5)",
+                bFalse );
     }
 }

@@ -18,31 +18,33 @@
 #|
  | (scream:make-circular! list)
  |
- | Returns #T if all of the the passed lists
- | are circular.
+ | Makes the passed list circular.
+ | Returns the circular list.
  |#
 (define (scream:make-circular! list)
     (set-cdr!
       ; of the last cons ...
       (list-tail list (- (length list) 1))
       ; ... to the begin of the list.
-      list))
+      list)
+    list)
 
 #|
- | (circular? list1 ...)
+ | (scream:circular? list1 ...)
  |
  | Returns #T if all of the the passed lists
  | are circular.
  |#
-(define (circular? list)
-  (cond
-    ((null? list)
-      #f)
-    ((not (pair? list))
-      (error "TYPE_ERROR" scream:type-cons list))
-    (else
-      ((object list) (isCircular)))))
-(set! circular? (scream:make-transitive circular?))
+(define scream:circular?
+  (scream:make-transitive
+    (lambda (list)
+      (cond
+        ((null? list)
+          #f)
+        ((not (pair? list))
+          (error "TYPE_ERROR" scream:type-cons list))
+        (else
+          ((object list) (isCircular)))))))
 
 #|
  | (scream:memx obj list compare)
