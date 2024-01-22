@@ -70,7 +70,7 @@
   (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
 
 #|
- | (apply proc arg1 ... args)  procedure; r7rs 50
+ | (apply proc arg₁ ... args)  procedure; r7rs 50
  |#
 (define (apply op . list)
   (define (make-argument-list list)
@@ -81,12 +81,11 @@
   (scream:apply op (make-argument-list list)))
 
 #|
- | (map proc list1 list2 ... ) r7rs 6.10 p51 procedure
+ | (map proc list₁ list₂ ... ) r7rs 6.10 p51 procedure
  |#
 (define (map proc . lists)
 ;  (scream:display-ln 'map lists)
 
-  ; Entry point of for-each.
   (let ((slicer (apply scream:list-slicer lists)))
 
     (define (_map result)
@@ -96,10 +95,12 @@
           (_map 
             (cons (apply proc current) result)))))
 
-    (_map '())))
+    (if (apply scream:circular? lists)
+      (error "ILLEGAL_ARGUMENT" 'all-circular)
+      (_map '()))))
 
 #|
- | (string-map proc string1 string2 ... ) r7rs 6.10 p51 procedure
+ | (string-map proc string₁ string₂ ... ) r7rs 6.10 p51 procedure
  |#
 (define (string-map proc . strings)
 ;  (scream:display-ln 'string-map strings)
