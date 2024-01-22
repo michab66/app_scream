@@ -1,6 +1,6 @@
 ; Scream @ https://github.com/urschleim/scream
 ;
-; Copyright © 1998-2023 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Scream definitions.
@@ -10,7 +10,7 @@
 (define scream:type-procedure
   ((make-object de.michab.scream.fcos.Procedure) TYPE_NAME))
 
-; Returns true if all passed lists are not null.
+; Returns true if none of the passed lists is null.
 ; (scream:valid-list-slice? list1 ...)
 (define scream:valid-list-slice?
   (scream:make-transitive 
@@ -147,7 +147,6 @@
     (else
       (error "TYPE_ERROR" scream:type-procedure proc))))
 
-
 #|
  | (vector-map proc vector₁ vector₂ ...) r7rs 6.10 p51 procedure
  |#
@@ -240,6 +239,138 @@
             (_for-each)))))
 
     (_for-each)))
+
+#|
+ | (string-for-each proc string₁ string₂ ... ) r7rs 6.10 p52 procedure
+ |#
+  ; Returns true if the passed index k is a valid index in the
+  ; passed string.
+  (define (valid-string-index? k string)
+    (scream:display-ln 'valid-string-index k string)
+  
+    (and 
+      (>= k 0)
+      (< k (string-length string))))
+
+  ; Returns true if k is a valid index in all strings.
+  (define (valid-strings-index? k strings)
+    (scream:display-ln 'valid-strings-index k strings)
+    (if (null? strings)
+      #t
+      (if (valid-string-index? k (car strings))
+        (valid-strings-index? k (cdr strings))
+        #f)))
+
+  ; Returns a cons-slice of the values at position k of
+  ; the passed strings.
+  (define (slice-strings k strings)
+    (scream:display-ln 'slice-strings k strings)
+
+    (define (_slice-strings result strings)
+      (if (null? strings)
+        (reverse result)
+        (_slice-strings
+          (cons (string-ref (car strings) k) result)
+          (cdr strings))))
+
+    (_slice-strings '() strings))
+
+  ; Returns a engine-expression returning slices at index 0 1 ...
+  ; from the passed strings.  If no further slice can be returned
+  ; returns the empty list.
+  (define (string-slicer . strings)
+    (let ((current-position -1))
+      (scream:display-ln 'make-string-slicer current-position strings)
+
+      (lambda ()
+        (set! current-position (+ 1 current-position))
+      
+        (scream:display-ln 'string-slicer current-position strings)
+      
+        (let (
+               (valid? (valid-strings-index? current-position strings))
+             )
+          (scream:display-ln 'string-slicer 'valid? valid?)
+        
+          ; is current position after the end of a vector?
+          (if (not valid?)
+          ;  yes: return the empty list
+            '()
+          ;  no: collect all elements at this position and return this as the result.
+            (slice-strings current-position strings))))))
+
+(define (string-for-each proc . strings)
+  (scream:display-ln 'string-for-each strings)
+
+  ; Returns true if the passed index k is a valid index in the
+  ; passed string.
+  #;(define (valid-string-index? k string)
+    (scream:display-ln 'valid-string-index k string)
+  
+    (and 
+      (>= k 0)
+      (< k (string-length string))))
+
+  ; Returns true if k is a valid index in all strings.
+  #;(define (valid-strings-index? k strings)
+    (scream:display-ln 'valid-strings-index k strings)
+    (if (null? strings)
+      #t
+      (if (valid-string-index? k (car strings))
+        (valid-strings-index? k (cdr strings))
+        #f)))
+
+  ; Returns a cons-slice of the values at position k of
+  ; the passed strings.
+  #;(define (slice-strings k strings)
+    (scream:display-ln 'slice-strings k strings)
+
+    (define (_slice-strings result strings)
+      (if (null? strings)
+        (reverse result)
+        (_slice-strings
+          (cons (string-ref (car strings) k) result)
+          (cdr strings))))
+
+    (_slice-strings '() strings))
+
+  ; Returns a engine-expression returning slices at index 0 1 ...
+  ; from the passed strings.  If no further slice can be returned
+  ; returns the empty list.
+  #;(define (string-slicer . strings)
+    (let ((current-position -1))
+      (scream:display-ln 'make-string-slicer current-position strings)
+
+      (lambda ()
+        (set! current-position (+ 1 current-position))
+      
+        (scream:display-ln 'string-slicer current-position strings)
+      
+        (let (
+               (valid? (valid-strings-index? current-position strings))
+             )
+          (scream:display-ln 'string-slicer 'valid? valid?)
+        
+          ; is current position after the end of a vector?
+          (if (not valid?)
+          ;  yes: return the empty list
+            '()
+          ;  no: collect all elements at this position and return this as the result.
+            (slice-strings current-position strings))))))
+  
+  (let (
+         (slicer (apply string-slicer strings))
+       )
+    (define (_string-map result)
+      (scream:display-ln '_string-map result)
+      (let ((current (slicer)))
+        (scream:display-ln '_string-map 'result result 'current current)
+        (if (null? current)
+          scream:unspecified ; (apply string (reverse result))
+          (_string-map 
+            (cons (apply proc current) result)))))
+
+    (_string-map '())))
 
 #|
  | (values obj ...) r7rs 6.10 p53 procedure

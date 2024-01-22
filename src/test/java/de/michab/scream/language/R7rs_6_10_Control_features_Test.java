@@ -296,6 +296,21 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
                 "#(0 1 4 9 16)" );
     }
 
+    @Test
+    public void string_for_each_1() throws Exception
+    {
+        expectFco(
+                """
+                (let ((v '()))
+                  (string-for-each
+                    (lambda (c)
+                      (set! v (cons (char->integer c) v)))
+                    "abcde")
+                  v)
+                """,
+                "(101 100 99 98 97)" );
+    }
+
     /**
      * p52
      */
