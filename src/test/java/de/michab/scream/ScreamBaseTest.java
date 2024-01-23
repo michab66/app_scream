@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import org.junit.jupiter.api.Test;
 import org.smack.util.FunctionalUtil.ConsumerTX;
 
 import de.michab.scream.RuntimeX.Code;
@@ -31,6 +32,8 @@ import de.michab.scream.util.Continuation;
 
 /**
  * scream test support.
+ *
+ * Note that the tests testing the test support are also implemented here.
  *
  * @author micbinz
  */
@@ -162,6 +165,13 @@ public class ScreamBaseTest
      *
      */
     public static interface Tester {
+        /**
+         * Execute the passed script and accept any outcome but an exception.
+         * @param script
+         * @return A fluent tester.
+         * @throws RuntimeX In case of an error.
+         */
+        Tester execute( String script ) throws RuntimeX;
         Tester expectFco( String script, String result ) throws RuntimeX;
         Tester expectFco( String script, FirstClassObject result ) throws RuntimeX;
         Tester expectError( String script, Code result );
@@ -195,6 +205,13 @@ public class ScreamBaseTest
             public Tester expectError( String script, Code result )
             {
                 ScreamBaseTest.this.expectError( script, result );
+                return this;
+            }
+
+            @Override
+            public Tester execute( String script ) throws RuntimeX
+            {
+                se.evalFco( script );
                 return this;
             }
         };
@@ -325,5 +342,17 @@ public class ScreamBaseTest
     protected Continuation<FirstClassObject,RuntimeX> cont()
     {
         return new Continuation<FirstClassObject,RuntimeX>( RuntimeX.class );
+    }
+
+
+    @Test
+    public void makeTester_test() throws Exception
+    {
+        var t = makeTester();
+
+        // Uses state. 'a is defined in step 1.
+        t.execute( "(define a 1)" );
+        // 'a referenced in step 2.
+        t.expectFco( "a", "1" );
     }
 }
