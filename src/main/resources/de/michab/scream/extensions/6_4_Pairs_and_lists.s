@@ -102,7 +102,7 @@
     ((object pair) (getCar))
     (error "TYPE_ERROR"
            %type-cons
-           (%typename pair))))
+           (scream:typename pair))))
 
 #|
  | (cdr pair) procedure p41
@@ -112,7 +112,7 @@
     ((object pair) (getCdr))
     (error "TYPE_ERROR"
            %type-cons
-           (%typename pair))))
+           (scream:typename pair))))
 
 #|
  | (set-car! pair new-car) procedure p41
@@ -122,7 +122,7 @@
     ((object pair) (setCar new-car))
     (error "TYPE_ERROR"
            %type-cons
-           (%typename pair)
+           (scream:typename pair)
            1)))
 
 #|
@@ -133,7 +133,7 @@
     ((object pair) (setCdr new-cdr))
     (error "TYPE_ERROR"
            %type-cons
-           (%typename pair)
+           (scream:typename pair)
            1)))
 
 #|
@@ -238,7 +238,7 @@
             o
             (error "TYPE_ERROR"
               %type-cons
-              (%typename o)
+              (scream:typename o)
               position)))
         ; Implement the actual append.
         (define (append-impl position list)
@@ -279,7 +279,7 @@
     ((object list) (listTail k))
     (error "TYPE_ERROR"
            %type-cons
-           (%typename list)
+           (scream:typename list)
            1)))
 
 #|
@@ -290,7 +290,7 @@
     ((object list) (listRef k))
     (error "TYPE_ERROR"
            %type-cons
-           (%typename list)
+           (scream:typename list)
            1)))
 #|
  | (list-set! list k obj) procedure r7rs 6.4 p43

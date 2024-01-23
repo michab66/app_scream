@@ -7,6 +7,7 @@
 ; Perform common runtime initialisation.
 (include
   "basic.s"
+  "6_1_Equivalence_predicates.s"
   "6_4_Pairs_and_lists.s"
   "vector.s"
   "delayed.s"

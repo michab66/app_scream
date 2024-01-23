@@ -26,7 +26,7 @@
 (define (char->integer char)
   (if (char? char)
     ((object char) (asInteger))
-    (error "TYPE_ERROR" %type-char (%typename char))))
+    (error "TYPE_ERROR" %type-char (scream:typename char))))
 
 
 
@@ -36,7 +36,7 @@
 (define (integer->char i)
   (if (integer? i)
     ((make-object de.michab.scream.SchemeCharacter) (createObject i))
-    (error "TYPE_ERROR" %type-integer (%typename i))))
+    (error "TYPE_ERROR" %type-integer (scream:typename i))))
 
 
 

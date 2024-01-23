@@ -72,11 +72,11 @@
         ((object result) (setCharAt insert-position (car insert-list)))
         (error "TYPE_ERROR"
                %type-char
-               (%typename (car insert-list))
+               (scream:typename (car insert-list))
                (+ 1 insert-position))))
 
     ;; Error handler for first argument slot.
-    (error "TYPE_ERROR" %type-char (%typename char) 1)))
+    (error "TYPE_ERROR" %type-char (scream:typename char) 1)))
 
 
 
@@ -86,7 +86,7 @@
 (define (string-length string)
   (if (string? string)
     ((object string) (length))
-    (error "TYPE_ERROR" %type-string (%typename string))))
+    (error "TYPE_ERROR" %type-string (scream:typename string))))
 
 
 
@@ -96,7 +96,7 @@
 (define (string-ref string k)
   (if (string? string)
     ((object string) (getCharAt k))
-    (error "TYPE_ERROR" %type-string (%typename string) 1)))
+    (error "TYPE_ERROR" %type-string (scream:typename string) 1)))
 
 
 ;;
@@ -104,11 +104,11 @@
 ;;
 (define (string-set! string k char)
   (if (not (string? string))
-    (error "TYPE_ERROR" %type-string (%typename string) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename string) 1))
   (if (not (integer? k))
-    (error "TYPE_ERROR" %type-integer (%typename k) 2))
+    (error "TYPE_ERROR" %type-integer (scream:typename k) 2))
   (if (not (char? char))
-    (error "TYPE_ERROR" %type-char (%typename char) 3))
+    (error "TYPE_ERROR" %type-char (scream:typename char) 3))
 
   ((object string) (setCharAt k char)))
 
@@ -119,11 +119,11 @@
 ;;
 (define (substring string start end)
   (if (not (string? string))
-    (error "TYPE_ERROR" %type-string (%typename string) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename string) 1))
   (if (not (integer? start))
-    (error "TYPE_ERROR" %type-integer (%typename start) 2))
+    (error "TYPE_ERROR" %type-integer (scream:typename start) 2))
   (if (not (integer? end))
-    (error "TYPE_ERROR" %type-integer (%typename end) 3))
+    (error "TYPE_ERROR" %type-integer (scream:typename end) 3))
   ((object string) (substring start end)))
 
 
@@ -147,13 +147,13 @@
         (error
           "TYPE_ERROR"
           %type-string
-          (%typename (car append-list))
+          (scream:typename (car append-list))
           ; Complex parameter position calculation.  The difference between
           ; the length of the original input list and the rest of that list
           ; that is left for processing plus an offset of 2 because of the
           ; static parameter.
           (+ 2 (- (length optional-string-list) (length append-list))))))
-    (error "TYPE_ERROR" %type-string (%typename string) 1)))
+    (error "TYPE_ERROR" %type-string (scream:typename string) 1)))
 
 
 
@@ -163,7 +163,7 @@
 (define (string->list string)
   (if (string? string)
     ((object string) (toCons))
-    (error "TYPE_ERROR" %type-string (%typename string))))
+    (error "TYPE_ERROR" %type-string (scream:typename string))))
 
 
 
@@ -186,11 +186,11 @@
         (string-set! result idx (car remaining-characters))
         (error "TYPE_ERROR"
                %type-char
-               (%typename (car remaining-characters))
+               (scream:typename (car remaining-characters))
                (+ 1 idx))))
     (error "TYPE_ERROR"
            %type-cons
-           (%typename character-list)
+           (scream:typename character-list)
            1)))
 
 
@@ -201,7 +201,7 @@
 (define (string-copy string)
   (if (string? string)
     ((object string) (copy))
-    (error "TYPE_ERROR" %type-string (%typename string))))
+    (error "TYPE_ERROR" %type-string (scream:typename string))))
 
 
 
@@ -210,9 +210,9 @@
 ;;
 (define (string-fill! string char)
   (if (not (string? string))
-    (error "TYPE_ERROR" %type-string (%typename string) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename string) 1))
   (if (not (char? char))
-    (error "TYPE_ERROR" %type-char (%typename char) 2))
+    (error "TYPE_ERROR" %type-char (scream:typename char) 2))
 
   ((object string) (fill char)))
 
@@ -223,9 +223,9 @@
 ;;
 (define (string=? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
   (= 0 ((object s1) (compareTo s2))))
 
 ; Note that this operation was fixed but the others
@@ -239,56 +239,56 @@
 
 (define (string<? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
   (> 0 ((object s1) (compareTo s2))))
 
 (define (string-ci<? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
   (> 0 ((object s1) (compareToIgnoreCase s2))))
 
 (define (string>? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
   (< 0 ((object s1) (compareTo s2))))
 
 (define (string-ci>? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
   (< 0 ((object s1) (compareToIgnoreCase s2))))
 
 (define (string<=? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
   (>= 0 ((object s1) (compareTo s2))))
 
 (define (string-ci<=? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
   (>= 0 ((object s1) (compareToIgnoreCase s2))))
 
 (define (string>=? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
   (<= 0 ((object s1) (compareTo s2))))
 
 (define (string-ci>=? s1 s2)
   (if (not (string? s1))
-    (error "TYPE_ERROR" %type-string (%typename s1) 1))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
-    (error "TYPE_ERROR" %type-string (%typename s1) 2))
+    (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
   (<= 0 ((object s1) (compareToIgnoreCase s2))))
