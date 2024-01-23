@@ -7,7 +7,7 @@
 ; Perform common runtime initialisation.
 (include
   "basic.s"
-  "cons.s"
+  "6_4_Pairs_and_lists.s"
   "vector.s"
   "delayed.s"
   "quasiquote.s"
