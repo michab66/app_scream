@@ -296,7 +296,21 @@
  | (list-set! list k obj) procedure r7rs 6.4 p43
  |#
 (define (list-set! list k obj)
-  (error "NOT_IMPLEMENTED" 'list-set!))
+  (if (< k 0)
+    (error "INDEX_OUT_OF_BOUNDS" k))
+  (if (not (list? list))
+    (error "EXPECTED_PROPER_LIST" list))
+
+  (define (_list-set! list i)
+    (cond
+      ((null? list)
+        (error "INDEX_OUT_OF_BOUNDS" k))
+      ((= i 0)
+	      (set-car! list obj))
+      (else
+        (_list-set! (cdr list) (- i 1)))))
+
+  (_list-set! list k))
 
 #|
  | (memq obj list) procedure; r7rs p43
