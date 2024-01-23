@@ -7,6 +7,7 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
@@ -162,8 +163,9 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     {
         expectFco(
                 "(map cadr '((a b)(d e)(g h)))",
-                parse( "(b e h)" ) );
+                "(b e h)" );
     }
+
     /**
      * p51
      */
@@ -172,8 +174,9 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     {
         expectFco(
                 "(map (lambda (n) (expt n n))  '(1 2 3 4 5))",
-                parse( "(1 4 27 256 3125)" ) );
+                "(1 4 27 256 3125)" );
     }
+
     /**
      * p51
      */
@@ -182,7 +185,149 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     {
         expectFco(
                 "(map + '(1 2 3) '(4 5 6 7))",
-                parse( "(5 7 9)" ) );
+                "(5 7 9)" );
+    }
+
+    /**
+     * p51
+     */
+    @Test
+    public void string_map_1() throws Exception
+    {
+        expectFco(
+                "(string-map char-upcase \"donald\")",
+                str( "DONALD" ) );
+    }
+
+    /**
+     * p51
+     */
+    @Test
+    @Disabled( "https://github.com/urschleim/scream/issues/281" )
+    public void string_map_2() throws Exception
+    {
+        expectFco(
+                """
+                (string-map
+                  (lambda (c)
+                    (integer->char (+ 1 (char->integer c))))
+                  \"HAL\" )
+                """,
+                str( "IBM" ) );
+    }
+
+    @Test
+    public void string_map_3() throws Exception
+    {
+        expectFco(
+                """
+                (string-map
+                    (lambda (c k)
+                        ((if (eqv? k #\\u) char-upcase char-downcase)
+                        c))
+                    "studlycaps xxx"
+                    "ululululul")
+                """,
+                str( "StUdLyCaPs" ) );
+    }
+
+    @Test
+    public void vector_map_1() throws Exception
+    {
+        expectFco(
+                """
+                (vector-map cadr '#((a b)(d e)(g h)))
+                """,
+                "#(b e h)" );
+    }
+
+    @Test
+    public void vector_map_2() throws Exception
+    {
+        expectFco(
+                """
+                (vector-map (lambda (n) (expt n n))
+                '#(1 2 3 4 5))
+                """,
+                "#(1 4 27 256 3125)" );
+    }
+
+    @Test
+    public void vector_map_3() throws Exception
+    {
+        expectFco(
+                """
+                (vector-map + '#(1 2 3) '#(4 5 6 7))
+                """,
+                "#(5 7 9)" );
+    }
+
+    @Test
+    public void vector_map_4() throws Exception
+    {
+        expectFco(
+                """
+                (let ((count 0))
+                  (vector-map
+                    (lambda (ignored)
+                      (set! count (+ count 1))
+                      count)
+                    '#(a b)))
+                """,
+                // scream processes the map-calls left to right.
+                "#(1 2)" );
+    }
+
+    /**
+     * p51
+     */
+    @Test
+    public void for_each_1() throws Exception
+    {
+        expectFco(
+                """
+                (let ((v (make-vector 5)))
+                  (for-each
+                    (lambda (i)
+                      (vector-set! v i (* i i)))
+                    '(0 1 2 3 4))
+                  v)
+                """,
+                "#(0 1 4 9 16)" );
+    }
+
+    @Test
+    public void string_for_each_1() throws Exception
+    {
+        expectFco(
+                """
+                (let ((v '()))
+                  (string-for-each
+                    (lambda (c)
+                      (set! v (cons (char->integer c) v)))
+                    "abcde")
+                  v)
+                """,
+                "(101 100 99 98 97)" );
+    }
+
+    /**
+     * p52
+     */
+    @Test
+    @Disabled( "See https://github.com/urschleim/scream/issues/262" )
+    public void vector_for_each_1() throws Exception
+    {
+        expectFco(
+                """
+                (let ((v (make-list 5)))
+                  (vector-for-each
+                    (lambda (i)
+                      (list-set! v i (* i i)))
+                      #(0 1 2 3 4))
+                  v)
+                """,
+                "(0 1 4 9 16)" );
     }
 
     /**

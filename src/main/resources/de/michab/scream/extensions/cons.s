@@ -14,20 +14,37 @@
 (define scream:type-cons
   ((make-object de.michab.scream.fcos.Cons) TYPE_NAME))
 
+
 #|
- | (circular? list)
+ | (scream:make-circular! list)
  |
- | Returns #T if the passed list is circular.
+ | Makes the passed list circular.
+ | Returns the circular list.
  |#
-(define (circular? list)
-  (cond
-    ((null? list)
-      #f)
-    ((not (pair? list))
-      (error "TYPE_ERROR" scream:type-cons list))
-    (else
-      ((object list) (isCircular)))))
- 
+(define (scream:make-circular! list)
+    (set-cdr!
+      ; of the last cons ...
+      (list-tail list (- (length list) 1))
+      ; ... to the begin of the list.
+      list)
+    list)
+
+#|
+ | (scream:circular? list1 ...)
+ |
+ | Returns #T if all of the the passed lists
+ | are circular.
+ |#
+(define scream:circular?
+  (scream:make-transitive
+    (lambda (list)
+      (cond
+        ((null? list)
+          #f)
+        ((not (pair? list))
+          (error "TYPE_ERROR" scream:type-cons list))
+        (else
+          ((object list) (isCircular)))))))
 
 #|
  | (scream:memx obj list compare)

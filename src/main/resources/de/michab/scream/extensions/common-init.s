@@ -1,7 +1,7 @@
 ;
 ; Scream @ https://github.com/urschleim/scream
 ;
-; Copyright © 1998-2023 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
 ;
 
 ; Perform common runtime initialisation.
@@ -16,7 +16,7 @@
   "boolean.s"
   "math.s"
   "char.s"
-  "procedure.s"
+  "6_10_Control_features.s"
   "string.s"
   "object.s"
   "bytevector.s"

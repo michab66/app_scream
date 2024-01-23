@@ -159,9 +159,50 @@ public class ScreamBaseTest
     }
 
     /**
+     *
+     */
+    public static interface Tester {
+        Tester expectFco( String script, String result ) throws RuntimeX;
+        Tester expectFco( String script, FirstClassObject result ) throws RuntimeX;
+        Tester expectError( String script, Code result );
+    }
+
+    /**
+     * Creates a stateful tester.
+     */
+    protected Tester makeTester()
+    {
+        return new Tester() {
+
+            ScreamEvaluator se = scriptEngine();
+
+            @Override
+            public Tester expectFco( String script, String result ) throws RuntimeX
+
+            {
+                expectFco( script, parse( result ) );
+                return this;
+            }
+
+            @Override
+            public Tester expectFco( String script, FirstClassObject result ) throws RuntimeX
+            {
+                ScreamBaseTest.this.expectFco( se, script, result  );
+                return this;
+            }
+
+            @Override
+            public Tester expectError( String script, Code result )
+            {
+                ScreamBaseTest.this.expectError( script, result );
+                return this;
+            }
+        };
+    }
+
+    /**
      * Creates a consumer that performs {@link #expectFco(String, FirstClassObject)}
-     * on the passed parameters.  Used if state should be kept between
-     * tests.
+     * on the passed parameters.  Used if state should be kept between tests.
      *
      * @return A consumer.
      */
