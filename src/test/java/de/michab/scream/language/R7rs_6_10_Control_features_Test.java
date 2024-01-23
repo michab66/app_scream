@@ -315,6 +315,25 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p52
      */
     @Test
+    @Disabled( "See https://github.com/urschleim/scream/issues/262" )
+    public void vector_for_each_1() throws Exception
+    {
+        expectFco(
+                """
+                (let ((v (make-list 5)))
+                  (vector-for-each
+                    (lambda (i)
+                      (list-set! v i (* i i)))
+                      #(0 1 2 3 4))
+                  v)
+                """,
+                "(0 1 4 9 16)" );
+    }
+
+    /**
+     * p52
+     */
+    @Test
     public void call_cc__r7rs_1() throws Exception
     {
         var result = scriptEngine().evalFco(
