@@ -559,6 +559,42 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p43
      */
     @Test
+    public void list_setBang_1() throws Exception
+    {
+        expectFco( """
+                (let ((ls (list 'one 'two 'five!)))
+                  (list-set! ls 2 'three)
+                    ls)
+                """,
+                "(one two three)" );
+    }
+
+    /**
+     * p43
+     */
+    @Test
+    public void list_setBang_2() throws Exception
+    {
+        var se = makeTester();
+
+        se.expectError(
+                "(list-set! '(0 1 2) 1 'oops)",
+                Code.CANNOT_MODIFY_CONSTANT );
+        se.expectError(
+                "(list-set! '(0 1 2) 7 'oops)",
+                Code.INDEX_OUT_OF_BOUNDS );
+        se.expectError(
+                "(list-set! '(0 1 2) -1 'oops)",
+                Code.INDEX_OUT_OF_BOUNDS );
+        se.expectError(
+                "(list-set! (scream:make-circular! (list 0 1 2)) 1 'oops)",
+                Code.EXPECTED_PROPER_LIST );
+    }
+
+    /**
+     * p43
+     */
+    @Test
     public void memq_1() throws Exception
     {
         expectFco(

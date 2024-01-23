@@ -315,7 +315,6 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p52
      */
     @Test
-    @Disabled( "See https://github.com/urschleim/scream/issues/262" )
     public void vector_for_each_1() throws Exception
     {
         expectFco(
