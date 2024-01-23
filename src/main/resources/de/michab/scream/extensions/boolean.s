@@ -31,7 +31,7 @@
       (let ((first (car list)) (rest (cdr list)))
         (cond
           ((not (boolean? first))
-            (error "TYPE_ERROR" scream:type-bool (%typename first) position))
+            (error "TYPE_ERROR" scream:type-bool (scream:typename first) position))
           ((eq? result first)
             (boolean-impl (+ position 1) result rest))
           (else

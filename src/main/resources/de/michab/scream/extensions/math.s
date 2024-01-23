@@ -178,7 +178,7 @@
 (define (zero? x)
   (if (number? x)
       (equal? 0 x)
-      (error "TYPE_ERROR" %type-number (%typename x))))
+      (error "TYPE_ERROR" %type-number (scream:typename x))))
 
 
 

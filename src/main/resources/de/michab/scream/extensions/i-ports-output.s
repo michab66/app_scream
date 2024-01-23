@@ -27,7 +27,7 @@
 
     ; Check if what we assigned above is really an output port.
     (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
+      (error "TYPE_ERROR" %type-port (scream:typename the-port) 2))
     (if (not (output-port? the-port))
       (error "EXPECTED_OUTPUT_PORT"))
     ; Finally do the actual read.
@@ -126,11 +126,11 @@
 
     ; Check if what we assigned above is really an output port.
     (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (%typename the-port) 2))
+      (error "TYPE_ERROR" %type-port (scream:typename the-port) 2))
     (if (not (output-port? the-port))
       (error "EXPECTED_OUTPUT_PORT"))
     (if (not (char? char))
-      (error "TYPE_ERROR" %type-char (%typename char) 1))
+      (error "TYPE_ERROR" %type-char (scream:typename char) 1))
     ; Finally do the actual write.
     ((object the-port) (writeCharacter char))))
 

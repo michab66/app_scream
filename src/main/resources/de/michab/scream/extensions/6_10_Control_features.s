@@ -347,15 +347,3 @@
  |#
 (define (dynamic-wind before thunk after)
   (error "NOT_IMPLEMENTED" 'dynamic-wind))
-
-;;
-;; See https://github.com/urschleim/scream/issues/221
-;;
-(define (eq? x y)
-    (%fco-class (eq x y)))
-
-(define (eqv? x y)
-    (%fco-class (eqv x y)))
-
-(define (equal? x y)
-    (%fco-class (equal x y)))

@@ -16,7 +16,8 @@
 (define scream:unspecified '())
 
 ;;
-(define scream:class:fco (make-object de.michab.scream.fcos.FirstClassObject))
+(define scream:class:fco
+  (make-object de.michab.scream.fcos.FirstClassObject))
 
 ;;
 ;; Get the type name of the passed object.
@@ -187,22 +188,6 @@
     (if (null? list)
       #f
       (apply _make-transitive list))))
-
-;;
-;; Deprecated, use scream:typename
-;;
-(define (%typename x)
-  (%fco-class (getTypename x)))
-
-
-
-;;
-;; A reference to the FirstClassObject's class.  This has to be used for
-;; access to the static methods in the runtime implementations.
-;;
-(define %fco-class (make-object de.michab.scream.fcos.FirstClassObject))
-
-
 
 ;;
 ;;
