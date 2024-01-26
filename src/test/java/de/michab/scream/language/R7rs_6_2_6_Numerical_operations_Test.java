@@ -7,6 +7,7 @@ package de.michab.scream.language;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 
 public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
@@ -30,6 +31,19 @@ public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
         expectFco(
                 "(truncate 3.5)",
                 d( 3.0 ) );
+    }
+
+    @Test
+    public void round() throws Exception
+    {
+        var ts = makeTester();
+
+        ts.expectFco( "(round -4.3)", d(-4.0) );
+        ts.expectFco( "(exact? (round -4.3))", bFalse );
+        ts.expectFco( "(round 3.5)", d(4.0) );
+        ts.expectFco( "(round 7)", i(7) );
+        ts.expectFco( "(exact? (round 7))", bTrue );
+        ts.expectError( "(round 'me)", Code.TYPE_ERROR );
     }
 
     @Test

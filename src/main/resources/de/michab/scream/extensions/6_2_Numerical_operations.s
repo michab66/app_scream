@@ -1,6 +1,6 @@
 ; Scream @ https://github.com/urschleim/scream
 ;
-; Copyright © 1998-2023 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
 
 ;;
 ;; r7rs 6.2.6 Numerical operations, p35
@@ -13,10 +13,20 @@
 (define scream:type-integer
   ((make-object de.michab.scream.fcos.SchemeInteger) TYPE_NAME))
 
+#|
+ | Encapsulates java.lang.Math.
+ |#
 (define scream:math (make-object java.lang.Math))
 
 (define (scream:to-float x) (+ 0.0 x))
- 
+
+#|
+ | Checks if the passed object if of type SchemeInteger.
+ |#
+(define scream:integer?
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeInteger" #t))
+(define scream:double?
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeDouble" #t))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
@@ -42,13 +52,13 @@
 
 
 
-;;
-;; (integer? obj) procedure; r5rs 21
-;;
-(define integer?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeInteger" #t))
-
-
+#|
+ | (integer? obj) procedure; r5rs 21
+ |#
+(define (integer? obj)
+  (if (number? obj)
+    (= (round obj) obj)
+    #f))
 
 ;;
 ;; (even? x)
@@ -160,9 +170,7 @@
       ((object x) (isExact))
       (error "TYPE_ERROR"
              %type-number
-             ((object x) (getTypename)))))
-
-
+             (scream:typename x))))
 
 ;;
 ;; inexact?
@@ -306,12 +314,14 @@
         (math (atan (car x)))
         (math (atan2 (car x) (cadr x))))))
 
-  ;;
-  ;; round - procedure - r5rs p. 23
-  ;;
+#|
+ | round - procedure - r7rs p37
+ |#
   (set! round
-    (lambda (x) 
-      (math (round x))))
+    (lambda (x)
+      (if (exact? x)
+        x
+        (scream:math (rint x)))))
 
   ;;
   ;; floor - procedure - r5rs p. 23
