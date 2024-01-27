@@ -16,7 +16,11 @@
 #|
  | Encapsulates java.lang.Math.
  |#
-(define scream:math (make-object java.lang.Math))
+(define scream:math
+  (make-object java.lang.Math))
+
+(define scream:class:number
+  (make-object de.michab.scream.fcos.Number))
 
 (define (scream:to-float x) (+ 0.0 x))
 
@@ -32,74 +36,79 @@
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;
-;; (number? obj) procedure; r5rs 30
-;;
+#|
+ | (number? obj) procedure; r7rs 35
+ |#
 (define number?
   (typePredicateGenerator "de.michab.scream.fcos.Number" #f))
 
-
-
-;;
-;; (real? obj) procedure; r5rs 21
-;;
-;; This is not in compliance with R5RS since an integer is also a real.  To get
-;; compliant real? had to be equal to number?.  To be cool we would then need
-;; automatic numeric type promotion that we don't have currently.
-;;
-(define real?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeDouble" #t))
-
-
+#|
+ | (complex? obj) procedure; r7rs 35
+ |#
+(define (complex? obj)
+  (error "NOT_IMPLEMENTED" 'complex?))
 
 #|
- | (integer? obj) procedure; r5rs 21
+ | (real? obj) procedure; r7rs 35
+ |#
+(define (real? obj)
+  (number? obj))
+
+#|
+ | (complex? obj) procedure; r7rs 35
+ |#
+(define (rational? obj)
+  (error "NOT_IMPLEMENTED" 'rational?))
+
+#|
+ | (integer? obj) procedure; r7rs 35
  |#
 (define (integer? obj)
   (if (number? obj)
     (= (round obj) obj)
     #f))
 
-;;
-;; (even? x)
-;;
-(define (even? x)
-  ; Return whether twice the half of x is x.  This works because of integer
-  ; division.
-  (eqv? x (* 2 (/ x 2))))
+#|
+ | exact?
+ |#
+(define (exact? x)
+  (if (number? x)
+      ((object x) (isExact))
+      (error "TYPE_ERROR"
+             %type-number
+             (scream:typename x))))
 
+#|
+ | inexact?
+ |#
+(define (inexact? x)
+  (not (exact? x)))
 
+#|
+ | (exact-integer? z) library procedure; r7rs 38
+ |#
+(define (exact-integer? z) 
+  (and
+    (integer? z)
+    (exact? z)))
 
-;;
-;; (odd? x)
-;;
-(define (odd? x)
-  ; Well, if we aren't even, we seem to be a little odd.
-  (not (even? x)))
+#|
+ | (finite? z) inexact library procedure; r7rs 35
+ |#
+(define (finite? obj)
+  (error "NOT_IMPLEMENTED" 'finite?))
 
+#|
+ | (infinite? z) inexact library procedure; r7rs 35
+ |#
+(define (infinite? obj)
+  (error "NOT_IMPLEMENTED" 'infinite?))
 
-
-;;
-;; (max n1 ...)
-;;
-(define (max n . rest)
-  (if (null? rest)
-    n
-    (let ((c (car rest)))
-      (apply max (if (> n c) n c) (cdr rest)))))
-
-
-
-;;
-;; (min n1 ...)
-;;
-(define (min n . rest)
-  (if (null? rest)
-    n
-    (let ((c (car rest)))
-      (apply min (if (< n c) n c) (cdr rest)))))
-
-
+#|
+ | (nan? z) inexact library procedure; r7rs 36
+ |#
+(define (nan? obj)
+  (error "NOT_IMPLEMENTED" 'nan?))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Preallocate the TLE slots that will be filled in the closure below.
@@ -160,24 +169,44 @@
 )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;;
+;; (even? x)
+;;
+(define (even? x)
+  ; Return whether twice the half of x is x.  This works because of integer
+  ; division.
+  (eqv? x (* 2 (/ x 2))))
+
+
+
+;;
+;; (odd? x)
+;;
+(define (odd? x)
+  ; Well, if we aren't even, we seem to be a little odd.
+  (not (even? x)))
+
 
 
 ;;
-;; exact?
+;; (max n1 ...)
 ;;
-(define (exact? x)
-  (if (number? x)
-      ((object x) (isExact))
-      (error "TYPE_ERROR"
-             %type-number
-             (scream:typename x))))
+(define (max n . rest)
+  (if (null? rest)
+    n
+    (let ((c (car rest)))
+      (apply max (if (> n c) n c) (cdr rest)))))
+
+
 
 ;;
-;; inexact?
+;; (min n1 ...)
 ;;
-(define (inexact? x)
-  (not (exact? x)))
-
+(define (min n . rest)
+  (if (null? rest)
+    n
+    (let ((c (car rest)))
+      (apply min (if (< n c) n c) (cdr rest)))))
 
 
 ;;
@@ -495,3 +524,19 @@
          (set! abs-character-list
          	(cons #\- abs-character-list)))
        (list->string abs-character-list)))
+
+#|
+ | (inexact z) procedure; r7rs 39
+ |#
+(define (inexact z)
+  (if (inexact? z)
+    z
+    (+ 0.0 z)))
+
+#|
+ | (inexact z) procedure; r7rs 39
+ |#
+(define (exact z)
+  (if (number? z)
+    (scream:class:number (r7rsExact z))
+    (error "TYPE_ERROR" scream:type-number z)))

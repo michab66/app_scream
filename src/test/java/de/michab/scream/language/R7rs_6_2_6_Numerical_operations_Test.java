@@ -13,6 +13,41 @@ import de.michab.scream.ScreamBaseTest;
 public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
 {
     /**
+     * r7rs exact/inexact 6.2.6 p35
+     */
+    @Test
+    public void exact_inexact() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(exact? 3.0)",
+                bFalse );
+        t.expectFco(
+                "(exact? #e3.0)",
+                bTrue );
+        t.expectFco(
+                "(inexact? 3.)",
+                bTrue );
+    }
+
+    /**
+     * r7rs exact/inexact 6.2.6 p35
+     */
+    @Test
+    public void exact_inexact_integer() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(exact-integer? 32)",
+                bTrue );
+        t.expectFco(
+                "(exact-integer? 32.0)",
+                bFalse );
+    }
+
+    /**
      * r7rs truncate 6.2.6 p37
      */
     @Test
@@ -22,6 +57,7 @@ public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
                 "(truncate -4.3)",
                 d( -4.0 ) );
     }
+
     /**
      * r7rs truncate 6.2.6 p37
      */
@@ -93,4 +129,25 @@ public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
                 "(exact-integer-sqrt 32)",
                 "(5 7)" );
     }
+
+    @Test
+    public void inexact() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(inexact 3)",
+                d( 3.0 ) );
+        t.expectFco(
+                "(inexact 3.0)",
+                d( 3.0 ) );
+        t.expectFco(
+                "(exact? (inexact 3))",
+                bFalse );
+        t.expectFco(
+                "(exact? (inexact 3.0))",
+                bFalse );
+    }
+
+
 }

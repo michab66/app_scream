@@ -102,6 +102,25 @@ extends FirstClassObject
     }
 
     /**
+     * Implements r7rs {@code (exact z)}.
+     *
+     * @param z
+     * @return
+     * @throws RuntimeX
+     */
+    public static Number r7rsExact( Number z )
+      throws RuntimeX
+    {
+        if ( z.isExact() )
+            return z;
+
+        if ( z.asLong() == z.asDouble() )
+            return SchemeInteger.createObject( z.asLong() );
+
+        throw RuntimeX.mIllegalArgument( z.toString() );
+    }
+
+    /**
      * Computes this plus the argument.
      *
      * @param other The corresponding number to add.
