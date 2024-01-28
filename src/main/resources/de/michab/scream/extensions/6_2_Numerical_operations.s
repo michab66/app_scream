@@ -191,24 +191,33 @@
 (define (zero? z)
   (= 0 z))
 
-;;
-;; (even? x)
-;;
-(define (even? x)
-  ; Return whether twice the half of x is x.  This works because of integer
-  ; division.
-  (eqv? x (* 2 (/ x 2))))
+#|
+ | positive? - library procedure - r5rs p. 22
+ |#
+(define (positive? x)
+  (> x 0))
 
+#|
+ | negative? - library procedure - r5rs p. 22
+ |#
+(define (negative? x)
+  (< x 0))
 
+#|
+ | (odd? n)
+ |#
+(define (odd? n)
+  (if (integer? n)
+    ((object (exact n)) (r7rsOddQ))
+    (error "TYPE_ERROR"
+             %type-integer
+             (scream:typename n))))
 
-;;
-;; (odd? x)
-;;
-(define (odd? x)
-  ; Well, if we aren't even, we seem to be a little odd.
-  (not (even? x)))
-
-
+#|
+ | (even? n)
+ |#
+(define (even? n)
+  (not (odd? n)))
 
 ;;
 ;; (max n1 ...)
@@ -229,16 +238,6 @@
     n
     (let ((c (car rest)))
       (apply min (if (< n c) n c) (cdr rest)))))
-
-;;
-;; positive? - library procedure - r5rs p. 22
-;;
-(define (positive? x) (> x 0))
-
-;;
-;; negative? - library procedure - r5rs p. 22
-;;
-(define (negative? x) (< x 0))
 
 ;;
 ;; Set up dummy bindings in the global TLE.  The actual method definitions

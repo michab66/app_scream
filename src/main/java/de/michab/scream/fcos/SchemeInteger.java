@@ -263,4 +263,9 @@ public class SchemeInteger
                 asLong() >= z.asLong() :
                 asDouble() >= z.asDouble();
     }
+
+    public boolean r7rsOddQ()
+    {
+        return (asLong() & 0x1) != 0;
+    }
 }

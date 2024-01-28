@@ -257,6 +257,204 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     }
 
     /**
+     * r7rs zero? 6.2.6 p36
+     */
+    @Test
+    public void zeroq() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(zero? 0)",
+                bTrue );
+        t.expectFco(
+                "(zero? 0.0)",
+                bTrue );
+        t.expectFco(
+                "(zero? 313)",
+                bFalse );
+        t.expectFco(
+                "(zero? 3.1415)",
+                bFalse );        t.expectError(
+                "(zero? '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(zero?)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(zero? 0 0)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
+    /**
+     * r7rs positive? 6.2.6 p36
+     */
+    @Test
+    public void positiveq() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(positive? 0)",
+                bFalse );
+        t.expectFco(
+                "(positive? -1)",
+                bFalse );
+        t.expectFco(
+                "(positive? 1)",
+                bTrue );
+
+        t.expectFco(
+                "(positive? 0.0)",
+                bFalse );
+        t.expectFco(
+                "(positive? -1.)",
+                bFalse );
+        t.expectFco(
+                "(positive? 1.)",
+                bTrue );
+
+        t.expectError(
+                "(positive? '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(positive?)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(positive? 0 0)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
+    /**
+     * r7rs negative? 6.2.6 p36
+     */
+    @Test
+    public void negativeq() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(negative? 0)",
+                bFalse );
+        t.expectFco(
+                "(negative? -1)",
+                bTrue );
+        t.expectFco(
+                "(negative? 1)",
+                bFalse );
+
+        t.expectFco(
+                "(negative? 0.0)",
+                bFalse );
+        t.expectFco(
+                "(negative? -1.)",
+                bTrue );
+        t.expectFco(
+                "(negative? 1.)",
+                bFalse );
+
+        t.expectError(
+                "(negative? '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(negative?)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(negative? 0 0)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
+    /**
+     * r7rs odd? 6.2.6 p36
+     */
+    @Test
+    public void oddq() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(odd? -1)",
+                bTrue );
+        t.expectFco(
+                "(odd? 0)",
+                bFalse );
+        t.expectFco(
+                "(odd? 1)",
+                bTrue );
+        t.expectFco(
+                "(odd? 2)",
+                bFalse );
+
+        t.expectFco(
+                "(odd? -1.)",
+                bTrue );
+        t.expectFco(
+                "(odd? 0.)",
+                bFalse );
+        t.expectFco(
+                "(odd? 1.)",
+                bTrue );
+        t.expectFco(
+                "(odd? 2.)",
+                bFalse );
+
+        t.expectError(
+                "(odd? '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(odd?)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(odd? 0 0)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
+    /**
+     * r7rs even? 6.2.6 p36
+     */
+    @Test
+    public void evenq() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(even? -1)",
+                bFalse );
+        t.expectFco(
+                "(even? 0)",
+                bTrue );
+        t.expectFco(
+                "(even? 1)",
+                bFalse );
+        t.expectFco(
+                "(even? 2)",
+                bTrue );
+
+        t.expectFco(
+                "(even? -1.)",
+                bFalse );
+        t.expectFco(
+                "(even? 0.)",
+                bTrue );
+        t.expectFco(
+                "(even? 1.)",
+                bFalse );
+        t.expectFco(
+                "(even? 2.)",
+                bTrue );
+
+        t.expectError(
+                "(even? '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(even?)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(even? 0 0)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
+    /**
      * r7rs truncate 6.2.6 p37
      */
     @Test
@@ -428,22 +626,6 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
 //      #t)
 //    (%positive-test sourcefile 10
 //      (>= 1 1.0 1.5 2.0 2)
-//      #f)
-//
-//    ;;
-//    ;;
-//    ;;
-//    (%positive-test sourcefile 11
-//      (zero? 0)
-//      #t)
-//    (%positive-test sourcefile 12
-//      (zero? 0.0)
-//      #t)
-//    (%positive-test sourcefile 13
-//      (zero? 1)
-//      #f)
-//    (%positive-test sourcefile 14
-//      (zero? -1.0)
 //      #f)
 //
 //    ;;
