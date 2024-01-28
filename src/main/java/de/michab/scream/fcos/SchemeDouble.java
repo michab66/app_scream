@@ -203,4 +203,24 @@ public class SchemeDouble extends
     {
         return asDouble() == z.asDouble();
     }
+    @Override
+    public boolean r7rsLessThan( Number z ) throws RuntimeX
+    {
+        return asDouble() < z.asDouble();
+    }
+    @Override
+    public boolean r7rsGreaterThan( Number z ) throws RuntimeX
+    {
+        return asDouble() > z.asDouble();
+    }
+    @Override
+    public boolean r7rsLessOrEqualThan( Number z ) throws RuntimeX
+    {
+        return asDouble() <= z.asDouble();
+    }
+    @Override
+    public boolean r7rsGreaterOrEqualThan( Number z ) throws RuntimeX
+    {
+        return asDouble() >= z.asDouble();
+    }
 }

@@ -71,6 +71,184 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 Code.TYPE_ERROR );
     }
 
+    @Test
+    public void mathLess() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(< -1 1)",
+                bTrue );
+        t.expectFco(
+                "(< -1 0 1 2)",
+                bTrue );
+
+        t.expectFco(
+                "(< 2 2)",
+                bFalse );
+        t.expectFco(
+                "(< 3 2)",
+                bFalse );
+        t.expectFco(
+                "(< -1 0 0 2)",
+                bFalse );
+
+        t.expectFco(
+                "(< -1 1.0)",
+                bTrue );
+        t.expectFco(
+                "(< -1.0 1)",
+                bTrue );
+
+        t.expectFco(
+                "(< -1 1.0 2)",
+                bTrue );
+        t.expectFco(
+                "(< -1.0 1 2.0)",
+                bTrue );
+
+        t.expectFco(
+                "(< 0)",
+                bTrue );
+        t.expectError( "(<)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError( "(< '())",
+                Code.TYPE_ERROR );
+    }
+
+    @Test
+    public void mathGreater() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(> -1 1)",
+                bFalse );
+        t.expectFco(
+                "(> -1 0 1 2)",
+                bFalse );
+
+        t.expectFco(
+                "(> 2 2)",
+                bFalse );
+        t.expectFco(
+                "(> 3 2)",
+                bTrue );
+        t.expectFco(
+                "(> -1 0 0 2)",
+                bFalse );
+
+        t.expectFco(
+                "(> -1 1.0)",
+                bFalse );
+        t.expectFco(
+                "(> -1.0 1)",
+                bFalse );
+
+        t.expectFco(
+                "(> -1 1.0 2)",
+                bFalse );
+        t.expectFco(
+                "(> -1.0 1 2.0)",
+                bFalse );
+
+        t.expectFco(
+                "(> 0)",
+                bTrue );
+        t.expectError( "(>)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError( "(> '())",
+                Code.TYPE_ERROR );
+    }
+
+    @Test
+    public void mathLessEqual() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(<= -1 1)",
+                bTrue );
+        t.expectFco(
+                "(<= -1 -1)",
+                bTrue );
+        t.expectFco(
+                "(<= 1 0)",
+                bFalse );
+
+        t.expectFco(
+                "(<= -1. 1)",
+                bTrue );
+        t.expectFco(
+                "(<= -1. -1)",
+                bTrue );
+        t.expectFco(
+                "(<= 1. 0)",
+                bFalse );
+
+        t.expectFco(
+                "(<= -1. 1.)",
+                bTrue );
+        t.expectFco(
+                "(<= -1. -1.)",
+                bTrue );
+        t.expectFco(
+                "(<= 1. 0.)",
+                bFalse );
+
+        t.expectFco(
+                "(<= 0)",
+                bTrue );
+        t.expectError( "(<=)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError( "(<= '())",
+                Code.TYPE_ERROR );
+    }
+
+    @Test
+    public void mathGreaterEqual() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(>= -1 1)",
+                bFalse );
+        t.expectFco(
+                "(>= -1 -1)",
+                bTrue );
+        t.expectFco(
+                "(>= 1 0)",
+                bTrue );
+
+        t.expectFco(
+                "(>= -1. 1)",
+                bFalse );
+        t.expectFco(
+                "(>= -1. -1)",
+                bTrue );
+        t.expectFco(
+                "(>= 1. 0)",
+                bTrue );
+
+        t.expectFco(
+                "(>= -1. 1.)",
+                bFalse );
+        t.expectFco(
+                "(>= -1. -1.)",
+                bTrue );
+        t.expectFco(
+                "(>= 1. 0.)",
+                bTrue );
+
+        t.expectFco(
+                "(>= 0)",
+                bTrue );
+        t.expectError( "(>=)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError( "(>= '())",
+                Code.TYPE_ERROR );
+    }
+
     /**
      * r7rs truncate 6.2.6 p37
      */

@@ -235,4 +235,32 @@ public class SchemeInteger
             asLong() == z.asLong() :
             asDouble() == z.asDouble();
     }
+    @Override
+    public boolean r7rsLessThan( Number z ) throws RuntimeX
+    {
+        return z.isExact() ?
+                asLong() < z.asLong() :
+                asDouble() < z.asDouble();
+    }
+    @Override
+    public boolean r7rsGreaterThan( Number z ) throws RuntimeX
+    {
+        return z.isExact() ?
+                asLong() > z.asLong() :
+                asDouble() > z.asDouble();
+    }
+    @Override
+    public boolean r7rsLessOrEqualThan( Number z ) throws RuntimeX
+    {
+        return z.isExact() ?
+                asLong() <= z.asLong() :
+                asDouble() <= z.asDouble();
+    }
+    @Override
+    public boolean r7rsGreaterOrEqualThan( Number z ) throws RuntimeX
+    {
+        return z.isExact() ?
+                asLong() >= z.asLong() :
+                asDouble() >= z.asDouble();
+    }
 }

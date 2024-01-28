@@ -110,18 +110,6 @@
 (define (nan? obj)
   (error "NOT_IMPLEMENTED" 'nan?))
 
-(define (scream:math:to-transitive proc2)
-
-  (define (transitiver first . rest)
-    (cond
-         ((null? rest)
-           #t)
-         ((proc2 first (car rest))
-           (apply transitiver (car rest) (cdr rest)))
-         (else
-           #f)))
-
-    transitiver)
 
 (define (scream:math:to-transitive-cmp cmp-operation)
 
@@ -150,74 +138,20 @@
 
     transitiver)
 
-#;(define =
-  (scream:math:to-transitive 
-    (lambda (z1 z2)
-      (cond
-        ((not (number? z1))
-          (error "TYPE_ERROR" %type-number z1))
-        ((not (number? z2))
-          (error "TYPE_ERROR" %type-number z2))
-        (else
-          ((object z1) (r7rsEqual z2)))))))
 (define =
   (scream:math:to-transitive-cmp 'r7rsEqual))
 
-(define < ())
-(define > ())
-(define <= ())
-(define >= ())
+(define <
+  (scream:math:to-transitive-cmp 'r7rsLessThan))
 
+(define >
+  (scream:math:to-transitive-cmp 'r7rsGreaterThan))
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Open a special closure holding the precomputed Number class reference for
-;; better efficiency.
-(let ((numberClass (make-object de.michab.scream.fcos.Number)))
-
-;;
-;; (= n1 .. nn)
-;;
-#;(set! = (lambda args
-  (if (not (null? args))
-      (numberClass (compare (list->vector args) (numberClass EQ)))
-      #f)))
-
-;;
-;; (< n1 .. nn)
-;;
-(set! < (lambda args
-  (if (not (null? args))
-      (numberClass (compare (list->vector args) (numberClass LT)))
-      #f)))
-
-;;
-;; (<= n1 .. nn)
-;;
-(set! <= (lambda args
-  (if (not (null? args))
-      (numberClass (compare (list->vector args) (numberClass LET)))
-      #f)))
-
-;;
-;; (> n1 .. nn)
-;;
-(set! > (lambda args
-  (if (not (null? args))
-      (numberClass (compare (list->vector args) (numberClass GT)))
-      #f)))
-
-;;
-;; (>= n1 .. nn)
-;;
-(set! >= (lambda args
-  (if (not (null? args))
-      (numberClass (compare (list->vector args) (numberClass GET)))
-      #f)))
-
-;; Finish number class closure.
-)
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(define <= 
+  (scream:math:to-transitive-cmp 'r7rsLessOrEqualThan))
+  
+(define >= 
+  (scream:math:to-transitive-cmp 'r7rsGreaterOrEqualThan))
 
 ;;
 ;; (even? x)

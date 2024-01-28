@@ -109,7 +109,15 @@ extends FirstClassObject
      * @throws RuntimeX
      */
     public abstract boolean r7rsEqual( Number z )
-      throws RuntimeX;
+            throws RuntimeX;
+    public abstract boolean r7rsLessThan( Number z )
+            throws RuntimeX;
+    public abstract boolean r7rsGreaterThan( Number z )
+            throws RuntimeX;
+    public abstract boolean r7rsLessOrEqualThan( Number z )
+            throws RuntimeX;
+    public abstract boolean r7rsGreaterOrEqualThan( Number z )
+            throws RuntimeX;
 
     /**
      * Implements r7rs {@code (exact z)}.
@@ -309,89 +317,6 @@ extends FirstClassObject
                     Scut.as( Number.class, list.getCar() ),
                     Scut.as( Cons.class, list.getCdr() ),
                     c );
-    }
-
-
-    /**
-     * Implements the comparison for the < <= = >= > operations.
-     *
-     * @param args The array of arguments for the comparison.
-     * @param operation The operation flag, one of EQ LT LET GT GET.
-     * @return The result of the comparison.
-     * @throws RuntimeX In case a wrong operation argument was given.
-     */
-    public static FirstClassObject
-    compare( FirstClassObject[] args, ComparisonType operation )
-            throws
-            RuntimeX
-    {
-        // Ensure valid non-NIL arguments.
-        catchNil( args );
-
-        // Comparisons are based on doubles in this method.
-
-        // Create an array that holds the values for the further comparison.
-        double[] dargs = new double[ args.length ];
-        // Now init this array and implicitly check types.
-        for ( int i = 0 ; i < args.length ; i++ )
-        {
-            try
-            {
-                dargs[i] = ((Number)args[i]).asDouble();
-            }
-            catch ( Exception e )
-            {
-                Operation.checkArgument( 1, Number.class, args[i] );
-            }
-        }
-
-        // Easy going now.  Check if the entries in the array compare according
-        // to the operations argument.
-        boolean result = false;
-        for ( int i = 0 ; i < args.length -1 ; i++ )
-        {
-            switch ( operation )
-            {
-            case EQ:
-                result = dargs[i] == dargs[i+1];
-                break;
-            case LT:
-                result = dargs[i] < dargs[i+1];
-                break;
-            case LET:
-                result = dargs[i] <= dargs[i+1];
-                break;
-            case GT:
-                result = dargs[i] > dargs[i+1];
-                break;
-            case GET:
-                result = dargs[i] >= dargs[i+1];
-                break;
-            default:
-                throw RuntimeX.mInternalError( Number.class.getName() );
-            }
-
-            // Shortcut evaluation.
-            if ( !result )
-                break;
-        }
-
-        return SchemeBoolean.createObject( result );
-    }
-
-
-
-    /**
-     * Used for catching NIL values in number lists.
-     *
-     * @param list The list of objects to be checked.
-     * @throws RuntimeX In case the list contains NIL.
-     */
-    static void catchNil( FirstClassObject[] list )
-            throws RuntimeX
-    {
-        for ( int i = list.length -1 ; i >= 0 ; i-- )
-            Operation.checkArgument( i, Number.class, list[i] );
     }
 
     private static Thunk doArithmetic(
