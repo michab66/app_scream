@@ -139,6 +139,8 @@
 
   (define (transitiver first . rest)
     (cond
+         ((not (number? first))
+           (error "TYPE_ERROR" %type-number first))
          ((null? rest)
            #t)
          ((comparer first (car rest))
@@ -148,7 +150,7 @@
 
     transitiver)
 
-(define =
+#;(define =
   (scream:math:to-transitive 
     (lambda (z1 z2)
       (cond
@@ -158,7 +160,7 @@
           (error "TYPE_ERROR" %type-number z2))
         (else
           ((object z1) (r7rsEqual z2)))))))
-#;(define =2
+(define =
   (scream:math:to-transitive-cmp 'r7rsEqual))
 
 (define < ())

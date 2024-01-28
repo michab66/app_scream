@@ -1,24 +1,76 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.language;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamEvaluator;
-import de.michab.scream.fcos.SchemeBoolean;
 import de.michab.scream.fcos.SchemeDouble;
 import de.michab.scream.fcos.SchemeInteger;
 
 public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
 {
+    @Test
+    public void mathEquals() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(= 1 1)",
+                bTrue );
+        t.expectFco(
+                "(= 1 1 1)",
+                bTrue );
+        t.expectFco(
+                "(= 2 1)",
+                bFalse );
+        t.expectFco(
+                "(= 2 2 1)",
+                bFalse );
+
+        t.expectFco(
+                "(= 1 1.0)",
+                bTrue );
+        t.expectFco(
+                "(= 1 1.0 (+ -1 2))",
+                bTrue );
+        t.expectFco(
+                "(= 1 1.1)",
+                bFalse );
+        t.expectFco(
+                "(= 1.1 1)",
+                bFalse );
+        t.expectFco(
+                "(= 1.9 1)",
+                bFalse );
+        t.expectFco(
+                "(= 1 1.0 3.14)",
+                bFalse );
+
+        t.expectFco(
+                "(= 1 1.0 (- 3 2) (* .5 2))",
+                bTrue );
+        t.expectFco(
+                "(= 1 1.0 (- 3 2) (* .5 3))",
+                bFalse );
+
+        t.expectFco( "(= 1)",
+                bTrue );
+        t.expectFco( "(= 3.14159265)",
+                bTrue );
+
+        t.expectError( "(=)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError( "(= '())",
+                Code.TYPE_ERROR );
+    }
+
     /**
      * r7rs truncate 6.2.6 p37
      */
@@ -168,57 +220,11 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     }
 
     @Test
-    public void mathEquals_t() throws Exception
-    {
-        ScreamEvaluator se = scriptEngine();
-
-        var result = se.evalFco(
-                """
-                (= 313 313)
-                """ );
-        assertEquals( SchemeBoolean.T, result );
-    }
-
-    @Test
-    public void mathEquals_f() throws Exception
-    {
-        ScreamEvaluator se = scriptEngine();
-
-        var result = se.evalFco(
-                """
-                (= 121 313)
-                """ );
-        assertEquals( SchemeBoolean.F, result );
-    }
-
-    @Test
-    public void _equalsCompile() throws Exception
-    {
-        expectFco( "(= 121 121)", SchemeBoolean.T );
-    }
-
-    @Test
-    public void _equalsCompile2() throws Exception
-    {
-        expectFco( "(define i 121)(= i 121)", SchemeBoolean.T );
-    }
-
-    @Test
     public void addition_err_1() throws Exception
     {
         expectError( "(+ 1 'i)", Code.TYPE_ERROR );
     }
 
-//    ;;
-//    ;; Test =
-//    ;;
-//    (%positive-test sourcefile 1
-//      (= 1 1.0 (- 3 2) (* .5 2))
-//      #t)
-//    (%positive-test sourcefile 2
-//      (= 1 1.0 (- 3 2) (* .5 3))
-//      #f)
-//
 //    ;;
 //    ;; Test <=>
 //    ;;

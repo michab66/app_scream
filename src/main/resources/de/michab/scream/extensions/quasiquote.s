@@ -26,8 +26,7 @@
       (lambda (a)
         (and (list? a)
              (not (null? a))
-             (= 2 (length a))
-            ; (symbol? (car a))
+             (eqv? 2 (length a))
              (memq (car a) '(quasiquote quote unquote unquote-splicing)))))
 
     (qq-vector

@@ -231,6 +231,8 @@ public class SchemeInteger
     @Override
     public boolean r7rsEqual( Number z ) throws RuntimeX
     {
-        return asLong() == z.asLong();
+        return z.isExact() ?
+            asLong() == z.asLong() :
+            asDouble() == z.asDouble();
     }
 }
