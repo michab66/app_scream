@@ -197,6 +197,13 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 bFalse );
 
         t.expectFco(
+                "(<= 1 1.0 1.5 2.0 2)",
+                bTrue );
+        t.expectFco(
+                "(<= 1 1.5 1)",
+                bFalse );
+
+        t.expectFco(
                 "(<= 0)",
                 bTrue );
         t.expectError( "(<=)",
@@ -403,15 +410,6 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         expectError( "(+ 1 'i)", Code.TYPE_ERROR );
     }
 
-//    ;;
-//    ;; Test <=>
-//    ;;
-//    (%positive-test sourcefile 3
-//      (<= 1 1.0 1.5 2.0 2)
-//      #t)
-//    (%positive-test sourcefile 4
-//      (<= 1 1.5 1)
-//      #f)
 //    (%positive-test sourcefile 5
 //      (< 1 1.5 2)
 //      #t)

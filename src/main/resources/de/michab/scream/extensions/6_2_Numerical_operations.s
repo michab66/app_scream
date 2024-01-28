@@ -188,7 +188,7 @@
 #|
  | (zero? z)
  |#
-(define (zero? x)
+(define (zero? z)
   (= 0 z))
 
 ;;
