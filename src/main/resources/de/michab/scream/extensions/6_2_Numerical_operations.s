@@ -32,6 +32,51 @@
 (define scream:double?
   (typePredicateGenerator "de.michab.scream.fcos.SchemeDouble" #t))
 
+#|
+ | Support-operation for the implementation of the math comparison operators.
+ |
+ | Expects an operation (op z1 z2) => bool.
+ | Returns an operation (op' . z).
+ |
+ | Evalution is:
+ |  (op' 1) => #t
+ |  (op' 1 2 3) => (if (op 1 2)
+ |                   (op' 2 3)
+ |                   #f)
+ |
+ | The implementation uses quasiquote rewriting which is
+ | performance-expensive.  Optimisation options are
+ |  * Speed up quasiquote, this is preferred.
+ |  * Delay evaluation.  See usages of case-lambda.
+ |#
+(define (scream:math:to-transitive-cmp cmp-operation)
+
+  (define q-comparer
+    `(lambda (z1 z2)
+      (cond
+        ((not (number? z1))
+          (error "TYPE_ERROR" %type-number z1))
+        ((not (number? z2))
+          (error "TYPE_ERROR" %type-number z2))
+        (else
+          ((object z1) (,cmp-operation z2))))))
+
+  (define comparer (scream:eval q-comparer))
+
+  (define (transitiver first . rest)
+    (cond
+         ((not (number? first))
+           (error "TYPE_ERROR" %type-number first))
+         ((null? rest)
+           #t)
+         ((comparer first (car rest))
+           (apply transitiver (car rest) (cdr rest)))
+         (else
+           #f)))
+
+    transitiver)
+
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -110,48 +155,41 @@
 (define (nan? obj)
   (error "NOT_IMPLEMENTED" 'nan?))
 
-
-(define (scream:math:to-transitive-cmp cmp-operation)
-
-  (define q-comparer
-    `(lambda (z1 z2)
-      (cond
-        ((not (number? z1))
-          (error "TYPE_ERROR" %type-number z1))
-        ((not (number? z2))
-          (error "TYPE_ERROR" %type-number z2))
-        (else
-          ((object z1) (,cmp-operation z2))))))
-
-  (define comparer (scream:eval q-comparer))
-
-  (define (transitiver first . rest)
-    (cond
-         ((not (number? first))
-           (error "TYPE_ERROR" %type-number first))
-         ((null? rest)
-           #t)
-         ((comparer first (car rest))
-           (apply transitiver (car rest) (cdr rest)))
-         (else
-           #f)))
-
-    transitiver)
-
+#|
+ | (= z₁ z₂ ...)  procedure; r7rs 36
+ |#
 (define =
   (scream:math:to-transitive-cmp 'r7rsEqual))
 
+#|
+ | (< z₁ z₂ ...)  procedure; r7rs 36
+ |#
 (define <
   (scream:math:to-transitive-cmp 'r7rsLessThan))
 
+#|
+ | (> z₁ z₂ ...)  procedure; r7rs 36
+ |#
 (define >
   (scream:math:to-transitive-cmp 'r7rsGreaterThan))
 
+#|
+ | (<= z₁ z₂ ...)  procedure; r7rs 36
+ |#
 (define <= 
   (scream:math:to-transitive-cmp 'r7rsLessOrEqualThan))
   
+#|
+ | (>= z₁ z₂ ...)  procedure; r7rs 36
+ |#
 (define >= 
   (scream:math:to-transitive-cmp 'r7rsGreaterOrEqualThan))
+
+#|
+ | (zero? z)
+ |#
+(define (zero? x)
+  (= 0 z))
 
 ;;
 ;; (even? x)
@@ -191,17 +229,6 @@
     n
     (let ((c (car rest)))
       (apply min (if (< n c) n c) (cdr rest)))))
-
-
-;;
-;; zero?
-;;
-(define (zero? x)
-  (if (number? x)
-      (equal? 0 x)
-      (error "TYPE_ERROR" %type-number (scream:typename x))))
-
-
 
 ;;
 ;; positive? - library procedure - r5rs p. 22
