@@ -166,12 +166,14 @@ public class ScreamBaseTest
      */
     public static interface Tester {
         /**
-         * Execute the passed script and accept any outcome but an exception.
-         * @param script
-         * @return A fluent tester.
+         * Execute the passed script and return the result without
+         * validation.
+         *
+         * @param script The script to execute.
+         * @return The execution result.
          * @throws RuntimeX In case of an error.
          */
-        Tester execute( String script ) throws RuntimeX;
+        FirstClassObject execute( String script ) throws RuntimeX;
         Tester expectFco( String script, String result ) throws RuntimeX;
         Tester expectFco( String script, FirstClassObject result ) throws RuntimeX;
         Tester expectError( String script, Code result );
@@ -209,10 +211,9 @@ public class ScreamBaseTest
             }
 
             @Override
-            public Tester execute( String script ) throws RuntimeX
+            public FirstClassObject execute( String script ) throws RuntimeX
             {
-                se.evalFco( script );
-                return this;
+                return se.evalFco( script );
             }
         };
     }

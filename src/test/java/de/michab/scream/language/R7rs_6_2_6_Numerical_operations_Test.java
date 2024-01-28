@@ -5,10 +5,14 @@
  */
 package de.michab.scream.language;
 
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.SchemeInteger;
 
 public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
 {
@@ -109,23 +113,17 @@ public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
     }
 
     @Test
-    public void exact_integer_sqrt_1() throws Exception
+    public void exact_integer_sqrt() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(exact-integer-sqrt 4)",
                 "(2 0)" );
-    }
-    @Test
-    public void exact_integer_sqrt_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(exact-integer-sqrt 5)",
                 "(2 1)" );
-    }
-    @Test
-    public void exact_integer_sqrt_3() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(exact-integer-sqrt 32)",
                 "(5 7)" );
     }
@@ -135,19 +133,37 @@ public class R7rs_6_2_6_Numerical_operations_Test extends ScreamBaseTest
     {
         var t = makeTester();
 
+        assertInstanceOf(
+                SchemeDouble.class,
+                t.execute( "(inexact 3.1415)" ) );
+
+        // Workaround for #261.
         t.expectFco(
-                "(inexact 3)",
-                d( 3.0 ) );
+                "(inexact? (inexact 3))",
+                bTrue );
         t.expectFco(
-                "(inexact 3.0)",
-                d( 3.0 ) );
-        t.expectFco(
-                "(exact? (inexact 3))",
-                bFalse );
-        t.expectFco(
-                "(exact? (inexact 3.0))",
-                bFalse );
+                "(inexact? (inexact 3.0))",
+                bTrue );
     }
 
+    @Test
+    public void exact() throws Exception
+    {
+        var t = makeTester();
 
+        assertInstanceOf(
+                SchemeInteger.class,
+                t.execute( "(exact 313)" ) );
+
+        // Workaround for #261, better is "(exact 313) -> 313".
+        t.expectFco(
+                "(exact? (exact 313))",
+                bTrue );
+        t.expectFco(
+                "(exact? (exact 3.0))",
+                bTrue );
+        t.expectError(
+                "(exact 3.13)",
+                Code.ILLEGAL_ARGUMENT );
+    }
 }

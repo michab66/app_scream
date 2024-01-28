@@ -477,6 +477,21 @@
 (define (quotient n1 n2)
   (/ n1 n2))
 
+#|
+ | (inexact z) procedure; r7rs p39
+ |#
+(define (inexact z)
+  (if (inexact? z)
+    z
+    (scream:to-float z)))
+
+#|
+ | (exact z) procedure; r7rs p39
+ |#
+(define (exact z)
+  (if (number? z)
+    (scream:class:number (r7rsExact z))
+    (error "TYPE_ERROR" scream:type-number z)))
 
 ; string->number supports a radix argument up to the number of entries
 ; in this vector.
@@ -525,18 +540,3 @@
          	(cons #\- abs-character-list)))
        (list->string abs-character-list)))
 
-#|
- | (inexact z) procedure; r7rs 39
- |#
-(define (inexact z)
-  (if (inexact? z)
-    z
-    (+ 0.0 z)))
-
-#|
- | (inexact z) procedure; r7rs 39
- |#
-(define (exact z)
-  (if (number? z)
-    (scream:class:number (r7rsExact z))
-    (error "TYPE_ERROR" scream:type-number z)))
