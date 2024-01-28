@@ -197,4 +197,10 @@ public class SchemeDouble extends
     {
         return Double.valueOf( _value );
     }
+
+    @Override
+    public boolean r7rsEqual( Number z ) throws RuntimeX
+    {
+        return asDouble() == z.asDouble();
+    }
 }

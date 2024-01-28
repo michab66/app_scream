@@ -110,9 +110,57 @@
 (define (nan? obj)
   (error "NOT_IMPLEMENTED" 'nan?))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Preallocate the TLE slots that will be filled in the closure below.
-(define = ())
+(define (scream:math:to-transitive proc2)
+
+  (define (transitiver first . rest)
+    (cond
+         ((null? rest)
+           #t)
+         ((proc2 first (car rest))
+           (apply transitiver (car rest) (cdr rest)))
+         (else
+           #f)))
+
+    transitiver)
+
+(define (scream:math:to-transitive-cmp cmp-operation)
+
+  (define q-comparer
+    `(lambda (z1 z2)
+      (cond
+        ((not (number? z1))
+          (error "TYPE_ERROR" %type-number z1))
+        ((not (number? z2))
+          (error "TYPE_ERROR" %type-number z2))
+        (else
+          ((object z1) (,cmp-operation z2))))))
+
+  (define comparer (scream:eval q-comparer))
+
+  (define (transitiver first . rest)
+    (cond
+         ((null? rest)
+           #t)
+         ((comparer first (car rest))
+           (apply transitiver (car rest) (cdr rest)))
+         (else
+           #f)))
+
+    transitiver)
+
+(define =
+  (scream:math:to-transitive 
+    (lambda (z1 z2)
+      (cond
+        ((not (number? z1))
+          (error "TYPE_ERROR" %type-number z1))
+        ((not (number? z2))
+          (error "TYPE_ERROR" %type-number z2))
+        (else
+          ((object z1) (r7rsEqual z2)))))))
+#;(define =2
+  (scream:math:to-transitive-cmp 'r7rsEqual))
+
 (define < ())
 (define > ())
 (define <= ())
@@ -128,7 +176,7 @@
 ;;
 ;; (= n1 .. nn)
 ;;
-(set! = (lambda args
+#;(set! = (lambda args
   (if (not (null? args))
       (numberClass (compare (list->vector args) (numberClass EQ)))
       #f)))
@@ -262,9 +310,9 @@
  |#
 (define (sqrt z) 
   (let ((result (scream:math (sqrt z))))
-    (if (= z (* result result))
-    	(round result)
-    	result
+    (if (integer? result)
+  	  (exact result)
+      result
     )
   )
 )
@@ -490,7 +538,7 @@
  |#
 (define (exact z)
   (if (number? z)
-    (scream:class:number (r7rsExact z))
+    ((object z) (r7rsExact))
     (error "TYPE_ERROR" scream:type-number z)))
 
 ; string->number supports a radix argument up to the number of entries

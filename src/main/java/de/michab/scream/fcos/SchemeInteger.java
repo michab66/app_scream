@@ -227,4 +227,10 @@ public class SchemeInteger
 
         Arrays.fill( _cache, Cons.NIL );
     }
+
+    @Override
+    public boolean r7rsEqual( Number z ) throws RuntimeX
+    {
+        return asLong() == z.asLong();
+    }
 }

@@ -102,22 +102,32 @@ extends FirstClassObject
     }
 
     /**
+     * Implements r7rs {@code (= y z)}.
+     *
+     * @param z
+     * @return
+     * @throws RuntimeX
+     */
+    public abstract boolean r7rsEqual( Number z )
+      throws RuntimeX;
+
+    /**
      * Implements r7rs {@code (exact z)}.
      *
      * @param z
      * @return
      * @throws RuntimeX
      */
-    public static Number r7rsExact( Number z )
+    public Number r7rsExact()
       throws RuntimeX
     {
-        if ( z.isExact() )
-            return z;
+        if ( isExact() )
+            return this;
 
-        if ( z.asLong() == z.asDouble() )
-            return SchemeInteger.createObject( z.asLong() );
+        if ( asLong() == asDouble() )
+            return SchemeInteger.createObject( asLong() );
 
-        throw RuntimeX.mIllegalArgument( z.toString() );
+        throw RuntimeX.mIllegalArgument( toString() );
     }
 
     /**

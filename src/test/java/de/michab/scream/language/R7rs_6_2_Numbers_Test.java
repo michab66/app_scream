@@ -20,6 +20,64 @@ import de.michab.scream.fcos.SchemeInteger;
 public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
 {
     /**
+     * r7rs truncate 6.2.6 p37
+     */
+    @Test
+    public void truncate() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(truncate -4.3)",
+                d( -4.0 ) );
+        t.expectFco(
+                "(truncate 3.5)",
+                d( 3.0 ) );
+    }
+
+    @Test
+    public void round() throws Exception
+    {
+        var ts = makeTester();
+
+        ts.expectFco(
+                "(round -4.3)",
+                d(-4.0) );
+        ts.expectFco(
+                "(exact? (round -4.3))",
+                bFalse );
+        ts.expectFco(
+                "(round 3.5)",
+                d(4.0) );
+        ts.expectFco(
+                "(round 7)",
+                i(7) );
+        ts.expectFco(
+                "(exact? (round 7))",
+                bTrue );
+        ts.expectError(
+                "(round 'me)", Code.TYPE_ERROR );
+    }
+
+    @Test
+    public void sqrt() throws Exception
+    {
+        var t = makeTester();
+
+        final var SQRT2 = Math.sqrt( 2.0 );
+
+        t.expectFco(
+                "(sqrt 2)",
+                d( SQRT2 ) );
+        t.expectFco(
+                "(sqrt 2.0)",
+                d( SQRT2 ) );
+        t.expectFco(
+                "(integer? (sqrt 4))",
+                bTrue );
+    }
+
+    /**
      * r7rs exact/inexact 6.2.6 p35
      */
     @Test
@@ -52,67 +110,6 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         t.expectFco(
                 "(exact-integer? 32.0)",
                 bFalse );
-    }
-
-    /**
-     * r7rs truncate 6.2.6 p37
-     */
-    @Test
-    public void truncate_1() throws Exception
-    {
-        expectFco(
-                "(truncate -4.3)",
-                d( -4.0 ) );
-    }
-
-    /**
-     * r7rs truncate 6.2.6 p37
-     */
-    @Test
-    public void truncate_2() throws Exception
-    {
-        expectFco(
-                "(truncate 3.5)",
-                d( 3.0 ) );
-    }
-
-    @Test
-    public void round() throws Exception
-    {
-        var ts = makeTester();
-
-        ts.expectFco( "(round -4.3)", d(-4.0) );
-        ts.expectFco( "(exact? (round -4.3))", bFalse );
-        ts.expectFco( "(round 3.5)", d(4.0) );
-        ts.expectFco( "(round 7)", i(7) );
-        ts.expectFco( "(exact? (round 7))", bTrue );
-        ts.expectError( "(round 'me)", Code.TYPE_ERROR );
-    }
-
-    @Test
-    public void sqrt() throws Exception
-    {
-        final var SQRT2 = Math.sqrt( 2.0 );
-
-        expectFco(
-                "(sqrt 2)",
-                d( SQRT2 ) );
-    }
-    @Test
-    public void sqrt_2() throws Exception
-    {
-        final var SQRT2 = Math.sqrt( 2.0 );
-
-        expectFco(
-                "(sqrt 2.0)",
-                d( SQRT2 ) );
-    }
-    @Test
-    public void sqrt_3() throws Exception
-    {
-        expectFco(
-                "(integer? (sqrt 4))",
-                bTrue );
     }
 
     @Test
@@ -212,15 +209,6 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         expectError( "(+ 1 'i)", Code.TYPE_ERROR );
     }
 
-//    ;;
-//    ;; Test setup
-//    ;;
-//    (define sourcefile "test/math.s")
-//
-//    ;;
-//    ;; R5RS 4.2.6 p21
-//    ;;
-//
 //    ;;
 //    ;; Test =
 //    ;;
