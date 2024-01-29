@@ -76,6 +76,25 @@
 
     transitiver)
 
+#|
+ | Support operation for implementing the min and max functions.
+ |
+ | compare is a comparison function (cmp a b) => boolean.
+ |#
+(define (scream:min-max compare inexact-seen first . rest)
+
+    (if (null? rest)
+      (if inexact-seen
+        (inexact first)
+        first)
+      (let ((next (car rest)))
+        (apply scream:min-max
+          compare
+          (or inexact-seen (inexact? first) (inexact? next))
+          (if (compare first next)
+            first
+            next)
+          (cdr rest)))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
@@ -192,13 +211,13 @@
   (= 0 z))
 
 #|
- | positive? - library procedure - r5rs p. 22
+ | positive? - library procedure - r7rs p36
  |#
 (define (positive? x)
   (> x 0))
 
 #|
- | negative? - library procedure - r5rs p. 22
+ | negative? - library procedure - r7rs p36
  |#
 (define (negative? x)
   (< x 0))
@@ -219,25 +238,17 @@
 (define (even? n)
   (not (odd? n)))
 
-;;
-;; (max n1 ...)
-;;
+#|
+ | (max x₁ x₂ ...)  procedure; r7rs 36
+ |#
 (define (max n . rest)
-  (if (null? rest)
-    n
-    (let ((c (car rest)))
-      (apply max (if (> n c) n c) (cdr rest)))))
+  (apply scream:min-max > #f n rest))
 
-
-
-;;
-;; (min n1 ...)
-;;
+#|
+ | (min x₁ x₂ ...)  procedure; r7rs 36
+ |#
 (define (min n . rest)
-  (if (null? rest)
-    n
-    (let ((c (car rest)))
-      (apply min (if (< n c) n c) (cdr rest)))))
+  (apply scream:min-max < #f n rest))
 
 ;;
 ;; Set up dummy bindings in the global TLE.  The actual method definitions

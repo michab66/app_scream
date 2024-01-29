@@ -455,6 +455,50 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     }
 
     /**
+     * r7rs max 6.2.6 p36
+     */
+    @Test
+    public void max() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(max 3 4)",
+                i( 4 ) );
+        t.expectFco(
+                "(exact? (max 3 4))",
+                bTrue );
+        t.expectFco(
+                "(max 3.9 4)",
+                d( 4.0 ) );
+        t.expectFco(
+                "(inexact? (max 3.9 4))",
+                bTrue );
+    }
+
+    /**
+     * r7rs min 6.2.6 p36
+     */
+    @Test
+    public void min() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(min 3 4)",
+                i( 3 ) );
+        t.expectFco(
+                "(exact? (min 3 4))",
+                bTrue );
+        t.expectFco(
+                "(min 3.9 4)",
+                d( 3.9 ) );
+        t.expectFco(
+                "(inexact? (min 3.9 4))",
+                bTrue );
+    }
+
+    /**
      * r7rs truncate 6.2.6 p37
      */
     @Test
