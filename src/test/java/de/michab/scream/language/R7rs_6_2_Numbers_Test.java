@@ -707,6 +707,12 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         t.expectError(
                 "(/)",
                 Code.NOT_ENOUGH_ARGUMENTS );
+        t.expectError(
+                "(/ 313 0)",
+                Code.DIVISION_BY_ZERO );
+        t.expectError(
+                "(/ 313 .0)",
+                Code.DIVISION_BY_ZERO );
     }
 
     /**

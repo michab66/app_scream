@@ -429,6 +429,8 @@ extends FirstClassObject
             {
                 var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
+                // Check after the division if it is possible to convert the
+                // result to integer.
                 Cont<FirstClassObject> finish = fco -> {
                     var result = (SchemeDouble)fco;
                     if ( Math.round( result.asDouble() ) == result.asDouble() )
