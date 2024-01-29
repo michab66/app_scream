@@ -715,6 +715,60 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 Code.DIVISION_BY_ZERO );
     }
 
+    @Test
+    public void abs() throws Exception
+    {
+        var t = makeTester();
+
+        {
+            var fco = t.execute(
+                    "(abs 4)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i( 4 ),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(abs -4)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i( 4 ),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(abs 2.0)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d( 2. ),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(abs -2.0)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d( 2. ),
+                    fco );
+        }
+
+        t.expectError(
+                "(abs '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(abs)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
     /**
      * r7rs truncate 6.2.6 p37
      */

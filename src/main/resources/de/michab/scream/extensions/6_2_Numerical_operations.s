@@ -223,7 +223,7 @@
   (< x 0))
 
 #|
- | (odd? n)
+ | (odd? n) procedure; r7rs p36
  |#
 (define (odd? n)
   (if (integer? n)
@@ -233,28 +233,32 @@
              (scream:typename n))))
 
 #|
- | (even? n)
+ | (even? n) procedure; r7rs p36
  |#
 (define (even? n)
   (not (odd? n)))
 
 #|
- | (max x₁ x₂ ...)  procedure; r7rs 36
+ | (max x₁ x₂ ...)  procedure; r7rs p36
  |#
 (define (max n . rest)
   (apply scream:min-max > #f n rest))
 
 #|
- | (min x₁ x₂ ...)  procedure; r7rs 36
+ | (min x₁ x₂ ...)  procedure; r7rs p36
  |#
 (define (min n . rest)
   (apply scream:min-max < #f n rest))
 
-;;
-;; Set up dummy bindings in the global TLE.  The actual method definitions
-;; will be done in the following let expression.
-;;
-(define abs ())
+#|
+ | (abs x) procedure; r7rs p36
+ |#
+(define (abs x)
+  (if (number? x)
+    (scream:math (abs x))
+    (error "TYPE_ERROR"
+             %type-integer
+             (scream:typename x))))
 
 #|
  | (truncate x) procedure; r7rs 6.2.6 p37
@@ -315,11 +319,6 @@
 (let ((math (make-object java.lang.Math))
       (to-float (lambda (x) (+ 0.0 x)))
      )
-  ;;
-  ;; abs - library procedure - r5rs p. 22
-  ;;
-  (set! abs (lambda (x) (math (abs x))))
-
   ;;
   ;; exp - procedure - r5rs p. 23
   ;;
