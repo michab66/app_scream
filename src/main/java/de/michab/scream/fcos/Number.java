@@ -275,8 +275,21 @@ extends FirstClassObject
      * @return The quotient of this and other.
      * @throws RuntimeX In case an error occurred.
      */
-    public abstract Number divide( FirstClassObject other )
-            throws RuntimeX;
+    public final Number divide( FirstClassObject other )
+            throws RuntimeX
+    {
+        if ( other == Cons.NIL )
+            throw RuntimeX.mTypeError( Number.class, other );
+
+        double otherDouble =
+                other.as( Number.class ).asDouble();
+
+        if ( 0.0 == otherDouble )
+            throw RuntimeX.mDivisionByZero();
+
+        return SchemeDouble.createObject(
+                asDouble() / otherDouble );
+    }
 
     private static Thunk _divide( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
             throws RuntimeX
@@ -308,15 +321,15 @@ extends FirstClassObject
         if ( listLength == 1 )
             return () -> _divide(
                     e,
-                    SchemeInteger.createObject( 1 ),
+                    SchemeDouble.createObject( 1 ),
                     list,
                     c );
 
-            return () -> _divide(
-                    e,
-                    Scut.as( Number.class, list.getCar() ),
-                    Scut.as( Cons.class, list.getCdr() ),
-                    c );
+        return () -> _divide(
+                e,
+                Scut.as( Number.class, list.getCar() ),
+                Scut.as( Cons.class, list.getCdr() ),
+                c );
     }
 
     private static Thunk doArithmetic(
@@ -416,12 +429,19 @@ extends FirstClassObject
             {
                 var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
+                Cont<FirstClassObject> finish = fco -> {
+                    var result = (SchemeDouble)fco;
+                    if ( Math.round( result.asDouble() ) == result.asDouble() )
+                        return c.accept( SchemeInteger.createObject( result.asLong() ) );
+                    return c.accept( fco );
+                };
+
                 return doArithmetic(
                         Number::_x_divide,
                         e,
                         args,
                         len,
-                        c );
+                        finish );
             }
         };
     }

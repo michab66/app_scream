@@ -499,6 +499,217 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     }
 
     /**
+     * r7rs min 6.2.6 p36
+     */
+    @Test
+    public void plus() throws Exception
+    {
+        var t = makeTester();
+
+        {
+            var fco = t.execute(
+                    "(+ 300 10 3)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(313),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(+ 3 4)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(7),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(+ 3)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(3),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(+)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(0),
+                    fco );
+        }
+
+        {
+            var fco = t.execute(
+                    "(+ 300 10. 3)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d(313.),
+                    fco );
+        }
+    }
+
+    @Test
+    public void multiply() throws Exception
+    {
+        var t = makeTester();
+
+        {
+            var fco = t.execute(
+                    "(*)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(1),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(* 4)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(4),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(* 2 3)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(6),
+                    fco );
+        }
+
+        {
+            var fco = t.execute(
+                    "(* 2. 3)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d(6.),
+                    fco );
+        }
+    }
+
+    @Test
+    public void minus() throws Exception
+    {
+        var t = makeTester();
+
+        {
+            var fco = t.execute(
+                    "(- 3 4)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(-1),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(- 3 4 5)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(-6),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(- 3)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(-3),
+                    fco );
+        }
+
+        {
+            var fco = t.execute(
+                    "(- 2. 3)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d(-1.),
+                    fco );
+        }
+    }
+
+    @Test
+    public void divide() throws Exception
+    {
+        var t = makeTester();
+
+        {
+            var fco = t.execute(
+                    "(/ 4 2)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i( 2 ),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(/ 1)" );
+            assertInstanceOf(
+                    SchemeInteger.class,
+                    fco );
+            assertEqualq(
+                    i(1),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(/ 3)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d(1./3.),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(/ 3 4 5)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d(3./20.),
+                    fco );
+        }
+
+        t.expectError(
+                "(/ 1 '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(/)",
+                Code.NOT_ENOUGH_ARGUMENTS );
+    }
+
+    /**
      * r7rs truncate 6.2.6 p37
      */
     @Test
@@ -652,75 +863,6 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         expectError( "(+ 1 'i)", Code.TYPE_ERROR );
     }
 
-//    (%positive-test sourcefile 5
-//      (< 1 1.5 2)
-//      #t)
-//    (%positive-test sourcefile 6
-//      (< 1 1.0 1.5 2.0 2)
-//      #f)
-//
-//    (%positive-test sourcefile 7
-//      (> 1 0.0 -1)
-//      #t)
-//    (%positive-test sourcefile 8
-//      (> 1 0.0 1)
-//      #f)
-//    (%positive-test sourcefile 9
-//      (>= 1 1.0 1 0.0 0 0.0 -1 -1.0 -1)
-//      #t)
-//    (%positive-test sourcefile 10
-//      (>= 1 1.0 1.5 2.0 2)
-//      #f)
-//
-//    ;;
-//    ;;
-//    ;;
-//    (%positive-test sourcefile 15
-//      (positive? 0)
-//      #f)
-//    (%positive-test sourcefile 16
-//      (positive? -1)
-//      #f)
-//    (%positive-test sourcefile 17
-//      (positive? 1)
-//      #t)
-//    (%positive-test sourcefile 18
-//      (negative? 0)
-//      #f)
-//    (%positive-test sourcefile 19
-//      (negative? -1)
-//      #t)
-//    (%positive-test sourcefile 20
-//      (negative? 1)
-//      #f)
-//
-//    ;;
-//    ;;
-//    ;;
-//    (%positive-test sourcefile 21
-//      (odd? 1)
-//      #t)
-//    (%positive-test sourcefile 22
-//      (odd? 2)
-//      #f)
-//    (%positive-test sourcefile 23
-//      (even? 1)
-//      #f)
-//    (%positive-test sourcefile 24
-//      (even? 2)
-//      #t)
-//    (%positive-test sourcefile 25
-//      (even? 0)
-//      #t)
-//
-//    ;;;
-//    (%positive-test sourcefile 26
-//      (max 3 4 5)
-//      5)
-//    (%positive-test sourcefile 27
-//      (min 3 4 5)
-//      3)
-//
 //    ;; +*
 //    (%positive-test sourcefile 28
 //      (+ 3 4)

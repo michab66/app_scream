@@ -168,25 +168,6 @@ public class SchemeInteger
     }
 
     /**
-     * @see Number#divide
-     */
-    @Override
-    public Number divide( FirstClassObject other )
-            throws RuntimeX
-    {
-        if ( other instanceof SchemeDouble )
-            return SchemeDouble.createObject( _value / ((SchemeDouble)other).asDouble() );
-        else if ( other instanceof SchemeInteger )
-            return SchemeInteger.createObject( _value / ((SchemeInteger)other).asLong() );
-
-        // Do the needed typecheck.  Since 'other' must be NIL or of a type
-        // other than scream.Number this has to fail...
-        Operation.checkArgument( 1, Number.class, other );
-        // ...or we found an internal error.
-        throw RuntimeX.mInternalError( getClass() );
-    }
-
-    /**
      * Returns a <code>java.lang.Long</code> instance corresponding to this
      * <code>integer</code.
      *

@@ -166,29 +166,6 @@ public class SchemeDouble extends
     }
 
     /**
-     * @see Number#divide
-     */
-    @Override
-    public Number divide( FirstClassObject other )
-            throws RuntimeX
-    {
-        try
-        {
-            return createObject( _value / ((Number)other).asDouble() );
-        }
-        // Two exceptions are possible from the code above:  For the failed class
-        // cast or because of a NIL reference.  The handling for both is the same.
-        catch ( Exception e )
-        {
-            // Do the needed typecheck.  Since 'other' must be NIL or of a type
-            // other than scream.Number this has to fail...
-            Operation.checkArgument( 1, Number.class, other );
-            // ...or we found an internal error.
-            throw RuntimeX.mInternalError( getClass() );
-        }
-    }
-
-    /**
      * Converts this <code>SchemeDouble</code> instance into a
      * <code>java.lang.Double</code>.
      */

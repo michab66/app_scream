@@ -185,19 +185,8 @@ public class SchemeIntegerTest extends ScreamBaseTest
     @Test
     public void divisionByZero()
     {
-        try
-        {
-            scriptEngine().evalFco(
-                    """
-                            (/ 313 0)
-                            """ );
-            fail();
-        }
-        catch ( RuntimeX rx )
-        {
-            assertEquals( Code.DIVISION_BY_ZERO, rx.getCode() );
-            assertNotNull( rx.getMessage() );
-        }
+        expectError(
+                "(/ 313 0)",
+                Code.DIVISION_BY_ZERO );
     }
-
 }
