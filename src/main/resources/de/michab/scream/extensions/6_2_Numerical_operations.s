@@ -261,6 +261,27 @@
              (scream:typename x))))
 
 #|
+ | (floor/ n1 n2) procedure r7rs p36
+ |#
+(define (floor/ n1 n2)
+  (values
+    (floor-quotient n1 n2)
+    (floor-remainder n1 n2)))
+
+#|
+ | (floor-quotient n1 n2) procedure r7rs p36
+ |#
+(define (floor-quotient n1 n2)
+  (scream:math (floorDiv n1 n2)))
+
+#|
+ | (floor-remainder n1 n2) procedure r7rs p36
+ |#
+(define (floor-remainder n1 n2)
+  (let ((nq (floor-quotient n1 n2)))
+    (- n1 (* n2 nq))))
+
+#|
  | (truncate x) procedure; r7rs 6.2.6 p37
  |#
 (define (truncate x)
