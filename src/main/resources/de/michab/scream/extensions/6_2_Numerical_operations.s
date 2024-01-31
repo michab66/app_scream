@@ -282,12 +282,37 @@
     (- n1 (* n2 nq))))
 
 #|
+ | (truncate/ n1 n2) procedure r7rs p36
+ |#
+(define (truncate/ n1 n2)
+  (values
+    (truncate-quotient n1 n2)
+    (truncate-remainder n1 n2)))
+
+#|
+ | (truncate-quotient n1 n2) procedure r7rs p36
+ |#
+(define (truncate-quotient n1 n2)
+  (exact (truncate (/ n1 n2))))
+
+#|
+ | (truncate-remainder n1 n2) procedure r7rs p36
+ |#
+(define (truncate-remainder n1 n2)
+  (let ((nq (truncate-quotient n1 n2)))
+    (- n1 (* n2 nq))))
+
+#|
  | (truncate x) procedure; r7rs 6.2.6 p37
  |#
 (define (truncate x)
-  (if (positive? x)
-    (floor x)
-    (ceiling x)))
+  (cond
+    ((exact? x)
+      x)
+    ((positive? x)
+      (floor x))
+    (else
+      (ceiling x))))
 
 (define exp ())
 (define log ())

@@ -803,6 +803,40 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
 
+    @Test
+    public void truncateDiv() throws Exception
+    {
+        var t = makeTester();
+
+        // Define a support operation that performs the actual test.
+        t.execute(
+                """
+                (define (check n1 n2 nqx nrx)
+                  (let-values (((nq nr) (truncate/ n1 n2)))
+                    (and
+                      (exact? nq)
+                      (exact? nr)
+                      (= nqx nq)
+                      (= nrx nr))))
+                """ );
+
+        t.expectFco(
+                "(check 5 2 2 1)", bTrue );
+        t.expectFco(
+                "(check -5 2 -2 -1)", bTrue );
+        t.expectFco(
+                "(check 5 -2 -2 1)", bTrue );
+        t.expectFco(
+                "(check -5 -2 2 -1)", bTrue );
+
+        t.expectError(
+                "(abs '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(abs)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
     /**
      * r7rs truncate 6.2.6 p37
      */
