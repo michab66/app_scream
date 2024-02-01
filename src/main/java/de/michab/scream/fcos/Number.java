@@ -291,17 +291,33 @@ extends FirstClassObject
                 asDouble() / otherDouble );
     }
 
-    private static Thunk _divide( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
-            throws RuntimeX
+    private static Thunk _divide(
+            Environment e,
+            boolean inexactSeen,
+            Number total,
+            Cons rest,
+            Cont<FirstClassObject> c )
+        throws RuntimeX
     {
         if ( rest == Cons.NIL )
-            return c.accept( total );
+        {
+            if ( inexactSeen )
+                return c.accept( total );
 
-        var current = Scut.as( Number.class, rest.getCar() );
+            // Check after the division if it is possible to convert the
+            // result to integer.
+            if ( Math.round( total.asDouble() ) == total.asDouble() )
+                return c.accept( SchemeInteger.createObject( total.asLong() ) );
+
+            return c.accept( total );
+        }
+
+        var current = Scut.asNotNil( Number.class, rest.getCar() );
 
         try {
             return _divide(
                     e,
+                    inexactSeen || ! current.isExact(),
                     total.divide( current ),
                     Scut.as( Cons.class, rest.getCdr() ),
                     c );
@@ -321,13 +337,18 @@ extends FirstClassObject
         if ( listLength == 1 )
             return () -> _divide(
                     e,
-                    SchemeDouble.createObject( 1 ),
+                    false,
+                    SchemeInteger.createObject( 1 ),
                     list,
                     c );
 
+        Number total =
+                Scut.as( Number.class, list.getCar() );
+
         return () -> _divide(
                 e,
-                Scut.as( Number.class, list.getCar() ),
+                ! total.isExact(),
+                total,
                 Scut.as( Cons.class, list.getCdr() ),
                 c );
     }
@@ -358,13 +379,14 @@ extends FirstClassObject
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
-                var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
-
                 return doArithmetic(
                         Number::_x_add,
                         e,
                         args,
-                        len,
+                        checkArgumentCount(
+                                0,
+                                Integer.MAX_VALUE,
+                                args ),
                         c );
             }
         };
@@ -381,13 +403,14 @@ extends FirstClassObject
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
-                var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
-
                 return doArithmetic(
                         Number::_x_subtract,
                         e,
                         args,
-                        len,
+                        checkArgumentCount(
+                                1,
+                                Integer.MAX_VALUE,
+                                args ),
                         c );
             }
         };
@@ -404,13 +427,14 @@ extends FirstClassObject
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
-                var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
-
                 return doArithmetic(
                         Number::_x_multiply,
                         e,
                         args,
-                        len,
+                        checkArgumentCount(
+                                0,
+                                Integer.MAX_VALUE,
+                                args ),
                         c );
             }
 
@@ -427,23 +451,15 @@ extends FirstClassObject
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
-                var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
-
-                // Check after the division if it is possible to convert the
-                // result to integer.
-                Cont<FirstClassObject> finish = fco -> {
-                    var result = (SchemeDouble)fco;
-                    if ( Math.round( result.asDouble() ) == result.asDouble() )
-                        return c.accept( SchemeInteger.createObject( result.asLong() ) );
-                    return c.accept( fco );
-                };
-
                 return doArithmetic(
                         Number::_x_divide,
                         e,
                         args,
-                        len,
-                        finish );
+                        checkArgumentCount(
+                                1,
+                                Integer.MAX_VALUE,
+                                args ),
+                        c );
             }
         };
     }

@@ -672,12 +672,42 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         }
         {
             var fco = t.execute(
+                    "(/ 4.0 2)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d( 2. ),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(/ 4 2.0)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d( 2. ),
+                    fco );
+        }
+        {
+            var fco = t.execute(
                     "(/ 1)" );
             assertInstanceOf(
                     SchemeInteger.class,
                     fco );
             assertEqualq(
                     i(1),
+                    fco );
+        }
+        {
+            var fco = t.execute(
+                    "(/ 1.0)" );
+            assertInstanceOf(
+                    SchemeDouble.class,
+                    fco );
+            assertEqualq(
+                    d(1),
                     fco );
         }
         {
