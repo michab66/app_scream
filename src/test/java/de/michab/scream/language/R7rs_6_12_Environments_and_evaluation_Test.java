@@ -5,15 +5,12 @@
  */
 package de.michab.scream.language;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Environment;
@@ -39,8 +36,7 @@ public class R7rs_6_12_Environments_and_evaluation_Test extends ScreamBaseTest
                 (scheme-report-environment 7)
                 """ );
             assertInstanceOf( Environment.class, result );
-            Environment e = (Environment)result;
-            assertTrue( e.isConstant() );
+            assertTrue( result.isConstant() );
         }
         {
             var result = se.evalFco(
@@ -48,8 +44,7 @@ public class R7rs_6_12_Environments_and_evaluation_Test extends ScreamBaseTest
                 (scheme-report-environment 6)
                 """ );
             assertInstanceOf( Environment.class, result );
-            Environment e = (Environment)result;
-            assertTrue( e.isConstant() );
+            assertTrue( result.isConstant() );
         }
         {
             var result = se.evalFco(
@@ -57,8 +52,7 @@ public class R7rs_6_12_Environments_and_evaluation_Test extends ScreamBaseTest
                 (scheme-report-environment 5)
                 """ );
             assertInstanceOf( Environment.class, result );
-            Environment e = (Environment)result;
-            assertTrue( e.isConstant() );
+            assertTrue( result.isConstant() );
         }
     }
 
@@ -87,8 +81,7 @@ public class R7rs_6_12_Environments_and_evaluation_Test extends ScreamBaseTest
                 (null-environment 7)
                 """ );
             assertInstanceOf( Environment.class, result );
-            Environment e = (Environment)result;
-            assertTrue( e.isConstant() );
+            assertTrue( result.isConstant() );
         }
         {
             var result = se.evalFco(
@@ -96,8 +89,7 @@ public class R7rs_6_12_Environments_and_evaluation_Test extends ScreamBaseTest
                 (null-environment 6)
                 """ );
             assertInstanceOf( Environment.class, result );
-            Environment e = (Environment)result;
-            assertTrue( e.isConstant() );
+            assertTrue( result.isConstant() );
         }
         {
             var result = se.evalFco(
@@ -105,8 +97,7 @@ public class R7rs_6_12_Environments_and_evaluation_Test extends ScreamBaseTest
                 (null-environment 5)
                 """ );
             assertInstanceOf( Environment.class, result );
-            Environment e = (Environment)result;
-            assertTrue( e.isConstant() );
+            assertTrue( result.isConstant() );
         }
     }
 
@@ -134,8 +125,7 @@ public class R7rs_6_12_Environments_and_evaluation_Test extends ScreamBaseTest
                 (interaction-environment)
                 """ );
             assertInstanceOf( Environment.class, result );
-            Environment e = (Environment)result;
-            assertFalse( e.isConstant() );
+            assertFalse( result.isConstant() );
         }
     }
 
@@ -171,34 +161,24 @@ public class R7rs_6_12_Environments_and_evaluation_Test extends ScreamBaseTest
     @Test
     public void evalDef() throws Exception
     {
-        var se = scriptEngine();
+        var t = makeTester();
 
-        se.evalFco(
+        t.execute(
                 """
                 (eval '(define donald 313) (interaction-environment))
                 """ );
-        var result = se.evalFco(
-                "donald" );
-
-        assertEqualq( i313, result );
+        t.expectFco(
+                "donald",
+                i313 );
     }
 
     @Test
     public void evalDefFailure() throws Exception
     {
-        var se = scriptEngine();
-
-        try
-        {
-            se.evalFco(
+        expectError(
                 """
                 (eval '(define donald 313) (scheme-report-environment 7))
-                """ );
-            fail();
-        }
-        catch ( RuntimeX rx )
-        {
-            assertEquals( Code.CANNOT_MODIFY_CONSTANT, rx.getCode() );
-        }
+                """,
+                Code.CANNOT_MODIFY_CONSTANT );
     }
 }
