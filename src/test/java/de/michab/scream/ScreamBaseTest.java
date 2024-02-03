@@ -176,7 +176,7 @@ public class ScreamBaseTest
         FirstClassObject execute( String script ) throws RuntimeX;
         Tester expectFco( String script, String result ) throws RuntimeX;
         Tester expectFco( String script, FirstClassObject result ) throws RuntimeX;
-        Tester expectError( String script, Code result );
+        RuntimeX expectError( String script, Code result );
     }
 
     /**
@@ -192,7 +192,7 @@ public class ScreamBaseTest
             public Tester expectFco( String script, String result ) throws RuntimeX
 
             {
-                expectFco( script, parse( result ) );
+                ScreamBaseTest.this.expectFco( se, script, parse( result ) );
                 return this;
             }
 
@@ -204,10 +204,9 @@ public class ScreamBaseTest
             }
 
             @Override
-            public Tester expectError( String script, Code result )
+            public RuntimeX expectError( String script, Code result )
             {
-                ScreamBaseTest.this.expectError( script, result );
-                return this;
+                return ScreamBaseTest.this.expectError( se, script, result );
             }
 
             @Override
@@ -253,9 +252,18 @@ public class ScreamBaseTest
             String expression,
             Code expected )
     {
+        return expectError(
+                scriptEngine(), expression, expected );
+    }
+
+    protected RuntimeX expectError(
+            ScreamEvaluator se,
+            String expression,
+            Code expected )
+    {
         try
         {
-            scriptEngine().evalFco( expression );
+            se.evalFco( expression );
             fail();
         }
         catch ( RuntimeX rx )
