@@ -261,7 +261,7 @@
              (scream:typename x))))
 
 #|
- | (floor/ n1 n2) procedure r7rs p36
+ | (floor/ n₁ n₂) procedure r7rs p36
  |#
 (define (floor/ n1 n2)
   (values
@@ -269,20 +269,31 @@
     (floor-remainder n1 n2)))
 
 #|
- | (floor-quotient n1 n2) procedure r7rs p36
+ | (floor-quotient n₁ n₂) procedure r7rs p36
  |#
 (define (floor-quotient n1 n2)
   (scream:math (floorDiv n1 n2)))
+  
+(define (floor-quotient n1 n2)
+  (if (not (integer? n1))
+    (error "TYPE_ERROR" %type-integer n1))
+  (if (not (integer? n2))
+    (error "TYPE_ERROR" %type-integer n2))
+    
+  ((if (and (exact? n1) (exact? n2))
+      exact
+      inexact)
+  (scream:math (floorDiv (exact n1) (exact n2)))))
 
 #|
- | (floor-remainder n1 n2) procedure r7rs p36
+ | (floor-remainder n₁ n₂) procedure r7rs p36
  |#
 (define (floor-remainder n1 n2)
   (let ((nq (floor-quotient n1 n2)))
     (- n1 (* n2 nq))))
 
 #|
- | (truncate/ n1 n2) procedure r7rs p36
+ | (truncate/ n₁ n₂) procedure r7rs p36
  |#
 (define (truncate/ n1 n2)
   (values
@@ -290,17 +301,81 @@
     (truncate-remainder n1 n2)))
 
 #|
- | (truncate-quotient n1 n2) procedure r7rs p36
+ | (truncate-quotient n₁ n₂) procedure r7rs p36
  |#
 (define (truncate-quotient n1 n2)
-  (exact (truncate (/ n1 n2))))
+  ((if (and (exact? n1) (exact? n2))
+      exact
+      inexact)
+  (truncate (/ n1 n2))))
 
 #|
- | (truncate-remainder n1 n2) procedure r7rs p36
+ | (truncate-remainder n₁ n₂) procedure r7rs p36
  |#
 (define (truncate-remainder n1 n2)
   (let ((nq (truncate-quotient n1 n2)))
     (- n1 (* n2 nq))))
+
+#|
+ | (quotient n₁ n₂) procedure; r7rs 6.2.6 p37
+ |#
+(define quotient truncate-quotient)
+
+#|
+ | (remainder n₁ n₂) procedure; r7rs 6.2.6 p37
+ |#
+(define remainder truncate-remainder)
+
+#|
+ | (modulo n₁ n₂) procedure; r7rs 6.2.6 p37
+ |#
+(define modulo floor-remainder)
+
+#|
+ | (gcd n1 ...) procedure 6.2.6 p37
+ |#
+(define (gcd . rest)
+  (letrec ((positive-gcd
+             (lambda (a b)
+               (cond ((= a b)
+                      a)
+                     ((> a b)
+                      (positive-gcd (- a b) b))
+                     (else
+                      (positive-gcd a (- b a)))))))
+
+          (if (null? rest)
+            0
+            ; Take the argument list, run the abs procedure on each element and
+            ; feed that into the locally defined procedure implementation.
+            (apply positive-gcd (map abs rest)))))
+
+#|
+ | (lcm n1 ...) procedure 6.2.6 p37
+ |#
+;;
+;;  static long lcm(Object args) {
+;;    long L = 1, g = 1;
+;;    while (isPair(args)) {
+;;      long n = Math.abs((long)toInt(first(args)));
+;;      g = gcd(n, L);
+;;      L = (g == 0) ? g : (n / g) * L;
+;;     args = toList(rest(args));
+;;    }
+;;    return L;
+;;  }
+(define (lcm . args)
+  ;; TODO it must be possible to implement this simpler.
+  (do ((k 1)
+       (g 1)
+       (n 0))
+      ((null? args) k)
+      (set! n (abs (car args)))
+      (set! g (gcd n k))
+      (set! k (if (= g 0)
+                  g
+                  (* k (/ n g))))
+      (set! args (cdr args))))
 
 #|
  | (truncate x) procedure; r7rs 6.2.6 p37
@@ -454,94 +529,6 @@
   (if (and (integer? x) (integer? y))
     (expt-int x y)
     (expt-float x y)))
-
-;;
-;; remainder - procedure - r5rs p. 22
-;;
-(define (remainder x y)
-  ; Well that guy behaves magically.  Maps to the range of smallest abs
-  ; values. Uh.
-  (let ((result (round (scream:math (IEEEremainder (scream:to-float x)
-                                                   (scream:to-float y))))))
-    (cond ((and (positive? x) (negative? result))
-           (+ result (abs y)))
-          ((and (negative? x) (positive? result))
-           (- result (abs y)))
-          (else
-           result))))
-
-
-
-;;
-;; (modulo n1 n2)
-;;
-(define (modulo x y)
-  ; Well that guy behaves magically.  Maps to the range of smallest abs
-  ; values. Uh.
-  ; TODO micbinz scream:to-float should not be required.
-  (let ((result (round (scream:math (IEEEremainder (scream:to-float x)
-                                                   (scream:to-float y))))))
-    (cond ((and (positive? y) (negative? result))
-           (+ result (abs y)))
-          ((and (negative? y) (positive? result))
-           (- result (abs y)))
-          (else
-           result))))
-
-
-
-;;
-;; (gcd a b)
-;;
-(define (gcd . rest)
-  (letrec ((positive-gcd
-             (lambda (a b)
-               (cond ((= a b)
-                      a)
-                     ((> a b)
-                      (positive-gcd (- a b) b))
-                     (else
-                      (positive-gcd a (- b a)))))))
-
-          (if (null? rest)
-            0
-            ; Take the argument list, run the abs procedure on each element and
-            ; feed that into the locally defined procedure implementation.
-            (apply positive-gcd (map abs rest)))))
-
-
-
-;;
-;;  static long lcm(Object args) {
-;;    long L = 1, g = 1;
-;;    while (isPair(args)) {
-;;      long n = Math.abs((long)toInt(first(args)));
-;;      g = gcd(n, L);
-;;      L = (g == 0) ? g : (n / g) * L;
-;;     args = toList(rest(args));
-;;    }
-;;    return L;
-;;  }
-(define (lcm . args)
-  ;; TODO it must be possible to implement this simpler.
-  (do ((k 1)
-       (g 1)
-       (n 0))
-      ((null? args) k)
-      (set! n (abs (car args)))
-      (set! g (gcd n k))
-      (set! k (if (= g 0)
-                  g
-                  (* k (/ n g))))
-      (set! args (cdr args))))
-
-
-
-;;
-;; (quotient n1 n2) -- Integer division.
-;;
-(define (quotient n1 n2)
-  (/ n1 n2))
 
 #|
  | (inexact z) procedure; r7rs p39

@@ -557,6 +557,8 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                     d(313.),
                     fco );
         }
+
+        t.expectError( "(+ 1 'i)", Code.TYPE_ERROR );
     }
 
     @Test
@@ -807,29 +809,38 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         // Define a support operation that performs the actual test.
         t.execute(
                 """
-                (define (check n1 n2 nqx nrx)
+                (define (check n1 n2)
                   (let-values (((nq nr) (floor/ n1 n2)))
-                    (and
-                      (exact? nq)
-                      (exact? nr)
-                      (= nqx nq)
-                      (= nrx nr))))
+                    (cons nq nr)))
                 """ );
 
         t.expectFco(
-                "(check 5 2 2 1)", bTrue );
+                "(check 5 2)",
+                "(2 . 1)" );
         t.expectFco(
-                "(check -5 2 -3 1)", bTrue );
+                "(check -5 2)",
+                "(-3 . 1)" );
         t.expectFco(
-                "(check 5 -2 -3 -1)", bTrue );
+                "(check 5 -2)",
+                "(-3 . -1)" );
         t.expectFco(
-                "(check -5 -2 2 -1)", bTrue );
+                "(check -5 -2)",
+                "(2 . -1)" );
+        t.expectFco(
+                "(check -5. -2)",
+                "(2. . -1.)" );
+        t.expectFco(
+                "(check -5 -2.)",
+                "(2. . -1.)" );
 
         t.expectError(
-                "(abs '())",
+                "(floor/ '() '())",
                 Code.TYPE_ERROR );
         t.expectError(
-                "(abs)",
+                "(floor/)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(floor/ 1 2 3)",
                 Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
 
@@ -841,30 +852,72 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         // Define a support operation that performs the actual test.
         t.execute(
                 """
-                (define (check n1 n2 nqx nrx)
+                (define (check n1 n2)
                   (let-values (((nq nr) (truncate/ n1 n2)))
-                    (and
-                      (exact? nq)
-                      (exact? nr)
-                      (= nqx nq)
-                      (= nrx nr))))
+                    (cons nq nr)))
                 """ );
 
         t.expectFco(
-                "(check 5 2 2 1)", bTrue );
+                "(check 5 2)",
+                "(2 . 1)" );
         t.expectFco(
-                "(check -5 2 -2 -1)", bTrue );
+                "(check -5 2)",
+                "(-2 . -1)" );
         t.expectFco(
-                "(check 5 -2 -2 1)", bTrue );
+                "(check 5 -2)",
+                "(-2 . 1)" );
         t.expectFco(
-                "(check -5 -2 2 -1)", bTrue );
+                "(check -5 -2)",
+                "(2 . -1)" );
+        t.expectFco(
+                "(check -5.0 -2)",
+                "(2. . -1.)" );
 
         t.expectError(
-                "(abs '())",
+                "(truncate/ '() '())",
                 Code.TYPE_ERROR );
         t.expectError(
-                "(abs)",
+                "(truncate/)",
                 Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(truncate/ 1 2 3)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
+    @Test
+    public void quotient_remainder_modulo() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco( "(eqv? quotient truncate-quotient)", bTrue );
+        t.expectFco( "(eqv? remainder truncate-remainder)", bTrue );
+        t.expectFco( "(eqv? modulo floor-remainder)", bTrue );
+    }
+
+    @Test
+    public void gcd_lcm() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(gcd 32 -36)",
+                i(4) );
+        assertInstanceOf(
+                SchemeDouble.class,
+                t.execute( "(gcd 32.0 -36)" ) );
+        t.expectFco(
+                "(gcd)",
+                i(0) );
+
+        t.expectFco(
+                "(lcm 32 -36)",
+                i(288) );
+        assertInstanceOf(
+                SchemeDouble.class,
+                t.execute( "(lcm 32.0 -36)" ) );
+        t.expectFco(
+                "(lcm)",
+                i(1) );
     }
 
     /**
@@ -1015,94 +1068,6 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 Code.ILLEGAL_ARGUMENT );
     }
 
-    @Test
-    public void addition_err_1() throws Exception
-    {
-        expectError( "(+ 1 'i)", Code.TYPE_ERROR );
-    }
-
-//    ;; +*
-//    (%positive-test sourcefile 28
-//      (+ 3 4)
-//      7)
-//    (%positive-test sourcefile 29
-//      (+ 3)
-//      3)
-//    (%positive-test sourcefile 30
-//      (+)
-//      0)
-//
-//    (%positive-test sourcefile 31
-//      (* 3 4)
-//      12)
-//    (%positive-test sourcefile 32
-//      (* 4)
-//      4)
-//    (%positive-test sourcefile 33
-//      (*)
-//      1)
-//
-//    ;; -/
-//    (%positive-test sourcefile 34
-//      (- 3 4)
-//      -1)
-//    (%positive-test sourcefile 35
-//      (- 3 4 5)
-//      -6)
-//    (%positive-test sourcefile 36
-//      (- 3)
-//      -3)
-//    (%positive-test sourcefile 37
-//      (/ 3.0 4 5) ; TODO
-//      0.15)
-//    (%positive-test sourcefile 38
-//      (/ 3.0)
-//      0.3333333333333333)
-//
-//    ;;
-//    (%positive-test sourcefile 39
-//      (abs -7)
-//      7)
-//
-//    ;;
-//    (%positive-test sourcefile 40
-//      (modulo 13 4)
-//      1)
-//    (%positive-test sourcefile 41
-//      (remainder 13 4)
-//      1)
-//    (%positive-test sourcefile 42
-//      (modulo -13 4)
-//      3)
-//    (%positive-test sourcefile 43
-//      (remainder -13 4)
-//      -1)
-//    (%positive-test sourcefile 44
-//      (modulo 13 -4)
-//      -3)
-//    (%positive-test sourcefile 45
-//      (remainder 13 -4)
-//      1)
-//    (%positive-test sourcefile 46
-//      (modulo -13 -4)
-//      -1)
-//    (%positive-test sourcefile 47
-//      (remainder -13 -4)
-//      -1)
-//
-//    ;;
-//    (%positive-test sourcefile 48
-//      (gcd 32 -36)
-//      4)
-//    (%positive-test sourcefile 49
-//      (gcd)
-//      0)
-//    (%positive-test sourcefile 50
-//      (lcm 32 -36)
-//      288)
-//    (%positive-test sourcefile 51
-//      (lcm)
-//      1)
 //
 //    ;;
 //    (%positive-test sourcefile 52
