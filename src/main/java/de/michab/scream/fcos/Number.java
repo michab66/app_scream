@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -15,7 +15,7 @@ import de.michab.scream.util.Scut;
  * The base class for Scream's numeric types.
  */
 public abstract class Number
-extends FirstClassObject
+    extends FirstClassObject
 {
     /**
      * The name of the type as used by error reporting.
@@ -25,22 +25,7 @@ extends FirstClassObject
     public static final String TYPE_NAME = "number";
 
     /**
-     * Type save enumeration class.
-     */
-    private static enum ComparisonType
-    {
-        EQ, LT, LET, GT, GET
-    };
-
-    public static final ComparisonType EQ = ComparisonType.EQ;
-    public static final ComparisonType LT = ComparisonType.LT;
-    public static final ComparisonType LET = ComparisonType.LET;
-    public static final ComparisonType GT = ComparisonType.GT;
-    public static final ComparisonType GET = ComparisonType.GET;
-
-    /**
-     * The exactness flag as described in the scheme standard.  Not really
-     * implemented.  The flag is always false.
+     * The exactness flag as described in the scheme standard.
      */
     private final boolean _isExact;
 
@@ -65,13 +50,34 @@ extends FirstClassObject
         setConstant();
     }
 
-    /**
-     * Default constructor.  Since this is an abstract class this is only
-     * implicitly called from an derived class implementing {@code Number}.
-     */
-    Number()
+    public static Number make( double value )
+            throws RuntimeX
     {
-        this( false );
+        return make( value, false );
+    }
+    public static Number make( double value, boolean exact )
+            throws RuntimeX
+    {
+        if ( ! exact )
+            return Real.createObject( value );
+
+        if ( Math.rint( value ) == value )
+            return SchemeInteger.createObject( Math.round( value ) );
+
+        throw RuntimeX.mTypeError(
+                SchemeInteger.class,
+                Real.createObject( value ) );
+    }
+    public static Number make( long value )
+    {
+        return make( value, true );
+    }
+    public static Number make( long value, boolean exact )
+    {
+        if ( exact )
+            return SchemeInteger.createObject( value );
+
+        return Real.createObject( value );
     }
 
     /**
@@ -80,8 +86,6 @@ extends FirstClassObject
      * @return This number's value as long.
      */
     public abstract long asLong();
-
-
 
     /**
      * Returns this number's value as double.
@@ -119,25 +123,25 @@ extends FirstClassObject
     public abstract boolean r7rsGreaterOrEqualThan( Number z )
             throws RuntimeX;
 
-//    @Override
-//    protected final boolean eqv( FirstClassObject other )
-//    {
-//        try
-//        {
-//            Number number = (Number)other;
-//
-//            if ( isExact() != number.isExact() )
-//                return false;
-//
-//            return isExact() ?
-//                asLong() == number.asLong() :
-//                asDouble() == number.asDouble();
-//        }
-//        catch ( ClassCastException ignored )
-//        {
-//            return false;
-//        }
-//    }
+    @Override
+    protected final boolean eqv( FirstClassObject other )
+    {
+        try
+        {
+            Number number = (Number)other;
+
+            if ( isExact() != number.isExact() )
+                return false;
+
+            return isExact() ?
+                asLong() == number.asLong() :
+                asDouble() == number.asDouble();
+        }
+        catch ( ClassCastException ignored )
+        {
+            return false;
+        }
+    }
 
     /**
      * Implements r7rs {@code (exact z)}.
@@ -307,7 +311,7 @@ extends FirstClassObject
         if ( 0.0 == otherDouble )
             throw RuntimeX.mDivisionByZero();
 
-        return SchemeDouble.createObject(
+        return Real.createObject(
                 asDouble() / otherDouble );
     }
 

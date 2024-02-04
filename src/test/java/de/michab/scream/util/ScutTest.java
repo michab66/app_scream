@@ -21,7 +21,7 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.Operation;
-import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.Symbol;
 
@@ -308,7 +308,7 @@ public class ScutTest extends ScreamBaseTest
     {
         var list = parse( "(1. 2. 3.)", Cons.class );
 
-        Scut.assertHomogeneous( list, SchemeDouble.class );
+        Scut.assertHomogeneous( list, Real.class );
     }
     @Test
     public void assertHomogeneous_numbers() throws Exception
@@ -343,7 +343,7 @@ public class ScutTest extends ScreamBaseTest
                     FirstClassObject.typename( SchemeInteger.class ),
                     x.getArguments()[0] );
             assertEquals(
-                    FirstClassObject.typename( SchemeDouble.class ) + "=2.0",
+                    FirstClassObject.typename( Real.class ) + "=2.0",
                     x.getArguments()[1] );
         }
     }

@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -66,24 +66,6 @@ public class SchemeInteger
     }
 
     /**
-     * @see FirstClassObject#eqv
-     */
-    @Override
-    public boolean eqv( FirstClassObject other )
-    {
-        if ( other instanceof SchemeInteger )
-        {
-            return asLong() == ((SchemeInteger)other).asLong();
-        }
-        else if ( other instanceof SchemeDouble )
-        {
-            return asLong() == ((SchemeDouble)other).asDouble();
-        }
-
-        return false;
-    }
-
-    /**
      * @see Object#toString
      */
     @Override
@@ -117,8 +99,8 @@ public class SchemeInteger
     public Number add( FirstClassObject other )
             throws RuntimeX
     {
-        if ( other instanceof SchemeDouble )
-            return SchemeDouble.createObject( _value + ((SchemeDouble)other).asDouble() );
+        if ( other instanceof Real )
+            return Real.createObject( _value + ((Real)other).asDouble() );
         else if ( other instanceof SchemeInteger )
             return SchemeInteger.createObject( _value + ((SchemeInteger)other).asLong() );
 
@@ -136,8 +118,8 @@ public class SchemeInteger
     public Number subtract( FirstClassObject other )
             throws RuntimeX
     {
-        if ( other instanceof SchemeDouble )
-            return SchemeDouble.createObject( _value - ((SchemeDouble)other).asDouble() );
+        if ( other instanceof Real )
+            return Real.createObject( _value - ((Real)other).asDouble() );
         else if ( other instanceof SchemeInteger )
             return SchemeInteger.createObject( _value - ((SchemeInteger)other).asLong() );
 
@@ -155,8 +137,8 @@ public class SchemeInteger
     public Number multiply( FirstClassObject other )
             throws RuntimeX
     {
-        if ( other instanceof SchemeDouble )
-            return SchemeDouble.createObject( _value * ((SchemeDouble)other).asDouble() );
+        if ( other instanceof Real )
+            return Real.createObject( _value * ((Real)other).asDouble() );
         else if ( other instanceof SchemeInteger )
             return SchemeInteger.createObject( _value * ((SchemeInteger)other).asLong() );
 

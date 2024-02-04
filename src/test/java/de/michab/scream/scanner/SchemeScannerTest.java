@@ -7,6 +7,7 @@ package de.michab.scream.scanner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -18,6 +19,8 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.fcos.Real;
+import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.frontend.SchemeScanner7;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
@@ -168,8 +171,8 @@ public class SchemeScannerTest extends ScreamBaseTest
         var t = toToken(
                 ";  #| special comment characters  # | |# \n 313" );
 
-        assertEquals( Token.Tk.Integer, t.getType() );
-        assertEquals( 313, t.integerValue().asLong() );
+        assertEquals( Token.Tk.Number, t.getType() );
+        assertEquals( 313, t.numberValue().asLong() );
     }
 
     @Test
@@ -187,7 +190,7 @@ public class SchemeScannerTest extends ScreamBaseTest
         var t = toToken(
                 "#| special comment characters  # | |# 313" );
 
-        assertEquals( Token.Tk.Integer, t.getType() );
+        assertEquals( Token.Tk.Number, t.getType() );
     }
 
     @Test
@@ -200,7 +203,7 @@ public class SchemeScannerTest extends ScreamBaseTest
  |# 313
 """ );
 
-        assertEquals( Token.Tk.Integer, t.getType() );
+        assertEquals( Token.Tk.Number, t.getType() );
     }
 
     @Test
@@ -209,7 +212,7 @@ public class SchemeScannerTest extends ScreamBaseTest
         var t = toToken(
                 "#| #| #| #| #| #| #|  |<-comment-># | |# |# |# |# |# |# |# 313" );
 
-        assertEquals( Token.Tk.Integer, t.getType() );
+        assertEquals( Token.Tk.Number, t.getType() );
     }
 
     @Test
@@ -258,8 +261,9 @@ public class SchemeScannerTest extends ScreamBaseTest
     {
         var t = toToken( code );
 
-        assertEquals( Token.Tk.Integer, t.getType() );
-        assertEquals( expected, t.integerValue().asLong() );
+        assertEquals( Token.Tk.Number, t.getType() );
+        assertInstanceOf( SchemeInteger.class, t.numberValue() );
+        assertEquals( expected, t.numberValue().asLong() );
     }
 
     @Test
@@ -267,32 +271,32 @@ public class SchemeScannerTest extends ScreamBaseTest
     {
         testInteger( "313", 313 );
         testInteger( "#e313", 313 );
-        testInteger( "#i313", 313 );
+        testFloat( "#i313", 313 );
         testInteger( "-313", -313 );
 
         testInteger( "#b10", 2 );
         testInteger( "#b-10", -2 );
         testInteger( "#b#e10", 2 );
         testInteger( "#b#e-10", -2 );
-        testInteger( "#b#i10", 2 );
+        testFloat( "#b#i10", 2 );
         testInteger( "#e#b10", 2 );
-        testInteger( "#i#b10", 2 );
+        testFloat( "#i#b10", 2 );
 
         testInteger( "#o10", 8 );
         testInteger( "#o-10", -8 );
         testInteger( "#o#e10", 8 );
         testInteger( "#o#e-10", -8 );
-        testInteger( "#o#i10", 8 );
+        testFloat( "#o#i10", 8 );
         testInteger( "#e#o10", 8 );
-        testInteger( "#i#o10", 8 );
+        testFloat( "#i#o10", 8 );
 
         testInteger( "#d10", 10 );
         testInteger( "#d-10", -10 );
         testInteger( "#d#e10", 10 );
         testInteger( "#d#e-10", -10 );
-        testInteger( "#d#i10", 10 );
+        testFloat( "#d#i10", 10 );
         testInteger( "#e#d10", 10 );
-        testInteger( "#i#d10", 10 );
+        testFloat( "#i#d10", 10 );
 
         testInteger( "#xba", 186 );
         testInteger( "#xBa", 186 );
@@ -304,17 +308,18 @@ public class SchemeScannerTest extends ScreamBaseTest
         testInteger( "#x-10", -16 );
         testInteger( "#x#e10", 16 );
         testInteger( "#x#e-10", -16 );
-        testInteger( "#x#i10", 16 );
+        testFloat( "#x#i10", 16 );
         testInteger( "#e#x10", 16 );
-        testInteger( "#i#x10", 16 );
+        testFloat( "#i#x10", 16 );
     }
 
     private void testFloat( String code, double expected ) throws Exception
     {
         var t = toToken( code );
 
-        assertEquals( Token.Tk.Double, t.getType() );
-        assertEquals( expected, t.doubleValue().asDouble() );
+        assertEquals( Token.Tk.Number, t.getType() );
+        assertInstanceOf( Real.class, t.numberValue() );
+        assertEquals( expected, t.numberValue().asDouble() );
     }
 
     @Test
@@ -339,21 +344,24 @@ public class SchemeScannerTest extends ScreamBaseTest
         // Default.  Exactness not specified.
         {
             var t = toToken( "313.0" );
-            assertEquals( Tk.Double, t.getType() );
+            assertEquals( Tk.Number, t.getType() );
+            assertInstanceOf( Real.class, t.numberValue() );
             // By default inexact.
-            assertFalse( t.doubleValue().isExact() );
+            assertFalse( t.numberValue().isExact() );
         }
         // Explicitly exact.
         {
             var t = toToken( "#e313.0" );
-            assertEquals( Tk.Double, t.getType() );
-            assertTrue( t.doubleValue().isExact() );
+            assertEquals( Tk.Number, t.getType() );
+            assertInstanceOf( SchemeInteger.class, t.numberValue() );
+            assertTrue( t.numberValue().isExact() );
         }
         // Explicitly inexact.
         {
             var t = toToken( "#i313.0" );
-            assertEquals( Tk.Double, t.getType() );
-            assertFalse( t.doubleValue().isExact() );
+            assertEquals( Tk.Number, t.getType() );
+            assertInstanceOf( Real.class, t.numberValue() );
+            assertFalse( t.numberValue().isExact() );
         }
     }
 
@@ -363,21 +371,24 @@ public class SchemeScannerTest extends ScreamBaseTest
         // Default.  Exactness not specified.
         {
             var t = toToken( "313" );
-            assertEquals( Tk.Integer, t.getType() );
+            assertEquals( Tk.Number, t.getType() );
+            assertInstanceOf( SchemeInteger.class, t.numberValue() );
             // By default exact.
-            assertTrue( t.integerValue().isExact() );
+            assertTrue( t.numberValue().isExact() );
         }
         // Explicitly exact.
         {
             var t = toToken( "#e313" );
-            assertEquals( Tk.Integer, t.getType() );
-            assertTrue( t.integerValue().isExact() );
+            assertEquals( Tk.Number, t.getType() );
+            assertInstanceOf( SchemeInteger.class, t.numberValue() );
+            assertTrue( t.numberValue().isExact() );
         }
         // Explicitly inexact.
         {
             var t = toToken( "#i313" );
-            assertEquals( Tk.Integer, t.getType() );
-            assertFalse( t.integerValue().isExact() );
+            assertEquals( Tk.Number, t.getType() );
+            assertInstanceOf( Real.class, t.numberValue() );
+            assertFalse( t.numberValue().isExact() );
         }
     }
 }

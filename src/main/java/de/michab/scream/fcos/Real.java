@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -10,7 +10,7 @@ import de.michab.scream.RuntimeX;
 /**
  * Represents the scheme real type.
  */
-public class SchemeDouble extends
+public class Real extends
     de.michab.scream.fcos.Number
 {
     /**
@@ -28,45 +28,19 @@ public class SchemeDouble extends
     /**
      * A factory for scheme doubles.
      */
-    static public SchemeDouble createObject( double v )
+    static public Real createObject( double v )
     {
-        return new SchemeDouble( v, false );
-    }
-    static public SchemeDouble createObject( double v, boolean exact )
-    {
-        return new SchemeDouble( v, exact );
+        return new Real( v, false );
     }
 
     /**
      * Create a new SchemeDouble.
      */
-    private SchemeDouble( double v, boolean exact )
+    private Real( double v, boolean exact )
     {
         super( exact );
 
         _value = v;
-    }
-
-    /**
-     * See FirstClassObject#eqv
-     */
-    @Override
-    public boolean eqv( FirstClassObject other )
-    {
-        boolean result;
-
-        try
-        {
-            result = _value == ((Number)other).asDouble();
-        }
-        // This could catch either a ClassCast or NullPointer exception.  Is the
-        // quickest way to let the VM check for all error conditions.
-        catch ( Exception e )
-        {
-            result = false;
-        }
-
-        return result;
     }
 
     /**

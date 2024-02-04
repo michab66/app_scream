@@ -177,7 +177,7 @@ public class SchemeIntegerTest extends ScreamBaseTest
         var div = ScreamBaseTest.i3;
 
         var v = fourtynine.divide( seven );
-        assertTrue( equal( div, v ) );
+        assertTrue( div.r7rsEqual( v ) );
 
         typeFailureTest( fourtynine::divide );
     }

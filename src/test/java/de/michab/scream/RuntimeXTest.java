@@ -21,7 +21,7 @@ import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
-import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.Real;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.ErrorMessages;
@@ -314,7 +314,7 @@ public class RuntimeXTest extends ScreamBaseTest
                 RuntimeX.mTypeError( Cons.class, d(313) ),
                 Code.TYPE_ERROR,
                 FirstClassObject.typename( Cons.class ),
-                FirstClassObject.typename( SchemeDouble.class ) + "=313.0" );
+                FirstClassObject.typename( Real.class ) + "=313.0" );
     }
     @Test
     public void _11_typeError3() throws Exception

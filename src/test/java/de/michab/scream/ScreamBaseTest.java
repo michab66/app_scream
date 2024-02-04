@@ -23,7 +23,7 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeBoolean;
-import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
@@ -317,9 +317,9 @@ public class ScreamBaseTest
      * @param v The value of the double.
      * @return The requested value.
      */
-    protected static SchemeDouble d( double v )
+    protected static Real d( double v )
     {
-        return SchemeDouble.createObject( v );
+        return Real.createObject( v );
     }
 
     protected File tmpFile( Class<?> caller ) throws IOException

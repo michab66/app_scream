@@ -12,8 +12,7 @@ package de.michab.scream.frontend;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
-import de.michab.scream.fcos.SchemeDouble;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Number;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.SourcePosition;
 
@@ -354,7 +353,6 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   {CHARACTER_NAME} {
     // Remove prefix '#\'.
     String matched = yytext().substring( 2 );
-    char result;
 
     switch ( matched )
     {
@@ -454,7 +452,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     try
     {
         return new Token(
-            SchemeInteger.createObject( Long.parseLong( matched, radix ), exact ),
+            Number.make( Long.parseLong( matched, radix ), exact ),
             sourcePosition() );
     }
     catch ( NumberFormatException e )
@@ -492,7 +490,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     try
     {
         return new Token(
-            SchemeDouble.createObject( Double.parseDouble( matched ), exact ),
+            Number.make( Double.parseDouble( matched ), exact ),
             sourcePosition() );
     }
     catch ( NumberFormatException e )

@@ -40,7 +40,7 @@ public class R7rs_6_1_Equivalence_predicates_Test extends ScreamBaseTest
                 bTrue );
         ts.expectFco(
                 "(eqv? 2 2.0)",
-                bTrue );
+                bFalse );
         ts.expectFco(
                 "(eqv? '() '())",
                 bTrue );

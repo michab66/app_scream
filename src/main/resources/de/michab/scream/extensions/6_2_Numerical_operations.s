@@ -30,7 +30,7 @@
 (define scream:integer?
   (typePredicateGenerator "de.michab.scream.fcos.SchemeInteger" #t))
 (define scream:double?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeDouble" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.Real" #t))
 
 #|
  | Support-operation for the implementation of the math comparison operators.
@@ -443,14 +443,19 @@
 #|
  | (exact-integer-sqrt k) inexact library procedure; r7rs 38
  |#
-(define (exact-integer-sqrt k) 
+(define (exact-integer-sqrt k)
+
+  (if (not (and (integer? k) (>= k 0) (exact? k)))
+    (error "TYPE_ERROR" "nonnegative exact integer" k))
+
   (let*
     (
-      (result (truncate (scream:math (sqrt k))))
+      (result
+        (exact (truncate (scream:math (sqrt k)))))
       (result-square (* result result))
       (rest (- k result-square))
     )
-    
+
     (values result rest)
   )
 )

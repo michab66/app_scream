@@ -150,7 +150,7 @@ public class SchemeStringTest
 
         var thirteen = SchemeString.make( "313" );
         var fourteen = SchemeString.make( "314" );
-        var zero = SchemeDouble.createObject( 0.0 );
+        var zero = Real.createObject( 0.0 );
 
         assertTrue( thirteen.equal( thirteen ) );
         assertFalse( fourteen.equal( thirteen ) );

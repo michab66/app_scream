@@ -7,8 +7,7 @@ package de.michab.scream.frontend;
 
 import java.util.Objects;
 
-import de.michab.scream.fcos.SchemeDouble;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Number;
 import de.michab.scream.util.SourcePosition;
 
 /**
@@ -29,13 +28,12 @@ public final class Token
         Char,
         DatumComment,
         Dot,
-        Double,
         End,
         Eof,
-        Integer,
         Label,
         LabelReference,
         List,
+        Number,
         String,
         Symbol,
         QuasiQuote,
@@ -98,9 +96,9 @@ public final class Token
     /**
      * Create a token for the given value and set the type accordingly.
      */
-    public Token( SchemeInteger value, SourcePosition sourcePosition  )
+    public Token( Number value, SourcePosition sourcePosition )
     {
-        this( Tk.Integer, value, sourcePosition );
+        this( Tk.Number, value, sourcePosition );
     }
 
     /**
@@ -120,14 +118,6 @@ public final class Token
     }
 
     /**
-     * Create a token for the given value and set the type accordingly.
-     */
-    public Token( SchemeDouble value, SourcePosition sourcePosition )
-    {
-        this( Tk.Double, value, sourcePosition );
-    }
-
-    /**
      * @see java.lang.Object#toString
      */
     @Override
@@ -140,11 +130,8 @@ public final class Token
         case Symbol:
             result = "TkSymbol( " + _value + " )";
             break;
-        case Integer:
-            result = "TkInteger( " + _value + " )";
-            break;
-        case Double:
-            result = "TkDouble( " + _value + " )";
+        case Number:
+            result = "TkNumber( " + _value + " )";
             break;
         case Array:
             result = "TkArray";
@@ -185,10 +172,9 @@ public final class Token
     }
 
     /**
-     * Access the token's type as defined as integer constants in SchemeParser.
+     * Access the token's type.
      *
      * @return This <code>Token</code>'s type.
-     * @see SchemeParser
      */
     public Tk getType()
     {
@@ -217,11 +203,11 @@ public final class Token
      * of type SchemeParser.TkDouble.  If that is not the case, the program
      * will be stopped.
      */
-    public SchemeDouble doubleValue()
+    public Number numberValue()
     {
         try
         {
-            return (SchemeDouble)_value;
+            return (Number)_value;
         }
         catch ( ClassCastException e )
         {
@@ -243,23 +229,6 @@ public final class Token
         catch ( ClassCastException e )
         {
             throw new InternalError( "Not a character." );
-        }
-    }
-
-    /**
-     * Get the token's integer value.  This is only successful if the token is
-     * of type SchemeParser.TkInteger.  If that is not the case, the program
-     * will be stopped.
-     */
-    public SchemeInteger integerValue()
-    {
-        try
-        {
-            return (SchemeInteger)_value;
-        }
-        catch ( ClassCastException e )
-        {
-            throw new InternalError( "Not an integer." );
         }
     }
 
