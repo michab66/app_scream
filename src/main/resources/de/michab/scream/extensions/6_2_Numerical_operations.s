@@ -334,21 +334,42 @@
 #|
  | (gcd n1 ...) procedure 6.2.6 p37
  |#
-(define (gcd . rest)
-  (letrec ((positive-gcd
-             (lambda (a b)
-               (cond ((= a b)
-                      a)
-                     ((> a b)
-                      (positive-gcd (- a b) b))
-                     (else
-                      (positive-gcd a (- b a)))))))
+#;(define gcd
+  (letrec 
+    (
+      (_gcd 
+        (lambda (a b)
+          (abs
+            (if (zero? b)
+              a
+              (_gcd b (remainder a b)))))))
 
-          (if (null? rest)
-            0
-            ; Take the argument list, run the abs procedure on each element and
-            ; feed that into the locally defined procedure implementation.
-            (apply positive-gcd (map abs rest)))))
+    (scream:to-transitive _gcd)))
+(define gcd
+  (letrec 
+    (
+      (_gcd 
+        (lambda (a b)
+          (abs
+            (if (zero? b)
+              a
+              (_gcd b (remainder a b))))))
+      (_gcd-transitive
+        (scream:to-transitive _gcd))
+    )
+
+    (lambda arguments
+      (cond
+        ((null? arguments)
+          0)
+        ((= 1 (length arguments))
+          (if (number? (car arguments))
+            (car arguments)
+            (error "TYPE_ERROR" %type-integer n1)))
+        (else
+          (apply _gcd-transitive arguments))))
+  )
+)
 
 #|
  | (lcm n1 ...) procedure 6.2.6 p37
@@ -376,6 +397,10 @@
                   g
                   (* k (/ n g))))
       (set! args (cdr args))))
+#;(define lcm (lambda (a b)
+         (if (or (zero? a) (zero? b))
+             0
+             (abs (* b (floor (/ a (gcd a b))))))))
 
 #|
  | (truncate x) procedure; r7rs 6.2.6 p37
@@ -592,4 +617,3 @@
          (set! abs-character-list
          	(cons #\- abs-character-list)))
        (list->string abs-character-list)))
-

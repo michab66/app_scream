@@ -895,7 +895,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     }
 
     @Test
-    public void gcd_lcm() throws Exception
+    public void gcd() throws Exception
     {
         var t = makeTester();
 
@@ -908,6 +908,12 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         t.expectFco(
                 "(gcd)",
                 i(0) );
+    }
+
+    @Test
+    public void lcm() throws Exception
+    {
+        var t = makeTester();
 
         t.expectFco(
                 "(lcm 32 -36)",

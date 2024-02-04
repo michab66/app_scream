@@ -119,6 +119,26 @@ extends FirstClassObject
     public abstract boolean r7rsGreaterOrEqualThan( Number z )
             throws RuntimeX;
 
+//    @Override
+//    protected final boolean eqv( FirstClassObject other )
+//    {
+//        try
+//        {
+//            Number number = (Number)other;
+//
+//            if ( isExact() != number.isExact() )
+//                return false;
+//
+//            return isExact() ?
+//                asLong() == number.asLong() :
+//                asDouble() == number.asDouble();
+//        }
+//        catch ( ClassCastException ignored )
+//        {
+//            return false;
+//        }
+//    }
+
     /**
      * Implements r7rs {@code (exact z)}.
      *
