@@ -168,25 +168,6 @@ public class SchemeInteger
     }
 
     /**
-     * @see Number#divide
-     */
-    @Override
-    public Number divide( FirstClassObject other )
-            throws RuntimeX
-    {
-        if ( other instanceof SchemeDouble )
-            return SchemeDouble.createObject( _value / ((SchemeDouble)other).asDouble() );
-        else if ( other instanceof SchemeInteger )
-            return SchemeInteger.createObject( _value / ((SchemeInteger)other).asLong() );
-
-        // Do the needed typecheck.  Since 'other' must be NIL or of a type
-        // other than scream.Number this has to fail...
-        Operation.checkArgument( 1, Number.class, other );
-        // ...or we found an internal error.
-        throw RuntimeX.mInternalError( getClass() );
-    }
-
-    /**
      * Returns a <code>java.lang.Long</code> instance corresponding to this
      * <code>integer</code.
      *
@@ -226,5 +207,46 @@ public class SchemeInteger
         _cache = new SchemeInteger[ (int)(CACHE_MAX - CACHE_MIN + 1) ];
 
         Arrays.fill( _cache, Cons.NIL );
+    }
+
+    @Override
+    public boolean r7rsEqual( Number z ) throws RuntimeX
+    {
+        return z.isExact() ?
+            asLong() == z.asLong() :
+            asDouble() == z.asDouble();
+    }
+    @Override
+    public boolean r7rsLessThan( Number z ) throws RuntimeX
+    {
+        return z.isExact() ?
+                asLong() < z.asLong() :
+                asDouble() < z.asDouble();
+    }
+    @Override
+    public boolean r7rsGreaterThan( Number z ) throws RuntimeX
+    {
+        return z.isExact() ?
+                asLong() > z.asLong() :
+                asDouble() > z.asDouble();
+    }
+    @Override
+    public boolean r7rsLessOrEqualThan( Number z ) throws RuntimeX
+    {
+        return z.isExact() ?
+                asLong() <= z.asLong() :
+                asDouble() <= z.asDouble();
+    }
+    @Override
+    public boolean r7rsGreaterOrEqualThan( Number z ) throws RuntimeX
+    {
+        return z.isExact() ?
+                asLong() >= z.asLong() :
+                asDouble() >= z.asDouble();
+    }
+
+    public boolean r7rsOddQ()
+    {
+        return (asLong() & 0x1) != 0;
     }
 }

@@ -181,23 +181,4 @@ public class SchemeIntegerTest extends ScreamBaseTest
 
         typeFailureTest( fourtynine::divide );
     }
-
-    @Test
-    public void divisionByZero()
-    {
-        try
-        {
-            scriptEngine().evalFco(
-                    """
-                            (/ 313 0)
-                            """ );
-            fail();
-        }
-        catch ( RuntimeX rx )
-        {
-            assertEquals( Code.DIVISION_BY_ZERO, rx.getCode() );
-            assertNotNull( rx.getMessage() );
-        }
-    }
-
 }

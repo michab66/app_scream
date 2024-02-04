@@ -102,6 +102,63 @@ extends FirstClassObject
     }
 
     /**
+     * Implements r7rs {@code (= y z)}.
+     *
+     * @param z
+     * @return
+     * @throws RuntimeX
+     */
+    public abstract boolean r7rsEqual( Number z )
+            throws RuntimeX;
+    public abstract boolean r7rsLessThan( Number z )
+            throws RuntimeX;
+    public abstract boolean r7rsGreaterThan( Number z )
+            throws RuntimeX;
+    public abstract boolean r7rsLessOrEqualThan( Number z )
+            throws RuntimeX;
+    public abstract boolean r7rsGreaterOrEqualThan( Number z )
+            throws RuntimeX;
+
+//    @Override
+//    protected final boolean eqv( FirstClassObject other )
+//    {
+//        try
+//        {
+//            Number number = (Number)other;
+//
+//            if ( isExact() != number.isExact() )
+//                return false;
+//
+//            return isExact() ?
+//                asLong() == number.asLong() :
+//                asDouble() == number.asDouble();
+//        }
+//        catch ( ClassCastException ignored )
+//        {
+//            return false;
+//        }
+//    }
+
+    /**
+     * Implements r7rs {@code (exact z)}.
+     *
+     * @param z
+     * @return
+     * @throws RuntimeX
+     */
+    public Number r7rsExact()
+      throws RuntimeX
+    {
+        if ( isExact() )
+            return this;
+
+        if ( asLong() == asDouble() )
+            return SchemeInteger.createObject( asLong() );
+
+        throw RuntimeX.mIllegalArgument( toString() );
+    }
+
+    /**
      * Computes this plus the argument.
      *
      * @param other The corresponding number to add.
@@ -238,20 +295,49 @@ extends FirstClassObject
      * @return The quotient of this and other.
      * @throws RuntimeX In case an error occurred.
      */
-    public abstract Number divide( FirstClassObject other )
-            throws RuntimeX;
-
-    private static Thunk _divide( Environment e, Number total, Cons rest, Cont<FirstClassObject> c )
+    public final Number divide( FirstClassObject other )
             throws RuntimeX
     {
-        if ( rest == Cons.NIL )
-            return c.accept( total );
+        if ( other == Cons.NIL )
+            throw RuntimeX.mTypeError( Number.class, other );
 
-        var current = Scut.as( Number.class, rest.getCar() );
+        double otherDouble =
+                other.as( Number.class ).asDouble();
+
+        if ( 0.0 == otherDouble )
+            throw RuntimeX.mDivisionByZero();
+
+        return SchemeDouble.createObject(
+                asDouble() / otherDouble );
+    }
+
+    private static Thunk _divide(
+            Environment e,
+            boolean inexactSeen,
+            Number total,
+            Cons rest,
+            Cont<FirstClassObject> c )
+        throws RuntimeX
+    {
+        if ( rest == Cons.NIL )
+        {
+            if ( inexactSeen )
+                return c.accept( total );
+
+            // Check after the division if it is possible to convert the
+            // result to integer.
+            if ( Math.round( total.asDouble() ) == total.asDouble() )
+                return c.accept( SchemeInteger.createObject( total.asLong() ) );
+
+            return c.accept( total );
+        }
+
+        var current = Scut.asNotNil( Number.class, rest.getCar() );
 
         try {
             return _divide(
                     e,
+                    inexactSeen || ! current.isExact(),
                     total.divide( current ),
                     Scut.as( Cons.class, rest.getCdr() ),
                     c );
@@ -271,98 +357,20 @@ extends FirstClassObject
         if ( listLength == 1 )
             return () -> _divide(
                     e,
+                    false,
                     SchemeInteger.createObject( 1 ),
                     list,
                     c );
 
-            return () -> _divide(
-                    e,
-                    Scut.as( Number.class, list.getCar() ),
-                    Scut.as( Cons.class, list.getCdr() ),
-                    c );
-    }
+        Number total =
+                Scut.as( Number.class, list.getCar() );
 
-
-    /**
-     * Implements the comparison for the < <= = >= > operations.
-     *
-     * @param args The array of arguments for the comparison.
-     * @param operation The operation flag, one of EQ LT LET GT GET.
-     * @return The result of the comparison.
-     * @throws RuntimeX In case a wrong operation argument was given.
-     */
-    public static FirstClassObject
-    compare( FirstClassObject[] args, ComparisonType operation )
-            throws
-            RuntimeX
-    {
-        // Ensure valid non-NIL arguments.
-        catchNil( args );
-
-        // Comparisons are based on doubles in this method.
-
-        // Create an array that holds the values for the further comparison.
-        double[] dargs = new double[ args.length ];
-        // Now init this array and implicitly check types.
-        for ( int i = 0 ; i < args.length ; i++ )
-        {
-            try
-            {
-                dargs[i] = ((Number)args[i]).asDouble();
-            }
-            catch ( Exception e )
-            {
-                Operation.checkArgument( 1, Number.class, args[i] );
-            }
-        }
-
-        // Easy going now.  Check if the entries in the array compare according
-        // to the operations argument.
-        boolean result = false;
-        for ( int i = 0 ; i < args.length -1 ; i++ )
-        {
-            switch ( operation )
-            {
-            case EQ:
-                result = dargs[i] == dargs[i+1];
-                break;
-            case LT:
-                result = dargs[i] < dargs[i+1];
-                break;
-            case LET:
-                result = dargs[i] <= dargs[i+1];
-                break;
-            case GT:
-                result = dargs[i] > dargs[i+1];
-                break;
-            case GET:
-                result = dargs[i] >= dargs[i+1];
-                break;
-            default:
-                throw RuntimeX.mInternalError( Number.class.getName() );
-            }
-
-            // Shortcut evaluation.
-            if ( !result )
-                break;
-        }
-
-        return SchemeBoolean.createObject( result );
-    }
-
-
-
-    /**
-     * Used for catching NIL values in number lists.
-     *
-     * @param list The list of objects to be checked.
-     * @throws RuntimeX In case the list contains NIL.
-     */
-    static void catchNil( FirstClassObject[] list )
-            throws RuntimeX
-    {
-        for ( int i = list.length -1 ; i >= 0 ; i-- )
-            Operation.checkArgument( i, Number.class, list[i] );
+        return () -> _divide(
+                e,
+                ! total.isExact(),
+                total,
+                Scut.as( Cons.class, list.getCdr() ),
+                c );
     }
 
     private static Thunk doArithmetic(
@@ -391,13 +399,14 @@ extends FirstClassObject
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
-                var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
-
                 return doArithmetic(
                         Number::_x_add,
                         e,
                         args,
-                        len,
+                        checkArgumentCount(
+                                0,
+                                Integer.MAX_VALUE,
+                                args ),
                         c );
             }
         };
@@ -414,13 +423,14 @@ extends FirstClassObject
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
-                var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
-
                 return doArithmetic(
                         Number::_x_subtract,
                         e,
                         args,
-                        len,
+                        checkArgumentCount(
+                                1,
+                                Integer.MAX_VALUE,
+                                args ),
                         c );
             }
         };
@@ -437,13 +447,14 @@ extends FirstClassObject
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
-                var len = checkArgumentCount( 0, Integer.MAX_VALUE, args );
-
                 return doArithmetic(
                         Number::_x_multiply,
                         e,
                         args,
-                        len,
+                        checkArgumentCount(
+                                0,
+                                Integer.MAX_VALUE,
+                                args ),
                         c );
             }
 
@@ -460,13 +471,14 @@ extends FirstClassObject
             protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                     throws RuntimeX
             {
-                var len = checkArgumentCount( 1, Integer.MAX_VALUE, args );
-
                 return doArithmetic(
                         Number::_x_divide,
                         e,
                         args,
-                        len,
+                        checkArgumentCount(
+                                1,
+                                Integer.MAX_VALUE,
+                                args ),
                         c );
             }
         };
