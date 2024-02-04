@@ -74,14 +74,42 @@ extends FirstClassObject
         this( false );
     }
 
+    public static Number make( double value )
+            throws RuntimeX
+    {
+        return make( value, false );
+    }
+    public static Number make( double value, boolean exact )
+            throws RuntimeX
+    {
+        if ( ! exact )
+            return SchemeDouble.createObject( value );
+
+        if ( Math.rint( value ) == value )
+            return SchemeInteger.createObject( Math.round( value ) );
+
+        throw RuntimeX.mTypeError(
+                SchemeInteger.class,
+                SchemeDouble.createObject( value ) );
+    }
+    public static Number make( long value )
+    {
+        return make( value, true );
+    }
+    public static Number make( long value, boolean exact )
+    {
+        if ( exact )
+            return SchemeInteger.createObject( value );
+
+        return SchemeDouble.createObject( value );
+    }
+
     /**
      * Returns this number's value as long.
      *
      * @return This number's value as long.
      */
     public abstract long asLong();
-
-
 
     /**
      * Returns this number's value as double.
