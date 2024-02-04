@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -32,10 +32,6 @@ public class SchemeDouble extends
     {
         return new SchemeDouble( v, false );
     }
-    static public SchemeDouble createObject( double v, boolean exact )
-    {
-        return new SchemeDouble( v, exact );
-    }
 
     /**
      * Create a new SchemeDouble.
@@ -45,28 +41,6 @@ public class SchemeDouble extends
         super( exact );
 
         _value = v;
-    }
-
-    /**
-     * See FirstClassObject#eqv
-     */
-    @Override
-    public boolean eqv( FirstClassObject other )
-    {
-        boolean result;
-
-        try
-        {
-            result = _value == ((Number)other).asDouble();
-        }
-        // This could catch either a ClassCast or NullPointer exception.  Is the
-        // quickest way to let the VM check for all error conditions.
-        catch ( Exception e )
-        {
-            result = false;
-        }
-
-        return result;
     }
 
     /**

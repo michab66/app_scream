@@ -37,7 +37,6 @@ public class SchemeParser
     private final static FirstClassObject QUOTE_SYMBOL
         = Symbol.createObject( "quote" );
 
-
     /**
      * A flyweight quasiquote symbol.
      */
@@ -177,11 +176,11 @@ public class SchemeParser
         {
             Token token = getNextToken();
 
-            if ( Tk.Integer != token.getType() )
-                throw RuntimeX.mParseExpected( Tk.Integer );
+            if ( Tk.Number != token.getType() )
+                throw RuntimeX.mParseExpected( Tk.Number );
 
             collector.add(
-                    Scut.assertByte( token.integerValue().asLong() ) );
+                    Scut.assertByte( token.numberValue().asLong() ) );
         }
 
         // Consume the End token.
@@ -262,11 +261,8 @@ public class SchemeParser
         case Symbol:
             return Symbol.createObject( token.stringValue() );
 
-        case Integer:
-            return token.integerValue();
-
-        case Double:
-            return token.doubleValue();
+        case Number:
+            return token.numberValue();
 
         case Array:
             return parseArray();

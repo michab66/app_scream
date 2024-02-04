@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -63,24 +63,6 @@ public class SchemeInteger
         super( exact );
 
         _value = v;
-    }
-
-    /**
-     * @see FirstClassObject#eqv
-     */
-    @Override
-    public boolean eqv( FirstClassObject other )
-    {
-        if ( other instanceof SchemeInteger )
-        {
-            return asLong() == ((SchemeInteger)other).asLong();
-        }
-        else if ( other instanceof SchemeDouble )
-        {
-            return asLong() == ((SchemeDouble)other).asDouble();
-        }
-
-        return false;
     }
 
     /**

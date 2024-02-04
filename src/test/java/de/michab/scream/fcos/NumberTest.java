@@ -5,8 +5,8 @@
  */
 package de.michab.scream.fcos;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,9 +15,8 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
-import de.michab.scream.ScreamBaseTest;
 
-public class NumberTest extends ScreamBaseTest
+public class NumberTest
 {
     @Test
     public void makeExact() throws Exception
