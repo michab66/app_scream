@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.SchemeDouble;
+import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.SchemeInteger;
 
 public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
@@ -551,7 +551,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(+ 300 10. 3)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d(313.),
@@ -601,7 +601,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(* 2. 3)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d(6.),
@@ -649,7 +649,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(- 2. 3)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d(-1.),
@@ -676,7 +676,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(/ 4.0 2)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d( 2. ),
@@ -686,7 +686,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(/ 4 2.0)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d( 2. ),
@@ -706,7 +706,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(/ 1.0)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d(1),
@@ -716,7 +716,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(/ 3)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d(1./3.),
@@ -726,7 +726,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(/ 3 4 5)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d(3./20.),
@@ -776,7 +776,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(abs 2.0)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d( 2. ),
@@ -786,7 +786,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(abs -2.0)" );
             assertInstanceOf(
-                    SchemeDouble.class,
+                    Real.class,
                     fco );
             assertEqualq(
                     d( 2. ),
@@ -903,7 +903,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 "(gcd 32 -36)",
                 i(4) );
         assertInstanceOf(
-                SchemeDouble.class,
+                Real.class,
                 t.execute( "(gcd 32.0 -36)" ) );
         t.expectFco(
                 "(gcd)",
@@ -919,7 +919,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 "(lcm 32 -36)",
                 i(288) );
         assertInstanceOf(
-                SchemeDouble.class,
+                Real.class,
                 t.execute( "(lcm 32.0 -36)" ) );
         t.expectFco(
                 "(lcm)",
@@ -1041,7 +1041,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         var t = makeTester();
 
         assertInstanceOf(
-                SchemeDouble.class,
+                Real.class,
                 t.execute( "(inexact 3.1415)" ) );
 
         // Workaround for #261.

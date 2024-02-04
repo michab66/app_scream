@@ -66,13 +66,13 @@ public class NumberTest
         assertFalse(
                 Number.make( .0 ).isExact() );
         assertInstanceOf(
-                SchemeDouble.class,
+                Real.class,
                 Number.make( .0 ) );
 
         assertFalse(
                 Number.make( 0, false ).isExact() );
         assertInstanceOf(
-                SchemeDouble.class,
+                Real.class,
                 Number.make( 0, false ) );
     }
 }

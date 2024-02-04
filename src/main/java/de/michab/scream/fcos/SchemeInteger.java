@@ -99,8 +99,8 @@ public class SchemeInteger
     public Number add( FirstClassObject other )
             throws RuntimeX
     {
-        if ( other instanceof SchemeDouble )
-            return SchemeDouble.createObject( _value + ((SchemeDouble)other).asDouble() );
+        if ( other instanceof Real )
+            return Real.createObject( _value + ((Real)other).asDouble() );
         else if ( other instanceof SchemeInteger )
             return SchemeInteger.createObject( _value + ((SchemeInteger)other).asLong() );
 
@@ -118,8 +118,8 @@ public class SchemeInteger
     public Number subtract( FirstClassObject other )
             throws RuntimeX
     {
-        if ( other instanceof SchemeDouble )
-            return SchemeDouble.createObject( _value - ((SchemeDouble)other).asDouble() );
+        if ( other instanceof Real )
+            return Real.createObject( _value - ((Real)other).asDouble() );
         else if ( other instanceof SchemeInteger )
             return SchemeInteger.createObject( _value - ((SchemeInteger)other).asLong() );
 
@@ -137,8 +137,8 @@ public class SchemeInteger
     public Number multiply( FirstClassObject other )
             throws RuntimeX
     {
-        if ( other instanceof SchemeDouble )
-            return SchemeDouble.createObject( _value * ((SchemeDouble)other).asDouble() );
+        if ( other instanceof Real )
+            return Real.createObject( _value * ((Real)other).asDouble() );
         else if ( other instanceof SchemeInteger )
             return SchemeInteger.createObject( _value * ((SchemeInteger)other).asLong() );
 

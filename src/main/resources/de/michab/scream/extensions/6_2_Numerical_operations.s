@@ -30,7 +30,7 @@
 (define scream:integer?
   (typePredicateGenerator "de.michab.scream.fcos.SchemeInteger" #t))
 (define scream:double?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeDouble" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.Real" #t))
 
 #|
  | Support-operation for the implementation of the math comparison operators.

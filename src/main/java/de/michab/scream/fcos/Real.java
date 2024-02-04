@@ -10,7 +10,7 @@ import de.michab.scream.RuntimeX;
 /**
  * Represents the scheme real type.
  */
-public class SchemeDouble extends
+public class Real extends
     de.michab.scream.fcos.Number
 {
     /**
@@ -28,15 +28,15 @@ public class SchemeDouble extends
     /**
      * A factory for scheme doubles.
      */
-    static public SchemeDouble createObject( double v )
+    static public Real createObject( double v )
     {
-        return new SchemeDouble( v, false );
+        return new Real( v, false );
     }
 
     /**
      * Create a new SchemeDouble.
      */
-    private SchemeDouble( double v, boolean exact )
+    private Real( double v, boolean exact )
     {
         super( exact );
 

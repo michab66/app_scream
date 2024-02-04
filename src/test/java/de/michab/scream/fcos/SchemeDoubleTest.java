@@ -26,30 +26,30 @@ public class SchemeDoubleTest extends ScreamBaseTest
     {
         assertTrue(
                 FirstClassObject.isConstant(
-                        SchemeDouble.createObject( ZERO ) ) );
+                        Real.createObject( ZERO ) ) );
     }
 
     @Test
     public void toJava() throws Exception
     {
         ScreamBaseTest.toJava_(
-                SchemeDouble.class,
+                Real.class,
                 Double.class,
                 ZERO,
-                SchemeDouble::createObject );
+                Real::createObject );
     }
 
     @Test
     public void basic() throws Exception
     {
-        var d = SchemeDouble.createObject( 0.0 );
+        var d = Real.createObject( 0.0 );
         assertNotNull( d );
-        assertInstanceOf( SchemeDouble.class, d );
+        assertInstanceOf( Real.class, d );
         var j = d.toJava();
         assertNotNull( j );
         assertInstanceOf( Double.class, j );
 
-        var d2 = SchemeDouble.createObject( d.asDouble() );
+        var d2 = Real.createObject( d.asDouble() );
 
         assertEqualq( d, d2 );
     }
@@ -59,9 +59,9 @@ public class SchemeDoubleTest extends ScreamBaseTest
     {
         for ( double i = 0 ; i < 100 ; i += .5 )
         {
-            var d = SchemeDouble.createObject( i );
+            var d = Real.createObject( i );
             assertNotNull( d );
-            assertInstanceOf( SchemeDouble.class, d );
+            assertInstanceOf( Real.class, d );
         }
     }
 
@@ -102,9 +102,9 @@ public class SchemeDoubleTest extends ScreamBaseTest
     @Test
     public void add() throws Exception
     {
-        var one = SchemeDouble.createObject( 1.0 );
-        var two = SchemeDouble.createObject( 2.0 );
-        var three = SchemeDouble.createObject( 3.0 );
+        var one = Real.createObject( 1.0 );
+        var two = Real.createObject( 2.0 );
+        var three = Real.createObject( 3.0 );
 
         var sum = one.add( two );
         assertEqualq( three, sum );
@@ -115,9 +115,9 @@ public class SchemeDoubleTest extends ScreamBaseTest
     @Test
     public void subtract() throws Exception
     {
-        var one = SchemeDouble.createObject( 1.0 );
-        var two = SchemeDouble.createObject( 2.0 );
-        var three = SchemeDouble.createObject( 3.0 );
+        var one = Real.createObject( 1.0 );
+        var two = Real.createObject( 2.0 );
+        var three = Real.createObject( 3.0 );
 
         assertEqualq(
                 one,
@@ -129,11 +129,11 @@ public class SchemeDoubleTest extends ScreamBaseTest
     @Test
     public void multiply() throws Exception
     {
-        var two = SchemeDouble.createObject( 2.0 );
-        var three = SchemeDouble.createObject( 3.0 );
+        var two = Real.createObject( 2.0 );
+        var three = Real.createObject( 3.0 );
 
         var v = three.multiply( two );
-        assertEqualq( SchemeDouble.createObject( 6.0 ), v );
+        assertEqualq( Real.createObject( 6.0 ), v );
 
         typeFailureTest( two::multiply );
     }
@@ -141,9 +141,9 @@ public class SchemeDoubleTest extends ScreamBaseTest
     @Test
     public void divide() throws Exception
     {
-        var two = SchemeDouble.createObject( 2.0 );
-        var three = SchemeDouble.createObject( 3.0 );
-        var div = SchemeDouble.createObject( 1.5 );
+        var two = Real.createObject( 2.0 );
+        var three = Real.createObject( 3.0 );
+        var div = Real.createObject( 1.5 );
 
         var v = three.divide( two );
         assertEqualq( div, v );

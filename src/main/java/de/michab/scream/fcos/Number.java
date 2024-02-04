@@ -59,14 +59,14 @@ public abstract class Number
             throws RuntimeX
     {
         if ( ! exact )
-            return SchemeDouble.createObject( value );
+            return Real.createObject( value );
 
         if ( Math.rint( value ) == value )
             return SchemeInteger.createObject( Math.round( value ) );
 
         throw RuntimeX.mTypeError(
                 SchemeInteger.class,
-                SchemeDouble.createObject( value ) );
+                Real.createObject( value ) );
     }
     public static Number make( long value )
     {
@@ -77,7 +77,7 @@ public abstract class Number
         if ( exact )
             return SchemeInteger.createObject( value );
 
-        return SchemeDouble.createObject( value );
+        return Real.createObject( value );
     }
 
     /**
@@ -311,7 +311,7 @@ public abstract class Number
         if ( 0.0 == otherDouble )
             throw RuntimeX.mDivisionByZero();
 
-        return SchemeDouble.createObject(
+        return Real.createObject(
                 asDouble() / otherDouble );
     }
 
