@@ -9,7 +9,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Continuation.Cont;
@@ -48,7 +48,7 @@ public class SyntaxCond extends Syntax
             {
                 if ( Cons.NIL != arg.getCdr() )
                     throw RuntimeX.mBadClause( fco );
-                clause.setCar( SchemeBoolean.T );
+                clause.setCar( Bool.T );
             }
         }
 
@@ -66,7 +66,7 @@ public class SyntaxCond extends Syntax
                     throws RuntimeX
     {
         Cont<FirstClassObject> next = s -> {
-            if ( ! SchemeBoolean.isTrue( s ) )
+            if ( ! Bool.isTrue( s ) )
                 return falseBranch;
 
             Cons afterTest = (Cons)clause.getCdr();

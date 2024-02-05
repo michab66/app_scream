@@ -133,7 +133,7 @@ public class VectorTest extends ScreamBaseTest
                 """
                 (vector? #(1 2 3))
                 """ );
-        assertEquals( SchemeBoolean.T, result );
+        assertEquals( Bool.T, result );
     }
 
     @Test

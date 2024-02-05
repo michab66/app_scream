@@ -36,7 +36,7 @@ public class PortTest extends ScreamBaseTest
 
         PortOut po = new PortOut( file.getPath() );
 
-        assertTrue( po.isBinary() == SchemeBoolean.F );
+        assertTrue( po.isBinary() == Bool.F );
         assertFalse( po.isClosed() );
 
         po.write( content );
@@ -117,7 +117,7 @@ public class PortTest extends ScreamBaseTest
 
         PortOut po = new PortOut( file.getPath() );
 
-        assertTrue( po.isBinary() == SchemeBoolean.F );
+        assertTrue( po.isBinary() == Bool.F );
         assertFalse( po.isClosed() );
 
         po.writeCharacter( content );
@@ -157,7 +157,7 @@ public class PortTest extends ScreamBaseTest
 
         PortOutBinary po = new PortOutBinary( file.getPath() );
 
-        assertTrue( po.isBinary() == SchemeBoolean.T );
+        assertTrue( po.isBinary() == Bool.T );
         assertFalse( po.isClosed() );
 
         po.write( content );

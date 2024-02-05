@@ -10,7 +10,7 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Procedure;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
@@ -61,7 +61,7 @@ public class Primitives
         return () -> {
             Cont<FirstClassObject> branch = testResult ->
             {
-                return SchemeBoolean.isTrue( testResult ) ?
+                return Bool.isTrue( testResult ) ?
                         trueBranch.accept( testResult ) :
                         falseBranch.accept( testResult );
             };
@@ -87,7 +87,7 @@ public class Primitives
     {
         if ( expressions == Cons.NIL )
             return () -> c.accept( previousResult );
-        if ( ! SchemeBoolean.isTrue( previousResult ) )
+        if ( ! Bool.isTrue( previousResult ) )
             return () -> c.accept( previousResult );
 
         Cont<FirstClassObject> next =
@@ -120,7 +120,7 @@ public class Primitives
         return () -> _and(
                 e,
                 expressions,
-                SchemeBoolean.T,
+                Bool.T,
                 c );
     }
 
@@ -609,7 +609,7 @@ public class Primitives
     {
         if ( expressions == Cons.NIL )
             return () -> c.accept( previousResult );
-        if ( SchemeBoolean.isTrue( previousResult ) )
+        if ( Bool.isTrue( previousResult ) )
             return () -> c.accept( previousResult );
 
         Cont<FirstClassObject> next =
@@ -637,7 +637,7 @@ public class Primitives
         return _or(
                 e,
                 expressions,
-                SchemeBoolean.F,
+                Bool.F,
                 c );
     }
 

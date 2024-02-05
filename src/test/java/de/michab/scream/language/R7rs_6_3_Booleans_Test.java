@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 
 /**
  * r7rs 6.3 Booleans.
@@ -39,7 +39,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_2() throws Exception
     {
-        expectFco( "#f", SchemeBoolean.F );
+        expectFco( "#f", Bool.F );
     }
 
     @Test
@@ -54,7 +54,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_3() throws Exception
     {
-        expectFco( "'#f", SchemeBoolean.F );
+        expectFco( "'#f", Bool.F );
     }
 
     /**
@@ -63,7 +63,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_not_1() throws Exception
     {
-        expectFco( "(not #t)", SchemeBoolean.F );
+        expectFco( "(not #t)", Bool.F );
     }
 
     /**
@@ -72,7 +72,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_not_2() throws Exception
     {
-        expectFco( "(not 3)", SchemeBoolean.F );
+        expectFco( "(not 3)", Bool.F );
     }
 
     /**
@@ -81,7 +81,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_not_3() throws Exception
     {
-        expectFco( "(not (list 3))", SchemeBoolean.F );
+        expectFco( "(not (list 3))", Bool.F );
     }
 
     /**
@@ -90,7 +90,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_not_4() throws Exception
     {
-        expectFco( "(not #f)", SchemeBoolean.T );
+        expectFco( "(not #f)", Bool.T );
     }
 
     /**
@@ -99,7 +99,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_not_5() throws Exception
     {
-        expectFco( "(not '())", SchemeBoolean.F );
+        expectFco( "(not '())", Bool.F );
     }
 
     /**
@@ -108,7 +108,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_not_6() throws Exception
     {
-        expectFco( "(not (list))", SchemeBoolean.F );
+        expectFco( "(not (list))", Bool.F );
     }
 
     /**
@@ -117,7 +117,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_not_7() throws Exception
     {
-        expectFco( "(not 'nil)", SchemeBoolean.F );
+        expectFco( "(not 'nil)", Bool.F );
     }
 
     /**
@@ -126,8 +126,8 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_booleanq_1() throws Exception
     {
-        expectFco( "(boolean? #f)", SchemeBoolean.T );
-        expectFco( "(boolean? #t)", SchemeBoolean.T );
+        expectFco( "(boolean? #f)", Bool.T );
+        expectFco( "(boolean? #t)", Bool.T );
     }
 
     /**
@@ -136,7 +136,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_booleanq_2() throws Exception
     {
-        expectFco( "(boolean? 0)", SchemeBoolean.F );
+        expectFco( "(boolean? 0)", Bool.F );
     }
 
     /**
@@ -145,7 +145,7 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void r7rs_booleanq_3() throws Exception
     {
-        expectFco(  "(boolean? '())", SchemeBoolean.F );
+        expectFco(  "(boolean? '())", Bool.F );
     }
 
     /**
@@ -160,25 +160,25 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
     @Test
     public void boolean_eq_5() throws Exception
     {
-        expectFco( "(boolean=? #t)", SchemeBoolean.T );
+        expectFco( "(boolean=? #t)", Bool.T );
     }
 
     @Test
     public void boolean_eq_6() throws Exception
     {
-        expectFco( "(boolean=? #t #t #t #t #t #t #t #t)", SchemeBoolean.T );
+        expectFco( "(boolean=? #t #t #t #t #t #t #t #t)", Bool.T );
     }
 
     @Test
     public void boolean_eq_7() throws Exception
     {
-        expectFco( "(boolean=? #f #f #f #f #f #f)", SchemeBoolean.T );
+        expectFco( "(boolean=? #f #f #f #f #f #f)", Bool.T );
     }
 
     @Test
     public void boolean_eq_8() throws Exception
     {
-        expectFco( "(boolean=? #t #t #f #t #t #t)", SchemeBoolean.F );
+        expectFco( "(boolean=? #t #t #f #t #t #t)", Bool.F );
     }
 
     @Test

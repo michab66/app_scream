@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 
 /**
  * r7rs 4.2.1 Conditionals.
@@ -38,7 +38,7 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
                 """
                 (if #f 313)
                 """ );
-        assertEquals( SchemeBoolean.F, result );
+        assertEquals( Bool.F, result );
     }
 
     @Test
@@ -151,7 +151,7 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             """
             (and (= 2 2) (> 2 1))
             """ );
-        assertEquals( SchemeBoolean.T, result );
+        assertEquals( Bool.T, result );
     }
 
     /**
@@ -164,7 +164,7 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             """
             (and (= 2 2) (< 2 1))
             """ );
-        assertEquals( SchemeBoolean.F, result );
+        assertEquals( Bool.F, result );
     }
 
     /**
@@ -190,7 +190,7 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             """
             (and)
             """ );
-        assertEquals( SchemeBoolean.T, result );
+        assertEquals( Bool.T, result );
     }
 
     /**
@@ -203,7 +203,7 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             """
             (or (= 2 2) (> 2 1))
             """ );
-        assertEquals( SchemeBoolean.T, result );
+        assertEquals( Bool.T, result );
     }
 
     /**
@@ -216,7 +216,7 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             """
             (or (= 2 2) (< 2 1))
             """ );
-        assertEquals( SchemeBoolean.T, result );
+        assertEquals( Bool.T, result );
     }
 
     /**
@@ -229,7 +229,7 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             """
             (or #f #f #f)
             """ );
-        assertEquals( SchemeBoolean.F, result );
+        assertEquals( Bool.F, result );
     }
 
     /**
@@ -256,7 +256,7 @@ public class R7rs_4_2_1_Conditionals_Test extends ScreamBaseTest
             """
             (or)
             """ );
-        assertEqualq( SchemeBoolean.F, result );
+        assertEqualq( Bool.F, result );
     }
 
 }

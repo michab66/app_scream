@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 
 /**
  * r7rs 4.2.2 Binding constructs, p16
@@ -37,7 +37,7 @@ public class LetRecTest extends ScreamBaseTest
                             (even? (- n 1))))))
              (even? 89))
             """ );
-        assertEquals( SchemeBoolean.F, result );
+        assertEquals( Bool.F, result );
     }
     /**
      * Checking the opposite of the r7rs test on p16.
@@ -59,7 +59,7 @@ public class LetRecTest extends ScreamBaseTest
                             (even? (- n 1))))))
              (odd? 89))
             """ );
-        assertEquals( SchemeBoolean.T, result );
+        assertEquals( Bool.T, result );
     }
     /**
      * Checking the opposite of the r7rs test on p16.
@@ -81,7 +81,7 @@ public class LetRecTest extends ScreamBaseTest
                             (even? (- n 1))))))
              (odd? 88))
             """ );
-        assertEquals( SchemeBoolean.F, result );
+        assertEquals( Bool.F, result );
     }
 
 }

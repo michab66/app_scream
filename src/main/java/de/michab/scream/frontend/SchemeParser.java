@@ -14,7 +14,7 @@ import de.michab.scream.fcos.Bytevector;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
@@ -290,7 +290,7 @@ public class SchemeParser
                     new Cons( parseDatum() ) );
 
         case Boolean:
-            return SchemeBoolean.createObject( token.booleanValue() );
+            return Bool.createObject( token.booleanValue() );
 
         case Eof:
             throw RuntimeX.mParseUnexpectedEof();

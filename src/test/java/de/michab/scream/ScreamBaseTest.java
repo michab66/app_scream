@@ -22,7 +22,7 @@ import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.SchemeInteger;
 import de.michab.scream.fcos.SchemeString;
@@ -51,8 +51,8 @@ public class ScreamBaseTest
     public final static Symbol s4 = s( "four" );
     public final static Symbol s313 = s( "threethirteen" );
 
-    public final static SchemeBoolean bTrue = SchemeBoolean.T;
-    public final static SchemeBoolean bFalse = SchemeBoolean.F;
+    public final static Bool bTrue = Bool.T;
+    public final static Bool bFalse = Bool.F;
 
     public static <S extends FirstClassObject,J>
     void toJava_( Class<S> sc, Class<J> jc, J testObject, Function<J, S> factory) throws RuntimeX

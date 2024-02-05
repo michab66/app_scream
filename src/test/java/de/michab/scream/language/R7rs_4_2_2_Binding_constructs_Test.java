@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 
 /**
  * r7rs 4.2.2 Binding constructs, p16
@@ -168,7 +168,7 @@ public class R7rs_4_2_2_Binding_constructs_Test extends ScreamBaseTest
                             (even? (- n 1))))))
              (even? 88))
             """,
-            SchemeBoolean.T );
+            Bool.T );
     }
 
     /**

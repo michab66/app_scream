@@ -22,7 +22,7 @@ package de.michab.scream.fcos;
  *
  * @author Michael Binz
  */
-public class SchemeBoolean
+public class Bool
     extends FirstClassObject
 {
     /**
@@ -35,17 +35,17 @@ public class SchemeBoolean
     /**
      * The single true value.
      */
-    public static final SchemeBoolean T = new SchemeBoolean();
+    public static final Bool T = new Bool();
 
     /**
      * The single false value.
      */
-    public static final SchemeBoolean F = new SchemeBoolean();
+    public static final Bool F = new Bool();
 
     /**
      * A factory for scheme booleans.
      */
-    static public SchemeBoolean createObject( boolean v )
+    static public Bool createObject( boolean v )
     {
         return v ? T : F;
     }
@@ -53,7 +53,7 @@ public class SchemeBoolean
     /**
      * Constructor is private.  Access only allowed via the static members T/F.
      */
-    private SchemeBoolean()
+    private Bool()
     {
         setConstant();
     }
@@ -71,7 +71,7 @@ public class SchemeBoolean
      * Access the boolean's value as a primitive java type.
      *
      * @return The primitive value.
-     * @see SchemeBoolean#convertToJava() for the wrapped value.
+     * @see Bool#convertToJava() for the wrapped value.
      */
     public boolean getValue()
     {
@@ -93,7 +93,7 @@ public class SchemeBoolean
      *
      * @return {@code Boolean.TRUE} or {@code Boolean.FALSE} depending
      *         on the object's value.
-     * @see SchemeBoolean#getValue() for access to the primitive value.
+     * @see Bool#getValue() for access to the primitive value.
      */
     @Override
     public Boolean toJava()

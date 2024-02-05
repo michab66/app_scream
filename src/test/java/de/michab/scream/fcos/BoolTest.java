@@ -18,20 +18,20 @@ public class BoolTest extends ScreamBaseTest
     public void toJava() throws Exception
     {
         ScreamBaseTest.toJava_(
-                SchemeBoolean.class,
+                Bool.class,
                 Boolean.class,
                 true,
-                SchemeBoolean::createObject );
+                Bool::createObject );
     }
 
     @Test
     public void isTrue() throws Exception
     {
-        assertFalse( SchemeBoolean.isTrue( SchemeBoolean.F ) );
-        assertTrue( SchemeBoolean.isTrue( Cons.NIL ) );
-        assertTrue( SchemeBoolean.isTrue( i313 ) );
-        assertTrue( SchemeBoolean.isTrue( s313 ) );
-        assertTrue( SchemeBoolean.isTrue( c(i1,i2) ) );
-        assertTrue( SchemeBoolean.isTrue( SchemeBoolean.T ) );
+        assertFalse( Bool.isTrue( Bool.F ) );
+        assertTrue( Bool.isTrue( Cons.NIL ) );
+        assertTrue( Bool.isTrue( i313 ) );
+        assertTrue( Bool.isTrue( s313 ) );
+        assertTrue( Bool.isTrue( c(i1,i2) ) );
+        assertTrue( Bool.isTrue( Bool.T ) );
     }
 }

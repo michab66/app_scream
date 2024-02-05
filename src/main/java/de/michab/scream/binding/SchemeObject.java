@@ -22,7 +22,7 @@ import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.Procedure;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.SchemeInteger;
@@ -338,7 +338,7 @@ public class SchemeObject
 
             // Check for java primitive types
             else if ( formal == java.lang.Boolean.TYPE )
-                result = Boolean.valueOf( ((SchemeBoolean)actual).getValue() );
+                result = Boolean.valueOf( ((Bool)actual).getValue() );
 
             else if ( formal == java.lang.Byte.TYPE )
                 result = Byte.valueOf( (byte)((SchemeInteger)actual).asLong() );
@@ -504,7 +504,7 @@ public class SchemeObject
             return SchemeString.make( (String)object );
 
         if ( object instanceof java.lang.Boolean )
-            return SchemeBoolean.createObject( ((java.lang.Boolean)object).booleanValue() );
+            return Bool.createObject( ((java.lang.Boolean)object).booleanValue() );
 
         // This is needed for tightly integrated classes that know about Scream's
         // internal type system.
@@ -823,7 +823,7 @@ public class SchemeObject
                 checkArgumentCount( 1, args );
 
                 return () -> c.accept(
-                        SchemeBoolean.createObject( args.getCar() instanceof SchemeObject ) );
+                        Bool.createObject( args.getCar() instanceof SchemeObject ) );
             }
         };
     }
