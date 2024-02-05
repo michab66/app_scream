@@ -18,7 +18,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 
-public class SchemeIntegerTest extends ScreamBaseTest
+public class IntTest extends ScreamBaseTest
 {
     private boolean equal( FirstClassObject a, FirstClassObject b )
     {
