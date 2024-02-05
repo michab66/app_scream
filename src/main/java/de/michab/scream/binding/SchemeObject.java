@@ -25,7 +25,7 @@ import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.Real;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
@@ -341,16 +341,16 @@ public class SchemeObject
                 result = Boolean.valueOf( ((Bool)actual).getValue() );
 
             else if ( formal == java.lang.Byte.TYPE )
-                result = Byte.valueOf( (byte)((SchemeInteger)actual).asLong() );
+                result = Byte.valueOf( (byte)((Int)actual).asLong() );
 
             else if ( formal == java.lang.Short.TYPE )
-                result = Short.valueOf( (short)((SchemeInteger)actual).asLong() );
+                result = Short.valueOf( (short)((Int)actual).asLong() );
 
             else if ( formal == java.lang.Integer.TYPE )
-                result = Integer.valueOf( (int)((SchemeInteger)actual).asLong() );
+                result = Integer.valueOf( (int)((Int)actual).asLong() );
 
             else if ( formal == java.lang.Long.TYPE )
-                result = Long.valueOf( ((SchemeInteger)actual).asLong() );
+                result = Long.valueOf( ((Int)actual).asLong() );
 
             else if ( formal == java.lang.Float.TYPE )
                 result = Float.valueOf( (float)((Real)actual).asDouble() );
@@ -491,7 +491,7 @@ public class SchemeObject
                 object instanceof java.lang.Byte ||
                 object instanceof java.lang.Short ||
                 object instanceof java.lang.Long )
-            return SchemeInteger.createObject( ((java.lang.Number)object).longValue() );
+            return Int.createObject( ((java.lang.Number)object).longValue() );
 
         if ( object instanceof java.lang.Double ||
                 object instanceof java.lang.Float )

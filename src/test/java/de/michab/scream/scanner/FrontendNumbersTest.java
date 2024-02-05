@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 
 public class FrontendNumbersTest
 {
@@ -20,9 +20,9 @@ public class FrontendNumbersTest
             long expected )
                     throws RuntimeX
     {
-        SchemeInteger n = ScreamBaseTest.parse(
+        Int n = ScreamBaseTest.parse(
                 scheme,
-                SchemeInteger.class );
+                Int.class );
         assertEquals(
                 expected,
                 n.asLong() );

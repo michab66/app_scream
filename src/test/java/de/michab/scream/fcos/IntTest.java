@@ -18,7 +18,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 
-public class SchemeIntegerTest extends ScreamBaseTest
+public class IntTest extends ScreamBaseTest
 {
     private boolean equal( FirstClassObject a, FirstClassObject b )
     {
@@ -38,10 +38,10 @@ public class SchemeIntegerTest extends ScreamBaseTest
     public void toJava() throws Exception
     {
         ScreamBaseTest.toJava_(
-                SchemeInteger.class,
+                Int.class,
                 Long.class,
                 0L,
-                SchemeInteger::createObject );
+                Int::createObject );
     }
 
     @Test
@@ -49,7 +49,7 @@ public class SchemeIntegerTest extends ScreamBaseTest
     {
         var d = i( 0 );
         assertNotNull( d );
-        assertInstanceOf( SchemeInteger.class, d );
+        assertInstanceOf( Int.class, d );
         var j = d.toJava();
         assertNotNull( j );
         assertInstanceOf( Long.class, j );

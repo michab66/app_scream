@@ -29,7 +29,7 @@ public class NumberTest
         assertTrue(
                 Number.make( 0 ).isExact() );
         assertInstanceOf(
-                SchemeInteger.class,
+                Int.class,
                 Number.make( 0 ) );
 
         // Double values are converted to long if they represent an
@@ -42,7 +42,7 @@ public class NumberTest
         assertTrue(
                 Number.make( .0, true ).isExact() );
         assertInstanceOf(
-                SchemeInteger.class,
+                Int.class,
                 Number.make( .0, true ) );
 
         // Error expected if exactness is requested for a double that

@@ -12,7 +12,7 @@ import de.michab.scream.RuntimeX;
 /**
  * Represents the scheme integer data type.
  */
-public class SchemeInteger
+public class Int
     extends Number
 {
     /**
@@ -24,7 +24,7 @@ public class SchemeInteger
 
     private final static long CACHE_MIN = -100;
     private final static long CACHE_MAX =  100;
-    private static SchemeInteger[] _cache;
+    private static Int[] _cache;
 
     /**
      * This integer's value.
@@ -35,30 +35,30 @@ public class SchemeInteger
      * A factory for scheme integers.  Used for limiting generation for well
      * known instances as for 1, 2, ... of this type.
      */
-    static public SchemeInteger createObject( long v )
+    static public Int createObject( long v )
     {
         return createObject( v, true );
     }
-    static public SchemeInteger createObject( long v, boolean exact )
+    static public Int createObject( long v, boolean exact )
     {
         if ( ! exact )
-            return new SchemeInteger( v, exact );
+            return new Int( v, exact );
 
         if ( v >= CACHE_MIN && v <= CACHE_MAX )
         {
             int cacheIdx = (int)(v - CACHE_MIN);
             if ( null == _cache[ cacheIdx ] )
-                _cache[ cacheIdx ] = new SchemeInteger( v, exact );
+                _cache[ cacheIdx ] = new Int( v, exact );
             return _cache[ cacheIdx ];
         }
 
-        return new SchemeInteger( v, exact );
+        return new Int( v, exact );
     }
 
     /**
      * Make an instance.
      */
-    private SchemeInteger( long v, boolean exact )
+    private Int( long v, boolean exact )
     {
         super( exact );
 
@@ -101,8 +101,8 @@ public class SchemeInteger
     {
         if ( other instanceof Real )
             return Real.createObject( _value + ((Real)other).asDouble() );
-        else if ( other instanceof SchemeInteger )
-            return SchemeInteger.createObject( _value + ((SchemeInteger)other).asLong() );
+        else if ( other instanceof Int )
+            return Int.createObject( _value + ((Int)other).asLong() );
 
         // Do the needed typecheck.  Since 'other' must be NIL or of a type
         // other than scream.Number this has to fail...
@@ -120,8 +120,8 @@ public class SchemeInteger
     {
         if ( other instanceof Real )
             return Real.createObject( _value - ((Real)other).asDouble() );
-        else if ( other instanceof SchemeInteger )
-            return SchemeInteger.createObject( _value - ((SchemeInteger)other).asLong() );
+        else if ( other instanceof Int )
+            return Int.createObject( _value - ((Int)other).asLong() );
 
         // Do the needed typecheck.  Since 'other' must be NIL or of a type
         // other than scream.Number this has to fail...
@@ -139,8 +139,8 @@ public class SchemeInteger
     {
         if ( other instanceof Real )
             return Real.createObject( _value * ((Real)other).asDouble() );
-        else if ( other instanceof SchemeInteger )
-            return SchemeInteger.createObject( _value * ((SchemeInteger)other).asLong() );
+        else if ( other instanceof Int )
+            return Int.createObject( _value * ((Int)other).asLong() );
 
         // Do the needed typecheck.  Since 'other' must be NIL or of a type
         // other than scream.Number this has to fail...
@@ -165,7 +165,7 @@ public class SchemeInteger
     public boolean equals( Object other )
     {
         try {
-            SchemeInteger o = (SchemeInteger)other;
+            Int o = (Int)other;
 
             return _value == o._value;
         }
@@ -186,7 +186,7 @@ public class SchemeInteger
      */
     static
     {
-        _cache = new SchemeInteger[ (int)(CACHE_MAX - CACHE_MIN + 1) ];
+        _cache = new Int[ (int)(CACHE_MAX - CACHE_MIN + 1) ];
 
         Arrays.fill( _cache, Cons.NIL );
     }

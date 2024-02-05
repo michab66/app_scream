@@ -10,7 +10,7 @@ import java.util.HashSet;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 
 /**
  * Scream utilities.
@@ -157,7 +157,7 @@ public class Scut
     {
         if ( idx < 0 || idx >= Integer.MAX_VALUE )
             throw RuntimeX.mRangeExceeded(
-                    SchemeInteger.createObject( idx ),
+                    Int.createObject( idx ),
                     "[0.." + Integer.MAX_VALUE + "]" );
 
         return (int)idx;
@@ -167,7 +167,7 @@ public class Scut
     {
         if ( idx < 0 || idx > Integer.MAX_VALUE )
             throw RuntimeX.mRangeExceeded(
-                    SchemeInteger.createObject( idx ),
+                    Int.createObject( idx ),
                     "[0.." + Integer.MAX_VALUE + "]" );
         if ( idx > maximum )
             throw RuntimeX.mIndexOutOfBounds( idx );
@@ -179,7 +179,7 @@ public class Scut
     {
         if ( len < 0 || len > Integer.MAX_VALUE )
             throw RuntimeX.mRangeExceeded(
-                    SchemeInteger.createObject( len ),
+                    Int.createObject( len ),
                     "[0.." + Integer.MAX_VALUE + "]" );
 
         return (int)len;
@@ -189,7 +189,7 @@ public class Scut
     {
         if ( idx < 0 || idx > 0xff )
             throw RuntimeX.mRangeExceeded(
-                    SchemeInteger.createObject( idx ),
+                    Int.createObject( idx ),
                     "[0..255]" );
 
         return (byte)(0xff & idx);

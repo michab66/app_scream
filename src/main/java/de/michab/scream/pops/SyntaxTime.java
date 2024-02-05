@@ -11,7 +11,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
@@ -44,7 +44,7 @@ public class SyntaxTime extends Syntax
             Cont<FirstClassObject> c ) throws RuntimeX
     {
         var result = new Cons(
-                SchemeInteger.createObject( tp.stop().duration() ),
+                Int.createObject( tp.stop().duration() ),
                 evalResult );
 
         return c.accept( result );

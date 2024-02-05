@@ -11,7 +11,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define scream:type-integer
-  ((make-object de.michab.scream.fcos.SchemeInteger) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.Int) TYPE_NAME))
 
 #|
  | Encapsulates java.lang.Math.
@@ -25,10 +25,10 @@
 (define (scream:to-float x) (+ 0.0 x))
 
 #|
- | Checks if the passed object if of type SchemeInteger.
+ | Checks if the passed object if of type Int.
  |#
 (define scream:integer?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeInteger" #t))
+  (typePredicateGenerator "de.michab.scream.fcos.Int" #t))
 (define scream:double?
   (typePredicateGenerator "de.michab.scream.fcos.Real" #t))
 

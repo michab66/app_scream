@@ -62,10 +62,10 @@ public abstract class Number
             return Real.createObject( value );
 
         if ( Math.rint( value ) == value )
-            return SchemeInteger.createObject( Math.round( value ) );
+            return Int.createObject( Math.round( value ) );
 
         throw RuntimeX.mTypeError(
-                SchemeInteger.class,
+                Int.class,
                 Real.createObject( value ) );
     }
     public static Number make( long value )
@@ -75,7 +75,7 @@ public abstract class Number
     public static Number make( long value, boolean exact )
     {
         if ( exact )
-            return SchemeInteger.createObject( value );
+            return Int.createObject( value );
 
         return Real.createObject( value );
     }
@@ -157,7 +157,7 @@ public abstract class Number
             return this;
 
         if ( asLong() == asDouble() )
-            return SchemeInteger.createObject( asLong() );
+            return Int.createObject( asLong() );
 
         throw RuntimeX.mIllegalArgument( toString() );
     }
@@ -194,7 +194,7 @@ public abstract class Number
             long listLength,
             Cont<FirstClassObject> c )
     {
-        var zero = SchemeInteger.createObject( 0 );
+        var zero = Int.createObject( 0 );
 
         if ( listLength == 0 )
             return () -> Primitives._quote( zero, c );
@@ -240,7 +240,7 @@ public abstract class Number
         if ( listLength == 1 )
             return () -> _subtract(
                     e,
-                    SchemeInteger.createObject( 0 ),
+                    Int.createObject( 0 ),
                     list,
                     c );
 
@@ -281,7 +281,7 @@ public abstract class Number
             long listLength,
             Cont<FirstClassObject> c ) throws RuntimeX
     {
-        var one = SchemeInteger.createObject( 1 );
+        var one = Int.createObject( 1 );
 
         if ( listLength == 0 )
             return () -> Primitives._quote( one, c );
@@ -331,7 +331,7 @@ public abstract class Number
             // Check after the division if it is possible to convert the
             // result to integer.
             if ( Math.round( total.asDouble() ) == total.asDouble() )
-                return c.accept( SchemeInteger.createObject( total.asLong() ) );
+                return c.accept( Int.createObject( total.asLong() ) );
 
             return c.accept( total );
         }
@@ -362,7 +362,7 @@ public abstract class Number
             return () -> _divide(
                     e,
                     false,
-                    SchemeInteger.createObject( 1 ),
+                    Int.createObject( 1 ),
                     list,
                     c );
 

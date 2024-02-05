@@ -14,7 +14,7 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Operation;
 import de.michab.scream.fcos.Bool;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 
 public class SchemeObjectTest extends ScreamBaseTest
 {
@@ -154,7 +154,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                     (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest 313 0)))
                 (o attributeA)
                 """ );
-        assertInstanceOf( SchemeInteger.class, result );
+        assertInstanceOf( Int.class, result );
         assertEqualq( i313, result );
     }
     @Test
@@ -184,7 +184,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                     (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest 311 2)))
                 (o (sum))
                 """ );
-        assertInstanceOf( SchemeInteger.class, result );
+        assertInstanceOf( Int.class, result );
         assertEqualq( i313, result );
     }
     @Test
@@ -198,7 +198,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                     (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest 310 2)))
                 (o (sumPlus 1))
                 """ );
-        assertInstanceOf( SchemeInteger.class, result );
+        assertInstanceOf( Int.class, result );
         assertEqualq( i313, result );
     }
     @Test
@@ -212,7 +212,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                     (make-object de.michab.scream.binding.SchemeObjectTest$ObjectTest))
                 (o (donaldian))
                 """ );
-        assertInstanceOf( SchemeInteger.class, result );
+        assertInstanceOf( Int.class, result );
         assertEqualq( i313, result );
     }
     @Test
@@ -226,7 +226,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                     (make-object de.michab.scream.binding.SchemeObjectTest$ObjectTest))
                 (o (donaldianPlus 1))
                 """ );
-        assertInstanceOf( SchemeInteger.class, result );
+        assertInstanceOf( Int.class, result );
         assertEqualq( i(314), result );
     }
 }
