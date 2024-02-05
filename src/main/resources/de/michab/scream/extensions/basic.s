@@ -205,7 +205,7 @@
 (define %type-number
   ((make-object de.michab.scream.fcos.Number) TYPE_NAME))
 (define %type-integer
-  ((make-object de.michab.scream.fcos.SchemeInteger) TYPE_NAME))
+  ((make-object de.michab.scream.fcos.Int) TYPE_NAME))
 (define %type-real
   ((make-object de.michab.scream.fcos.Real) TYPE_NAME))
 (define %type-port

@@ -22,7 +22,7 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.Operation;
 import de.michab.scream.fcos.Real;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.Symbol;
 
 public class ScutTest extends ScreamBaseTest
@@ -32,7 +32,7 @@ public class ScutTest extends ScreamBaseTest
     {
         FirstClassObject fco = i313;
 
-        SchemeInteger i = Scut.as( SchemeInteger.class, fco );
+        Int i = Scut.as( Int.class, fco );
         assertEquals( 313L, i.asLong() );
     }
 
@@ -41,7 +41,7 @@ public class ScutTest extends ScreamBaseTest
     {
         FirstClassObject fco = Cons.NIL;
 
-        SchemeInteger i = Scut.as( SchemeInteger.class, fco );
+        Int i = Scut.as( Int.class, fco );
         assertEquals( Cons.NIL, i );
     }
 
@@ -61,7 +61,7 @@ public class ScutTest extends ScreamBaseTest
 
         try
         {
-            Scut.as( SchemeInteger.class, fco );
+            Scut.as( Int.class, fco );
             fail();
         }
         catch ( RuntimeX e )
@@ -79,7 +79,7 @@ public class ScutTest extends ScreamBaseTest
 
         try
         {
-            Scut.as( SchemeInteger.class,
+            Scut.as( Int.class,
                     fco,
                     (s) -> { throw RuntimeX.mDuplicateElement( s ); } );
             fail();
@@ -97,8 +97,8 @@ public class ScutTest extends ScreamBaseTest
     {
         FirstClassObject fco = s313;
 
-        SchemeInteger i = Scut.as(
-                SchemeInteger.class,
+        Int i = Scut.as(
+                Int.class,
                 fco,
                 (s) -> { return i2; } );
         assertEquals( 2L, i.asLong() );
@@ -109,7 +109,7 @@ public class ScutTest extends ScreamBaseTest
     {
         FirstClassObject fco = i313;
 
-        SchemeInteger i = Scut.asNotNil( SchemeInteger.class, fco );
+        Int i = Scut.asNotNil( Int.class, fco );
         assertEquals( 313L, i.asLong() );
     }
 
@@ -120,7 +120,7 @@ public class ScutTest extends ScreamBaseTest
         {
             FirstClassObject fco = Cons.NIL;
 
-            Scut.asNotNil( SchemeInteger.class, fco );
+            Scut.asNotNil( Int.class, fco );
             fail();
         }
         catch ( RuntimeX rx )
@@ -301,7 +301,7 @@ public class ScutTest extends ScreamBaseTest
     {
         var list = parse( "(1 2 3)", Cons.class );
 
-        Scut.assertHomogeneous( list, SchemeInteger.class );
+        Scut.assertHomogeneous( list, Int.class );
     }
     @Test
     public void assertHomogeneous_floats() throws Exception
@@ -331,7 +331,7 @@ public class ScutTest extends ScreamBaseTest
 
         try
         {
-            Scut.assertHomogeneous( list, SchemeInteger.class );
+            Scut.assertHomogeneous( list, Int.class );
             fail();
         }
         catch ( RuntimeX x )
@@ -340,7 +340,7 @@ public class ScutTest extends ScreamBaseTest
                     Code.TYPE_ERROR,
                     x.getCode() );
             assertEquals(
-                    FirstClassObject.typename( SchemeInteger.class ),
+                    FirstClassObject.typename( Int.class ),
                     x.getArguments()[0] );
             assertEquals(
                     FirstClassObject.typename( Real.class ) + "=2.0",

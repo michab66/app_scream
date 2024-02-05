@@ -20,7 +20,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Real;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.frontend.SchemeScanner7;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
@@ -262,7 +262,7 @@ public class SchemeScannerTest extends ScreamBaseTest
         var t = toToken( code );
 
         assertEquals( Token.Tk.Number, t.getType() );
-        assertInstanceOf( SchemeInteger.class, t.numberValue() );
+        assertInstanceOf( Int.class, t.numberValue() );
         assertEquals( expected, t.numberValue().asLong() );
     }
 
@@ -353,7 +353,7 @@ public class SchemeScannerTest extends ScreamBaseTest
         {
             var t = toToken( "#e313.0" );
             assertEquals( Tk.Number, t.getType() );
-            assertInstanceOf( SchemeInteger.class, t.numberValue() );
+            assertInstanceOf( Int.class, t.numberValue() );
             assertTrue( t.numberValue().isExact() );
         }
         // Explicitly inexact.
@@ -372,7 +372,7 @@ public class SchemeScannerTest extends ScreamBaseTest
         {
             var t = toToken( "313" );
             assertEquals( Tk.Number, t.getType() );
-            assertInstanceOf( SchemeInteger.class, t.numberValue() );
+            assertInstanceOf( Int.class, t.numberValue() );
             // By default exact.
             assertTrue( t.numberValue().isExact() );
         }
@@ -380,7 +380,7 @@ public class SchemeScannerTest extends ScreamBaseTest
         {
             var t = toToken( "#e313" );
             assertEquals( Tk.Number, t.getType() );
-            assertInstanceOf( SchemeInteger.class, t.numberValue() );
+            assertInstanceOf( Int.class, t.numberValue() );
             assertTrue( t.numberValue().isExact() );
         }
         // Explicitly inexact.

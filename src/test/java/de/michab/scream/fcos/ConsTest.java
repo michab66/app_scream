@@ -235,8 +235,8 @@ public class ConsTest extends ScreamBaseTest
         int count = 0;
         for ( var c : cons )
         {
-            assertInstanceOf( SchemeInteger.class, c );
-            SchemeInteger si = (SchemeInteger)c;
+            assertInstanceOf( Int.class, c );
+            Int si = (Int)c;
             assertEqualq( i(count++), si );
         }
     }
@@ -252,8 +252,8 @@ public class ConsTest extends ScreamBaseTest
         int count = 0;
         for ( var c : cons )
         {
-            assertInstanceOf( SchemeInteger.class, c );
-            SchemeInteger si = (SchemeInteger)c;
+            assertInstanceOf( Int.class, c );
+            Int si = (Int)c;
             assertEqualq( i(count++), si );
         }
     }

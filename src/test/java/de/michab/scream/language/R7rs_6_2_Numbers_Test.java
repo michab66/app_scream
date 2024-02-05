@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Real;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 
 public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
 {
@@ -510,7 +510,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(+ 300 10 3)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(313),
@@ -520,7 +520,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(+ 3 4)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(7),
@@ -530,7 +530,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(+ 3)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(3),
@@ -540,7 +540,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(+)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(0),
@@ -570,7 +570,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(*)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(1),
@@ -580,7 +580,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(* 4)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(4),
@@ -590,7 +590,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(* 2 3)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(6),
@@ -618,7 +618,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(- 3 4)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(-1),
@@ -628,7 +628,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(- 3 4 5)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(-6),
@@ -638,7 +638,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(- 3)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(-3),
@@ -666,7 +666,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(/ 4 2)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i( 2 ),
@@ -696,7 +696,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(/ 1)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i(1),
@@ -756,7 +756,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(abs 4)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i( 4 ),
@@ -766,7 +766,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
             var fco = t.execute(
                     "(abs -4)" );
             assertInstanceOf(
-                    SchemeInteger.class,
+                    Int.class,
                     fco );
             assertEqualq(
                     i( 4 ),
@@ -1059,7 +1059,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         var t = makeTester();
 
         assertInstanceOf(
-                SchemeInteger.class,
+                Int.class,
                 t.execute( "(exact 313)" ) );
 
         // Workaround for #261, better is "(exact 313) -> 313".

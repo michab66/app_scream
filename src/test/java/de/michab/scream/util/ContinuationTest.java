@@ -15,7 +15,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 
@@ -133,7 +133,7 @@ public class ContinuationTest extends ScreamBaseTest
         assertEquals( 7, aeh.get()._total );
     }
 
-    private Thunk addFco( SchemeInteger si1, SchemeInteger si2, Cont<FirstClassObject> cont )
+    private Thunk addFco( Int si1, Int si2, Cont<FirstClassObject> cont )
     {
         return () -> cont.accept( si1.add( si2 ) );
     }
@@ -148,7 +148,7 @@ public class ContinuationTest extends ScreamBaseTest
         assertEqualq( i3, fco );
     }
 
-    private Thunk throwRtx( SchemeInteger si1, SchemeInteger si2, Cont<FirstClassObject> cont )
+    private Thunk throwRtx( Int si1, Int si2, Cont<FirstClassObject> cont )
             throws RuntimeX
     {
         return () -> { throw RuntimeX.mDivisionByZero(); };

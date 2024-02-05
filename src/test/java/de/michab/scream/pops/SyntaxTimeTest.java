@@ -16,7 +16,7 @@ import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Operation;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 
 public class SyntaxTimeTest extends ScreamBaseTest
 {
@@ -33,8 +33,8 @@ public class SyntaxTimeTest extends ScreamBaseTest
     {
         Cons cons = (Cons)result;
         assertFalse( ((Cons)result).isProperList() );
-        SchemeInteger car = (SchemeInteger)cons.getCar();
-        SchemeInteger cdr = (SchemeInteger)cons.getCdr();
+        Int car = (Int)cons.getCar();
+        Int cdr = (Int)cons.getCdr();
 
         assertTrue( 3 == cdr.asLong() );
         assertTrue( car.asLong() >= 0 );

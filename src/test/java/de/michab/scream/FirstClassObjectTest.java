@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.util.Scut;
 
@@ -28,7 +28,7 @@ public class FirstClassObjectTest extends ScreamBaseTest
     {
         FirstClassObject fco = i313;
 
-        SchemeInteger i = Scut.as( SchemeInteger.class, fco );
+        Int i = Scut.as( Int.class, fco );
         assertEquals( 313L, i.asLong() );
     }
 

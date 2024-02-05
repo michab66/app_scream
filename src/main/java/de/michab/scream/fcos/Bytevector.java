@@ -59,7 +59,7 @@ public final class Bytevector
         int count = 0;
         for ( var c : bytes )
         {
-            SchemeInteger i = Scut.as( SchemeInteger.class, c );
+            Int i = Scut.as( Int.class, c );
 
             _vector[count++] = Scut.assertByte( i.asLong() );
         }

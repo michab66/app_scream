@@ -16,7 +16,7 @@ import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.util.Scut;
 
@@ -33,10 +33,10 @@ public class PrimitivesTest extends ScreamBaseTest
     {
         var result = cont().toStack(
                 cont -> Primitives._cast(
-                        SchemeInteger.class,
+                        Int.class,
                         i313,
                         // Intermediate continuation of type
-                        // Cont<SchemeInteger> required.
+                        // Cont<Int> required.
                         casted -> cont.accept( casted ) ) );
 
         assertEqualq( i313, result );

@@ -73,7 +73,7 @@ public class PortOutBinary
      * @param c The character to write.
      * @throws RuntimeX In case something went wrong.
      */
-    public PortOutBinary writeByte( SchemeInteger c )
+    public PortOutBinary writeByte( Int c )
             throws RuntimeX
     {
         return writeByte( (int)c.asLong() );

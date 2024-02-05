@@ -24,7 +24,7 @@ import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Real;
-import de.michab.scream.fcos.SchemeInteger;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
@@ -39,11 +39,11 @@ import de.michab.scream.util.Continuation;
  */
 public class ScreamBaseTest
 {
-    public final static SchemeInteger i1 = i( 1 );
-    public final static SchemeInteger i2 = i( 2 );
-    public final static SchemeInteger i3 = i( 3 );
-    public final static SchemeInteger i4 = i( 4 );
-    public final static SchemeInteger i313 = i( 313 );
+    public final static Int i1 = i( 1 );
+    public final static Int i2 = i( 2 );
+    public final static Int i3 = i( 3 );
+    public final static Int i4 = i( 4 );
+    public final static Int i313 = i( 313 );
 
     public final static Symbol s1 = s( "one" );
     public final static Symbol s2 = s( "two" );
@@ -302,9 +302,9 @@ public class ScreamBaseTest
     {
         return SchemeString.make( name );
     }
-    public static SchemeInteger i( long v )
+    public static Int i( long v )
     {
-        return SchemeInteger.createObject( v );
+        return Int.createObject( v );
     }
     protected static Cons c( FirstClassObject ... fcos )
     {
