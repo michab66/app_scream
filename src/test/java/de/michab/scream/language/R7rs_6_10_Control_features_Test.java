@@ -25,10 +25,30 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p50
      */
     @Test
-    public void procedureq_1() throws Exception
+    public void procedureq() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(procedure? car)",
+                bTrue );
+        t.expectFco(
+                "(procedure? 'car)",
+                bFalse );
+        t.expectFco(
+                """
+                (procedure? (lambda(x) (* x x)))
+                """,
+                bTrue );
+        t.expectFco(
+                """
+                (procedure? '(lambda(x) (* x x)))
+                """,
+                bFalse );
+        t.expectFco(
+                """
+                (call-with-current-continuation procedure?)
+                """,
                 bTrue );
     }
 
@@ -36,72 +56,16 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p50
      */
     @Test
-    public void procedureq_2() throws Exception
+    public void apply() throws Exception
     {
-        expectFco(
-                "(procedure? 'car)",
-                bFalse );
-    }
+        var t = makeTester();
 
-    /**
-     * p50
-     */
-    @Test
-    public void procedureq_3() throws Exception
-    {
-        expectFco(
-            """
-            (procedure? (lambda(x) (* x x)))
-            """,
-            bTrue );
-    }
-
-    /**
-     * p50
-     */
-    @Test
-    public void procedureq_4() throws Exception
-    {
-        expectFco(
-            """
-            (procedure? '(lambda(x) (* x x)))
-            """,
-            bFalse );
-    }
-
-    /**
-     * p50
-     */
-    @Test
-    public void procedureq_5() throws Exception
-    {
-        expectFco(
-            """
-            (call-with-current-continuation procedure?)
-            """,
-            bTrue );
-    }
-
-    /**
-     * p50
-     */
-    @Test
-    public void apply_r7rs_1() throws Exception
-    {
-        expectFco(
+        t.expectFco(
             """
             (apply + (list 3 4))
             """,
             i(7) );
-    }
-
-    /**
-     * p51
-     */
-    @Test
-    public void apply_r7rs_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
             """
             (define compose
               (lambda (f g)
@@ -111,46 +75,21 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
             ((compose - *) 12 75)
             """,
             i(-900) );
-    }
-
-    @Test
-    public void apply_1() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(apply + 10 '(2 1))",
                 i(13) );
-    }
-
-    @Test
-    public void apply_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(apply + 300 10 '(2 1))",
                 i313 );
-    }
-
-    @Test
-    public void apply_3() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(apply cadr '((a b)))",
                 s("b") );
-    }
-
-    @Test
-    public void apply_err_2() throws Exception
-    {
         // Last argument wrong.
-        expectError(
+        t.expectError(
                 "(apply + 300 10 3)",
                 Code.TYPE_ERROR );
-    }
-
-    @Test
-    public void apply_err_3() throws Exception
-    {
         // Not a procedure.
-        expectError(
+        t.expectError(
                 "(apply 1 300 10 '(2 1))",
                 Code.TYPE_ERROR );
     }
@@ -159,31 +98,17 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p51
      */
     @Test
-    public void map_1() throws Exception
+    public void map() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(map cadr '((a b)(d e)(g h)))",
                 "(b e h)" );
-    }
-
-    /**
-     * p51
-     */
-    @Test
-    public void map_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(map (lambda (n) (expt n n))  '(1 2 3 4 5))",
                 "(1 4 27 256 3125)" );
-    }
-
-    /**
-     * p51
-     */
-    @Test
-    public void map_3() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(map + '(1 2 3) '(4 5 6 7))",
                 "(5 7 9)" );
     }
@@ -192,9 +117,11 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
      * p51
      */
     @Test
-    public void string_map_1() throws Exception
+    public void string_map() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(string-map char-upcase \"donald\")",
                 str( "DONALD" ) );
     }
@@ -234,38 +161,25 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void vector_map_1() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 """
                 (vector-map cadr '#((a b)(d e)(g h)))
                 """,
                 "#(b e h)" );
-    }
-
-    @Test
-    public void vector_map_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 """
                 (vector-map (lambda (n) (expt n n))
                 '#(1 2 3 4 5))
                 """,
                 "#(1 4 27 256 3125)" );
-    }
-
-    @Test
-    public void vector_map_3() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 """
                 (vector-map + '#(1 2 3) '#(4 5 6 7))
                 """,
                 "#(5 7 9)" );
-    }
-
-    @Test
-    public void vector_map_4() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 """
                 (let ((count 0))
                   (vector-map
@@ -284,7 +198,9 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void for_each_1() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 """
                 (let ((v (make-vector 5)))
                   (for-each
@@ -294,12 +210,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
                   v)
                 """,
                 "#(0 1 4 9 16)" );
-    }
-
-    @Test
-    public void string_for_each_1() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 """
                 (let ((v '()))
                   (string-for-each
@@ -309,15 +220,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
                   v)
                 """,
                 "(101 100 99 98 97)" );
-    }
-
-    /**
-     * p52
-     */
-    @Test
-    public void vector_for_each_1() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 """
                 (let ((v (make-list 5)))
                   (vector-for-each
@@ -469,31 +372,25 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
     @Test
     public void call_with_values() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
 """
         (call-with-values
             (lambda () (values 4 5))
             (lambda (a b) b))
 """,
         i(5) );
-    }
 
-    @Test
-    public void call_with_values_1() throws Exception
-    {
-        expectFco(
+        t.expectFco(
 """
         (call-with-values
             (lambda () (values 300 10 3))
             (lambda (a b c) (+ a b c)))
 """,
          i(313) );
-    }
 
-    @Test
-    public void call_with_values_2() throws Exception
-    {
-        expectError(
+        t.expectError(
 """
         (call-with-values
             (lambda () (values 300 10 3))
