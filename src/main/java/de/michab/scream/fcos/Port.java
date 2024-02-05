@@ -155,7 +155,7 @@ public abstract class Port<T extends Closeable>
         return stream() == null;
     }
 
-    public abstract SchemeBoolean isBinary();
+    public abstract Bool isBinary();
 
     /**
      * Closes the port.
@@ -215,7 +215,7 @@ public abstract class Port<T extends Closeable>
                 "#<%s '%s' %s %s>",
                 getTypename( this ),
                 name(),
-                isBinary() == SchemeBoolean.T ? "binary" : "textual",
+                isBinary() == Bool.T ? "binary" : "textual",
                 isClosed() ? "closed" : "open" );
     }
 

@@ -25,7 +25,7 @@ import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Procedure;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 
 /**
  * r7rs 6.13.1 Ports p56
@@ -250,7 +250,7 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
                 """
                 (port? (current-input-port))
                 """ );
-            assertEquals( SchemeBoolean.T, result );
+            assertEquals( Bool.T, result );
         }
     }
 

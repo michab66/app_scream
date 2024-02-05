@@ -163,8 +163,8 @@ public class PortInBinary
     }
 
     @Override
-    public SchemeBoolean isBinary()
+    public Bool isBinary()
     {
-        return SchemeBoolean.T;
+        return Bool.T;
     }
 }

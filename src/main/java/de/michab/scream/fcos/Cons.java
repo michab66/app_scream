@@ -315,7 +315,7 @@ public class Cons
                 return subList;
         }
 
-        return SchemeBoolean.F;
+        return Bool.F;
     }
 
     /**
@@ -382,7 +382,7 @@ public class Cons
                 return subList;
         }
 
-        return SchemeBoolean.F;
+        return Bool.F;
     }
 
     /**

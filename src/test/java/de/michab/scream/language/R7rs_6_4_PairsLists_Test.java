@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 
 /**
  * rsr7 6.4 Pairs and lists.
@@ -165,7 +165,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
                 """
                 (null? '())
                 """,
-                SchemeBoolean.T );
+                Bool.T );
     }
 
     /**
@@ -178,7 +178,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
                 """
                 (list? '(a b c))
                 """,
-                SchemeBoolean.T );
+                Bool.T );
     }
 
     /**
@@ -191,7 +191,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
                 """
                 (list? '())
                 """,
-                SchemeBoolean.T );
+                Bool.T );
     }
 
     /**
@@ -204,7 +204,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
                 """
                 (list? '(a . c))
                 """,
-                SchemeBoolean.F );
+                Bool.F );
     }
 
     /**
@@ -219,7 +219,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
                   (set-cdr! x x)
                   (list? x))
                 """,
-                SchemeBoolean.F );
+                Bool.F );
     }
 
     /**

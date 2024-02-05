@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 
 /**
  * rsr7 6.10 Control features, p50
@@ -392,7 +392,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
 
             (list-length '(a b . c))
             """ );
-        assertEquals( SchemeBoolean.F, result );
+        assertEquals( Bool.F, result );
     }
 
     /**

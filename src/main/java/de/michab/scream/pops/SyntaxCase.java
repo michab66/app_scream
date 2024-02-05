@@ -11,7 +11,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Continuation.Cont;
@@ -130,7 +130,7 @@ public class SyntaxCase extends Syntax
                     c );
         }
         var datums = Scut.as( Cons.class, currentClause.getCar() );
-        if ( SchemeBoolean.isTrue( datums.member( key ) ) )
+        if ( Bool.isTrue( datums.member( key ) ) )
         {
             return Primitives._begin(
                     e,

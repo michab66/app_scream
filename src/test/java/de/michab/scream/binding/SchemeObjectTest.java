@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Operation;
-import de.michab.scream.fcos.SchemeBoolean;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.SchemeInteger;
 
 public class SchemeObjectTest extends ScreamBaseTest
@@ -87,7 +87,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                     (make-object de.michab.scream.binding.SchemeObjectTest$ObjectTest))
                 (object? o)
                 """ );
-        assertEquals( SchemeBoolean.T, result );
+        assertEquals( Bool.T, result );
     }
     @Test
     public void isNumberAnObject() throws Exception
@@ -98,7 +98,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                 """
                 (object? 1)
                 """ );
-        assertEquals( SchemeBoolean.F, result );
+        assertEquals( Bool.F, result );
     }
     @Test
     public void isInstanceAnObject() throws Exception
@@ -111,7 +111,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                     (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest 313 0)))
                 (object? o)
                 """ );
-        assertEquals( SchemeBoolean.T, result );
+        assertEquals( Bool.T, result );
     }
     @Test
     public void create313() throws Exception
