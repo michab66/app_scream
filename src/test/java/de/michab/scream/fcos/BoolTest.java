@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
 
-public class SchemeBooleanTest extends ScreamBaseTest
+public class BoolTest extends ScreamBaseTest
 {
     @Test
     public void toJava() throws Exception

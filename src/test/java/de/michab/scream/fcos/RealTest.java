@@ -17,7 +17,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 
-public class SchemeDoubleTest extends ScreamBaseTest
+public class RealTest extends ScreamBaseTest
 {
     private Double ZERO = 0.0d;
 
