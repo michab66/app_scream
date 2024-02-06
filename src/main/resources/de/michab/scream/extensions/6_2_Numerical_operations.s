@@ -178,31 +178,46 @@
  | (= z₁ z₂ ...)  procedure; r7rs 36
  |#
 (define =
-  (scream:math:to-transitive-cmp 'r7rsEqual))
+  (scream:delay-op (delay ; -->
+    (scream:math:to-transitive-cmp 'r7rsEqual)
+  )) ; <--
+)
 
 #|
  | (< z₁ z₂ ...)  procedure; r7rs 36
  |#
 (define <
-  (scream:math:to-transitive-cmp 'r7rsLessThan))
+  (scream:delay-op (delay ; -->
+    (scream:math:to-transitive-cmp 'r7rsLessThan)
+  )) ; <--
+)
 
 #|
  | (> z₁ z₂ ...)  procedure; r7rs 36
  |#
 (define >
-  (scream:math:to-transitive-cmp 'r7rsGreaterThan))
+  (scream:delay-op (delay ; -->
+    (scream:math:to-transitive-cmp 'r7rsGreaterThan)
+  )) ; <--
+)
 
 #|
  | (<= z₁ z₂ ...)  procedure; r7rs 36
  |#
 (define <= 
-  (scream:math:to-transitive-cmp 'r7rsLessOrEqualThan))
+  (scream:delay-op (delay ; -->
+    (scream:math:to-transitive-cmp 'r7rsLessOrEqualThan)
+  )) ; <--
+)
   
 #|
  | (>= z₁ z₂ ...)  procedure; r7rs 36
  |#
-(define >= 
-  (scream:math:to-transitive-cmp 'r7rsGreaterOrEqualThan))
+(define >=
+  (scream:delay-op (delay ; -->
+    (scream:math:to-transitive-cmp 'r7rsGreaterOrEqualThan)
+  )) ; <--
+)
 
 #|
  | (zero? z)
@@ -401,6 +416,18 @@
          (if (or (zero? a) (zero? b))
              0
              (abs (* b (floor (/ a (gcd a b))))))))
+
+#|
+ | (numerator q)
+ |#
+(define (numerator q)
+  (error "NOT_IMPLEMENTED" 'numerator))
+
+#|
+ | (denominator q)
+ |#
+(define (denominator q)
+  (error "NOT_IMPLEMENTED" 'denominator))
 
 #|
  | (truncate x) procedure; r7rs 6.2.6 p37
