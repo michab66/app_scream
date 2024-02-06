@@ -11,8 +11,8 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.Int;
+import de.michab.scream.fcos.Real;
 
 public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
 {
@@ -466,14 +466,8 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 "(max 3 4)",
                 i( 4 ) );
         t.expectFco(
-                "(exact? (max 3 4))",
-                bTrue );
-        t.expectFco(
                 "(max 3.9 4)",
                 d( 4.0 ) );
-        t.expectFco(
-                "(inexact? (max 3.9 4))",
-                bTrue );
     }
 
     /**
@@ -488,14 +482,8 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 "(min 3 4)",
                 i( 3 ) );
         t.expectFco(
-                "(exact? (min 3 4))",
-                bTrue );
-        t.expectFco(
                 "(min 3.9 4)",
                 d( 3.9 ) );
-        t.expectFco(
-                "(inexact? (min 3.9 4))",
-                bTrue );
     }
 
     /**
@@ -506,59 +494,24 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     {
         var t = makeTester();
 
-        {
-            var fco = t.execute(
-                    "(+ 300 10 3)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(313),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(+ 3 4)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(7),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(+ 3)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(3),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(+)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(0),
-                    fco );
-        }
-
-        {
-            var fco = t.execute(
-                    "(+ 300 10. 3)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d(313.),
-                    fco );
-        }
-
-        t.expectError( "(+ 1 'i)", Code.TYPE_ERROR );
+        t.expectFco(
+                "(+ 300 10 3)",
+                i(313) );
+        t.expectFco(
+                "(+ 3 4)",
+                i(7) );
+        t.expectFco(
+                "(+ 3)",
+                i(3) );
+        t.expectFco(
+                "(+)",
+                i(0) );
+        t.expectFco(
+                "(+ 300 10. 3)",
+                d(313.) );
+        t.expectError(
+                "(+ 1 'i)",
+                Code.TYPE_ERROR );
     }
 
     @Test
@@ -566,47 +519,18 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     {
         var t = makeTester();
 
-        {
-            var fco = t.execute(
-                    "(*)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(1),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(* 4)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(4),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(* 2 3)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(6),
-                    fco );
-        }
-
-        {
-            var fco = t.execute(
-                    "(* 2. 3)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d(6.),
-                    fco );
-        }
+        t.expectFco(
+                "(*)",
+                i(1) );
+        t.expectFco(
+                "(* 4)",
+                i(4) );
+        t.expectFco(
+                "(* 2 3)",
+                i(6) );
+        t.expectFco(
+                "(* 2. 3)",
+                d(6.) );
     }
 
     @Test
@@ -614,47 +538,18 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     {
         var t = makeTester();
 
-        {
-            var fco = t.execute(
-                    "(- 3 4)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(-1),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(- 3 4 5)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(-6),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(- 3)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(-3),
-                    fco );
-        }
-
-        {
-            var fco = t.execute(
-                    "(- 2. 3)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d(-1.),
-                    fco );
-        }
+        t.expectFco(
+                "(- 3 4)",
+                i(-1) );
+        t.expectFco(
+                "(- 3 4 5)",
+                i(-6) );
+        t.expectFco(
+                "(- 3)",
+                i(-3) );
+        t.expectFco(
+                "(- 2. 3)",
+                d(-1.) );
     }
 
     @Test
@@ -662,77 +557,27 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     {
         var t = makeTester();
 
-        {
-            var fco = t.execute(
-                    "(/ 4 2)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i( 2 ),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(/ 4.0 2)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d( 2. ),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(/ 4 2.0)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d( 2. ),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(/ 1)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i(1),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(/ 1.0)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d(1),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(/ 3)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d(1./3.),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(/ 3 4 5)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d(3./20.),
-                    fco );
-        }
-
+        t.expectFco(
+                "(/ 4 2)",
+                i( 2 ) );
+        t.expectFco(
+                "(/ 4.0 2)",
+                d( 2. ) );
+        t.expectFco(
+                "(/ 4 2.0)",
+                d( 2. ) );
+        t.expectFco(
+                "(/ 1)",
+                i(1) );
+        t.expectFco(
+                "(/ 1.0)",
+                d(1) );
+        t.expectFco(
+                "(/ 3)",
+                d(1./3.) );
+        t.expectFco(
+                "(/ 3 4 5)",
+                d(3./20.) );
         t.expectError(
                 "(/ 1 '())",
                 Code.TYPE_ERROR );
@@ -752,46 +597,18 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     {
         var t = makeTester();
 
-        {
-            var fco = t.execute(
-                    "(abs 4)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i( 4 ),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(abs -4)" );
-            assertInstanceOf(
-                    Int.class,
-                    fco );
-            assertEqualq(
-                    i( 4 ),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(abs 2.0)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d( 2. ),
-                    fco );
-        }
-        {
-            var fco = t.execute(
-                    "(abs -2.0)" );
-            assertInstanceOf(
-                    Real.class,
-                    fco );
-            assertEqualq(
-                    d( 2. ),
-                    fco );
-        }
+        t.expectFco(
+                "(abs 4)",
+                i( 4 ) );
+        t.expectFco(
+                "(abs -4)",
+                i( 4 ) );
+        t.expectFco(
+                "(abs 2.0)",
+                d( 2. ) );
+        t.expectFco(
+                "(abs -2.0)",
+                d( 2. ) );
 
         t.expectError(
                 "(abs '())",
@@ -902,9 +719,9 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         t.expectFco(
                 "(gcd 32 -36)",
                 i(4) );
-        assertInstanceOf(
-                Real.class,
-                t.execute( "(gcd 32.0 -36)" ) );
+        t.expectFco(
+                "(gcd 32.0 -36)",
+                d(4.) );
         t.expectFco(
                 "(gcd)",
                 i(0) );
@@ -918,9 +735,9 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         t.expectFco(
                 "(lcm 32 -36)",
                 i(288) );
-        assertInstanceOf(
-                Real.class,
-                t.execute( "(lcm 32.0 -36)" ) );
+        t.expectFco(
+                "(lcm 32.0 -36)",
+                d(288.) );
         t.expectFco(
                 "(lcm)",
                 i(1) );
