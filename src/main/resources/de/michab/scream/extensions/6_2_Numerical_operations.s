@@ -349,17 +349,6 @@
 #|
  | (gcd n1 ...) procedure 6.2.6 p37
  |#
-#;(define gcd
-  (letrec 
-    (
-      (_gcd 
-        (lambda (a b)
-          (abs
-            (if (zero? b)
-              a
-              (_gcd b (remainder a b)))))))
-
-    (scream:to-transitive _gcd)))
 (define gcd
   (letrec 
     (
@@ -369,6 +358,7 @@
             (if (zero? b)
               a
               (_gcd b (remainder a b))))))
+            
       (_gcd-transitive
         (scream:to-transitive _gcd))
     )
@@ -389,33 +379,43 @@
 #|
  | (lcm n1 ...) procedure 6.2.6 p37
  |#
-;;
-;;  static long lcm(Object args) {
-;;    long L = 1, g = 1;
-;;    while (isPair(args)) {
-;;      long n = Math.abs((long)toInt(first(args)));
-;;      g = gcd(n, L);
-;;      L = (g == 0) ? g : (n / g) * L;
-;;     args = toList(rest(args));
-;;    }
-;;    return L;
-;;  }
-(define (lcm . args)
-  ;; TODO it must be possible to implement this simpler.
-  (do ((k 1)
-       (g 1)
-       (n 0))
-      ((null? args) k)
-      (set! n (abs (car args)))
-      (set! g (gcd n k))
-      (set! k (if (= g 0)
-                  g
-                  (* k (/ n g))))
-      (set! args (cdr args))))
-#;(define lcm (lambda (a b)
-         (if (or (zero? a) (zero? b))
-             0
-             (abs (* b (floor (/ a (gcd a b))))))))
+(define lcm
+  (letrec 
+    (
+      (_lcm 
+        (lambda (a b)
+          (if (or (zero? a) (zero? b))
+            0
+            (abs (* b (floor (/ a (gcd a b))))))))
+
+      (_lcm-exact
+        (lambda (a b)
+          (let
+            (
+              (inexact-seen (or (inexact? a) (inexact? b)))
+              (result (_lcm a b))
+            )
+
+            (if inexact-seen
+              result
+              (exact result)))))
+
+      (_lcm-transitive
+        (scream:to-transitive _lcm-exact))
+    )
+
+    (lambda arguments
+      (cond
+        ((null? arguments)
+          1)
+        ((= 1 (length arguments))
+          (if (number? (car arguments))
+            (car arguments)
+            (error "TYPE_ERROR" %type-integer n1)))
+        (else
+          (apply _lcm-transitive arguments))))
+  )
+)
 
 #|
  | (numerator q)
@@ -428,6 +428,30 @@
  |#
 (define (denominator q)
   (error "NOT_IMPLEMENTED" 'denominator))
+
+#|
+ | (floor x) procedure 6.2.6 p37
+ |#
+(define (floor x)
+  (cond
+    ((not (number? x))
+      (error "TYPE_ERROR" %type-number x))
+    ((integer? x)
+      x)
+    (else
+      (round (scream:math (floor x))))))
+
+#|
+ | (ceiling x) procedure - 6.2.6 p37
+ |#
+(define (ceiling x)
+  (cond
+    ((not (number? x))
+      (error "TYPE_ERROR" %type-number x))
+    ((integer? x)
+      x)
+    (else
+      (round (scream:math (ceil x))))))
 
 #|
  | (truncate x) procedure; r7rs 6.2.6 p37
@@ -449,9 +473,6 @@
 (define asin ())
 (define acos ())
 (define atan ())
-
-(define floor ())
-(define ceiling ())
 
 (define round ())
 
@@ -550,23 +571,8 @@
         x
         (scream:math (rint x)))))
 
-  ;;
-  ;; floor - procedure - r5rs p. 23
-  ;;
-  (set! floor 
-    (lambda (x) 
-      (round (math (floor x)))))
-
-  ;;
-  ;; ceiling - procedure - r5rs p. 23
-  ;;
-  (set! ceiling 
-  	(lambda (x) 
-  	  (round (math (ceil x)))))
-
   (set! expt-float (lambda (x y) (math (pow (to-float x) (to-float y)))))
 )
-
 
 (define (expt-int x y)
   (define (_expt-int x y)

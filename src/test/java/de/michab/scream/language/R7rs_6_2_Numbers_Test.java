@@ -743,6 +743,56 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 i(1) );
     }
 
+    @Test
+    public void floor() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(floor -4.3)",
+                d(-5.) );
+        t.expectFco(
+                "(floor 3.5)",
+                d(3.) );
+        t.expectFco(
+                "(floor 313)",
+                i(313) );
+        t.expectError(
+                "(floor '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(floor)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(floor 1 2)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
+    @Test
+    public void ceiling() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(ceiling -4.3)",
+                d(-4.) );
+        t.expectFco(
+                "(ceiling 3.5)",
+                d(4.) );
+        t.expectFco(
+                "(ceiling 313)",
+                i(313) );
+        t.expectError(
+                "(ceiling '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(ceiling)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(ceiling 1 2)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
     /**
      * r7rs truncate 6.2.6 p37
      */
