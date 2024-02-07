@@ -807,30 +807,56 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         t.expectFco(
                 "(truncate 3.5)",
                 d( 3.0 ) );
+        t.expectError(
+                "(truncate '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(truncate)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(truncate 1 2)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
 
     @Test
     public void round() throws Exception
     {
-        var ts = makeTester();
+        var t = makeTester();
 
-        ts.expectFco(
+        t.expectFco(
                 "(round -4.3)",
-                d(-4.0) );
-        ts.expectFco(
-                "(exact? (round -4.3))",
-                bFalse );
-        ts.expectFco(
+                d( -4. ) );
+        t.expectFco(
                 "(round 3.5)",
-                d(4.0) );
-        ts.expectFco(
+                d( 4. ) );
+        t.expectFco(
                 "(round 7)",
-                i(7) );
-        ts.expectFco(
-                "(exact? (round 7))",
-                bTrue );
-        ts.expectError(
-                "(round 'me)", Code.TYPE_ERROR );
+                i( 7 ) );
+        t.expectError(
+                "(round '())",
+                Code.TYPE_ERROR );
+        t.expectError(
+                "(round)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(round 1 2)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+
+    @Test
+    public void transcendental() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(exp 1)",
+                d( Math.exp( 1 ) ) );
+        t.expectFco(
+                "(log 2)",
+                d( Math.log( 2 ) ) );
+        t.expectFco(
+                "(log 2 3)",
+                d( Math.log( 2 ) / Math.log( 3 ) ) );
     }
 
     @Test

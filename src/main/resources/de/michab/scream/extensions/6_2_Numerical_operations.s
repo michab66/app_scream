@@ -465,16 +465,49 @@
     (else
       (ceiling x))))
 
-(define exp ())
-(define log ())
+#|
+ | round - procedure - r7rs p37
+ |#
+(define (round x)
+  (if (exact? x)
+    x
+    (scream:math (rint x))))
+
+#|
+ | (rationalize x y)
+ |#
+(define (rationalize x y)
+  (error "NOT_IMPLEMENTED" 'rationalize))
+
+#|
+ | (exp z) inexact library procedure r7rs p38
+ |#
+(define (exp x)
+  (scream:math (exp x)))
+
+(define log
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((z)
+      (scream:math (log z)))
+
+    ((z1 z2)
+      (/ (log z1) (log z2)))
+
+  ) ; case-lambda
+
+  )) ; <--
+)
+
 (define sin ())
 (define cos ())
 (define tan ())
 (define asin ())
 (define acos ())
 (define atan ())
-
-(define round ())
 
 #|
  | (sqrt z) inexact library procedure; r7rs 38
@@ -518,15 +551,11 @@
 (let ((math (make-object java.lang.Math))
       (to-float (lambda (x) (+ 0.0 x)))
      )
-  ;;
-  ;; exp - procedure - r5rs p. 23
-  ;;
-  (set! exp (lambda (x) (math (exp x))))
 
   ;;
   ;; log - procedure - r5rs p. 23
   ;;
-  (set! log (lambda (x) (math (log x))))
+#;  (set! log (lambda (x) (math (log x))))
 
   ;;
   ;; sin - procedure - r5rs p. 23
@@ -562,14 +591,6 @@
         (math (atan (car x)))
         (math (atan2 (car x) (cadr x))))))
 
-#|
- | round - procedure - r7rs p37
- |#
-  (set! round
-    (lambda (x)
-      (if (exact? x)
-        x
-        (scream:math (rint x)))))
 
   (set! expt-float (lambda (x y) (math (pow (to-float x) (to-float y)))))
 )
