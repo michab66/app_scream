@@ -96,6 +96,11 @@
             next)
           (cdr rest)))))
 
+(define (scream:assert-number n)
+  (if (number? n)
+    n
+    (error "TYPE_ERROR" %type-number n)))
+   
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -347,7 +352,7 @@
 (define modulo floor-remainder)
 
 #|
- | (gcd n1 ...) procedure 6.2.6 p37
+ | (gcd n₁ ...) procedure 6.2.6 p37
  |#
 (define gcd
   (letrec 
@@ -377,7 +382,7 @@
 )
 
 #|
- | (lcm n1 ...) procedure 6.2.6 p37
+ | (lcm n₁ ...) procedure 6.2.6 p37
  |#
 (define lcm
   (letrec 
@@ -466,7 +471,7 @@
       (ceiling x))))
 
 #|
- | round - procedure - r7rs p37
+ | (round x) procedure r7rs p37
  |#
 (define (round x)
   (if (exact? x)
@@ -483,8 +488,13 @@
  | (exp z) inexact library procedure r7rs p38
  |#
 (define (exp x)
-  (scream:math (exp x)))
+  (scream:math 
+    (exp (scream:assert-number x))))
 
+#|
+ | (log z) inexact library procedure r7rs p38
+ | (log z₁ z₂)
+ |#
 (define log
 
   (scream:delay-op (delay ; -->
@@ -492,29 +502,89 @@
   (case-lambda
 
     ((z)
-      (scream:math (log z)))
+      (scream:math (log (scream:assert-number z))))
 
     ((z1 z2)
-      (/ (log z1) (log z2)))
+      (/ 
+        (log (scream:assert-number z1))
+        (log (scream:assert-number z2))))
 
   ) ; case-lambda
 
   )) ; <--
 )
 
-(define sin ())
-(define cos ())
-(define tan ())
-(define asin ())
-(define acos ())
-(define atan ())
+#|
+ | (sin z) procedure r7rs p38
+ |#
+(define (sin z)
+  (scream:math 
+    (sin (scream:assert-number z))))
+
+#|
+ | (cos z) procedure r7rs p38
+ |#
+(define (cos z)
+  (scream:math 
+    (cos (scream:assert-number z))))
+
+#|
+ | (tan z) procedure r7rs p38
+ |#
+(define (tan z)
+  (scream:math
+    (tan (scream:assert-number z))))
+
+#|
+ | (asin z) procedure r7rs p38
+ |#
+(define (asin z)
+  (scream:math 
+    (asin (scream:assert-number z))))
+
+#|
+ | (acos z) procedure r7rs p38
+ |#
+(define (acos z)
+  (scream:math 
+    (acos (scream:assert-number z))))
+
+#|
+ | (atan z) procedure r7rs p38
+ |#
+(define atan
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((z)
+      (scream:math 
+        (atan (scream:assert-number z))))
+
+    ((x y)
+      (scream:math 
+        (atan2 
+          (scream:assert-number x) 
+          (scream:assert-number y))))
+
+  ) ; case-lambda
+
+  )) ; <--
+)
+
+#|
+ | (square z)
+ |#
+(define (square z)
+  (* (scream:assert-number z) z))
 
 #|
  | (sqrt z) inexact library procedure; r7rs 38
  |#
 (define (sqrt z) 
-  (let ((result (scream:math (sqrt z))))
-    (if (integer? result)
+  (let ((result (scream:math (sqrt (scream:assert-number z)))))
+    (if (and (exact? z) (integer? result))
   	  (exact result)
       result
     )
@@ -541,78 +611,57 @@
   )
 )
 
-(define expt-float ())
-
-;;
-;; Open a special scope to keep the java.lang.Math instance in the local
-;; closures.  Replace the TLE bindings with the function implementations in the
-;; let expression.
-;;
-(let ((math (make-object java.lang.Math))
-      (to-float (lambda (x) (+ 0.0 x)))
-     )
-
-  ;;
-  ;; log - procedure - r5rs p. 23
-  ;;
-#;  (set! log (lambda (x) (math (log x))))
-
-  ;;
-  ;; sin - procedure - r5rs p. 23
-  ;;
-  (set! sin (lambda (x) (math (sin x))))
-
-  ;;
-  ;; cos - procedure - r5rs p. 23
-  ;;
-  (set! cos (lambda (x) (math (cos x))))
-
-  ;;
-  ;; tan - procedure - r5rs p. 23
-  ;;
-  (set! tan (lambda (x) (math (tan x))))
-
-  ;;
-  ;; asin - procedure - r5rs p. 23
-  ;;
-  (set! asin (lambda (x) (math (asin x))))
-
-  ;;
-  ;; acos - procedure - r5rs p. 23
-  ;;
-  (set! acos (lambda (x) (math (acos x))))
-
-  ;;
-  ;; atan - procedure - r5rs p. 23
-  ;;
-  (set! atan
-    (lambda x
-      (if (= 1 (length x))
-        (math (atan (car x)))
-        (math (atan2 (car x) (cadr x))))))
-
-
-  (set! expt-float (lambda (x y) (math (pow (to-float x) (to-float y)))))
-)
-
-(define (expt-int x y)
-  (define (_expt-int x y)
-    (if (eqv? y 1)
-      x
-      (* x (_expt-int x (- y 1)))))
-
-  (cond 
-    ((< y 0) (error "RANGE_EXCEEDED" y "y >= 0"))
-    ((= y 0) 1)
-    (else (_expt-int x y))))
-    
 #|
  | (expt z1 z2) procedure; r7rs 6.2.6 p38
  |#
-(define (expt x y)
-  (if (and (integer? x) (integer? y))
-    (expt-int x y)
-    (expt-float x y)))
+(define (expt z1 z2)
+  (let 
+    (
+      (result 
+        (scream:math (pow (scream:assert-number z1) (scream:assert-number z2))))
+    )
+    
+    (if (and (exact? z1) (exact? z2) (integer? result))
+      (exact result)
+      result)
+  )
+)
+
+#|
+ | (make-rectangular x1 x2)
+ |#
+(define (make-rectangular x1 x2)
+  (error "NOT_IMPLEMENTED" 'make-rectangular))
+
+#|
+ | (make-polar x3 x4)
+ |#
+(define (make-polar x1 x2)
+  (error "NOT_IMPLEMENTED" 'make-polar))
+
+#|
+ | (real-part z)
+ |#
+(define (real-part z)
+  (error "NOT_IMPLEMENTED" 'real-part))
+
+#|
+ | (imag-part z)
+ |#
+(define (imag-part z)
+  (error "NOT_IMPLEMENTED" 'imag-part))
+
+#|
+ | (magnitude z)
+ |#
+(define (magnitude z)
+  (error "NOT_IMPLEMENTED" 'magnitude))
+
+#|
+ | (angle z)
+ |#
+(define (angle z)
+  (error "NOT_IMPLEMENTED" 'angle))
 
 #|
  | (inexact z) procedure; r7rs p39
