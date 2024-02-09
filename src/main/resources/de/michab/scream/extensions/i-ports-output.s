@@ -1,54 +1,65 @@
 ;
 ; Scream @ https://github.com/urschleim/scream
 ;
-; Copyright © 1998-2023 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
 ;
+; r7rs 6.13.3 Output p58 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; r7rs 6.13.3 Output p58 
+;; Scream definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; write write library procedure
-;;
-(define (write subject . arg-list)
-  (let (
-    ; If a single optional argument is given assign this to the port.  If no
-    ; optional argument is given assign the current output port to the port.
-    ; If more than one optional argument is given return an error.
-    (the-port
+;; r7rs definitions.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#|
+ | (write obj)
+ | (write obj port) write library procedure; r7rs 6.13.3 p58
+ |#
+(define write
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((obj)
+      (write obj (current-output-port)))
+
+    ((obj port)
       (cond
-        ((= 0 (length arg-list))
-          (current-output-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
+        ((not (output-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
         (else
-          (error "TOO_MANY_ARGUMENTS" 2)))))
+          ((object port) (write obj))
+          scream:unspecified)
+      ) ; cond
+    )
 
-    ; Check if what we assigned above is really an output port.
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (scream:typename the-port) 2))
-    (if (not (output-port? the-port))
-      (error "EXPECTED_OUTPUT_PORT"))
-    ; Finally do the actual read.
-    ((object the-port) (write subject))
-    scream:unspecified))
+  ) ; case-lambda
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; write-shared write library procedure
-;;
+  )) ; <--
+
+)
+
+#|
+ | (write-shared obj)
+ | (write-shared obj port) write library procedure; r7rs 6.13.3 p58
+ |#
 (define (write-shared obj port)
   (scream:error:not-implemented "(write-shared)"))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; write-simple write library procedure
-;;
+#|
+ | (write-simple obj)
+ | (write-simple obj port) write library procedure; r7rs 6.13.3 p59
+ |#
 (define (write-simple obj port)
   (scream:error:not-implemented "(write-simple)"))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; display write library procedure
-;;
+#|
+ | (display obj)
+ | (display obj port)  write library procedure; r7rs 6.13.3 p59
+ |#
 (define display
 
   (scream:delay-op (delay ; -->
@@ -76,9 +87,10 @@
 
 )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; newline procedure
-;;
+#|
+ | (newline obj)
+ | (newline obj port)  procedure; r7rs 6.13.3 p59
+ |#
 (define newline
 
   (scream:delay-op (delay ; -->
@@ -91,8 +103,6 @@
     ((port)
       
       (cond
-        ((not (output-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
         ((not (textual-port? port))
           (error "TYPE_ERROR" scream:type-output-port port))
         (else
@@ -107,37 +117,43 @@
   )) ; <--
 )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; write-char procedure
-;;
-(define (write-char char . arg-list)
-  (let (
-    ; If a single optional argument is given assign this to the port.  If no
-    ; optional argument is given assign the current output port to the port.
-    ; If more than one optional argument is given return an error.
-    (the-port
+#|
+ | (write-char obj)
+ | (write-char obj port)  procedure; r7rs 6.13.3 p59
+ |#
+(define write-char
+
+  (scream:delay-op (delay ; -->
+
+  (case-lambda
+
+    ((character)
+      (write-u8 character (current-output-port)))
+
+    ((character port)
       (cond
-        ((= 0 (length arg-list))
-          (current-output-port))
-        ((= 1 (length arg-list))
-          (car arg-list))
+        ((not (char? character))
+          (error "TYPE_ERROR" scream:type-character character))
+        ((not (output-port? port))
+          (error "TYPE_ERROR" scream:type-output-port port))
         (else
-          (error "TOO_MANY_ARGUMENTS" 2)))))
+          ((object port) (writeCharacter character))
+          scream:unspecified)
+      ) ; cond
+    )
 
-    ; Check if what we assigned above is really an output port.
-    (if (not (port? the-port))
-      (error "TYPE_ERROR" %type-port (scream:typename the-port) 2))
-    (if (not (output-port? the-port))
-      (error "EXPECTED_OUTPUT_PORT"))
-    (if (not (char? char))
-      (error "TYPE_ERROR" %type-char (scream:typename char) 1))
-    ; Finally do the actual write.
-    ((object the-port) (writeCharacter char))))
+  ) ; case-lambda
 
+  )) ; <--
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; write-string procedure
-;;
+)
+
+#|
+ | (write-string obj)
+ | (write-string obj port)
+ | (write-string obj port start)
+ | (write-string obj port start end)   procedure; r7rs 6.13.3 p59
+ |#
 (define write-string
 
   (scream:delay-op (delay ; -->
@@ -176,9 +192,10 @@
   )) ; <--
 )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; write-u8 procedure
-;;
+#|
+ | (write-u8 obj)
+ | (write-u8 obj port)  procedure; r7rs 6.13.3 p59
+ |#
 (define write-u8
 
   (scream:delay-op (delay ; -->
@@ -208,9 +225,12 @@
 
 )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; write-bytevector procedure
-;;
+#|
+ | (write-bytevector obj)
+ | (write-bytevector obj port)
+ | (write-bytevector obj port start)
+ | (write-bytevector obj port start end)  procedure; r7rs 6.13.3 p59
+ |#
 (define write-bytevector
 
   (scream:delay-op (delay ; -->
@@ -244,9 +264,10 @@
 
 )
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; flush-output-port procedure
-;;
+#|
+ | (flush-output-port)
+ | (flush-output-port port)  procedure; r7rs 6.13.3 p59
+ |#
 (define flush-output-port
 
   (scream:delay-op (delay ; -->
