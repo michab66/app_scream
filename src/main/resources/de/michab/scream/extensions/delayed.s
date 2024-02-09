@@ -10,11 +10,17 @@
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+#|
+ | (delay expression)  lazy library procedure, r7rs p18
+ |#
 (%syntax (delay expression)
   (vector 'promise #f expression))
 
 ; delay-force
 
+#|
+ | (promise? obj)  lazy library procedure, r7rs p19
+ |#
 (define (promise? obj)
   (and
     (vector? obj)
@@ -22,6 +28,9 @@
     (eqv? 'promise (vector-ref obj 0)))
 )
 
+#|
+ | (force promise)  lazy library procedure, r7rs p18
+ |#
 (define (force promise)
   (cond
     ((vector-ref promise 1)
@@ -34,14 +43,10 @@
       (vector-ref promise 1)))
 )
 
-; make-promise
+#|
+ | (make-promise obj)  lazy library procedure, r7rs p19
+ |#
 (define (make-promise obj)
   (if (promise? obj)
     obj
     (vector 'promise obj '())))
-
-(define (current-jiffy)
-  ((make-object java.lang.System) (currentTimeMillis)))
-
-(define (jiffies-per-second)
-  1000)
