@@ -381,7 +381,8 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 bFalse );
         t.expectFco(
                 "(zero? 3.1415)",
-                bFalse );        t.expectError(
+                bFalse );
+        t.expectError(
                 "(zero? '())",
                 Code.TYPE_ERROR );
         t.expectError(
@@ -574,6 +575,9 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         t.expectFco(
                 "(max 3.9 4)",
                 d( 4.0 ) );
+        t.expectError(
+                "(max 3.9 4 'x)",
+                Code.TYPE_ERROR );
     }
 
     /**
@@ -590,6 +594,9 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         t.expectFco(
                 "(min 3.9 4)",
                 d( 3.9 ) );
+        t.expectError(
+                "(min 3.9 4 'x)",
+                Code.TYPE_ERROR );
     }
 
     /**
@@ -812,9 +819,15 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
     {
         var t = makeTester();
 
-        t.expectFco( "(eqv? quotient truncate-quotient)", bTrue );
-        t.expectFco( "(eqv? remainder truncate-remainder)", bTrue );
-        t.expectFco( "(eqv? modulo floor-remainder)", bTrue );
+        t.expectFco(
+                "(eqv? quotient truncate-quotient)",
+                bTrue );
+        t.expectFco(
+                "(eqv? remainder truncate-remainder)",
+                bTrue );
+        t.expectFco(
+                "(eqv? modulo floor-remainder)",
+                bTrue );
     }
 
     @Test
@@ -1040,11 +1053,9 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
         t.expectFco(
                 "(square 42)",
                 i( 1764 ) );
-
         t.expectFco(
                 "(square 2.0)",
                 d( 4. ) );
-
         t.expectError(
                 "(square '())",
                 Code.TYPE_ERROR );
