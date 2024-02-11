@@ -126,6 +126,17 @@ public final class ScreamEvaluator implements ScriptEngine
     private final Scream _factory;
 
     /**
+     * A reference to the per-thread evaluator that is used by the scream
+     * runtime.
+     */
+    private final static ThreadLocal<ScreamEvaluator> _EVAL =
+            new ThreadLocal<>();
+    public final static ScreamEvaluator EVAL()
+    {
+        return Objects.requireNonNull( _EVAL.get() );
+    }
+
+    /**
      * Create a SchemeEvaluator.
      *
      * @param tle An environment used for evaluating the incoming expressions.
@@ -134,6 +145,8 @@ public final class ScreamEvaluator implements ScriptEngine
             Scream interpreter )
         throws RuntimeX
     {
+        _EVAL.set( this );
+
         _context.push( new SimpleScriptContext() );
 
         _factory =
@@ -359,7 +372,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @param filename The name of the file to load.
      * @throws RuntimeX In case of errors.
      */
-    private  FirstClassObject load( SchemeString filename, Environment environment )
+    public FirstClassObject load( SchemeString filename, Environment environment )
             throws RuntimeX
     {
         return load( new LoadContext( filename.getValue() ), environment );

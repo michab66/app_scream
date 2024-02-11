@@ -8,9 +8,11 @@ package de.michab.scream.language;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
+import java.io.FileWriter;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Vector;
@@ -23,6 +25,37 @@ import de.michab.scream.fcos.Vector;
 public class R7rs_6_14_System_interface_Test extends ScreamBaseTest
 {
     static String TEST_FILENAME = "screamTest.tmp";
+
+    @Test
+    public void load() throws Exception
+    {
+        long ctm = System.currentTimeMillis();
+        File testfile = new File( getClass().getSimpleName() + ".load.s" );
+
+        try
+        {
+            var writer = new FileWriter( testfile );
+            writer.write( "(define __load__ " + ctm + ")\n" );
+            writer.close();
+
+            var filename = testfile.getName();
+
+            var t = makeTester();
+
+            t.execute(
+                    String.format( "(load \"%s\")", filename ) );
+            t.expectFco(
+                    "__load__",
+                    i(ctm) );
+            t.expectError(
+                    String.format( "(load \"x%s\")", filename ),
+                    Code.IO_ERROR );
+        }
+        finally
+        {
+            testfile.delete();
+        }
+    }
 
     /**
      * This currently tests all offered functions for files.

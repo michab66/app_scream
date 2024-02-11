@@ -75,6 +75,14 @@
  | (load filename)
  | (load filename environment-specifier)  file library procedure; r7rs p59
  |#
+(define (load filename)
+  (let
+    (
+      (evaluator ((make-object de.michab.scream.ScreamEvaluator) (EVAL)))
+    )
+    
+    (evaluator (load filename (interaction-environment))))
+)
 
 #|
  | (file-exists? filename)  file library procedure; r7rs p60
