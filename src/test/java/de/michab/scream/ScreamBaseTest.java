@@ -19,16 +19,17 @@ import org.junit.jupiter.api.Test;
 import org.smack.util.FunctionalUtil.ConsumerTX;
 
 import de.michab.scream.RuntimeX.Code;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.Port;
-import de.michab.scream.fcos.Bool;
-import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.Int;
+import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.util.Continuation;
+import de.michab.scream.util.Scut;
 
 /**
  * scream test support.
@@ -174,6 +175,7 @@ public class ScreamBaseTest
          * @throws RuntimeX In case of an error.
          */
         FirstClassObject execute( String script ) throws RuntimeX;
+        <R extends FirstClassObject> R execute( String script, Class<R> cl ) throws RuntimeX;
         Tester expectFco( String script, String result ) throws RuntimeX;
         Tester expectFco( String script, FirstClassObject result ) throws RuntimeX;
         RuntimeX expectError( String script, Code result );
@@ -213,6 +215,15 @@ public class ScreamBaseTest
             public FirstClassObject execute( String script ) throws RuntimeX
             {
                 return se.evalFco( script );
+            }
+
+            @Override
+            public <R extends FirstClassObject> R execute( String script,
+                    Class<R> cl ) throws RuntimeX
+            {
+                return Scut.as(
+                        cl,
+                        execute( script ) );
             }
         };
     }
