@@ -6,6 +6,7 @@
 package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -15,7 +16,10 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Bool;
+import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Vector;
+import de.michab.scream.util.Scut;
 
 /**
  * rsr7 6.14 System interface, p59
@@ -104,6 +108,34 @@ public class R7rs_6_14_System_interface_Test extends ScreamBaseTest
             if ( testfile.exists() )
                 testfile.delete();
         }
+    }
+
+    @Test
+    public void get_environment_variable() throws Exception
+    {
+        var t = makeTester();
+
+        var val = t.execute(
+                "(get-environment-variable \"USER\")" );
+        assertInstanceOf( SchemeString.class, val );
+
+        t.expectFco(
+                "(get-environment-variable \"_undefined_variable_\")",
+                Bool.F );
+    }
+
+    @Test
+    public void get_environment_variables() throws Exception
+    {
+        var t = makeTester();
+
+        var val = Scut.as( Cons.class, t.execute(
+                "(get-environment-variables)" ) );
+
+        val = Scut.as( Cons.class, val.getCar() );
+
+        assertInstanceOf( SchemeString.class, val.getCar() );
+        assertInstanceOf( SchemeString.class, val.getCdr() );
     }
 
     @Test
