@@ -83,23 +83,6 @@ public class Scream_Extensions_Test extends ScreamBaseTest
     }
 
     @Test
-    public void basic_s_scream$transform()
-            throws Exception
-    {
-        var t = makeTester();
-
-        t.expectFco(
-                "(define (plus1 x) (+ 1 x))",
-                Cons.NIL );
-        t.expectFco(
-                "(scream:transform plus1 '( 1 2 3 4 5 6 7 8 9 10 11 12 313))",
-                "(2 3 4 5 6 7 8 9 10 11 12 13 314)" );
-        t.expectFco(
-                "(scream:transform plus1 '())",
-                Cons.NIL );
-    }
-
-    @Test
     public void basic_s_scream$make_transitive()
             throws Exception
     {

@@ -1,8 +1,6 @@
 ; Scream @ https://github.com/urschleim/scream
 ;
-; Copyright © 1998-2022 Michael G. Binz
-
-
+; Copyright © 1998-2024 Michael G. Binz
 
 ;;
 ;; Define a symbol holding the current jdk-version.
@@ -68,21 +66,8 @@
     (begin
       (display (car rest))
       (display #\space)
-      (apply scream:display-ln (cdr rest))
-)))
-
-#|
- | (scream:transform proc list)
- |
- | Applies the passed procedure to the elements of
- | the list and returns the results in order.
- |# 
-(define (scream:transform proc list)
-  (if (null? list)
-    '()
-    (cons
-      (proc (car list))
-      (scream:transform proc (cdr list)))))
+      (apply scream:display-ln (cdr rest))))
+)
 
 ;;
 ;; Exits the interpreter.  Note that this implementation is *very* straight-

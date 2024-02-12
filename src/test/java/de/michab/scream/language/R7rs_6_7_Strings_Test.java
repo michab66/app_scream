@@ -8,10 +8,10 @@ package de.michab.scream.language;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+import org.smack.util.StringUtil;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.SchemeString;
 
 /**
  * rsr7 6.7 Strings, p45
@@ -67,9 +67,9 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
                 """
                 (make-string 8 #\\ß)
                 """,
-                        """
-                        "ßßßßßßßß"
-                        """);
+                """
+                "ßßßßßßßß"
+                """);
     }
 
     /**
@@ -90,9 +90,17 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_length() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(string-length \"Donald\")",
                 "6");
+        t.expectFco(
+                "(string-length \"\")",
+                "0");
+        t.expectError(
+                "(string-length 'string)",
+                Code.TYPE_ERROR );
     }
 
     @Test
@@ -130,83 +138,66 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     // ----------
 
     @Test
-    public void substring_1() throws Exception
+    public void substring() throws Exception
     {
-        var result = scriptEngine().evalFco(
-            """
-            (substring "Donald" 1 4)
-            """ );
-        assertEqualq( SchemeString.makeEscaped( "ona" ), result );
-    }
-    @Test
-    public void substring_2() throws Exception
-    {
-        var result = scriptEngine().evalFco(
-            """
-            (substring "Donald" 4 4)
-            """ );
-        assertEqualq( SchemeString.makeEscaped( "" ), result );
-    }
+        var t = makeTester();
 
-    @Test
-    public void substring_3() throws Exception
-    {
-        var result = scriptEngine().evalFco(
+        t.expectFco(
+            "(substring \"Donald\" 1 4)",
+            str( "ona" ) );
+        t.expectFco(
+                "(substring \"Donald\" 4 4)",
+                str( StringUtil.EMPTY_STRING ) );
+        t.expectFco(
             """
             (let* (
               (donald-s "donald")
               (donald-len (string-length donald-s)))
 
               (substring donald-s 0 donald-len))
-            """ );
-        assertEqualq( SchemeString.makeEscaped( "donald" ), result );
-    }
+            """,
+            str( "donald" ) );
 
-    @Test
-    public void substring_4() throws Exception
-    {
-        var rx = expectError(
+        var rx = t.expectError(
             """
             (substring "xxx" 2 8)
             """,
             Code.INDEX_OUT_OF_BOUNDS );
         assertEquals( 8L, rx.getArgument(0) );
+
+        // MIT Scheme examples
+        t.expectFco(
+                "(substring \"\" 0 0)",
+                str( StringUtil.EMPTY_STRING ) );
+        t.expectFco(
+                "(substring \"arduous\" 2 5)",
+                "\"duo\"" );
+        t.expectError(
+                "(substring \"arduous\" 2 8)",
+                Code.INDEX_OUT_OF_BOUNDS ); // error--> 8 not in correct range
     }
 
     @Test
-    public void string_append_1() throws Exception
+    public void string_append() throws Exception
     {
-        var result = scriptEngine().evalFco(
+        var t = makeTester();
+
+        t.expectFco(
             """
             (string-append "Huckle" "berry")
-            """ );
-        assertEqualq( SchemeString.makeEscaped( "Huckleberry" ), result );
-    }
-
-    @Test
-    public void string_append_2() throws Exception
-    {
-        var result = scriptEngine().evalFco(
+            """,
+            str( "Huckleberry" ) );
+        t.expectFco(
             """
             (string-append "Huckle" "")
-            """ );
-        assertEqualq( str( "Huckle" ), result );
-    }
-
-    @Test
-    public void string_append_3() throws Exception
-    {
-        var result = scriptEngine().evalFco(
+            """,
+            str( "Huckle" ) );
+        t.expectFco(
             """
             (string-append "Huck" "lebe" "rry")
-            """ );
-        assertEqualq( str( "Huckleberry" ), result );
-    }
-
-    @Test
-    public void string_append_4() throws Exception
-    {
-        var rx = expectError(
+            """,
+            str( "Huckleberry" ) );
+        var rx = t.expectError(
             """
             (string-append "Huckle" ())
             """,
@@ -267,14 +258,14 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_equalq() throws Exception
     {
-        final var fcoc = expectFcoConsumer();
+        final var t = makeTester();
 
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string=? "A" "A")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string=? "a" "A")
                 """,
@@ -284,29 +275,29 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_ci_equalq() throws Exception
     {
-        final var fcoc = expectFcoConsumer();
+        final var t = makeTester();
 
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci=? "A" "A")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci=? "a" "A")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci=? "A" "a")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci=? "a" "a")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci=? "a" "b")
                 """,
@@ -316,34 +307,34 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_lt() throws Exception
     {
-        final var fcoc = expectFcoConsumer();
+        final var t = makeTester();
 
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<? "a" "c")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<? "b" "b")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<? "c" "a")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<? "A" "c")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<? "B" "b")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<? "C" "a")
                 """,
@@ -353,34 +344,34 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_gt() throws Exception
     {
-        final var fcoc = expectFcoConsumer();
+        final var t = makeTester();
 
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>? "a" "c")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>? "b" "b")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>? "c" "a")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>? "A" "c")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>? "B" "b")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>? "C" "a")
                 """,
@@ -390,34 +381,34 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_gtci() throws Exception
     {
-        final var fcoc = expectFcoConsumer();
+        final var t = makeTester();
 
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>? "a" "c")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>? "b" "b")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>? "c" "a")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>? "A" "c")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>? "B" "b")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>? "C" "a")
                 """,
@@ -427,34 +418,34 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_le() throws Exception
     {
-        final var fcoc = expectFcoConsumer();
+        final var t = makeTester();
 
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<=? "a" "c")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<=? "b" "b")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<=? "c" "a")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<=? "A" "c")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<=? "B" "b")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string<=? "C" "a")
                 """,
@@ -464,34 +455,34 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_gle_ci() throws Exception
     {
-        final var fcoc = expectFcoConsumer();
+        final var t = makeTester();
 
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci<=? "a" "c")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci<=? "b" "b")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci<=? "c" "a")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci<=? "A" "c")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci<=? "B" "b")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci<=? "C" "a")
                 """,
@@ -501,34 +492,34 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_ge() throws Exception
     {
-        final var fcoc = expectFcoConsumer();
+        final var t = makeTester();
 
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>=? "a" "c")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>=? "b" "b")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>=? "c" "a")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>=? "A" "c")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>=? "B" "b")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string>=? "C" "a")
                 """,
@@ -538,34 +529,34 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
     @Test
     public void string_ge_ci() throws Exception
     {
-        final var fcoc = expectFcoConsumer();
+        final var t = makeTester();
 
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>=? "a" "c")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>=? "b" "b")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>=? "c" "a")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>=? "A" "c")
                 """,
                 bFalse );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>=? "B" "b")
                 """,
                 bTrue );
-        fcoc.accept(
+        t.expectFco(
                 """
                 (string-ci>=? "C" "a")
                 """,
