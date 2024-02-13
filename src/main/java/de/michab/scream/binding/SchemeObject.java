@@ -17,15 +17,15 @@ import java.util.logging.Logger;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.Procedure;
-import de.michab.scream.fcos.Bool;
-import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.Real;
-import de.michab.scream.fcos.Int;
+import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
@@ -686,7 +686,7 @@ public class SchemeObject
         }
         catch ( IllegalAccessException e )
         {
-            throw RuntimeX.mIllegalAccess( attribute.toString() );
+            throw RuntimeX.mCannotModifyConstant( attribute );
         }
     }
     private Thunk _processAttributeSet(
