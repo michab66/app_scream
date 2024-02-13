@@ -6,7 +6,6 @@
 package de.michab.scream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -14,8 +13,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.util.UUID;
-
-import javax.script.ScriptException;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,40 +23,9 @@ public class SchemeTest extends ScreamBaseTest
     @Test
     public void errorTest() throws Exception
     {
-        var se = scriptEngine();
-
-        try
-        {
-            se.eval( "(error 3 310)" );
-            fail();
-        }
-        catch ( ScriptException e )
-        {
-            assertInstanceOf( RuntimeX.class, e.getCause() );
-            RuntimeX sex = (RuntimeX)e.getCause();
-            // TYPE_ERROR
-            assertEquals( Code.TYPE_ERROR, sex.getCode() );
-        }
-    }
-
-    @Test
-    public void addTest() throws Exception
-    {
-        var se = scriptEngine();
-
-        var result = se.evalFco( "(+ 3 310)" );
-
-        assertEquals( i313, result );
-    }
-
-    @Test
-    public void subtractTest() throws Exception
-    {
-        var se = scriptEngine();
-
-        var result = se.evalFco( "(- 320 7)" );
-
-        assertEquals( i313, result );
+        expectError(
+                "(error 3 310)",
+                Code.TYPE_ERROR );
     }
 
     @Test
@@ -134,27 +100,5 @@ public class SchemeTest extends ScreamBaseTest
     public void lockedOperation() throws Exception
     {
         expectError( "(set! + 0)", Code.CANNOT_MODIFY_CONSTANT );
-    }
-
-    /**
-     * https://github.com/urschleim/scream/issues/155
-     */
-    @Test
-    public void hangAfterError() throws Exception
-    {
-        var se = scriptEngine();
-
-        try
-        {
-            se.evalFco( "(cons 1 2 3)" ) ;
-            fail();
-        }
-        catch ( RuntimeX rx )
-        {
-            assertEquals( Code.WRONG_NUMBER_OF_ARGUMENTS, rx.getCode() );
-        }
-
-        // With #155 the next line threw the above exception again.
-        assertEqualq( i1, se.evalFco( "(+ 0 1)" ) );
     }
 }

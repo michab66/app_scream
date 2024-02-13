@@ -215,8 +215,9 @@ public class RuntimeX
      * Get an error code for the passed name.
      *
      * @param name An error name.
-     * @return If the name does not match one of the well-defined codes a default code of
-     * Code.ERROR is returned, otherwise the respective error code.
+     * @return If the name does not match one of the well-defined codes a
+     * default code of Code.ERROR is returned, otherwise the respective
+     * error code.
      */
     private static Code getCode( String name )
     {
@@ -229,9 +230,9 @@ public class RuntimeX
     }
 
     /**
-     * Sets the name of the throwing operation.  Note that this is only set once
-     * and locked.  Further calls to set do <i>not</i> change the operation name
-     * set by the first call to this method.
+     * Sets the name of the throwing operation.  Note that this is only set
+     * once and locked.  Further calls to set do <i>not</i> change the
+     * operation name set by the first call to this method.
      *
      * @param operation The name of the throwing operation.
      */
@@ -273,7 +274,6 @@ public class RuntimeX
 
     /**
      * @return This exception's message.
-     * See {@link RuntimeX} class documentation.
      */
     @Override
     public String getMessage()
@@ -367,9 +367,6 @@ public class RuntimeX
     }
 
     /**
-     * This is just a standard extendTopLevelEnvironment method as on other
-     * Scream classes.
-     *
      * @param tle The top-level environment to be extended.
      * @throws RuntimeX
      */
