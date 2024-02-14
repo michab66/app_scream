@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.binding;
 
@@ -12,10 +12,14 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
+import org.smack.util.Pair;
+import org.smack.util.collections.OneToN;
 
 import de.michab.scream.RuntimeX;
 
@@ -93,9 +97,12 @@ public class JavaClassAdapter
     private final Constructor<?>[] _constructors;
 
     /**
-     * The array of selected methods.
+     * A map of _methods.
+     * Maps a pair(name,parameterCount) to a list of methods.
      */
-    private final Method[] _methods;
+    private final OneToN<Pair<String, Integer>, Method, ArrayList<Method>>
+    _methodMap =
+            new OneToN<>( ArrayList<Method>::new );
 
     /**
      * Constructs a class adapter for the passed class.
@@ -109,8 +116,11 @@ public class JavaClassAdapter
 
         _constructors =
                 initConstructors( clazz );
-        _methods =
-                initMethods( clazz );
+
+        for ( Method c : initMethods( clazz ) )
+            _methodMap.putValue(
+                    new Pair<>( c.getName(), c.getParameterCount() ),
+                    c );
     }
 
     /**
@@ -177,7 +187,7 @@ public class JavaClassAdapter
                 methods.put( mangled, c );
         }
 
-        // Now the hashtable contains the cleaned up set of Scream callable
+        // Now the hashtable contains the filtered set of Scream-callable
         // methods. Finally filter the methods a last time so that all methods in
         // the array are really callable.
         return ensureCallAccess(
@@ -193,11 +203,6 @@ public class JavaClassAdapter
      */
     public static JavaClassAdapter createObject( Class<?> clazz )
     {
-        // In case this is an interface, we forward that to the interface
-        // factory.
-        //if ( clazz.isInterface() )
-        //  return createObject( new Class[]{ clazz } );
-
         String key = clazz.getName();
 
         // Check if we have an class adapter for this class.
@@ -315,15 +320,10 @@ public class JavaClassAdapter
         return _constructors;
     }
 
-    /**
-     * Returns the filtered set of methods accessible from Scream.
-     *
-     * @return The filtered set of methods accessible from Scream.
-     * @see java.lang.Class#getMethods
-     */
-    public Method[] getMethods()
+    public List<Method> getMethods( String name, int parameterCount )
     {
-        return _methods;
+        return _methodMap.getValues(
+                new Pair<>( name, parameterCount ) );
     }
 
     /**

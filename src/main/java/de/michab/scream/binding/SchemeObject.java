@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.binding;
 
@@ -546,28 +546,26 @@ public class SchemeObject
 
         try
         {
-            // Select the method to call.
-            for ( var method : _classAdapter.getMethods() )
-            {
-                // First check the name.
-                if ( methodName.equals( method.getName() ) )
-                {
-                    java.lang.Object[] argumentList =
-                            matchParameters( method.getParameterTypes(), Cons.asArray( list ) );
+            FirstClassObject[] argArray = Cons.asArray( list );
 
-                    if ( null != argumentList )
-                    {
-                        // Check if it is tried to invoke an instance method on a class
-                        // object.  Since the VM in this case simply throws a NPE we have
-                        // to check for this condition manually.
-                        if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
-                            throw RuntimeX.mCannotAccessInstance();
-                        // Store the method reference for the exception handler.
-                        methodRef = method;
-                        // Do the actual call.
-                        return c.accept( convertJava2Scream(
-                                method.invoke( _theInstance, argumentList ) ) );
-                    }
+            // Select the method to call.
+            for ( var method : _classAdapter.getMethods( methodName, argArray.length  ) )
+            {
+                java.lang.Object[] argumentList =
+                        matchParameters( method.getParameterTypes(), argArray );
+
+                if ( null != argumentList )
+                {
+                    // Check if it is tried to invoke an instance method on a class
+                    // object.  Since the VM in this case simply throws a NPE we have
+                    // to check for this condition manually.
+                    if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
+                        throw RuntimeX.mCannotAccessInstance();
+                    // Store the method reference for the exception handler.
+                    methodRef = method;
+                    // Do the actual call.
+                    return c.accept( convertJava2Scream(
+                            method.invoke( _theInstance, argumentList ) ) );
                 }
             }
 
@@ -584,7 +582,7 @@ public class SchemeObject
             // instance method on a java.lang.Class object.  In that case the illegal
             // argument is the first argument to invoke, that is on the one hand non
             // null, but on the other hand simply the wrong reference.
-            throw RuntimeX.mIllegalArgument( methodName );
+            throw RuntimeX.mInternalError( methodName );
         }
         catch ( IllegalAccessException e )
         {
