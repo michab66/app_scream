@@ -6,11 +6,11 @@
 package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Procedure;
-import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
@@ -108,7 +108,6 @@ public class Primitives
      *
      * @param e The environment for evaluation.
      * @param expressions The list of tests.
-     * @param previousResult The value of the previous test.
      * @param c The continuation.
      * @return A thunk.
      */
@@ -117,7 +116,7 @@ public class Primitives
             Cons expressions,
             Cont<FirstClassObject> c )
     {
-        return () -> _and(
+        return _and(
                 e,
                 expressions,
                 Bool.T,
@@ -128,8 +127,8 @@ public class Primitives
      * Assign an existing value.
      *
      * @param e The environment for evaluation.
-     * @param s The symbol to set.
-     * @param o The value to assign.  This is not evaluated, but assigned as-is.
+     * @param symbol The symbol to set.
+     * @param value The value to assign.  This is not evaluated, but assigned as-is.
      * @param c A continuation receiving the assigned value.
      * @return A thunk.
      * @see #_define(Environment, Symbol, FirstClassObject, Cont)
@@ -168,7 +167,7 @@ public class Primitives
     }
 
     /**
-     * Bonds a list of symbols in the passed environment to a value.
+     * Binds a list of symbols in the passed environment to a value.
      *
      * @param e The environment receiving the bindings.
      * @param symbols The symbols to bind.
@@ -203,8 +202,8 @@ public class Primitives
      * @param values The values to define.  If the list of values is shorter
      * than the list of symbols, then the symbols to the end of the list are
      * defined to {@code Cons.NIL}.
-     *
      * @param c returns the passed environment.
+     *
      * @return A thunk.
      */
     static Thunk _defineList(
@@ -449,7 +448,7 @@ public class Primitives
         };
     }
 
-    /*
+    /**
      * (
      *   ((a b) (init1))
      *   ((c d) (init2))
@@ -533,7 +532,7 @@ public class Primitives
                         body,
                         c );
 
-        return () -> _bind(
+        return _bind(
                 e,
                 extended,
                 bindings,
@@ -569,7 +568,7 @@ public class Primitives
                         bindings,
                         begin );
 
-        return () -> _defineSymbols(
+        return _defineSymbols(
                 e.extend( Symbol.createObject( "x_letrec" ) ),
                 symbols,
                 Cons.NIL,
@@ -645,7 +644,7 @@ public class Primitives
             FirstClassObject quote,
             Cont<FirstClassObject> c)
     {
-        return () -> c.accept( quote );
+        return c.accept( quote );
     }
 
     /**
@@ -780,7 +779,7 @@ public class Primitives
                         commands,
                         c );
 
-        return () -> _bind(
+        return _bind(
                 e,
                 e.extend( Symbol.createObject( "x_do" ) ),
                 inits,
