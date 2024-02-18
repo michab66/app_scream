@@ -103,6 +103,7 @@ public class JavaClassAdapter
     _methodMap =
             new OneToN<>( ArrayList<Method>::new );
 
+    private final Method[] _methods;
     /**
      * Constructs a class adapter for the passed class.
      *
@@ -116,7 +117,9 @@ public class JavaClassAdapter
         _constructors =
                 initConstructors( clazz );
 
-        for ( Method c : initMethods( clazz ) )
+        _methods = initMethods( clazz );
+
+        for ( Method c : _methods )
             _methodMap.putValue(
                     new Pair<>( c.getName(), c.getParameterCount() ),
                     c );
@@ -323,6 +326,10 @@ public class JavaClassAdapter
     {
         return _methodMap.getValues(
                 new Pair<>( name, parameterCount ) );
+    }
+    public  Method[] getMethods()
+    {
+        return _methods;
     }
 
     /**

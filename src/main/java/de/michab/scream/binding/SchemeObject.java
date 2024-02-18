@@ -9,6 +9,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Objects;
@@ -826,47 +827,55 @@ public class SchemeObject
         };
     }
 
-//    /**
-//     * (describe-object obj) -> #f
-//     *
-//     * TODO: return a more scheme like representation...
-//     */
-//    static private Procedure describeObjectProcedure =
-//            new Procedure( "describe-object" )
-//    {
-//        @Override
-//        public FirstClassObject apply( FirstClassObject[] args )
-//                throws RuntimeX
-//        {
-//            checkArgumentCount( 1, args );
-//
-//            try
-//            {
-//                SchemeObject so = (SchemeObject)args[0];
-//
-//                int i;
-//
-//                Method[] methods = so._classAdapter.getMethods();
-//                FirstClassObject[] methodsV = new FirstClassObject[ methods.length ];
-//                for ( i = 0 ; i < methods.length ; i++ )
-//                    methodsV[i] = new SchemeString( methods[i].toString() );
-//
-//                Field[] attributes = so._classAdapter.getFields();
-//                FirstClassObject[] fieldsV = new FirstClassObject[ attributes.length ];
-//                for ( i = 0 ; i < attributes.length ; i++ )
-//                    fieldsV[i] = new SchemeString( attributes[i].toString() );
-//
-//                return
-//                        new Cons( new Vector( methodsV, false ),
-//                                new Vector( fieldsV, false ) );
-//            }
-//            catch ( ClassCastException e )
-//            {
-//                return Cons.NIL;
-//            }
-//        }
-//    };
-//
+    /**
+     * (describe-object obj) -> #f
+     *
+     * TODO: return a more scheme like representation...
+     */
+    static private Procedure describeObjectProcedure( Environment e )
+    {
+        return new Procedure( "describe-object", e )
+        {
+            @Override
+            public Thunk _apply( Cons args, Cont<FirstClassObject> c )
+                    throws RuntimeX
+            {
+                checkArgumentCount( 1, args );
+
+                try
+                {
+                    SchemeObject so = Scut.as(
+                            SchemeObject.class,
+                            args.listRef( 0 ) );
+
+                    int i;
+
+                    Method[] methods =
+                            so._classAdapter.getMethods();
+                    FirstClassObject[] methodsV =
+                            new FirstClassObject[ methods.length ];
+                    for ( i = 0 ; i < methods.length ; i++ )
+                        methodsV[i] = SchemeString.make( methods[i].toString() );
+
+                    Field[] attributes = so._classAdapter.getFields();
+                    FirstClassObject[] fieldsV = new FirstClassObject[ attributes.length ];
+                    for ( i = 0 ; i < attributes.length ; i++ )
+                        fieldsV[i] = SchemeString.make( attributes[i].toString() );
+
+                    var result =
+                            new Cons( new Vector( methodsV, false ),
+                                    new Vector( fieldsV, false ) );
+
+                    return c.accept( result );
+                }
+                catch ( ClassCastException e )
+                {
+                    throw RuntimeX.mInternalError();
+                }
+            }
+        };
+    }
+
     /**
      * <p>{@code (%catch expression error-handler)}</p>
      * Evaluates the passed {@code expression} and executes the
@@ -905,8 +914,7 @@ public class SchemeObject
      * Object operations setup.
      *
      * @param tle The environment to extend with additional operations.
-     * @return The extended environment.  This is identical to the enivonment
-     *         passed in.
+     * @return The extended environment.
      * @throws RuntimeX
      */
     public static Environment extendTopLevelEnvironment( Environment tle )
@@ -915,7 +923,7 @@ public class SchemeObject
         tle.setPrimitive( objectPredicateProcedure(tle) );
         tle.setPrimitive( wrapObjectProcedure( tle ) );
         tle.setPrimitive( constructObjectSyntax );
-//        tle.setPrimitive( describeObjectProcedure );
+        tle.setPrimitive( describeObjectProcedure( tle ) );
 //        tle.setPrimitive( catchExceptionSyntax );
         return tle;
     }
