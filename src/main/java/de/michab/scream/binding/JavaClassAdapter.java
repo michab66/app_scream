@@ -39,18 +39,17 @@ import de.michab.scream.RuntimeX;
  * 1)  void argh( double d, float f );<br>
  * 2)  void argh( float f, double d );<br>
  * <br>}
- * Both could be called, and are equally expensive.  So for this case it is
- * simply defined (yeah, I like definitions if I don't have to ask anybody) that
- * the first one is selected.  Reason behind this is that based on the first
- * argument the second signature was ruled out.<br>
+ * Both could be called, and are equally expensive.  For this case it is
+ * defined that the first one is selected.  Reason behind this is, that
+ * based on the first argument the second signature was ruled out.<br>
  *
  * At the moment it isn't clear if we should take this system to the extreme
  * and allow scream calls where we always cast numeric arguments to the maximum
  * extent possible.  That means it is technically possible to do a call in
  * scream like (object-invoke (de.michab.Angh 1)) where the method signature is
  * void Angh( double d ).  This means an implicit conversion from integer to
- * double.  Basically this seems to be in line with scheme's (yes, really
- * scheme's) dynamic nature.  But we have to think about this...<br>
+ * double.  Basically this seems to be in line with Scheme's dynamic nature.
+ * But we have to think about this...<br>
  *
  * Another point is access efficiency.  From this class we only return unsorted
  * arrays of operations.  This is quite hairy for our clients to handle, in the
@@ -132,7 +131,7 @@ public class JavaClassAdapter
                 new HashMap<String,Constructor<?>>();
 
         // Get the constructors from the class object and remember them temporarily
-        // in our attribute.  Note that we get all *public* constructors, excluding
+        // in our attribute.  Note that we get only *public* constructors, excluding
         // private, protected, package visible ones.
         Constructor<?>[] co = clazz.getConstructors();
 
@@ -327,10 +326,7 @@ public class JavaClassAdapter
     }
 
     /**
-     * Returns the filtered set of fields accessible from Scream.
-     *
      * @return The filtered set of fields accessible from Scream.
-     * @see java.lang.Class#getFields
      */
     public Field[] getFields()
     {

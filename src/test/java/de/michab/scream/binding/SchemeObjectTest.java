@@ -8,11 +8,11 @@ package de.michab.scream.binding;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Operation;
 import de.michab.scream.fcos.Procedure;
@@ -36,99 +36,18 @@ public class SchemeObjectTest extends ScreamBaseTest
                         "make-object" ) );
     }
 
-    public static class ObjectTest
-    {
-        public static final int
-            publicStaticFinalZero = 0;
-        protected static final int
-            protectedStaticFinalZero = 0;
-        public static int
-            publicStaticZero = 0;
-
-        public final int
-            publicFinalZero = 0;
-
-        public int attributeA = 0;
-
-        public int attributeB = 0;
-
-        public ObjectTest()
-        {
-            this( 0, 0 );
-        }
-
-        public ObjectTest( int a, int b )
-        {
-            attributeA = a;
-            attributeB = b;
-        }
-
-        public int sum()
-        {
-            return attributeA + attributeB;
-        }
-
-        public int sumPlus( int plus )
-        {
-            return sum() + plus;
-        }
-
-        public int getA()
-        {
-            return attributeA;
-        }
-        public void setA( int a )
-        {
-            attributeA = a;
-        }
-
-        public static int donaldian()
-        {
-            return 313;
-        }
-
-        public static int donaldianPlus( int plus )
-        {
-            return 313 + plus;
-        }
-    }
-
-    @Test
-    public void make_object__createClass() throws Exception
-    {
-        var t = makeTester();
-
-        var result = t.execute(
-                """
-                (define o
-                   (make-object de.michab.scream.binding.SchemeObjectTest$ObjectTest))
-                o
-                """ );
-
-        assertInstanceOf( SchemeObject.class, result );
-
-        Class<?> cl =
-                (Class<?>)result.toJava();
-        assertEquals(
-                "de.michab.scream.binding.SchemeObjectTest$ObjectTest",
-                cl.getName() );
-
-
-    }
-
     @Test
     public void objectq() throws Exception
     {
         var t = makeTester();
 
+        // Class object.
         t.expectFco(
-                "(object? (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest 313 0)))",
+                "(object? (make-object java.lang.StringBuilder))",
                 Bool.T );
+        // Instance.
         t.expectFco(
-                "(object? (make-object de.michab.scream.binding.SchemeObjectTest$ObjectTest))",
-                Bool.T );
-        t.expectFco(
-                "(object? (make-object java.lang.String))",
+                "(object? (make-object (java.lang.StringBuilder)))",
                 Bool.T );
         t.expectFco(
                 "(object? 1)",
@@ -147,83 +66,22 @@ public class SchemeObjectTest extends ScreamBaseTest
                 Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
 
-    @Test
-    public void create313() throws Exception
+    public static class Cl_StaticMembers
     {
-        ScreamEvaluator se = scriptEngine();
-
-        var result = se.evalFco(
-                """
-                (define o
-                    (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest 313 0)))
-                o
-                """ );
-        assertInstanceOf( SchemeObject.class, result );
-        ObjectTest ih = (ObjectTest)result.toJava();
-        assertEquals( 313, ih.sum() );
-    }
-    @Test
-    public void createDefault() throws Exception
-    {
-        ScreamEvaluator se = scriptEngine();
-
-        var result = se.evalFco(
-                """
-                (define o
-                    (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest)))
-                o
-                """ );
-        assertInstanceOf( SchemeObject.class, result );
-        ObjectTest ih = (ObjectTest)result.toJava();
-        assertEquals( 0, ih.sum() );
-    }
-
-    @Test
-    public void callOperationNoParams() throws Exception
-    {
-        expectFco(
-                """
-                (define o
-                    (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest 311 2)))
-                (o (sum))
-                """,
-                i313 );
-    }
-
-    @Test
-    public void callOperation() throws Exception
-    {
-        expectFco(
-                """
-                (define o
-                    (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest 310 2)))
-                (o (sumPlus 1))
-                """,
-                i313 );
-    }
-
-    @Test
-    public void callStaticOperationNoParam() throws Exception
-    {
-        expectFco(
-                """
-                (define o
-                    (make-object de.michab.scream.binding.SchemeObjectTest$ObjectTest))
-                (o (donaldian))
-                """,
-                i313 );
-    }
-
-    @Test
-    public void callStaticOperation() throws Exception
-    {
-        expectFco(
-                """
-                (define o
-                    (make-object de.michab.scream.binding.SchemeObjectTest$ObjectTest))
-                (o (donaldianPlus 1))
-                """,
-                i(314) );
+        public static final int
+            publicStaticFinalZero = 0;
+        protected static final int
+            protectedStaticFinalZero = 0;
+        public static int
+            publicStaticZero = 0;
+        public static int get313()
+        {
+            return 313;
+        }
+        public static int add( int a, int b )
+        {
+            return a + b;
+        }
     }
 
     @Test
@@ -233,65 +91,212 @@ public class SchemeObjectTest extends ScreamBaseTest
 
         t.execute(
                 """
-                (define o
-                    (make-object de.michab.scream.binding.SchemeObjectTest$ObjectTest))
+                (define Cl_StaticMembers
+                    (make-object de.michab.scream.binding.SchemeObjectTest$Cl_StaticMembers))
                 """ );
         t.expectFco(
-                "(o publicStaticFinalZero)",
+                "(Cl_StaticMembers publicStaticFinalZero)",
                 i(0) );
         t.expectError(
-                "(o publicStaticFinalZero 1)",
+                "(Cl_StaticMembers publicStaticFinalZero 1)",
                 Code.CANNOT_MODIFY_CONSTANT );
         t.expectError(
-                "(o protectedStaticFinalZero)",
+                "(Cl_StaticMembers protectedStaticFinalZero)",
                 Code.FIELD_NOT_FOUND );
         t.expectFco(
-                "(o publicStaticZero)",
+                "(Cl_StaticMembers publicStaticZero)",
                 i(0) );
         t.expectFco(
-                "(o publicStaticZero 8)",
+                "(Cl_StaticMembers publicStaticZero 8)",
                 i(8) );
         t.expectFco(
-                "(o publicStaticZero)",
+                "(Cl_StaticMembers publicStaticZero)",
                 i(8) );
+        t.expectFco(
+                "(Cl_StaticMembers (get313))",
+                i(313) );
+        t.expectFco(
+                "(Cl_StaticMembers (add 310 3))",
+                i(313) );
     }
 
     @Test
-    public void accessInstanceMembers() throws Exception
+    public void make_object__createClass() throws Exception
     {
         var t = makeTester();
+
+        var result = t.execute(
+                """
+                (define o
+                   (make-object java.lang.StringBuilder))
+                o
+                """ );
+
+        assertInstanceOf( SchemeObject.class, result );
+
+        Class<?> cl =
+                (Class<?>)result.toJava();
+        assertEquals(
+                "java.lang.StringBuilder",
+                cl.getName() );
+    }
+
+    @Test
+    public void make_object__createInstanceDefault() throws Exception
+    {
+        var t = makeTester();
+
+        // Simple class with default constructor.
+        var result = t.execute(
+                """
+                (define StringBuilder
+                   (make-object (java.lang.StringBuilder)))
+                StringBuilder
+                """ );
+
+        assertInstanceOf( SchemeObject.class, result );
+
+        t.expectFco(
+                "(StringBuilder (toString))",
+                str("") );
+    }
+
+    @Test
+    public void make_object__createInstance() throws Exception
+    {
+        var t = makeTester();
+
+        // Simple class with default constructor.
+        var result = t.execute(
+                """
+                (define StringBuilder
+                   (make-object (java.lang.StringBuilder \"scream\")))
+                StringBuilder
+                """ );
+
+        assertInstanceOf( SchemeObject.class, result );
+
+        t.expectFco(
+                "(StringBuilder (toString))",
+                str("scream") );
+    }
+
+    @Test
+    public void make_object__useInstance() throws Exception
+    {
+        var t = makeTester();
+
+        // Simple class with default constructor.
+        t.execute(
+                """
+                (define StringBuilder
+                   (make-object (java.lang.StringBuilder)))
+                """ );
+        t.expectFco(
+                "(StringBuilder (toString))",
+                str("") );
+        t.execute(
+                "(StringBuilder (append \"scream\"))" );
+        t.expectFco(
+                "(StringBuilder (toString))",
+                str( "scream" ) );
+        t.execute(
+                "(StringBuilder (append 313.))" );
+        t.expectFco(
+                "(StringBuilder (toString))",
+                str( "scream313.0" ) );
+    }
+
+    @Test
+    public void make_object__useInstance_generic() throws Exception
+    {
+        var t = makeTester();
+
+        // Generic class without default constructor.
+        t.execute(
+                """
+                (define o
+                   (make-object (org.smack.util.Pair "stan" "ollie")))
+                """ );
+        t.expectFco(
+                "(o left)",
+                str("stan") );
+        t.expectFco(
+                "(o right)",
+                str("ollie") );
+
+        // Generic class without default constructor.
+        t.execute(
+                """
+                (define o
+                   (make-object (org.smack.util.Pair 121 313)))
+                """ );
+        t.expectFco(
+                "(o left)",
+                i(121) );
+        t.expectFco(
+                "(o right)",
+                i(313) );
 
         t.execute(
                 """
                 (define o
-                    (make-object (de.michab.scream.binding.SchemeObjectTest$ObjectTest 1 2)))
+                   (make-object (org.smack.util.Pair "stan" 313)))
                 """ );
         t.expectFco(
-                "(o attributeA)",
-                i(1) );
+                "(o left)",
+                str("stan") );
         t.expectFco(
-                "(o attributeB)",
-                i(2) );
-        t.expectFco(
-                "(o publicFinalZero)",
-                i(0) );
+                "(o right)",
+                i(313) );
 
+        t.execute(
+                """
+                (define o
+                   (make-object (org.smack.util.Pair 'lambda 313)))
+                """ );
+        // Symbol converted to string.
         t.expectFco(
-                "(o attributeA 3)",
-                i(3) );
+                "(o left)",
+                str("lambda") );
         t.expectFco(
-                "(o attributeA)",
-                i(3) );
+                "(o right)",
+                i(313) );
 
+        // Storing a function in the pair.
+        t.execute(
+                """
+                (define o
+                   (make-object (org.smack.util.Pair + 313)))
+                """ );
         t.expectFco(
-                "(o attributeB 4)",
-                i(4) );
-        t.expectFco(
-                "(o attributeB)",
-                i(4) );
+                "((o left) (o right) (o right))",
+                i(626) );
+    }
 
-        t.expectError(
-                "(o publicFinalZero 13)",
-                Code.CANNOT_MODIFY_CONSTANT );
+
+    @Test
+    @Disabled
+    public void todo_StringBuilder_useInstance() throws Exception
+    {
+        var t = makeTester();
+
+        // Simple class with default constructor.
+        t.execute(
+                """
+                (define StringBuilder
+                   (make-object (java.lang.StringBuilder)))
+                """ );
+        t.expectFco(
+                "(StringBuilder (toString))",
+                str("") );
+        t.execute(
+                "(StringBuilder (append 313))" );
+
+        // Wrong method selected: Returned value is 313.0.
+        t.expectFco(
+                "(StringBuilder (toString))",
+                str( "313" ) );
     }
 }
+
