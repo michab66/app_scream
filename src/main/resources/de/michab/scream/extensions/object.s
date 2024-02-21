@@ -1,19 +1,14 @@
-; $Id: object.s 8 2008-09-14 14:23:20Z binzm $
 ;
-; Scream / object system extensions
+; Scream @ https://github.com/urschleim/scream
 ;
-; Released under Gnu Public License
-; Copyright (c) 2001 Michael G. Binz
-
-
+; Copyright © 2001-2024 Michael G. Binz
+;
 
 ;
 ;
 ;
 (define (get-class string)
   ((make-object java.lang.Class) (forName string)))
-
-
 
 ;
 ;

@@ -19,9 +19,18 @@ import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
 import org.smack.util.Pair;
+import org.smack.util.ReflectionUtil;
 import org.smack.util.collections.OneToN;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.fcos.Bool;
+import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Number;
+import de.michab.scream.fcos.SchemeCharacter;
+import de.michab.scream.fcos.SchemeString;
+import de.michab.scream.fcos.Symbol;
+import de.michab.scream.fcos.Vector;
+import de.michab.scream.util.Scut;
 
 /**
  * This class encapsulates information for a Java class.  This is read from the
@@ -104,6 +113,7 @@ public class JavaClassAdapter
             new OneToN<>( ArrayList<Method>::new );
 
     private final Method[] _methods;
+
     /**
      * Constructs a class adapter for the passed class.
      *
@@ -159,13 +169,88 @@ public class JavaClassAdapter
     }
 
     /**
+    *
+    * @param name The method name.
+    * @param argumentList The argument list as used in method.toString.
+    * @return The method.
+    * @throws RuntimeX METHOD_NOT FOUND
+    * @throws RuntimeX INTERNAL_ERROR notUnique
+    */
+   public Method getMethod( String name, String argumentList )
+           throws RuntimeX
+   {
+       ArrayList<Method> result = new ArrayList<>();
+
+       String braced = "(" + argumentList + ")";
+
+       for ( var c : _clazz.getMethods() )
+       {
+           if ( ! c.getName().equals( name ) )
+               continue;
+
+           if ( ! c.toString().contains( braced ) )
+               continue;
+
+           if ( c.isSynthetic() )
+               continue;
+
+           result.add( c );
+       }
+
+       if ( result.isEmpty() )
+           throw RuntimeX.mMethodNotFound( name + braced );
+       if ( result.size() > 1 )
+           throw RuntimeX.mInternalError( Symbol.createObject( "notUnique" ) );
+
+       return result.get( 0 );
+   }
+
+   /**
+   *
+   * @param name The method name.
+   * @param argumentList The argument list as used in method.toString.
+   * @return The method.
+   * @throws RuntimeX METHOD_NOT FOUND
+   * @throws RuntimeX INTERNAL_ERROR notUnique
+   */
+  public Constructor<?> getCtor( String name, String argumentList )
+          throws RuntimeX
+  {
+      ArrayList<Constructor<?>> result = new ArrayList<>();
+
+      String braced = "(" + argumentList + ")";
+
+      for ( var c : _clazz.getConstructors() )
+      {
+          if ( ! c.getName().equals( name ) )
+              continue;
+
+          if ( ! c.toString().contains( braced ) )
+              continue;
+
+          if ( c.isSynthetic() )
+              continue;
+
+          result.add( c );
+      }
+
+      if ( result.isEmpty() )
+          throw RuntimeX.mMethodNotFound( name + "<init>" + braced );
+      if ( result.size() > 1 )
+          throw RuntimeX.mInternalError( Symbol.createObject( "notUnique" ) );
+
+      return result.get( 0 );
+  }
+
+    /**
      *
      */
     private static Method[] initMethods( Class<?> clazz )
     {
         HashMap<String, Method> methods =
                 new HashMap<String, Method>();
-        // Actually there is no simple way
+
+        // There is no simple way
         // to get all methods.  getMethods() below returns all public methods
         // including the inherited ones, while getDeclaredMethods() returns *all*
         // existing methods on the class but excludes the inherited ones.
@@ -220,6 +305,26 @@ public class JavaClassAdapter
         }
 
         return result;
+    }
+
+    /**
+     * This is our public interface for accessing class adapter instances.
+     * This method implements the flyweight pattern for this class.
+     *
+     * @param clazz The class to create an adapter for.
+     * @return A class adapter for the passed class.
+     */
+    public static JavaClassAdapter createObject( String classname )
+        throws RuntimeX
+    {
+        try
+        {
+            return createObject( Class.forName( classname ) );
+        }
+        catch ( ClassNotFoundException e )
+        {
+            throw RuntimeX.mClassNotFound( classname );
+        }
     }
 
     /**
@@ -373,17 +478,11 @@ public class JavaClassAdapter
     }
 
     /**
-     * Computes the methods that can be called on an actual class instance.  This
-     * is the result of a complex algorithm, it is not possible to just call
-     * the methods of a inner class instance implementing a public interface.
-     * See BugParade 4053737 and the following text from the Reflection FAQ
-     * for descriptions of the non-intuitive behaviors of the reflection API.
-     * And honestly: Though this behaves really like designed, IMHO this is
-     * really a design error.  While one can life with the default behavior, it
-     * doesn't make sense at all, nobody can *use* the default behavior since
-     * it's just simply not working as expected.  Gnah.<br>
+     * Computes the methods that can be called on an actual class instance.
+     * <br>
      *
-     * Reflection FAQ: It is a common error to attempt to invoke an overridden
+     * Reflection FAQ (https://www2.ki.informatik.uni-frankfurt.de/doc/html/java/jdk115/guide/reflection/faq/faq.html):
+     * It is a common error to attempt to invoke an overridden
      * method by retrieving the overriding method from the target object. This
      * will not always work, because the overriding method will in general be
      * defined in a class inaccessible to the caller. For example, the following
@@ -488,7 +587,7 @@ public class JavaClassAdapter
 
     /**
      * Decides which of the two passed constructors is cheaper to call from
-     * scream and returns this.  Method is stateless, since static.
+     * scream and returns this.
      *
      * @param l The first constructor.
      * @param r The second constructor.
@@ -511,7 +610,7 @@ public class JavaClassAdapter
 
     /**
      * Decides which of the two passed methods is cheaper to call from
-     * scream and returns this.  Method is stateless, since static.
+     * scream and returns this.
      *
      * @param l The first method.
      * @param r The second method.
@@ -525,9 +624,17 @@ public class JavaClassAdapter
         // Return value of selectArgumentList has to be interpreted as integer, so
         // false = 0 and true = 1.
         if ( ! which )
+        {
+            System.out.println( "Select " + l );
+            System.out.println( "Delete " + r );
             return l;
+        }
         else
+        {
+            System.out.println( "Select " + r );
+            System.out.println( "Delete " + l );
             return r;
+        }
     }
 
     /**
@@ -649,5 +756,84 @@ public class JavaClassAdapter
         else
             // Object
             return "@" + formal.getName();
+    }
+
+    private Object mapArray( Class<?> arrayType, Object[] fcos )
+    {
+
+
+        return null;
+    }
+
+    private Object map( FirstClassObject fco, Class<?> cl ) throws RuntimeX
+    {
+        cl = ReflectionUtil.normalizePrimitives( cl );
+
+        if ( cl.isArray() )
+            return mapArray( cl.arrayType(), Scut.as( Vector.class, fco ).toJava() );
+
+        if ( fco instanceof SchemeObject )
+            return fco.toJava();
+
+        if ( cl == Boolean.class  )
+            return Boolean.valueOf( fco == Bool.F ? Boolean.FALSE : Boolean.TRUE );
+        if ( cl == Byte.class )
+            return Byte.valueOf( (byte)Scut.as( Number.class, fco ).asLong() );
+        if ( cl == Short.class )
+            return Short.valueOf( (short)Scut.as( Number.class, fco ).asLong() );
+        if ( cl == Integer.class )
+            return Integer.valueOf( (int)Scut.as( Number.class, fco ).asLong() );
+        if ( cl == Long.class )
+            return Long.valueOf( Scut.as( Number.class, fco ).asLong() );
+        if ( cl == Character.class )
+            return Character.valueOf( Scut.as( SchemeCharacter.class, fco ).asCharacter() );
+        if ( cl == Float.class )
+            return Float.valueOf( (float)Scut.as( Number.class, fco ).asDouble() );
+        if ( cl == Double.class )
+            return Double.valueOf( Scut.as( Number.class, fco ).asDouble() );
+        if ( cl == String.class && fco instanceof SchemeString )
+            return fco.toJava();
+        if ( cl == String.class  )
+            return FirstClassObject.toString( fco );
+
+        throw RuntimeX.mInternalError( Symbol.createObject( "JavaClassAdpter.map" ) );
+    }
+
+    public Object createInstanceVariadic( Constructor<?> ctor,
+            FirstClassObject[] ctorArgs ) throws RuntimeX
+    {
+        throw RuntimeX.mNotImplemented( "VariadicCtor" );
+    }
+
+    public Object createInstance( Constructor<?> ctor,
+            FirstClassObject[] ctorArgs ) throws RuntimeX
+    {
+        if ( ctor.isVarArgs() )
+            return createInstanceVariadic( ctor, ctorArgs );
+
+        if ( ctorArgs.length != ctor.getParameterCount() )
+            throw RuntimeX.mWrongNumberOfArguments( ctor.getParameterCount(), ctorArgs.length );
+
+        Class<?>[] initTypes =
+                ctor.getParameterTypes();
+        Object[] initargs =
+                new Object[ initTypes.length ];
+
+        int i = 0;
+        for ( var fco : ctorArgs )
+        {
+            initargs[i] = map( fco, initTypes[i] );
+            i++;
+        }
+
+        try
+        {
+            return ctor.newInstance( initargs );
+        }
+        catch ( InstantiationException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e )
+        {
+            throw RuntimeX.mCreationFailed( ctor.getName() );
+        }
     }
 }

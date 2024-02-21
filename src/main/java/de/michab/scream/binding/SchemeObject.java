@@ -11,7 +11,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -206,12 +208,151 @@ public class SchemeObject
                     className + "<init>"  );
         }
     }
+
+    static List<String> splitAt( String string, String delimiter )
+    {
+        var result = new ArrayList<String>();
+
+        while ( true )
+        {
+            int pos = string.indexOf( delimiter );
+
+            if ( pos < 0 )
+            {
+                result.add( string );
+                break;
+            }
+
+            result.add(
+                    string.substring( 0, pos ) );
+            string = string.substring(
+                    pos + delimiter.length() );
+        }
+
+        return result;
+    }
+
+    private static Thunk createObjectExt(
+            SchemeString className,
+            FirstClassObject[] ctorArgs,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        String name = className.toJava();
+
+        if ( name.length() == 0 )
+            throw RuntimeX.mIllegalArgument( name );
+
+        var split = splitAt( name, ":" );
+
+        if ( split.size() > 2 )
+            throw RuntimeX.mIllegalArgument( name );
+
+        // Without a parameter definition: Fall back to classic behaviour.
+        if ( split.size() == 1 )
+            return createObject( split.get(0), ctorArgs, c );
+
+        var classAdapter =
+                JavaClassAdapter.createObject( split.get( 0 ) );
+
+        var ctor = classAdapter.getCtor( split.get( 0 ), split.get( 1 ) );
+
+        var result = classAdapter.createInstance( ctor, ctorArgs  );
+
+        // No conversion to Fco.
+        return c.accept( new SchemeObject( result ) );
+
+//
+//        JavaClassAdapter classAdapter = null;
+//
+//        // Used to transfer the constructor into the exception handlers.
+//        Executable constructor = null;
+//
+//        try
+//        {
+//            // Get the associated class adapter.
+//            classAdapter = JavaClassAdapter.createObject(
+//                    Class.forName( className ) );
+//
+//            // If we didn't receive any constructor arguments...
+//            if ( null == ctorArgs )
+//                // ...we create a class representative.
+//                return c.accept( new SchemeObject( null, classAdapter ) );
+//
+//            // We received constructor arguments, select the ctor to call.
+//            for ( var ctor : classAdapter.getConstructors() )
+//            {
+//                var argumentList =
+//                        matchParameters( ctor.getParameterTypes(), ctorArgs );
+//
+//                if ( null == argumentList )
+//                    continue;
+//
+//                constructor = Objects.requireNonNull( ctor );
+//
+//                return c.accept( convertJava2Scream( ctor.newInstance( argumentList ) ) );
+//            }
+//
+//            // No constructor fit the argument list.
+//            throw RuntimeX.mMethodNotFound(
+//                    className + "<init>" + Arrays.toString( ctorArgs ));
+//        }
+//        catch ( ClassNotFoundException e )
+//        {
+//            throw RuntimeX.mClassNotFound( className );
+//        }
+//        // We have to catch an error here, since this is thrown if we try to create
+//        // classes where the case of the class name differs from the actual upper
+//        // lower case writing. An example for the error message is:
+//        // "de/michab/scream/JavaCLassAdapter (wrong name:
+//        // de/michab/scream/JavaClassAdapter)"
+//        catch ( NoClassDefFoundError e )
+//        {
+//            throw RuntimeX.mClassNotFound( className );
+//        }
+//        catch ( InvocationTargetException e )
+//        {
+//            throw filterException( e, constructor );
+//        }
+//        catch ( InstantiationException e )
+//        {
+//            int modifiers = classAdapter.adapterFor().getModifiers();
+//            String what;
+//
+//            if ( Modifier.isAbstract( modifiers ) )
+//                what = "abstract class";
+//            else if ( Modifier.isInterface( modifiers ) )
+//                what = "interface";
+//            else
+//                what = "";
+//
+//            throw RuntimeX.mCreationFailed(
+//                    what + " " + className );
+//        }
+//        catch ( IllegalAccessException e )
+//        {
+//            throw RuntimeX.mIllegalAccess(
+//                    className + "<init>"  );
+//        }
+    }
+
     private static Thunk _createObject(
             String className,
             Cons ctorArgs,
             Cont<FirstClassObject> c )
     {
         return () -> createObject(
+                className,
+                Cons.asArray( ctorArgs ),
+                c );
+    }
+
+    private static Thunk _createObjectExt(
+            SchemeString className,
+            Cons ctorArgs,
+            Cont<FirstClassObject> c )
+    {
+        return () -> createObjectExt(
                 className,
                 Cons.asArray( ctorArgs ),
                 c );
@@ -784,6 +925,59 @@ public class SchemeObject
     };
 
     /**
+     * (make-instance "ctor-spec" ...)
+     */
+    static private Procedure makeObjectExt( Environment e )
+    {
+        return new Procedure( "make-instance", e )
+        {
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args,
+                    Cont<FirstClassObject> c ) throws RuntimeX
+            {
+                if ( ! Cons.isProper( args ) )
+                    throw RuntimeX.mExpectedProperList( args );
+
+                checkArgumentCount(
+                        1,
+                        Integer.MAX_VALUE,
+                        args );
+
+                SchemeString ctor_spec =
+                        Scut.asNotNil( SchemeString.class, args.getCar() );
+                Cons parameters =
+                        Scut.as( Cons.class, args.getCdr() );
+
+                return createObjectExt(
+                        ctor_spec,
+                        Cons.asArray( parameters),
+                        c );
+
+//                // ("classname" arg0... )
+//                // ("classname:long,long)
+//                Cons cons = Scut.asNotNil(
+//                        Cons.class,
+//                        argument );
+//                Cons arguments = Scut.as(
+//                        Cons.class,
+//                        cons.getCdr() );
+//                SchemeString name = Scut.asNotNil(
+//                        SchemeString.class,
+//                        cons.getCar() );
+//
+//                return Primitives._evalCons(
+//                        e,
+//                        arguments,
+//                        evaluated ->
+//                        _createObjectExt(
+//                                name,
+//                                evaluated,
+//                                c) );
+            }
+        };
+    }
+
+    /**
      * (object obj) -- Wraps the passed first class object with a scheme object.
      */
     static private Procedure wrapObjectProcedure( Environment e )
@@ -923,6 +1117,7 @@ public class SchemeObject
         tle.setPrimitive( objectPredicateProcedure(tle) );
         tle.setPrimitive( wrapObjectProcedure( tle ) );
         tle.setPrimitive( constructObjectSyntax );
+        tle.setPrimitive( makeObjectExt( tle ) );
         tle.setPrimitive( describeObjectProcedure( tle ) );
 //        tle.setPrimitive( catchExceptionSyntax );
         return tle;

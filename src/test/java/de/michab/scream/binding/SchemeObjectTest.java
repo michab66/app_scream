@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.smack.util.StringUtil;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
@@ -297,6 +298,273 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.expectFco(
                 "(StringBuilder (toString))",
                 str( "313" ) );
+    }
+
+    public static class MakeInstance
+    {
+        public String message = StringUtil.EMPTY_STRING;
+
+        public MakeInstance()
+        {
+        }
+        public MakeInstance( String s )
+        {
+            message = "String:" + s;
+        }
+        public MakeInstance( String s1, String s2 )
+        {
+            message = "String:" + s1 + ":String:" + s2;
+        }
+        public MakeInstance( float f )
+        {
+            message = "float:" + f;
+        }
+        public MakeInstance( Float f )
+        {
+            message = "Float:" + f;
+        }
+        public MakeInstance( double d )
+        {
+            message = "double:" + d;
+        }
+        public MakeInstance( float f, double d )
+        {
+            message = "float:" + f + ":double:" + d;
+        }
+        public MakeInstance( double d, float f )
+        {
+            message = "double:" + d + ":float:" + f;
+        }
+        public MakeInstance( boolean b )
+        {
+            message = "boolean:" + b;
+        }
+        public MakeInstance( byte b )
+        {
+            message = "byte:" + b;
+        }
+        public MakeInstance( short b )
+        {
+            message = "short:" + b;
+        }
+        public MakeInstance( int b )
+        {
+            message = "int:" + b;
+        }
+        public MakeInstance( long b )
+        {
+            message = "long:" + b;
+        }
+    }
+
+    private String makeInstanceScript( String ctorTypes, String ctorArgs )
+    {
+        return String.format(
+                """
+                (
+                  (make-instance
+                    "de.michab.scream.binding.SchemeObjectTest$MakeInstance:%s"
+                    %s)
+                  message
+                )
+                """,
+                ctorTypes,
+                ctorArgs );
+    }
+
+    @Test
+    public void make_instance() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                makeInstanceScript(
+                        StringUtil.EMPTY_STRING,
+                        StringUtil.EMPTY_STRING ),
+                str( StringUtil.EMPTY_STRING ) );
+
+        t.expectFco(
+                makeInstanceScript(
+                        "java.lang.String",
+                        "\"x\""),
+                str( "String:x" ) );
+
+        //
+        // float / Float
+        //
+        t.expectFco(
+                makeInstanceScript(
+                        "float",
+                        "1.0"),
+                str( "float:1.0" ) );
+        t.expectFco(
+                makeInstanceScript(
+                        "java.lang.Float",
+                        "1.0"),
+                str( "Float:1.0" ) );
+
+        //
+        // double
+        //
+        t.expectFco(
+                makeInstanceScript(
+                    "double",
+                    "1.0"),
+                str( "double:1.0" ) );
+
+        t.expectFco(
+                makeInstanceScript( "float,double",
+                "1.0 2.0"),
+                str( "float:1.0:double:2.0" ) );
+
+        t.expectFco(
+                makeInstanceScript(
+                        "double,float",
+                        "1.0 2.0" ),
+                str( "double:1.0:float:2.0" ) );
+
+        //
+        // boolean
+        //
+        t.expectFco(
+                makeInstanceScript(
+                        "boolean",
+                        "#t" ),
+                str( "boolean:true" ) );
+        t.expectFco(
+                makeInstanceScript(
+                        "boolean",
+                        "313" ),
+                str( "boolean:true" ) );
+        t.expectFco(
+                makeInstanceScript(
+                        "boolean",
+                        "3.14159265" ),
+                str( "boolean:true" ) );
+        t.expectFco(
+                makeInstanceScript(
+                        "boolean",
+                        "'()" ),
+                str( "boolean:true" ) );
+
+        t.expectFco(
+                makeInstanceScript(
+                        "boolean",
+                        "#f" ),
+                str( "boolean:false" ) );
+
+        //
+        // byte
+        //
+        t.expectFco(
+                makeInstanceScript(
+                        "byte",
+                        "10" ),
+                str( "byte:10" ) );
+        // overflow
+        t.expectFco(
+                makeInstanceScript(
+                        "byte",
+                        "255" ),
+                str( "byte:-1" ) );
+        // overflow
+        t.expectFco(
+                makeInstanceScript(
+                        "byte",
+                        "256" ),
+                str( "byte:0" ) );
+        // overflow
+        t.expectFco(
+                makeInstanceScript(
+                        "byte",
+                        "257" ),
+                str( "byte:1" ) );
+
+        //
+        // short
+        //
+        t.expectFco(
+                makeInstanceScript(
+                        "short",
+                        "10" ),
+                str( "short:10" ) );
+        t.expectFco(
+                makeInstanceScript(
+                        "short",
+                        "-10" ),
+                str( "short:-10" ) );
+
+        //
+        // int
+        //
+        t.expectFco(
+                makeInstanceScript(
+                        "int",
+                        "-10" ),
+                str( "int:-10" ) );
+
+        //
+        // long
+        //
+        t.expectFco(
+                makeInstanceScript(
+                        "long",
+                        "-10" ),
+                str( "long:-10" ) );
+
+        t.expectError(
+                """
+                (
+                  (make-instance
+                    "de.michab.scream.binding.SchemeObjectTest$MakeInstance:float,double"
+                    1.0)
+                  message
+                )
+                """,
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+
+        t.expectError(
+                """
+                (make-instance "MakeInstance:")
+                """,
+                Code.CLASS_NOT_FOUND );
+    }
+
+    @Test
+    public void splitAt()
+    {
+        {
+            var result = SchemeObject.splitAt( "a:b", ":" );
+            assertEquals( 2, result.size() );
+            assertEquals( "a", result.get( 0 ) );
+            assertEquals( "b", result.get( 1 ) );
+        }
+        {
+            var result = SchemeObject.splitAt( "a:", ":" );
+            assertEquals( 2, result.size() );
+            assertEquals( "a", result.get( 0 ) );
+            assertEquals( StringUtil.EMPTY_STRING, result.get( 1 ) );
+        }
+        {
+            var result = SchemeObject.splitAt( ":", ":" );
+            assertEquals( 2, result.size() );
+            assertEquals( StringUtil.EMPTY_STRING, result.get( 0 ) );
+            assertEquals( StringUtil.EMPTY_STRING, result.get( 1 ) );
+        }
+        {
+            var result = SchemeObject.splitAt( "::", ":" );
+            assertEquals( 3, result.size() );
+            assertEquals( StringUtil.EMPTY_STRING, result.get( 0 ) );
+            assertEquals( StringUtil.EMPTY_STRING, result.get( 1 ) );
+            assertEquals( StringUtil.EMPTY_STRING, result.get( 2 ) );
+        }
+        {
+            var result = SchemeObject.splitAt( "aa:bb:cc", ":" );
+            assertEquals( 3, result.size() );
+            assertEquals( "aa", result.get( 0 ) );
+            assertEquals( "bb", result.get( 1 ) );
+            assertEquals( "cc", result.get( 2 ) );
+        }
     }
 }
 
