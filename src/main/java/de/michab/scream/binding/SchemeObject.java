@@ -248,7 +248,7 @@ public class SchemeObject
         if ( split.size() > 2 )
             throw RuntimeX.mIllegalArgument( name );
 
-        // Without a parameter definition: Fall back to classic behaviour.
+        // Without a parameter definition: Fall back to classic behavior.
         if ( split.size() == 1 )
             return createObject( split.get(0), ctorArgs, c );
 
@@ -261,79 +261,6 @@ public class SchemeObject
 
         // No conversion to Fco.
         return c.accept( new SchemeObject( result ) );
-
-//
-//        JavaClassAdapter classAdapter = null;
-//
-//        // Used to transfer the constructor into the exception handlers.
-//        Executable constructor = null;
-//
-//        try
-//        {
-//            // Get the associated class adapter.
-//            classAdapter = JavaClassAdapter.createObject(
-//                    Class.forName( className ) );
-//
-//            // If we didn't receive any constructor arguments...
-//            if ( null == ctorArgs )
-//                // ...we create a class representative.
-//                return c.accept( new SchemeObject( null, classAdapter ) );
-//
-//            // We received constructor arguments, select the ctor to call.
-//            for ( var ctor : classAdapter.getConstructors() )
-//            {
-//                var argumentList =
-//                        matchParameters( ctor.getParameterTypes(), ctorArgs );
-//
-//                if ( null == argumentList )
-//                    continue;
-//
-//                constructor = Objects.requireNonNull( ctor );
-//
-//                return c.accept( convertJava2Scream( ctor.newInstance( argumentList ) ) );
-//            }
-//
-//            // No constructor fit the argument list.
-//            throw RuntimeX.mMethodNotFound(
-//                    className + "<init>" + Arrays.toString( ctorArgs ));
-//        }
-//        catch ( ClassNotFoundException e )
-//        {
-//            throw RuntimeX.mClassNotFound( className );
-//        }
-//        // We have to catch an error here, since this is thrown if we try to create
-//        // classes where the case of the class name differs from the actual upper
-//        // lower case writing. An example for the error message is:
-//        // "de/michab/scream/JavaCLassAdapter (wrong name:
-//        // de/michab/scream/JavaClassAdapter)"
-//        catch ( NoClassDefFoundError e )
-//        {
-//            throw RuntimeX.mClassNotFound( className );
-//        }
-//        catch ( InvocationTargetException e )
-//        {
-//            throw filterException( e, constructor );
-//        }
-//        catch ( InstantiationException e )
-//        {
-//            int modifiers = classAdapter.adapterFor().getModifiers();
-//            String what;
-//
-//            if ( Modifier.isAbstract( modifiers ) )
-//                what = "abstract class";
-//            else if ( Modifier.isInterface( modifiers ) )
-//                what = "interface";
-//            else
-//                what = "";
-//
-//            throw RuntimeX.mCreationFailed(
-//                    what + " " + className );
-//        }
-//        catch ( IllegalAccessException e )
-//        {
-//            throw RuntimeX.mIllegalAccess(
-//                    className + "<init>"  );
-//        }
     }
 
     private static Thunk _createObject(
@@ -347,16 +274,16 @@ public class SchemeObject
                 c );
     }
 
-    private static Thunk _createObjectExt(
-            SchemeString className,
-            Cons ctorArgs,
-            Cont<FirstClassObject> c )
-    {
-        return () -> createObjectExt(
-                className,
-                Cons.asArray( ctorArgs ),
-                c );
-    }
+//    private static Thunk _createObjectExt(
+//            SchemeString className,
+//            Cons ctorArgs,
+//            Cont<FirstClassObject> c )
+//    {
+//        return () -> createObjectExt(
+//                className,
+//                Cons.asArray( ctorArgs ),
+//                c );
+//    }
 
     /**
      * Return the Java object that corresponds to the Scheme object.
@@ -952,27 +879,6 @@ public class SchemeObject
                         ctor_spec,
                         Cons.asArray( parameters),
                         c );
-
-//                // ("classname" arg0... )
-//                // ("classname:long,long)
-//                Cons cons = Scut.asNotNil(
-//                        Cons.class,
-//                        argument );
-//                Cons arguments = Scut.as(
-//                        Cons.class,
-//                        cons.getCdr() );
-//                SchemeString name = Scut.asNotNil(
-//                        SchemeString.class,
-//                        cons.getCar() );
-//
-//                return Primitives._evalCons(
-//                        e,
-//                        arguments,
-//                        evaluated ->
-//                        _createObjectExt(
-//                                name,
-//                                evaluated,
-//                                c) );
             }
         };
     }
