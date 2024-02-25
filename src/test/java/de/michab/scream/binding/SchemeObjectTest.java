@@ -908,9 +908,6 @@ public class SchemeObjectTest extends ScreamBaseTest
                 )
                 """,
                 i(6) );
-
-        CallInstance ci = new CallInstance();
-        ci.mcall();
     }
 
     @Test

@@ -761,63 +761,6 @@ public class JavaClassAdapter
             return "@" + formal.getName();
     }
 
-    /**
-     * Converts a vector to a Java array.
-     *
-     * @param formal The component type) of the result array.
-     * @param actual The Scheme vector to convert.
-     * @return The result array.
-     * @throws RuntimeX In case there were type errors.
-     */
-    private Object mapArray( Class<?> componentType, Vector vector )
-            throws RuntimeX
-    {
-        var len = vector.size();
-
-        Object result = Array.newInstance(
-                componentType,
-                (int)len );
-
-        for ( int i = 0 ; i < len ; i++ )
-            Array.set(
-                    result,
-                    i,
-                    map(
-                    vector.get( i ),
-                    componentType ) );
-
-        return result;
-    }
-    /**
-     * Merge with {@link #mapArray(Class, Vector)}
-     * @param componentType
-     * @param list
-     * @return
-     * @throws RuntimeX
-     */
-    private Object mapArray( Class<?> componentType, Cons list )
-            throws RuntimeX
-    {
-        if ( ! Cons.isProper( list ) )
-            throw RuntimeX.mExpectedProperList( list );
-
-        var fcos = list.asArray();
-
-        Object result = Array.newInstance(
-                componentType,
-                fcos.length );
-
-        for ( int i = 0 ; i < fcos.length ; i++ )
-            Array.set(
-                    result,
-                    i,
-                    map(
-                    fcos[i],
-                    componentType ) );
-
-        return result;
-    }
-
     private Object mapArray( Class<?> componentType, FirstClassObject[] fcos )
             throws RuntimeX
     {
@@ -836,6 +779,42 @@ public class JavaClassAdapter
         return result;
     }
 
+    /**
+     * Maps a vector to a Java array.
+     *
+     * @param componentType The component type) of the result array.
+     * @param vector The Scheme vector to convert.
+     * @return The result array.
+     * @throws RuntimeX In case of type errors.
+     */
+    private Object mapArray( Class<?> componentType, Vector vector )
+            throws RuntimeX
+    {
+        return mapArray( componentType, vector.asArray() );
+    }
+
+    /**
+     * Maps a list to a Java array of a given component type.
+     *
+     * @param componentType The component type of the result array.
+     * @param list A proper list of fcos.
+     */
+    private Object mapArray( Class<?> componentType, Cons list )
+            throws RuntimeX
+    {
+        if ( ! Cons.isProper( list ) )
+            throw RuntimeX.mExpectedProperList( list );
+
+        return mapArray( componentType, Cons.asArray( list ) );
+    }
+
+    /**
+     *
+     * @param fco
+     * @param cl
+     * @return
+     * @throws RuntimeX
+     */
     private Object map( FirstClassObject fco, Class<?> cl )
             throws RuntimeX
     {
@@ -888,25 +867,22 @@ public class JavaClassAdapter
     }
 
     public Object createInstance( Constructor<?> ctor,
-            FirstClassObject[] ctorArgs ) throws RuntimeX
+            FirstClassObject[] args ) throws RuntimeX
     {
         if ( ctor.isVarArgs() )
-            return createInstanceVariadic( ctor, ctorArgs );
+            return createInstanceVariadic( ctor, args );
 
-        if ( ctorArgs.length != ctor.getParameterCount() )
-            throw RuntimeX.mWrongNumberOfArguments( ctor.getParameterCount(), ctorArgs.length );
+        if ( args.length != ctor.getParameterCount() )
+            throw RuntimeX.mWrongNumberOfArguments( ctor.getParameterCount(), args.length );
 
         Class<?>[] initTypes =
                 ctor.getParameterTypes();
         Object[] initargs =
                 new Object[ initTypes.length ];
 
-        int i = 0;
-        for ( var fco : ctorArgs )
-        {
-            initargs[i] = map( fco, initTypes[i] );
-            i++;
-        }
+
+        for ( int i = 0 ; i < initTypes.length ; i++ )
+            initargs[i] = map( args[i], initTypes[i] );
 
         try
         {
