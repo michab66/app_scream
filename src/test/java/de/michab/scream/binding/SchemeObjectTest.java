@@ -357,6 +357,13 @@ public class SchemeObjectTest extends ScreamBaseTest
         }
     }
 
+    /**
+     * Support operation.
+     *
+     * @param ctorTypes
+     * @param ctorArgs
+     * @return
+     */
     private String makeInstanceScript( String ctorTypes, String ctorArgs )
     {
         return String.format(
@@ -528,6 +535,246 @@ public class SchemeObjectTest extends ScreamBaseTest
                 (make-instance "MakeInstance:")
                 """,
                 Code.CLASS_NOT_FOUND );
+    }
+
+    public static class CallInstance
+    {
+        public CallInstance()
+        {
+        }
+        public String mcall()
+        {
+            return StringUtil.EMPTY_STRING;
+        }
+        public String mcall( String s )
+        {
+            return "String:" + s;
+        }
+        public String mcall( String s1, String s2 )
+        {
+            return "String:" + s1 + ":String:" + s2;
+        }
+        public String mcall( float f )
+        {
+            return "float:" + f;
+        }
+        public String mcall( Float f )
+        {
+            return "Float:" + f;
+        }
+        public String mcall( double d )
+        {
+            return "double:" + d;
+        }
+        public String mcall( float f, double d )
+        {
+            return "float:" + f + ":double:" + d;
+        }
+        public String mcall( double d, float f )
+        {
+            return "double:" + d + ":float:" + f;
+        }
+        public String mcall( boolean b )
+        {
+            return "boolean:" + b;
+        }
+        public String mcall( byte b )
+        {
+            return "byte:" + b;
+        }
+        public String mcall( short b )
+        {
+            return "short:" + b;
+        }
+        public String mcall( int b )
+        {
+            return "int:" + b;
+        }
+        public String mcall( long b )
+        {
+            return "long:" + b;
+        }
+    }
+
+    /**
+     * Support operation.
+     *
+     * @param ctorTypes
+     * @param ctorArgs
+     * @return
+     */
+    private String callScript( String callTypes, String callArgs )
+    {
+        return String.format(
+                """
+                (let
+                  (
+                    (i (make-instance
+                         "de.michab.scream.binding.SchemeObjectTest$CallInstance:"))
+                  )
+                  ((call i "mcall:%s" %s) (toString))
+                )
+                """,
+                callTypes,
+                callArgs );
+    }
+
+    @Test
+    public void call_instance() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                callScript(
+                        StringUtil.EMPTY_STRING,
+                        StringUtil.EMPTY_STRING ),
+                str( StringUtil.EMPTY_STRING ) );
+
+        t.expectFco(
+                callScript(
+                        "java.lang.String",
+                        "\"x\""),
+                str( "String:x" ) );
+
+        //
+        // float / Float
+        //
+        t.expectFco(
+                callScript(
+                        "float",
+                        "1.0"),
+                str( "float:1.0" ) );
+        t.expectFco(
+                callScript(
+                        "java.lang.Float",
+                        "1.0"),
+                str( "Float:1.0" ) );
+
+        //
+        // double
+        //
+        t.expectFco(
+                callScript(
+                    "double",
+                    "1.0"),
+                str( "double:1.0" ) );
+
+        t.expectFco(
+                callScript( "float,double",
+                "1.0 2.0"),
+                str( "float:1.0:double:2.0" ) );
+
+        t.expectFco(
+                callScript(
+                        "double,float",
+                        "1.0 2.0" ),
+                str( "double:1.0:float:2.0" ) );
+
+        //
+        // boolean
+        //
+        t.expectFco(
+                callScript(
+                        "boolean",
+                        "#t" ),
+                str( "boolean:true" ) );
+        t.expectFco(
+                callScript(
+                        "boolean",
+                        "313" ),
+                str( "boolean:true" ) );
+        t.expectFco(
+                callScript(
+                        "boolean",
+                        "3.14159265" ),
+                str( "boolean:true" ) );
+        t.expectFco(
+                callScript(
+                        "boolean",
+                        "'()" ),
+                str( "boolean:true" ) );
+
+        t.expectFco(
+                callScript(
+                        "boolean",
+                        "#f" ),
+                str( "boolean:false" ) );
+
+        //
+        // byte
+        //
+        t.expectFco(
+                callScript(
+                        "byte",
+                        "10" ),
+                str( "byte:10" ) );
+        // overflow
+        t.expectFco(
+                callScript(
+                        "byte",
+                        "255" ),
+                str( "byte:-1" ) );
+        // overflow
+        t.expectFco(
+                callScript(
+                        "byte",
+                        "256" ),
+                str( "byte:0" ) );
+        // overflow
+        t.expectFco(
+                callScript(
+                        "byte",
+                        "257" ),
+                str( "byte:1" ) );
+
+        //
+        // short
+        //
+        t.expectFco(
+                callScript(
+                        "short",
+                        "10" ),
+                str( "short:10" ) );
+        t.expectFco(
+                callScript(
+                        "short",
+                        "-10" ),
+                str( "short:-10" ) );
+
+        //
+        // int
+        //
+        t.expectFco(
+                callScript(
+                        "int",
+                        "-10" ),
+                str( "int:-10" ) );
+
+        //
+        // long
+        //
+        t.expectFco(
+                callScript(
+                        "long",
+                        "-10" ),
+                str( "long:-10" ) );
+
+        t.expectError(
+                callScript(
+                        "double,double",
+                        "1.0 2.0" ),
+                Code.METHOD_NOT_FOUND );
+
+        t.expectError(
+                callScript(
+                        "double",
+                        "1.0 2.0" ),
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                callScript(
+                        "double",
+                        StringUtil.EMPTY_STRING ),
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
 
     @Test

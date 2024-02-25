@@ -263,6 +263,41 @@ public class SchemeObject
         return c.accept( new SchemeObject( result ) );
     }
 
+    private static Thunk callExt(
+            SchemeObject instance,
+            SchemeString methodName,
+            FirstClassObject[] args,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        String name = methodName.toJava();
+
+        if ( name.length() == 0 )
+            throw RuntimeX.mIllegalArgument( name );
+
+        var split = splitAt( name, ":" );
+
+        if ( split.size() > 2 )
+            throw RuntimeX.mIllegalArgument( name );
+
+//        // Without a parameter definition: Fall back to classic behavior.
+//        if ( split.size() == 1 )
+//            return createObject( split.get(0), args, c );
+
+        var classAdapter =
+                JavaClassAdapter.createObject( instance.toJava().getClass() );
+
+        var x = classAdapter.getMethod( split.get( 0 ), split.get( 1 ) );
+
+        var result = classAdapter.call(
+                instance,
+                x,
+                args  );
+
+        // No conversion to Fco.
+        return c.accept( new SchemeObject( result ) );
+    }
+
     private static Thunk _createObject(
             String className,
             Cons ctorArgs,
@@ -884,6 +919,43 @@ public class SchemeObject
     }
 
     /**
+     * (call object "meth-spec" ...)
+     */
+    static private Procedure objectCall( Environment e )
+    {
+        return new Procedure( "call", e )
+        {
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args,
+                    Cont<FirstClassObject> c ) throws RuntimeX
+            {
+                if ( ! Cons.isProper( args ) )
+                    throw RuntimeX.mExpectedProperList( args );
+
+                checkArgumentCount(
+                        2,
+                        Integer.MAX_VALUE,
+                        args );
+
+                SchemeObject instance =
+                        Scut.asNotNil( SchemeObject.class, args.getCar() );
+                args =
+                        Scut.as( Cons.class, args.getCdr() );
+                SchemeString arg_spec =
+                        Scut.asNotNil( SchemeString.class, args.getCar() );
+                Cons parameters =
+                        Scut.as( Cons.class, args.getCdr() );
+
+                return callExt(
+                        instance,
+                        arg_spec,
+                        Cons.asArray( parameters),
+                        c );
+            }
+        };
+    }
+
+    /**
      * (object obj) -- Wraps the passed first class object with a scheme object.
      */
     static private Procedure wrapObjectProcedure( Environment e )
@@ -1023,7 +1095,9 @@ public class SchemeObject
         tle.setPrimitive( objectPredicateProcedure(tle) );
         tle.setPrimitive( wrapObjectProcedure( tle ) );
         tle.setPrimitive( constructObjectSyntax );
+
         tle.setPrimitive( makeObjectExt( tle ) );
+        tle.setPrimitive( objectCall( tle ) );
         tle.setPrimitive( describeObjectProcedure( tle ) );
 //        tle.setPrimitive( catchExceptionSyntax );
         return tle;

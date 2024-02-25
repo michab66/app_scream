@@ -10,6 +10,27 @@
 (define (get-class string)
   ((make-object java.lang.Class) (forName string)))
 
+(define (display-object class)
+  (define exp `(let* 
+    (
+      (class-info (make-object ,class))
+      (info (describe-object class-info))      
+    )
+    (scream:display-ln "Operations:")
+    (vector-for-each
+      (lambda (i) (scream:display-ln i))
+      (car info))
+    (scream:display-ln "Members:")
+    (vector-for-each
+      (lambda (i) (scream:display-ln i))
+      (cdr info))
+
+     scream:unspecified
+  ))
+
+  (scream:eval exp)
+)
+
 ;
 ;
 ;

@@ -207,7 +207,7 @@ public class JavaClassAdapter
 
    /**
    *
-   * @param name The method name.
+   * @param name A class name.
    * @param argumentList The argument list as used in method.toString.
    * @return The method.
    * @throws RuntimeX METHOD_NOT FOUND
@@ -834,6 +834,47 @@ public class JavaClassAdapter
                 | IllegalArgumentException | InvocationTargetException e )
         {
             throw RuntimeX.mCreationFailed( ctor.getName() );
+        }
+    }
+
+    private Object callVariadic( Method ctor, FirstClassObject[] ctorArgs )
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Object call(
+            SchemeObject instance,
+            Method method,
+            FirstClassObject[] ctorArgs ) throws RuntimeX
+    {
+        if ( method.isVarArgs() )
+            return callVariadic( method, ctorArgs );
+
+        if ( ctorArgs.length != method.getParameterCount() )
+            throw RuntimeX.mWrongNumberOfArguments( method.getParameterCount(), ctorArgs.length );
+
+        Class<?>[] initTypes =
+                method.getParameterTypes();
+        Object[] initargs =
+                new Object[ initTypes.length ];
+
+        int i = 0;
+        for ( var fco : ctorArgs )
+        {
+            initargs[i] = map( fco, initTypes[i] );
+            i++;
+        }
+
+        try
+        {
+            return method.invoke(
+                    instance.toJava(),
+                    initargs );
+        }
+        catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
+        {
+            throw RuntimeX.mInvocationException( method, e );
         }
     }
 }
