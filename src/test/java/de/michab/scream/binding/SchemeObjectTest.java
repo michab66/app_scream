@@ -603,8 +603,16 @@ public class SchemeObjectTest extends ScreamBaseTest
 
             return result;
         }
-    }
+        public long mcall( long ... longs )
+        {
+            long result = 0;
 
+            for ( var c : longs )
+                result += c;
+
+            return result;
+        }
+    }
     /**
      * Support operation.
      *
@@ -786,9 +794,40 @@ public class SchemeObjectTest extends ScreamBaseTest
                 Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
 
+    public static class CallInstanceArrays
+    {
+        public CallInstanceArrays()
+        {
+        }
+        public int intarray( int[] integers )
+        {
+            int result = 0;
+
+            for ( var c : integers )
+                result += c;
+
+            return result;
+        }
+        public long longVariadic( long ... longs )
+        {
+            if ( longs == null )
+                return -1;
+
+            long result = 0;
+
+            for ( var c : longs )
+                result += c;
+
+            return result;
+        }
+    }
+
     @Test
     public void call_instance_array() throws Exception
     {
+        CallInstanceArrays cia = new CallInstanceArrays();
+        cia.longVariadic();
+
         var t = makeTester();
 
         t.execute(
@@ -796,30 +835,82 @@ public class SchemeObjectTest extends ScreamBaseTest
                 (define
                   i
                   (scream:java:make-instance
-                         "de.michab.scream.binding.SchemeObjectTest$CallInstance:"))
+                         "de.michab.scream.binding.SchemeObjectTest$CallInstanceArrays:"))
                 """ );
+        // Call with a vector.
         t.expectFco(
                 """
                 (scream:java:to-fco
                   (scream:java:call
                     i
-                    "mcall:int[]"
-                    ; Call with a vector.
+                    "intarray:int[]"
                     (vector 1 2 3))
                 )
                 """,
                 i(6) );
+        // Call with a list.
         t.expectFco(
                 """
                 (scream:java:to-fco
                   (scream:java:call
                     i
-                    "mcall:int[]"
-                    ; Call with a list.
+                    "intarray:int[]"
                     '(1 2 3))
                 )
                 """,
                 i(6) );
+
+        // Call variadic with no variadic elements.
+        t.expectFco(
+                """
+                (scream:java:to-fco
+                  (scream:java:call
+                    i
+                    "longVariadic:long[]")
+                )
+                """,
+                i(-1) );
+
+        // Call variadic with variadic elements.
+        t.expectFco(
+                """
+                (scream:java:to-fco
+                  (scream:java:call
+                    i
+                    "longVariadic:long[]"
+                    1
+                    2
+                    3)
+                )
+                """,
+                i(6) );
+
+        // Call variadic with an explicit list.
+        t.expectFco(
+                """
+                (scream:java:to-fco
+                  (scream:java:call
+                    i
+                    "longVariadic:long[]"
+                    '(1 2 3))
+                )
+                """,
+                i(6) );
+
+        // Call variadic with a vector.
+        t.expectFco(
+                """
+                (scream:java:to-fco
+                  (scream:java:call
+                    i
+                    "longVariadic:long[]"
+                    #(1 2 3))
+                )
+                """,
+                i(6) );
+
+        CallInstance ci = new CallInstance();
+        ci.mcall();
     }
 
     @Test

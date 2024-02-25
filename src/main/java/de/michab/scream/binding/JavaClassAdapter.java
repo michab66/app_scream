@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
@@ -817,6 +818,24 @@ public class JavaClassAdapter
         return result;
     }
 
+    private Object mapArray( Class<?> componentType, FirstClassObject[] fcos )
+            throws RuntimeX
+    {
+        Object result = Array.newInstance(
+                componentType,
+                fcos.length );
+
+        for ( int i = 0 ; i < fcos.length ; i++ )
+            Array.set(
+                    result,
+                    i,
+                    map(
+                    fcos[i],
+                    componentType ) );
+
+        return result;
+    }
+
     private Object map( FirstClassObject fco, Class<?> cl )
             throws RuntimeX
     {
@@ -900,34 +919,80 @@ public class JavaClassAdapter
         }
     }
 
-    private Object callVariadic( Method ctor, FirstClassObject[] ctorArgs )
-    {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public Object call(
+    private Object callVariadic(
             SchemeObject instance,
             Method method,
-            FirstClassObject[] ctorArgs ) throws RuntimeX
+            FirstClassObject[] args )
+        throws RuntimeX
     {
-        if ( method.isVarArgs() )
-            return callVariadic( method, ctorArgs );
+        if ( args.length < method.getParameterCount()-1 )
+            throw RuntimeX.mWrongNumberOfArguments(
+                    method.getParameterCount(),
+                    args.length );
 
-        if ( ctorArgs.length != method.getParameterCount() )
-            throw RuntimeX.mWrongNumberOfArguments( method.getParameterCount(), ctorArgs.length );
+        final int variadicPosition =
+                method.getParameterCount() - 1;
 
         Class<?>[] initTypes =
                 method.getParameterTypes();
         Object[] initargs =
                 new Object[ initTypes.length ];
 
-        int i = 0;
-        for ( var fco : ctorArgs )
+        // Map the parameters before the variadic position.
+        for ( int i = 0 ; i < variadicPosition ; i++ )
+            initargs[i] = map( args[i], initTypes[i] );
+
+        if ( args.length == variadicPosition )
         {
-            initargs[i] = map( fco, initTypes[i] );
-            i++;
+            // Called without an variadic element.
+            initargs[variadicPosition] = null;
         }
+        else if ( args.length == 1 + variadicPosition )
+        {
+            initargs[variadicPosition] = map(
+                    args[args.length-1],
+                    initTypes[variadicPosition] );
+        }
+        else
+        {
+            initargs[variadicPosition] = mapArray(
+                    initTypes[variadicPosition].componentType(),
+                    Arrays.copyOfRange(
+                            args,
+                            variadicPosition,
+                            args.length ) );
+        }
+
+        try
+        {
+            return method.invoke(
+                    instance.toJava(),
+                    initargs );
+        }
+        catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
+        {
+            throw RuntimeX.mInvocationException( method, e );
+        }
+    }
+
+    public Object call(
+            SchemeObject instance,
+            Method method,
+            FirstClassObject[] args ) throws RuntimeX
+    {
+        if ( method.isVarArgs() )
+            return callVariadic( instance, method, args );
+
+        if ( args.length != method.getParameterCount() )
+            throw RuntimeX.mWrongNumberOfArguments( method.getParameterCount(), args.length );
+
+        Class<?>[] initTypes =
+                method.getParameterTypes();
+        Object[] initargs =
+                new Object[ initTypes.length ];
+
+        for ( int i = 0 ; i < initTypes.length ; i++ )
+            initargs[i] = map( args[i], initTypes[i] );
 
         try
         {
