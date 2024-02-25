@@ -594,6 +594,15 @@ public class SchemeObjectTest extends ScreamBaseTest
         {
             return "long:" + b;
         }
+        public int mcall( int[] integers )
+        {
+            int result = 0;
+
+            for ( var c : integers )
+                result += c;
+
+            return result;
+        }
     }
 
     /**
@@ -776,6 +785,43 @@ public class SchemeObjectTest extends ScreamBaseTest
                         StringUtil.EMPTY_STRING ),
                 Code.WRONG_NUMBER_OF_ARGUMENTS );
     }
+
+    @Test
+    public void call_instance_array() throws Exception
+    {
+        var t = makeTester();
+
+        t.execute(
+                """
+                (define
+                  i
+                  (scream:java:make-instance
+                         "de.michab.scream.binding.SchemeObjectTest$CallInstance:"))
+                """ );
+        t.expectFco(
+                """
+                (scream:java:to-fco
+                  (scream:java:call
+                    i
+                    "mcall:int[]"
+                    ; Call with a vector.
+                    (vector 1 2 3))
+                )
+                """,
+                i(6) );
+        t.expectFco(
+                """
+                (scream:java:to-fco
+                  (scream:java:call
+                    i
+                    "mcall:int[]"
+                    ; Call with a list.
+                    '(1 2 3))
+                )
+                """,
+                i(6) );
+    }
+
     @Test
     public void call_class() throws Exception
     {

@@ -5,6 +5,7 @@
  */
 package de.michab.scream.binding;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
@@ -24,6 +25,7 @@ import org.smack.util.collections.OneToN;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Bool;
+import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.SchemeCharacter;
@@ -758,23 +760,81 @@ public class JavaClassAdapter
             return "@" + formal.getName();
     }
 
-    private Object mapArray( Class<?> arrayType, Object[] fcos )
+    /**
+     * Converts a vector to a Java array.
+     *
+     * @param formal The component type) of the result array.
+     * @param actual The Scheme vector to convert.
+     * @return The result array.
+     * @throws RuntimeX In case there were type errors.
+     */
+    private Object mapArray( Class<?> componentType, Vector vector )
+            throws RuntimeX
     {
+        var len = vector.size();
 
+        Object result = Array.newInstance(
+                componentType,
+                (int)len );
 
-        return null;
+        for ( int i = 0 ; i < len ; i++ )
+            Array.set(
+                    result,
+                    i,
+                    map(
+                    vector.get( i ),
+                    componentType ) );
+
+        return result;
+    }
+    /**
+     * Merge with {@link #mapArray(Class, Vector)}
+     * @param componentType
+     * @param list
+     * @return
+     * @throws RuntimeX
+     */
+    private Object mapArray( Class<?> componentType, Cons list )
+            throws RuntimeX
+    {
+        if ( ! Cons.isProper( list ) )
+            throw RuntimeX.mExpectedProperList( list );
+
+        var fcos = list.asArray();
+
+        Object result = Array.newInstance(
+                componentType,
+                fcos.length );
+
+        for ( int i = 0 ; i < fcos.length ; i++ )
+            Array.set(
+                    result,
+                    i,
+                    map(
+                    fcos[i],
+                    componentType ) );
+
+        return result;
     }
 
-    private Object map( FirstClassObject fco, Class<?> cl ) throws RuntimeX
+    private Object map( FirstClassObject fco, Class<?> cl )
+            throws RuntimeX
     {
         cl = ReflectionUtil.normalizePrimitives( cl );
 
+        // Map arrays.
+        if ( cl.isArray() && FirstClassObject.is( Vector.class, fco ) )
+            return mapArray( cl.getComponentType(), Scut.as( Vector.class, fco ) );
+        if ( cl.isArray() && FirstClassObject.is( Cons.class, fco ) )
+            return mapArray( cl.getComponentType(), Scut.as( Cons.class, fco ) );
         if ( cl.isArray() )
-            return mapArray( cl.arrayType(), Scut.as( Vector.class, fco ).toJava() );
+            throw RuntimeX.mTypeError( Vector.class, fco );
 
+        // Handle SchemeObjects.
         if ( fco instanceof SchemeObject )
             return fco.toJava();
 
+        // Convert primitives.
         if ( cl == Boolean.class  )
             return Boolean.valueOf( fco == Bool.F ? Boolean.FALSE : Boolean.TRUE );
         if ( cl == Byte.class )
@@ -793,10 +853,13 @@ public class JavaClassAdapter
             return Double.valueOf( Scut.as( Number.class, fco ).asDouble() );
         if ( cl == String.class && fco instanceof SchemeString )
             return fco.toJava();
+
+        // Last order: Perform a string conversion.
         if ( cl == String.class  )
             return FirstClassObject.toString( fco );
 
-        throw RuntimeX.mInternalError( Symbol.createObject( "JavaClassAdpter.map" ) );
+        // TODO cannot express the target type.
+        throw RuntimeX.mTypeError( SchemeObject.class, fco );
     }
 
     public Object createInstanceVariadic( Constructor<?> ctor,
