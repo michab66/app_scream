@@ -79,8 +79,8 @@ public class SchemeObject
     private final JavaClassAdapter _classAdapter;
 
     /**
-     * Create a new SchemeObject for a given object.  The object is used as is,
-     * i.e. it isn't copied.  In case the passed object instance is null the
+     * Create a new SchemeObject for a given object.  In case the
+     * passed object instance is {@code null} the
      * instance will be set to the class adapter's embedded class.
      * <p>
      * The resulting SchemeObject then represents a class.
@@ -285,7 +285,10 @@ public class SchemeObject
 //            return createObject( split.get(0), args, c );
 
         var classAdapter =
-                JavaClassAdapter.createObject( instance.toJava().getClass() );
+                JavaClassAdapter.createObject(
+                        instance._isClass ?
+                                (Class<?>)instance.toJava() :
+                                instance.toJava().getClass() );
 
         var x = classAdapter.getMethod( split.get( 0 ), split.get( 1 ) );
 
@@ -887,11 +890,11 @@ public class SchemeObject
     };
 
     /**
-     * (make-instance "ctor-spec" ...)
+     * (scream:java:make-instance "ctor-spec" ...)
      */
-    static private Procedure makeObjectExt( Environment e )
+    static private Procedure scream_java_make_instance( Environment e )
     {
-        return new Procedure( "make-instance", e )
+        return new Procedure( "scream:java:make-instance", e )
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args,
@@ -919,11 +922,46 @@ public class SchemeObject
     }
 
     /**
-     * (call object "meth-spec" ...)
+     * (scream:java:make-class "class-name")
+     *
+     * Creates an object representing a class.
      */
-    static private Procedure objectCall( Environment e )
+    static private Procedure scream_java_make_class( Environment e )
     {
-        return new Procedure( "call", e )
+        return new Procedure( "scream:java:make-class", e )
+        {
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args,
+                    Cont<FirstClassObject> c ) throws RuntimeX
+            {
+                if ( ! Cons.isProper( args ) )
+                    throw RuntimeX.mExpectedProperList( args );
+
+                checkArgumentCount(
+                        1,
+                        args );
+
+                SchemeString classname =
+                        Scut.asNotNil( SchemeString.class, args.getCar() );
+
+                var x = new SchemeObject(
+                        null,
+                        JavaClassAdapter.createObject( classname.toJava() ) );
+
+                return c.accept( x );
+            }
+        };
+    }
+
+    /**
+     * (scream:java:call object "meth-spec" ...)
+     *
+     * Calls the operation specified by meth-spec on object.
+     * If the object represents a class then the static method is called.
+     */
+    static private Procedure scream_java_call( Environment e )
+    {
+        return new Procedure( "scream:java:call", e )
         {
             @Override
             protected Thunk _executeImpl( Environment e, Cons args,
@@ -956,6 +994,41 @@ public class SchemeObject
     }
 
     /**
+     * (scream:java:to-fco object)
+     *
+     * Converts the passed object back into a Scheme-type.
+     * If the passed object is already a Scheme-type the object is returned
+     * unmodified.
+     */
+    static private Procedure scream_java_to_fco( Environment e )
+    {
+        return new Procedure( "scream:java:to-fco", e )
+        {
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args,
+                    Cont<FirstClassObject> c ) throws RuntimeX
+            {
+                if ( ! Cons.isProper( args ) )
+                    throw RuntimeX.mExpectedProperList( args );
+
+                checkArgumentCount(
+                        1,
+                        args );
+
+                var a0 = args.getCar();
+
+                if ( ! FirstClassObject.is( SchemeObject.class, a0 ) )
+                    return c.accept( a0 );
+
+                SchemeObject object =
+                        Scut.asNotNil( SchemeObject.class, a0 );
+
+                return c.accept( convertJava2Scream( object.toJava() ) );
+            }
+        };
+    }
+
+    /**
      * (object obj) -- Wraps the passed first class object with a scheme object.
      */
     static private Procedure wrapObjectProcedure( Environment e )
@@ -972,7 +1045,7 @@ public class SchemeObject
 
                 // If the passed object is already a SchemeObject...
                 if ( a0 == Cons.NIL || a0 instanceof SchemeObject )
-                    // ...then just return this one.
+                    // ...then just return it.
                     return c.accept( a0 );
 
                 return c.accept( new SchemeObject( a0 ) );
@@ -1085,7 +1158,7 @@ public class SchemeObject
     /**
      * Object operations setup.
      *
-     * @param tle The environment to extend with additional operations.
+     * @param tle The environment to extend.
      * @return The extended environment.
      * @throws RuntimeX
      */
@@ -1096,10 +1169,11 @@ public class SchemeObject
         tle.setPrimitive( wrapObjectProcedure( tle ) );
         tle.setPrimitive( constructObjectSyntax );
 
-        tle.setPrimitive( makeObjectExt( tle ) );
-        tle.setPrimitive( objectCall( tle ) );
+        tle.setPrimitive( scream_java_make_instance( tle ) );
+        tle.setPrimitive( scream_java_call( tle ) );
         tle.setPrimitive( describeObjectProcedure( tle ) );
-//        tle.setPrimitive( catchExceptionSyntax );
+        tle.setPrimitive( scream_java_make_class( tle ) );
+        tle.setPrimitive( scream_java_to_fco( tle ) );
         return tle;
     }
 }

@@ -369,7 +369,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         return String.format(
                 """
                 (
-                  (make-instance
+                  (scream:java:make-instance
                     "de.michab.scream.binding.SchemeObjectTest$MakeInstance:%s"
                     %s)
                   message
@@ -522,7 +522,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.expectError(
                 """
                 (
-                  (make-instance
+                  (scream:java:make-instance
                     "de.michab.scream.binding.SchemeObjectTest$MakeInstance:float,double"
                     1.0)
                   message
@@ -532,7 +532,7 @@ public class SchemeObjectTest extends ScreamBaseTest
 
         t.expectError(
                 """
-                (make-instance "MakeInstance:")
+                (scream:java:make-instance "MakeInstance:")
                 """,
                 Code.CLASS_NOT_FOUND );
     }
@@ -609,10 +609,10 @@ public class SchemeObjectTest extends ScreamBaseTest
                 """
                 (let
                   (
-                    (i (make-instance
+                    (i (scream:java:make-instance
                          "de.michab.scream.binding.SchemeObjectTest$CallInstance:"))
                   )
-                  ((call i "mcall:%s" %s) (toString))
+                  ((scream:java:call i "mcall:%s" %s) (toString))
                 )
                 """,
                 callTypes,
@@ -775,6 +775,17 @@ public class SchemeObjectTest extends ScreamBaseTest
                         "double",
                         StringUtil.EMPTY_STRING ),
                 Code.WRONG_NUMBER_OF_ARGUMENTS );
+    }
+    @Test
+    public void call_class() throws Exception
+    {
+        var t = makeTester();
+
+        t.execute( "(define math (scream:java:make-class \"java.lang.Math\"))" );
+
+        t.expectFco(
+                "(scream:java:to-fco (scream:java:call math \"sqrt:double\" 2))",
+                d( 1.4142135623730951 ) );
     }
 
     @Test
