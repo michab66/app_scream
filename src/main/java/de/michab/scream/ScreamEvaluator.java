@@ -337,7 +337,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * kernel.schemeExtensions key.
      *
      * @param env The environment used for evaluating the extensions.
-     * @param fileNames The files to load.
+     * @param filename The files to load.
      */
     private void addExtensions(
             Environment env,

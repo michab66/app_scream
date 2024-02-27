@@ -22,7 +22,7 @@
 ;; (string? obj) procedure; r5rs 30
 ;;
 (define string?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
+  scream:string?)
 
 
 

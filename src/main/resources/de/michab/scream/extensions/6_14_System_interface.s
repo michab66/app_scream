@@ -15,7 +15,7 @@
 (define (scream:files:validate-exists filename)
   (let
     (
-      (file (make-object (java.io.File filename)))
+      (file (make-object-2 ("java.io.File:java.lang.String" filename)))
     )
 
     (if (not (file (exists)))
@@ -61,7 +61,7 @@
 (define (scream:files:create filename)
   (let
     (
-      (file (make-object (java.io.File filename)))
+      (file (make-object-2 ("java.io.File:java.lang.String" filename)))
     )
     
     (file (createNewFile)))
@@ -78,9 +78,9 @@
 (define (load filename)
   (let
     (
-      (evaluator ((make-object de.michab.scream.ScreamEvaluator) (EVAL)))
+      (evaluator ((make-object-2 "de.michab.scream.ScreamEvaluator") (EVAL)))
     )
-    
+
     (evaluator (load filename (interaction-environment))))
 )
 
@@ -90,7 +90,7 @@
 (define (file-exists? filename)
   (let
     (
-      (file (make-object (java.io.File filename)))
+      (file (make-object-2 ("java.io.File:java.lang.String" filename)))
     )
     
     (file (exists)))
@@ -113,7 +113,7 @@
   (let*
     (
       (system
-        (make-object java.lang.System))
+        (make-object-2 "java.lang.System"))
       (result 
         (system (getenv name)))
     )
@@ -264,7 +264,7 @@
     (
       ; Get a reference to java.lang.System
       (system
-        (make-object java.lang.System))
+        (make-object-2 "java.lang.System"))
       ; Query the environment as a map.
       (env-map
         (system (getenv)))
@@ -309,7 +309,7 @@
  | (current-jiffy)  time library procedure; r7rs p60
  |#
 (define (current-jiffy)
-  ((make-object java.lang.System) (currentTimeMillis)))
+  ((make-object-2 "java.lang.System") (currentTimeMillis)))
 
 #|
  | (jiffies-per-second)  time library procedure; r7rs p60

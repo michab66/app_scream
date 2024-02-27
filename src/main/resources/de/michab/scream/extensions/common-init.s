@@ -7,6 +7,7 @@
 ; Perform common runtime initialisation.
 (include
   "basic.s"
+  "object.s"
   "boolean.s"
   "vector.s"
   "delayed.s"
@@ -19,7 +20,6 @@
   "symbol.s"
   "char.s"
   "string.s"
-  "object.s"
   "bytevector.s"
   "cons-delayed.s"
   "6_14_System_interface.s"

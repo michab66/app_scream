@@ -11,18 +11,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define scream:type-integer
-  ((make-object de.michab.scream.fcos.Int) TYPE_NAME))
+  ((scream:java:make-class "de.michab.scream.fcos.Int") TYPE_NAME))
 
 #|
  | Encapsulates java.lang.Math.
  |#
 (define scream:math
-  (make-object java.lang.Math))
+  (scream:java:make-class "java.lang.Math"))
 
 (define scream:class:number
-  (make-object de.michab.scream.fcos.Number))
-
-(define (scream:to-float x) (+ 0.0 x))
+  (scream:java:make-class "de.michab.scream.fcos.Number"))
 
 #|
  | Checks if the passed object if of type Int.
@@ -669,7 +667,7 @@
 (define (inexact z)
   (if (inexact? z)
     z
-    (scream:to-float z)))
+    (+ .0 z)))
 
 #|
  | (exact z) procedure; r7rs p39

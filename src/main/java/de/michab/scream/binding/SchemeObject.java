@@ -248,6 +248,9 @@ public class SchemeObject
         if ( split.size() > 2 )
             throw RuntimeX.mIllegalArgument( name );
 
+        //
+        // TODO remove
+        //
         // Without a parameter definition: Fall back to classic behavior.
         if ( split.size() == 1 )
             return createObject( split.get(0), ctorArgs, c );

@@ -115,7 +115,8 @@
         (else
           (classObject (isAssignableFrom ((object obj) (getClass)))))))))
 
-
+(define scream:string?
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
 
 ;;
 ;; (transitiveBoolean proc)
