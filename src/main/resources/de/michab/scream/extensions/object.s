@@ -76,7 +76,7 @@
   (let*
     (
       (class-list (map get-class rest))
-      (class-adapter (make-object de.michab.scream.binding.JavaClassAdapter))
+      (class-adapter (make-object "de.michab.scream.binding.JavaClassAdapter"))
       (proxy (class-adapter (createObject (list->vector class-list))))
     )
     (proxy (instanciateInterface))))

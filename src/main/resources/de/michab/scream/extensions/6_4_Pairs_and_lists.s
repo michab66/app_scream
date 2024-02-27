@@ -12,7 +12,7 @@
 
 ;; Init type name.
 (define scream:type-cons
-  ((make-object de.michab.scream.fcos.Cons) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Cons") TYPE_NAME))
 
 
 #|

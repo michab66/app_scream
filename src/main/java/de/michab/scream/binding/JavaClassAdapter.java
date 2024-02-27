@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
@@ -285,24 +286,25 @@ public class JavaClassAdapter
     }
 
     /**
-     * This is our public interface for accessing class adapter instances.
-     * This method implements the flyweight pattern for this class.
+     * Get a class adapter instance.
      *
-     * @param clazz The class to create an adapter for.
+     * @param cl The class to create an adapter for.
      * @return A class adapter for the passed class.
      */
-    public static JavaClassAdapter createObject( Class<?> clazz )
+    static JavaClassAdapter get( Class<?> cl )
     {
-        String key = clazz.getName();
+        Objects.requireNonNull( cl );
 
-        // Check if we have an class adapter for this class.
+        String key = cl.getName();
+
+        // Check if we have a class adapter for this class.
         JavaClassAdapter result =
                 _classAdapterInstances.get( key );
 
         if ( null == result )
         {
             // We had no adapter.  So create one...
-            result = new JavaClassAdapter( clazz );
+            result = new JavaClassAdapter( cl );
             // ...and put it in the hash table.
             _classAdapterInstances.put( key, result );
         }
@@ -311,18 +313,17 @@ public class JavaClassAdapter
     }
 
     /**
-     * This is our public interface for accessing class adapter instances.
-     * This method implements the flyweight pattern for this class.
+     * Get a class adapter instance.
      *
-     * @param clazz The class to create an adapter for.
+     * @param classname The name of the class.
      * @return A class adapter for the passed class.
      */
-    public static JavaClassAdapter createObject( String classname )
+    public static JavaClassAdapter get( String classname )
         throws RuntimeX
     {
         try
         {
-            return createObject( Class.forName( classname ) );
+            return get( Class.forName( classname ) );
         }
         catch ( ClassNotFoundException e )
         {
@@ -337,40 +338,40 @@ public class JavaClassAdapter
      *        has to support.
      * @return A class adapter for the passed interfaces.
      */
-    public static JavaClassAdapter createObject( Class<?>[] interfaces )
-    {
-        // Create an unique name from the list of passed interfaces.  This will be
-        // used for hashing the created class.
-        StringBuffer tmpName = new StringBuffer();
-        for ( int i = 0 ; i < interfaces.length ; i++ )
-            tmpName.append( interfaces[i].getName() );
-
-        String name = tmpName.toString();
-
-        // Check if a class adapter exists for this class.
-        JavaClassAdapter result =
-                _classAdapterInstances.get( name );
-
-        if ( result != null )
-            return result;
-
-        // No class adapter did exist, so let's build one.  As a first step add
-        // another interface to the list of passed interfaces...
-        Class<?>[] extendedItfList = new Class[ interfaces.length +1 ];
-        System.arraycopy( interfaces, 0, extendedItfList, 0, interfaces.length );
-        interfaces = extendedItfList;
-        interfaces[ interfaces.length-1 ] = InterfaceConfigurator.class;
-
-        // ...create the class...
-        Class<?> clazz = Proxy.getProxyClass( JavaClassAdapter.class.getClassLoader(),
-                interfaces );
-        result = new JavaClassAdapter( clazz );
-        // ...save it in the hashtable...
-        _classAdapterInstances.put( name, result );
-        // ...and return it.
-        return result;
-    }
-
+//    public static JavaClassAdapter createObject( Class<?>[] interfaces )
+//    {
+//        // Create an unique name from the list of passed interfaces.  This will be
+//        // used for hashing the created class.
+//        StringBuffer tmpName = new StringBuffer();
+//        for ( int i = 0 ; i < interfaces.length ; i++ )
+//            tmpName.append( interfaces[i].getName() );
+//
+//        String name = tmpName.toString();
+//
+//        // Check if a class adapter exists for this class.
+//        JavaClassAdapter result =
+//                _classAdapterInstances.get( name );
+//
+//        if ( result != null )
+//            return result;
+//
+//        // No class adapter did exist, so let's build one.  As a first step add
+//        // another interface to the list of passed interfaces...
+//        Class<?>[] extendedItfList = new Class[ interfaces.length +1 ];
+//        System.arraycopy( interfaces, 0, extendedItfList, 0, interfaces.length );
+//        interfaces = extendedItfList;
+//        interfaces[ interfaces.length-1 ] = InterfaceConfigurator.class;
+//
+//        // ...create the class...
+//        Class<?> clazz = Proxy.getProxyClass( JavaClassAdapter.class.getClassLoader(),
+//                interfaces );
+//        result = new JavaClassAdapter( clazz );
+//        // ...save it in the hashtable...
+//        _classAdapterInstances.put( name, result );
+//        // ...and return it.
+//        return result;
+//    }
+//
     /**
      * Create an instance for a dynamically created interface.  The class adapter
      * has to be the result of a call to the array based createObject() method.

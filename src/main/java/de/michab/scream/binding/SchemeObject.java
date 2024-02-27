@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
+import org.smack.util.StringUtil;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Bool;
@@ -114,7 +115,7 @@ public class SchemeObject
      */
     public SchemeObject( java.lang.Object object )
     {
-        this( object, JavaClassAdapter.createObject( object.getClass() ) );
+        this( object, JavaClassAdapter.get( object.getClass() ) );
     }
 
     /**
@@ -130,23 +131,21 @@ public class SchemeObject
      * @return The thunk.
      * @throws RuntimeX In case of reflection errors.
      */
+    @Deprecated
     private static Thunk createObject(
             String className,
             FirstClassObject[] ctorArgs,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        JavaClassAdapter classAdapter = null;
+        final JavaClassAdapter classAdapter = JavaClassAdapter.get(
+                className );
 
         // Used to transfer the constructor into the exception handlers.
         Executable constructor = null;
 
         try
         {
-            // Get the associated class adapter.
-            classAdapter = JavaClassAdapter.createObject(
-                    Class.forName( className ) );
-
             // If we didn't receive any constructor arguments...
             if ( null == ctorArgs )
                 // ...we create a class representative.
@@ -169,10 +168,6 @@ public class SchemeObject
             // No constructor fit the argument list.
             throw RuntimeX.mMethodNotFound(
                     className + "<init>" + Arrays.toString( ctorArgs ));
-        }
-        catch ( ClassNotFoundException e )
-        {
-            throw RuntimeX.mClassNotFound( className );
         }
         // We have to catch an error here, since this is thrown if we try to create
         // classes where the case of the class name differs from the actual upper
@@ -209,6 +204,19 @@ public class SchemeObject
         }
     }
 
+    /**
+     * Splits the passed string at positions of delimiter.  Empty positions
+     * result in an empty string.
+     * <p>
+     * splitAt( "january:", ":" ) => { "january", "" }
+     * <p>
+     * splitAt( "january:february", ":" ) => { "january", "february" }
+     *
+     * @param string The string to split.
+     * @param delimiter The split delimiter.
+     * @return The split result.
+     */
+    // TODO move to Scut or Smack.
     static List<String> splitAt( String string, String delimiter )
     {
         var result = new ArrayList<String>();
@@ -232,13 +240,28 @@ public class SchemeObject
         return result;
     }
 
+    private static Thunk createClass(
+            String classname,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
+    {
+        var x = new SchemeObject(
+                null,
+                JavaClassAdapter.get( classname ) );
+
+        return c.accept( x );
+    }
+
     private static Thunk createObjectExt(
-            SchemeString className,
+            String name,
             FirstClassObject[] ctorArgs,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        String name = className.toJava();
+        Objects.requireNonNull(
+                name );
+        Objects.requireNonNull(
+                ctorArgs );
 
         if ( name.length() == 0 )
             throw RuntimeX.mIllegalArgument( name );
@@ -248,22 +271,22 @@ public class SchemeObject
         if ( split.size() > 2 )
             throw RuntimeX.mIllegalArgument( name );
 
-        //
-        // TODO remove
-        //
-        // Without a parameter definition: Fall back to classic behavior.
-        if ( split.size() == 1 )
-            return createObject( split.get(0), ctorArgs, c );
-
         var classAdapter =
-                JavaClassAdapter.createObject( split.get( 0 ) );
+                JavaClassAdapter.get( split.get( 0 ) );
 
-        var ctor = classAdapter.getCtor( split.get( 0 ), split.get( 1 ) );
+        var ctor = classAdapter.getCtor(
+                split.get( 0 ),
+                split.size() == 1 ?
+                        StringUtil.EMPTY_STRING :
+                        split.get( 1 ) );
 
-        var result = classAdapter.createInstance( ctor, ctorArgs  );
+        var result = classAdapter.createInstance(
+                ctor,
+                ctorArgs  );
 
         // No conversion to Fco.
-        return c.accept( new SchemeObject( result ) );
+        return c.accept(
+                new SchemeObject( result ) );
     }
 
     private static Thunk callExt(
@@ -284,7 +307,7 @@ public class SchemeObject
             throw RuntimeX.mIllegalArgument( name );
 
         var classAdapter =
-                JavaClassAdapter.createObject(
+                JavaClassAdapter.get(
                         instance._isClass ?
                                 (Class<?>)instance.toJava() :
                                 instance.toJava().getClass() );
@@ -620,7 +643,7 @@ public class SchemeObject
         // Everything else must be a Java-native reference type...
         // ...wrap it and return it.
         return new SchemeObject( object,
-                JavaClassAdapter.createObject( object.getClass()
+                JavaClassAdapter.get( object.getClass()
                         ) );
     }
 
@@ -863,9 +886,8 @@ public class SchemeObject
 
             FirstClassObject argument = args.getCar();
 
-            // This creates a class instance. TODO not intuitive.
-            if ( argument instanceof Symbol )
-                return createObject( argument.toString(), null, c );
+            if ( argument instanceof SchemeString )
+                return createClass( (String)argument.toJava(), c );
 
             Cons cons = Scut.as(
                     Cons.class,
@@ -913,7 +935,7 @@ public class SchemeObject
                         Scut.as( Cons.class, args.getCdr() );
 
                 return createObjectExt(
-                        ctor_spec,
+                        ctor_spec.toJava(),
                         Cons.asArray( parameters),
                         c );
             }
@@ -943,11 +965,7 @@ public class SchemeObject
                 SchemeString classname =
                         Scut.asNotNil( SchemeString.class, args.getCar() );
 
-                var x = new SchemeObject(
-                        null,
-                        JavaClassAdapter.createObject( classname.toJava() ) );
-
-                return c.accept( x );
+                return createClass( classname.toJava(), c );
             }
         };
     }

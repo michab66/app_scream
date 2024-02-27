@@ -10,7 +10,7 @@
 
 ;; String type name.
 (define scream:type-string
-  ((make-object de.michab.scream.fcos.SchemeString) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.SchemeString") TYPE_NAME))
 
 
 
@@ -135,7 +135,7 @@
   (if (string? string)
     (do
       ; Init
-      ((result ((make-object de.michab.scream.fcos.SchemeString) (makeEscaped string)))
+      ((result ((make-object "de.michab.scream.fcos.SchemeString") (makeEscaped string)))
        (append-list optional-string-list (cdr append-list)))
 
       ; Test

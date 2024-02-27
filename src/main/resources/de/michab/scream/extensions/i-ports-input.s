@@ -119,7 +119,7 @@
 (define eof-object
   (let
     (
-      (cached ((make-object de.michab.scream.fcos.Port) EOF))
+      (cached ((make-object "de.michab.scream.fcos.Port") EOF))
     )
     (lambda () cached)
   )

@@ -12,7 +12,7 @@
   (if (not (integer? v))
     (error
       "TYPE_ERROR"
-      (make-object de.michab.scream.fcos.Int)
+      (make-object "de.michab.scream.fcos.Int")
       ((object v) (getClass))))
   (if (or (< v 5) (> v 7))
     (error "ILLEGAL_ARGUMENT" v))
@@ -22,7 +22,7 @@
   (if (not (integer? v))
     (error
       "TYPE_ERROR" 
-      (make-object de.michab.scream.fcos.Int) 
+      (make-object "de.michab.scream.fcos.Int")
       ((object v) (getClass))))
   (if (or (< v 5) (> v 7))
     (error "ILLEGAL_ARGUMENT" v))

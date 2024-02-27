@@ -113,8 +113,8 @@
   (let*
     (
       (system
-        (make-object-2 "java.lang.System"))
-      (result 
+        (make-object "java.lang.System"))
+      (result
         (system (getenv name)))
     )
     
@@ -264,7 +264,7 @@
     (
       ; Get a reference to java.lang.System
       (system
-        (make-object-2 "java.lang.System"))
+        (make-object "java.lang.System"))
       ; Query the environment as a map.
       (env-map
         (system (getenv)))
@@ -309,7 +309,7 @@
  | (current-jiffy)  time library procedure; r7rs p60
  |#
 (define (current-jiffy)
-  ((make-object-2 "java.lang.System") (currentTimeMillis)))
+  ((make-object "java.lang.System") (currentTimeMillis)))
 
 #|
  | (jiffies-per-second)  time library procedure; r7rs p60

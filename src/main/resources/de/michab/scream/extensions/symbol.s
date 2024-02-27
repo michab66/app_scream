@@ -10,7 +10,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define scream:type-symbol
-  ((make-object de.michab.scream.fcos.Symbol) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Symbol") TYPE_NAME))
 
 ;;
 ;; (symbol? symbol) procedure; r5rs 30
@@ -45,5 +45,5 @@
 ;;
 (define (string->symbol string)
   (if (string? string)
-    ((make-object de.michab.scream.fcos.Symbol) (createObject string))
+    ((make-object "de.michab.scream.fcos.Symbol") (createObject string))
     (error "TYPE_ERROR" %type-string (scream:typename symbol))))

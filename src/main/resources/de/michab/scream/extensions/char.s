@@ -10,7 +10,7 @@
 ;;
 
 (define scream:type-character
-  ((make-object de.michab.scream.fcos.SchemeCharacter) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.SchemeCharacter") TYPE_NAME))
 
 ;;
 ;; (char? obj) procedure; r5rs 29
@@ -35,7 +35,7 @@
 ;;
 (define (integer->char i)
   (if (integer? i)
-    ((make-object de.michab.scream.SchemeCharacter) (createObject i))
+    ((make-object "de.michab.scream.SchemeCharacter") (createObject i))
     (error "TYPE_ERROR" %type-integer (scream:typename i))))
 
 
@@ -82,7 +82,7 @@
 ;; Open a special scope to keep the java.lang.Character instance in the local closures.
 ;; Replace the TLE bindings with the function implementations in the let expression.
 ;;
-(let ((char (make-object java.lang.Character)))
+(let ((char (make-object "java.lang.Character")))
 
   ;;
   ;; char-alphabetic? - library procedure - r5rs p. 29

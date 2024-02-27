@@ -44,7 +44,7 @@ public class SchemeObjectTest extends ScreamBaseTest
 
         // Class object.
         t.expectFco(
-                "(object? (make-object java.lang.StringBuilder))",
+                "(object? (make-object \"java.lang.StringBuilder\"))",
                 Bool.T );
         // Instance.
         t.expectFco(
@@ -93,7 +93,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.execute(
                 """
                 (define Cl_StaticMembers
-                    (make-object de.michab.scream.binding.SchemeObjectTest$Cl_StaticMembers))
+                    (make-object "de.michab.scream.binding.SchemeObjectTest$Cl_StaticMembers"))
                 """ );
         t.expectFco(
                 "(Cl_StaticMembers publicStaticFinalZero)",
@@ -129,7 +129,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         var result = t.execute(
                 """
                 (define o
-                   (make-object java.lang.StringBuilder))
+                   (make-object \"java.lang.StringBuilder\"))
                 o
                 """ );
 

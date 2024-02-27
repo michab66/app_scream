@@ -14,15 +14,15 @@
 
 ;; Port type name.
 (define scream:type-port
-  ((make-object de.michab.scream.fcos.Port) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Port") TYPE_NAME))
 
 ;; Output port type name.
 (define scream:type-output-port
-  ((make-object de.michab.scream.fcos.PortOut) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.PortOut") TYPE_NAME))
 
 ;; Input port type name.
 (define scream:type-input-port
-  ((make-object de.michab.scream.fcos.PortIn) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.PortIn") TYPE_NAME))
 
 ;; Predicates for the port implementation types.
 (define scream:input-port?
@@ -306,7 +306,7 @@
   (let* (
     (stream ((object port) (stream)))
     (port-class (stream (getClass)))
-    (writer-class (make-object java.io.StringWriter))
+    (writer-class (make-object "java.io.StringWriter"))
     )
     (if (equal? port-class writer-class)
       (stream (toString))

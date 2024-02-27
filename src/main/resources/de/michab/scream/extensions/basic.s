@@ -6,7 +6,7 @@
 ;; Define a symbol holding the current jdk-version.
 ;;
 (define %jdk-version
-  ((make-object java.lang.System) (getProperty "java.version")))
+  ((make-object "java.lang.System") (getProperty "java.version")))
 
 ;;
 ;; An object to be returned if the spec defines 'unspecified'.
@@ -15,7 +15,7 @@
 
 ;;
 (define scream:class:fco
-  (make-object de.michab.scream.fcos.FirstClassObject))
+  (make-object "de.michab.scream.fcos.FirstClassObject"))
 
 ;;
 ;; Get the type name of the passed object.
@@ -77,10 +77,10 @@
 ;; overridden.
 ;;
 (define (exit)
-  ((make-object java.lang.System) (exit 0)))
+  ((make-object "java.lang.System") (exit 0)))
 
 (define (scream:gc)
-  ((make-object java.lang.System) (gc)))
+  ((make-object "java.lang.System") (gc)))
 
 ;;
 ;;
@@ -103,7 +103,7 @@
 ;; accepting any single argument and returning a boolean.
 ;;
 (define (typePredicateGenerator string-type-name exact-match)
-  (let ((classObject ((make-object java.lang.Class) (forName string-type-name))))
+  (let ((classObject ((make-object "java.lang.Class") (forName string-type-name))))
     (lambda (obj)
       (cond
         ;; If this is NIL false is returned.
@@ -179,20 +179,20 @@
 ;;
 ;;
 (define %type-symbol
-  ((make-object de.michab.scream.fcos.Symbol) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Symbol") TYPE_NAME))
 (define %type-cons
-  ((make-object de.michab.scream.fcos.Cons) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Cons") TYPE_NAME))
 (define %type-vector
-  ((make-object de.michab.scream.fcos.Vector) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Vector") TYPE_NAME))
 (define %type-string
-  ((make-object de.michab.scream.fcos.SchemeString) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.SchemeString") TYPE_NAME))
 (define %type-char
-  ((make-object de.michab.scream.fcos.SchemeCharacter) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.SchemeCharacter") TYPE_NAME))
 (define %type-number
-  ((make-object de.michab.scream.fcos.Number) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Number") TYPE_NAME))
 (define %type-integer
-  ((make-object de.michab.scream.fcos.Int) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Int") TYPE_NAME))
 (define %type-real
-  ((make-object de.michab.scream.fcos.Real) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Real") TYPE_NAME))
 (define %type-port
-  ((make-object de.michab.scream.fcos.Port) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Port") TYPE_NAME))

@@ -12,7 +12,7 @@
 
 ;; Init type name.
 (define scream:type-bytevector
-  ((make-object de.michab.scream.fcos.Bytevector) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Bytevector") TYPE_NAME))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
