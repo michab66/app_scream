@@ -48,7 +48,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                 Bool.T );
         // Instance.
         t.expectFco(
-                "(object? (make-object (java.lang.StringBuilder)))",
+                "(object? (make-object (\"java.lang.StringBuilder\")))",
                 Bool.T );
         t.expectFco(
                 "(object? 1)",
@@ -151,7 +151,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         var result = t.execute(
                 """
                 (define StringBuilder
-                   (make-object (java.lang.StringBuilder)))
+                   (make-object ("java.lang.StringBuilder")))
                 StringBuilder
                 """ );
 
@@ -171,7 +171,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         var result = t.execute(
                 """
                 (define StringBuilder
-                   (make-object (java.lang.StringBuilder \"scream\")))
+                   (make-object (\"java.lang.StringBuilder:java.lang.String\" \"scream\")))
                 StringBuilder
                 """ );
 
@@ -191,7 +191,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.execute(
                 """
                 (define StringBuilder
-                   (make-object (java.lang.StringBuilder)))
+                   (make-object ("java.lang.StringBuilder")))
                 """ );
         t.expectFco(
                 "(StringBuilder (toString))",
@@ -217,7 +217,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.execute(
                 """
                 (define o
-                   (make-object (org.smack.util.Pair "stan" "ollie")))
+                   (make-object (\"org.smack.util.Pair:java.lang.Object,java.lang.Object\" "stan" "ollie")))
                 """ );
         t.expectFco(
                 "(o left)",
@@ -230,7 +230,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.execute(
                 """
                 (define o
-                   (make-object (org.smack.util.Pair 121 313)))
+                   (make-object (\"org.smack.util.Pair:java.lang.Object,java.lang.Object\" 121 313)))
                 """ );
         t.expectFco(
                 "(o left)",
@@ -242,7 +242,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.execute(
                 """
                 (define o
-                   (make-object (org.smack.util.Pair "stan" 313)))
+                   (make-object (\"org.smack.util.Pair:java.lang.Object,java.lang.Object\" "stan" 313)))
                 """ );
         t.expectFco(
                 "(o left)",
@@ -254,7 +254,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.execute(
                 """
                 (define o
-                   (make-object (org.smack.util.Pair 'lambda 313)))
+                   (make-object (\"org.smack.util.Pair:java.lang.Object,java.lang.Object\" 'lambda 313)))
                 """ );
         // Symbol converted to string.
         t.expectFco(
@@ -268,7 +268,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.execute(
                 """
                 (define o
-                   (make-object (org.smack.util.Pair + 313)))
+                   (make-object (\"org.smack.util.Pair:java.lang.Object,java.lang.Object\" + 313)))
                 """ );
         t.expectFco(
                 "((o left) (o right) (o right))",
@@ -468,24 +468,22 @@ public class SchemeObjectTest extends ScreamBaseTest
                         "byte",
                         "10" ),
                 str( "byte:10" ) );
-        // overflow
         t.expectFco(
                 makeInstanceScript(
                         "byte",
-                        "255" ),
+                        "-1" ),
                 str( "byte:-1" ) );
         // overflow
-        t.expectFco(
+        t.expectError(
                 makeInstanceScript(
                         "byte",
-                        "256" ),
-                str( "byte:0" ) );
-        // overflow
-        t.expectFco(
+                        "" + (Byte.MAX_VALUE + 1) ),
+                Code.RANGE_EXCEEDED );
+        t.expectError(
                 makeInstanceScript(
                         "byte",
-                        "257" ),
-                str( "byte:1" ) );
+                        "" + (Byte.MIN_VALUE - 1) ),
+                Code.RANGE_EXCEEDED );
 
         //
         // short
@@ -500,6 +498,17 @@ public class SchemeObjectTest extends ScreamBaseTest
                         "short",
                         "-10" ),
                 str( "short:-10" ) );
+        // overflow
+        t.expectError(
+                makeInstanceScript(
+                        "short",
+                        "" + (Short.MAX_VALUE + 1) ),
+                Code.RANGE_EXCEEDED );
+        t.expectError(
+                makeInstanceScript(
+                        "short",
+                        "" + (Short.MIN_VALUE - 1) ),
+                Code.RANGE_EXCEEDED );
 
         //
         // int
@@ -509,6 +518,16 @@ public class SchemeObjectTest extends ScreamBaseTest
                         "int",
                         "-10" ),
                 str( "int:-10" ) );
+        t.expectError(
+                makeInstanceScript(
+                        "int",
+                        "" + (Integer.MAX_VALUE + 1L ) ),
+                Code.RANGE_EXCEEDED );
+        t.expectError(
+                makeInstanceScript(
+                        "int",
+                        "" + (Integer.MIN_VALUE - 1L ) ),
+                Code.RANGE_EXCEEDED );
 
         //
         // long
@@ -729,20 +748,20 @@ public class SchemeObjectTest extends ScreamBaseTest
         t.expectFco(
                 callScript(
                         "byte",
-                        "255" ),
+                        "-1" ),
                 str( "byte:-1" ) );
         // overflow
-        t.expectFco(
+        t.expectError(
                 callScript(
                         "byte",
                         "256" ),
-                str( "byte:0" ) );
+                Code.RANGE_EXCEEDED );
         // overflow
-        t.expectFco(
+        t.expectError(
                 callScript(
                         "byte",
                         "257" ),
-                str( "byte:1" ) );
+                Code.RANGE_EXCEEDED );
 
         //
         // short
@@ -959,4 +978,3 @@ public class SchemeObjectTest extends ScreamBaseTest
         }
     }
 }
-

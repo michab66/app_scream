@@ -92,7 +92,7 @@
  | (cons obj1 obj2) procedure p41
  |#
 (define (cons obj1 obj2)
-  (make-object (de.michab.scream.fcos.Cons obj1 obj2)))
+  (make-object ("de.michab.scream.fcos.Cons:de.michab.scream.fcos.FirstClassObject,de.michab.scream.fcos.FirstClassObject" obj1 obj2)))
 
 #|
  | (car pair) procedure p41

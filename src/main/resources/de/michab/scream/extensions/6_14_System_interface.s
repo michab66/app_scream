@@ -15,7 +15,7 @@
 (define (scream:files:validate-exists filename)
   (let
     (
-      (file (make-object-2 ("java.io.File:java.lang.String" filename)))
+      (file (make-object ("java.io.File:java.lang.String" filename)))
     )
 
     (if (not (file (exists)))
@@ -61,7 +61,7 @@
 (define (scream:files:create filename)
   (let
     (
-      (file (make-object-2 ("java.io.File:java.lang.String" filename)))
+      (file (make-object ("java.io.File:java.lang.String" filename)))
     )
     
     (file (createNewFile)))
@@ -78,7 +78,7 @@
 (define (load filename)
   (let
     (
-      (evaluator ((make-object-2 "de.michab.scream.ScreamEvaluator") (EVAL)))
+      (evaluator ((make-object "de.michab.scream.ScreamEvaluator") (EVAL)))
     )
 
     (evaluator (load filename (interaction-environment))))
@@ -90,9 +90,9 @@
 (define (file-exists? filename)
   (let
     (
-      (file (make-object-2 ("java.io.File:java.lang.String" filename)))
+      (file (make-object ("java.io.File:java.lang.String" filename)))
     )
-    
+
     (file (exists)))
 )
 

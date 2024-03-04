@@ -239,19 +239,19 @@
 ;; open-input-file file library procedure
 ;;
 (define (open-input-file string)
-  (make-object (de.michab.scream.fcos.PortIn string)))
+  (make-object ("de.michab.scream.fcos.PortIn:java.lang.String" string)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-binary-input-file file library procedure
-;;
+;; TODO not tested.
 (define (open-binary-input-file string)
-  (make-object (de.michab.scream.fcos.PortInBinary string)))
+  (make-object ("de.michab.scream.fcos.PortInBinary:java.lang.String" string)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-output-file file library procedure
 ;;
 (define (open-output-file string)
-   (make-object (de.michab.scream.fcos.PortOut string)))
+   (make-object ("de.michab.scream.fcos.PortOut:java.lang.String" string)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-binary-output-file file library procedure
@@ -288,16 +288,16 @@
 ;;
 (define (open-input-string string)
   (let
-    ((reader (make-object (java.io.StringReader string))))
-    (make-object (de.michab.scream.fcos.PortIn "input-string" reader))))
+    ((reader (make-object ("java.io.StringReader:java.lang.String" string))))
+    (make-object ("de.michab.scream.fcos.PortIn:java.lang.String,java.io.Reader" "input-string" reader))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-output-string procedure
 ;;
 (define (open-output-string)
   (let
-    ((writer (make-object (java.io.StringWriter))))
-    (make-object (de.michab.scream.fcos.PortOut "output-string" writer))))
+    ((writer (make-object ("java.io.StringWriter"))))
+    (make-object ("de.michab.scream.fcos.PortOut:java.lang.String,java.io.Writer" "output-string" writer))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; get-output-string procedure
@@ -322,7 +322,7 @@
     scream:type-bytevector)
   
   (make-object 
-    (de.michab.scream.fcos.PortInBinary
+    ("de.michab.scream.fcos.PortInBinary:java.lang.String,java.io.InputStream"
       "input-bytevector" 
       ((object bytevector) (asStream)))))
 
@@ -331,10 +331,10 @@
 ;;
 (define (open-output-bytevector)
   (make-object
-    (de.michab.scream.fcos.PortOutBinary
+    ("de.michab.scream.fcos.PortOutBinary:java.lang.String,java.io.OutputStream"
       "output-bytevector"
       (make-object
-        (java.io.ByteArrayOutputStream)))))
+        ("java.io.ByteArrayOutputStream")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; get-output-bytevector procedure
@@ -344,7 +344,7 @@
     (stream ((object port) (stream)))
     (array ((object stream) (toByteArray))) )
     
-    (make-object (de.michab.scream.fcos.Bytevector array))
+    (make-object ("de.michab.scream.fcos.Bytevector:byte[]" array))
   )
 )
 

@@ -29,6 +29,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.SchemeString;
@@ -821,6 +822,9 @@ public class JavaClassAdapter
     {
         cl = ReflectionUtil.normalizePrimitives( cl );
 
+        if ( FirstClassObject.class.isAssignableFrom( cl ) )
+            return fco;
+
         // Map arrays.
         if ( cl.isArray() && FirstClassObject.is( Vector.class, fco ) )
             return mapArray( cl.getComponentType(), Scut.as( Vector.class, fco ) );
@@ -837,11 +841,11 @@ public class JavaClassAdapter
         if ( cl == Boolean.class  )
             return Boolean.valueOf( fco == Bool.F ? Boolean.FALSE : Boolean.TRUE );
         if ( cl == Byte.class )
-            return Byte.valueOf( (byte)Scut.as( Number.class, fco ).asLong() );
+            return Byte.valueOf( assertByte( Scut.as( Int.class, fco ) ) );
         if ( cl == Short.class )
-            return Short.valueOf( (short)Scut.as( Number.class, fco ).asLong() );
+            return Short.valueOf( assertShort( Scut.as( Int.class, fco ) ) );
         if ( cl == Integer.class )
-            return Integer.valueOf( (int)Scut.as( Number.class, fco ).asLong() );
+            return Integer.valueOf( assertInt( Scut.as( Int.class, fco ) ) );
         if ( cl == Long.class )
             return Long.valueOf( Scut.as( Number.class, fco ).asLong() );
         if ( cl == Character.class )
@@ -857,14 +861,64 @@ public class JavaClassAdapter
         if ( cl == String.class  )
             return FirstClassObject.toString( fco );
 
+        if ( cl == Object.class )
+            return fco.toJava();
+
         // TODO cannot express the target type.
         throw RuntimeX.mTypeError( SchemeObject.class, fco );
     }
 
-    public Object createInstanceVariadic( Constructor<?> ctor,
-            FirstClassObject[] ctorArgs ) throws RuntimeX
+    public Object createInstanceVariadic(
+            Constructor<?> method,
+            FirstClassObject[] args ) throws RuntimeX
     {
-        throw RuntimeX.mNotImplemented( "VariadicCtor" );
+        if ( args.length < method.getParameterCount()-1 )
+            throw RuntimeX.mWrongNumberOfArguments(
+                    method.getParameterCount(),
+                    args.length );
+
+        final int variadicPosition =
+                method.getParameterCount() - 1;
+
+        Class<?>[] initTypes =
+                method.getParameterTypes();
+        Object[] initargs =
+                new Object[ initTypes.length ];
+
+        // Map the parameters before the variadic position.
+        for ( int i = 0 ; i < variadicPosition ; i++ )
+            initargs[i] = map( args[i], initTypes[i] );
+
+        if ( args.length == variadicPosition )
+        {
+            // Called without an variadic element.
+            initargs[variadicPosition] = null;
+        }
+        else if ( args.length == 1 + variadicPosition )
+        {
+            initargs[variadicPosition] = map(
+                    args[args.length-1],
+                    initTypes[variadicPosition] );
+        }
+        else
+        {
+            initargs[variadicPosition] = mapArray(
+                    initTypes[variadicPosition].componentType(),
+                    Arrays.copyOfRange(
+                            args,
+                            variadicPosition,
+                            args.length ) );
+        }
+
+        try
+        {
+            return method.newInstance(
+                    initargs );
+        }
+        catch ( InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
+        {
+            throw RuntimeX.mCreationFailed( method.getName() );
+        }
     }
 
     public Object createInstance( Constructor<?> ctor,
@@ -981,5 +1035,36 @@ public class JavaClassAdapter
         {
             throw RuntimeX.mInvocationException( method, e );
         }
+    }
+
+    private long assertImpl( Int number, long min, long max )
+            throws RuntimeX
+    {
+        var value =  number.asLong();
+
+        if ( value < min || value > max )
+            throw RuntimeX.mRangeExceeded(
+                    number,
+                    String.format( "[%d..%d]", min, max ) );
+
+        return value;
+    }
+
+    private byte assertByte( Int number )
+            throws RuntimeX
+    {
+        return (byte)assertImpl( number, Byte.MIN_VALUE, Byte.MAX_VALUE );
+    }
+
+    private short assertShort( Int number )
+            throws RuntimeX
+    {
+        return (short)assertImpl( number, Short.MIN_VALUE, Short.MAX_VALUE );
+    }
+
+    private int assertInt( Int number )
+            throws RuntimeX
+    {
+        return (int)assertImpl( number, Integer.MIN_VALUE, Integer.MAX_VALUE );
     }
 }

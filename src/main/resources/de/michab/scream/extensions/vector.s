@@ -23,10 +23,10 @@
   (cond
     ;; If the optional argument is not given.
     ((null? filler)
-      (make-object (de.michab.scream.fcos.Vector vlength)))
+      (make-object ("de.michab.scream.fcos.Vector:long" vlength)))
     ;; If the optional argument exists.
     ((= (length filler) 1)
-      (make-object (de.michab.scream.fcos.Vector vlength (car filler))))
+      (make-object ("de.michab.scream.fcos.Vector:long,de.michab.scream.fcos.FirstClassObject" vlength (car filler))))
     ;; If there are more than one optional arguments.
     (else (error "TOO_MANY_ARGUMENTS" 2))))
 

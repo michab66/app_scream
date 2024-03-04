@@ -12,7 +12,6 @@
 
 #|
  |
- |#
 (%syntax (make-object-2 ctor-spec)
    ;(scream:display-ln 'list? (list? ctor-spec) ctor-spec)
    ;(scream:display-ln 'element (car ctor-spec)(cadr ctor-spec))
@@ -42,6 +41,7 @@
     (else
       (error "TYPE_ERROR" 'stringOrCons ctor-spec)))
 )
+ |#
 
 #|
  |
@@ -49,7 +49,7 @@
 (define (display-object class)
   (define exp `(let* 
     (
-      (class-info (make-object-2 ,class))
+      (class-info (make-object ,class))
       (info (describe-object class-info))      
     )
     (scream:display-ln "Operations:")

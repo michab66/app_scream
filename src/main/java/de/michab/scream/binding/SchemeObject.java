@@ -12,7 +12,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -119,92 +118,6 @@ public class SchemeObject
     }
 
     /**
-     * The factory for SchemeObjects.  Note that if a FirstClassObject is created
-     * this is not wrapped with a SchemeObject but returned as is.  If
-     * {@code null} is passed for ctor args, the resulting object represents
-     * a class and the instance is set to the associated java.lang.Class
-     * instance.
-     *
-     * @param className The name of the class used to create an instance for.
-     * @param ctorArgs The list of parameters for the constructor.
-     * @param c The continuation that receives the new object.
-     * @return The thunk.
-     * @throws RuntimeX In case of reflection errors.
-     */
-    @Deprecated
-    private static Thunk createObject(
-            String className,
-            FirstClassObject[] ctorArgs,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-        final JavaClassAdapter classAdapter = JavaClassAdapter.get(
-                className );
-
-        // Used to transfer the constructor into the exception handlers.
-        Executable constructor = null;
-
-        try
-        {
-            // If we didn't receive any constructor arguments...
-            if ( null == ctorArgs )
-                // ...we create a class representative.
-                return c.accept( new SchemeObject( null, classAdapter ) );
-
-            // We received constructor arguments, select the ctor to call.
-            for ( var ctor : classAdapter.getConstructors() )
-            {
-                var argumentList =
-                        matchParameters( ctor.getParameterTypes(), ctorArgs );
-
-                if ( null == argumentList )
-                    continue;
-
-                constructor = Objects.requireNonNull( ctor );
-
-                return c.accept( convertJava2Scream( ctor.newInstance( argumentList ) ) );
-            }
-
-            // No constructor fit the argument list.
-            throw RuntimeX.mMethodNotFound(
-                    className + "<init>" + Arrays.toString( ctorArgs ));
-        }
-        // We have to catch an error here, since this is thrown if we try to create
-        // classes where the case of the class name differs from the actual upper
-        // lower case writing. An example for the error message is:
-        // "de/michab/scream/JavaCLassAdapter (wrong name:
-        // de/michab/scream/JavaClassAdapter)"
-        catch ( NoClassDefFoundError e )
-        {
-            throw RuntimeX.mClassNotFound( className );
-        }
-        catch ( InvocationTargetException e )
-        {
-            throw filterException( e, constructor );
-        }
-        catch ( InstantiationException e )
-        {
-            int modifiers = classAdapter.adapterFor().getModifiers();
-            String what;
-
-            if ( Modifier.isAbstract( modifiers ) )
-                what = "abstract class";
-            else if ( Modifier.isInterface( modifiers ) )
-                what = "interface";
-            else
-                what = "";
-
-            throw RuntimeX.mCreationFailed(
-                    what + " " + className );
-        }
-        catch ( IllegalAccessException e )
-        {
-            throw RuntimeX.mIllegalAccess(
-                    className + "<init>"  );
-        }
-    }
-
-    /**
      * Splits the passed string at positions of delimiter.  Empty positions
      * result in an empty string.
      * <p>
@@ -286,7 +199,9 @@ public class SchemeObject
 
         // No conversion to Fco.
         return c.accept(
-                new SchemeObject( result ) );
+                result instanceof FirstClassObject ?
+                        FirstClassObject.class.cast( result ) :
+                        new SchemeObject( result ) );
     }
 
     private static Thunk callExt(
@@ -323,27 +238,16 @@ public class SchemeObject
         return c.accept( new SchemeObject( result ) );
     }
 
-    private static Thunk _createObject(
+    private static Thunk _createObjectExt(
             String className,
             Cons ctorArgs,
             Cont<FirstClassObject> c )
     {
-        return () -> createObject(
+        return () -> createObjectExt(
                 className,
                 Cons.asArray( ctorArgs ),
                 c );
     }
-
-//    private static Thunk _createObjectExt(
-//            SchemeString className,
-//            Cons ctorArgs,
-//            Cont<FirstClassObject> c )
-//    {
-//        return () -> createObjectExt(
-//                className,
-//                Cons.asArray( ctorArgs ),
-//                c );
-//    }
 
     /**
      * Return the Java object that corresponds to the Scheme object.
@@ -816,6 +720,7 @@ public class SchemeObject
             throw RuntimeX.mCannotModifyConstant( attribute );
         }
     }
+
     private Thunk _processAttributeSet(
             Symbol attribute,
             FirstClassObject value,
@@ -823,6 +728,7 @@ public class SchemeObject
     {
         return () -> processAttributeSet( attribute, value, c );
     }
+
     /**
      * Test for equality based on the embedded instance.  If we have no instance
      * which is the case for class representatives test if the same
@@ -895,18 +801,20 @@ public class SchemeObject
             Cons arguments = Scut.as(
                     Cons.class,
                     cons.getCdr() );
-            Symbol name = Scut.as(
-                    Symbol.class,
+
+            SchemeString name = Scut.as(
+                    SchemeString.class,
                     cons.getCar() );
 
             return Primitives._evalCons(
                     e,
                     arguments,
                     evaluated ->
-                            _createObject(
-                                    name.toString(),
-                                    evaluated,
-                                    c) );
+                    _createObjectExt(
+                            name.getValue(),
+                            evaluated,
+                            object
+                              -> {  return c.accept( convertJava2Scream( object ) ); }) );
         }
     };
 

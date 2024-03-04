@@ -46,7 +46,7 @@
         ((not (char? char))
           (error "TYPE_ERROR" scream:type-character from))
         (else
-          (make-object (de.michab.scream.fcos.SchemeString k char)))))
+          (make-object ("de.michab.scream.fcos.SchemeString:int,char" k char)))))
   ) ; case-lambda
 
   )) ; <--
