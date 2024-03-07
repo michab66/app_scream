@@ -20,6 +20,7 @@ import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -107,8 +108,7 @@ public class SchemeObject
     }
 
     /**
-     * Create a new SchemeObject for a given object.  The object is used as is,
-     * i.e. it isn't copied.
+     * Create a new SchemeObject for a given object.
      *
      * @param object The object to be wrapped by the new instance.
      */
@@ -204,15 +204,24 @@ public class SchemeObject
                         new SchemeObject( result ) );
     }
 
+    private static Thunk _createObjectExt(
+            String className,
+            Cons ctorArgs,
+            Cont<FirstClassObject> c )
+    {
+        return () -> createObjectExt(
+                className,
+                Cons.asArray( ctorArgs ),
+                c );
+    }
+
     private static Thunk callExt(
             SchemeObject instance,
-            SchemeString methodName,
+            String name,
             FirstClassObject[] args,
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        String name = methodName.toJava();
-
         if ( name.length() == 0 )
             throw RuntimeX.mIllegalArgument( name );
 
@@ -238,20 +247,20 @@ public class SchemeObject
         return c.accept( new SchemeObject( result ) );
     }
 
-    private static Thunk _createObjectExt(
-            String className,
-            Cons ctorArgs,
+    private Thunk _callExt(
+            String methodName,
+            Cons arguments,
             Cont<FirstClassObject> c )
     {
-        return () -> createObjectExt(
-                className,
-                Cons.asArray( ctorArgs ),
-                c );
+        return () -> callExt(
+                this,
+                methodName,
+                Cons.asArray( arguments ),
+                result -> _convertJava2Scream( result, c ) );
     }
 
     /**
-     * Return the Java object that corresponds to the Scheme object.
-     * @return The corresponding Java object.
+     * @return The wrapped Java object.
      */
     @Override
     public Object toJava()
@@ -260,26 +269,29 @@ public class SchemeObject
     }
 
     @Override
-    protected Thunk _executeImpl( Environment e, Cons args,
-            Cont<FirstClassObject> c ) throws RuntimeX
+    protected Thunk _executeImpl(
+            Environment e,
+            Cons args,
+            Cont<FirstClassObject> c )
+                    throws RuntimeX
     {
         long argsLen =
                 checkArgumentCount( 1, 2, args );
 
         var args0 = args.listRef( 0 );
 
-        if ( argsLen == 1 && args0 instanceof Cons )
+        if ( argsLen == 1 && FirstClassObject.is( Cons.class, args0 ) )
         {
             return processInvocation(
                     e,
-                    (Cons)args0,
+                    Scut.asNotNil( Cons.class, args0 ),
                     c );
         }
 
-        if ( argsLen == 1 && args0 instanceof Symbol)
+        if ( argsLen == 1 && args0 instanceof SchemeString )
         {
             return processAttributeGet(
-                    (Symbol)args0,
+                    ((SchemeString)args0).getValue(),
                     c );
         }
 
@@ -544,11 +556,19 @@ public class SchemeObject
         if ( object instanceof FirstClassObject )
             return (FirstClassObject)object;
 
-        // Everything else must be a Java-native reference type...
-        // ...wrap it and return it.
-        return new SchemeObject( object,
-                JavaClassAdapter.get( object.getClass()
-                        ) );
+        // Everything else must be a Java-native type.
+        return new SchemeObject(
+                object,
+                JavaClassAdapter.get( object.getClass() ) );
+    }
+
+    private static Thunk _convertJava2Scream(
+            FirstClassObject object,
+            Cont<FirstClassObject> c )
+    {
+        return ScreamEvaluator.CONT.get().toCont(
+                () -> convertJava2Scream( Scut.as( SchemeObject.class, object ).toJava() ),
+                c );
     }
 
     /**
@@ -611,7 +631,7 @@ public class SchemeObject
         catch ( IllegalArgumentException e )
         {
             // Not sure if this can be thrown under normal circumstances.  The only
-            // reason know to me for that exception is if it is tried to invoke an
+            // reason for that exception is if it is tried to invoke an
             // instance method on a java.lang.Class object.  In that case the illegal
             // argument is the first argument to invoke, that is on the one hand non
             // null, but on the other hand simply the wrong reference.
@@ -622,6 +642,7 @@ public class SchemeObject
             throw RuntimeX.mIllegalAccess( methodName );
         }
     }
+
     private Thunk _processInvocationImpl(
             Environment env,
             String methodName,
@@ -645,17 +666,33 @@ public class SchemeObject
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        var symbol = Scut.as(
-                Symbol.class, list.getCar() );
+        if ( FirstClassObject.is( Symbol.class, list.getCar() ))
+        {
+            var symbol = Scut.as(
+                    Symbol.class, list.getCar() );
+            var rest = Scut.as(
+                    Cons.class, list.getCdr() );
+
+            return Primitives._evalCons(
+                    env,
+                    rest,
+                    evaluated -> _processInvocationImpl(
+                            env,
+                            symbol.toString(),
+                            evaluated,
+                            c ) );
+        }
+
+        var string = Scut.as(
+                SchemeString.class, list.getCar() );
         var rest = Scut.as(
                 Cons.class, list.getCdr() );
 
         return Primitives._evalCons(
                 env,
                 rest,
-                evaluated -> _processInvocationImpl(
-                        env,
-                        symbol.toString(),
+                evaluated -> _callExt(
+                        string.getValue(),
                         evaluated,
                         c ) );
     }
@@ -663,26 +700,22 @@ public class SchemeObject
     /**
      * Get/Read an attribute from the passed object.
      *
-     * @param attribute The attribute to read.  This call is NIL safe, i.e. the
-     *        type of the FCO is expected to be Symbol, in all other cases an
-     *        exception will be thrown.
-     * @return The attribute's value.
+     * @param attribute The attribute to read.
+     * @param c The continuation receiving the attribute's value.
+     * @return A thunk.
      * @throws RuntimeX In case the attribute could not be read.
      */
-    private Thunk processAttributeGet( Symbol attribute, Cont<FirstClassObject> c )
+    private Thunk processAttributeGet( String attribute, Cont<FirstClassObject> c )
             throws RuntimeX
     {
-        LOG.info( attribute.toString() );
-
         try
         {
-            // Get the attribute.
             return c.accept( convertJava2Scream(
-                    _classAdapter.getField( attribute.toString() ).get( _theInstance ) ) );
+                    _classAdapter.getField( attribute ).get( _theInstance ) ) );
         }
         catch ( IllegalAccessException e )
         {
-            throw RuntimeX.mIllegalAccess( attribute.toString() );
+            throw RuntimeX.mIllegalAccess( attribute );
         }
     }
 
@@ -911,7 +944,7 @@ public class SchemeObject
 
                 return callExt(
                         instance,
-                        arg_spec,
+                        arg_spec.getValue(),
                         Cons.asArray( parameters),
                         c );
             }
@@ -1045,40 +1078,6 @@ public class SchemeObject
             }
         };
     }
-
-    /**
-     * <p>{@code (%catch expression error-handler)}</p>
-     * Evaluates the passed {@code expression} and executes the
-     * {@code error-handler} as soon as an error occurs in exception
-     * execution.  The error handler is executed for its side effects, <i>the
-     * error ultimately submitted is the original error</i>.  Errors inside the
-     * error-handler override the original error.
-     */
-//    static private Syntax catchExceptionSyntax =
-//            new Syntax( "%catch" )
-//    {
-//        @Override
-//        public FirstClassObject activate( Environment context,
-//                FirstClassObject[] args )
-//                        throws RuntimeX
-//        {
-//            checkArgumentCount( 2, args );
-//
-//            try
-//            {
-//                return FirstClassObject.evaluate( args[0], context );
-//            }
-//            catch ( RuntimeX e )
-//            {
-//                // Execute the error-handler for its side effects...
-//                FirstClassObject.evaluate( args[1], context );
-//                // ...then re-throw the original exception.  If an error happened in
-//                // the above invocation of the error-handler, then this is thrown
-//                // instead.
-//                throw e;
-//            }
-//        }
-//    };
 
     /**
      * Object operations setup.

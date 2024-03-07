@@ -10,7 +10,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define scream:type-symbol
-  ((make-object "de.michab.scream.fcos.Symbol") TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Symbol") "TYPE_NAME"))
 
 ;;
 ;; (symbol? symbol) procedure; r5rs 30

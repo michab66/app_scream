@@ -10,7 +10,7 @@
 ;;
 
 (define scream:type-character
-  ((make-object "de.michab.scream.fcos.SchemeCharacter") TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.SchemeCharacter") "TYPE_NAME"))
 
 ;;
 ;; (char? obj) procedure; r5rs 29

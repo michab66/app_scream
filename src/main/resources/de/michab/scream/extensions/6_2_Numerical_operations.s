@@ -11,7 +11,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define scream:type-integer
-  ((scream:java:make-class "de.michab.scream.fcos.Int") TYPE_NAME))
+  ((scream:java:make-class "de.michab.scream.fcos.Int") "TYPE_NAME"))
 
 #|
  | Encapsulates java.lang.Math.

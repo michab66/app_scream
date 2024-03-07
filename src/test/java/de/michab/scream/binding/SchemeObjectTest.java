@@ -96,22 +96,22 @@ public class SchemeObjectTest extends ScreamBaseTest
                     (make-object "de.michab.scream.binding.SchemeObjectTest$Cl_StaticMembers"))
                 """ );
         t.expectFco(
-                "(Cl_StaticMembers publicStaticFinalZero)",
+                "(Cl_StaticMembers \"publicStaticFinalZero\")",
                 i(0) );
         t.expectError(
                 "(Cl_StaticMembers publicStaticFinalZero 1)",
                 Code.CANNOT_MODIFY_CONSTANT );
         t.expectError(
-                "(Cl_StaticMembers protectedStaticFinalZero)",
+                "(Cl_StaticMembers \"protectedStaticFinalZero\")",
                 Code.FIELD_NOT_FOUND );
         t.expectFco(
-                "(Cl_StaticMembers publicStaticZero)",
+                "(Cl_StaticMembers \"publicStaticZero\")",
                 i(0) );
         t.expectFco(
                 "(Cl_StaticMembers publicStaticZero 8)",
                 i(8) );
         t.expectFco(
-                "(Cl_StaticMembers publicStaticZero)",
+                "(Cl_StaticMembers \"publicStaticZero\")",
                 i(8) );
         t.expectFco(
                 "(Cl_StaticMembers (get313))",
@@ -220,10 +220,10 @@ public class SchemeObjectTest extends ScreamBaseTest
                    (make-object (\"org.smack.util.Pair:java.lang.Object,java.lang.Object\" "stan" "ollie")))
                 """ );
         t.expectFco(
-                "(o left)",
+                "(o \"left\")",
                 str("stan") );
         t.expectFco(
-                "(o right)",
+                "(o \"right\")",
                 str("ollie") );
 
         // Generic class without default constructor.
@@ -233,10 +233,10 @@ public class SchemeObjectTest extends ScreamBaseTest
                    (make-object (\"org.smack.util.Pair:java.lang.Object,java.lang.Object\" 121 313)))
                 """ );
         t.expectFco(
-                "(o left)",
+                "(o \"left\")",
                 i(121) );
         t.expectFco(
-                "(o right)",
+                "(o \"right\")",
                 i(313) );
 
         t.execute(
@@ -245,10 +245,10 @@ public class SchemeObjectTest extends ScreamBaseTest
                    (make-object (\"org.smack.util.Pair:java.lang.Object,java.lang.Object\" "stan" 313)))
                 """ );
         t.expectFco(
-                "(o left)",
+                "(o \"left\")",
                 str("stan") );
         t.expectFco(
-                "(o right)",
+                "(o \"right\")",
                 i(313) );
 
         t.execute(
@@ -258,10 +258,10 @@ public class SchemeObjectTest extends ScreamBaseTest
                 """ );
         // Symbol converted to string.
         t.expectFco(
-                "(o left)",
+                "(o \"left\")",
                 str("lambda") );
         t.expectFco(
-                "(o right)",
+                "(o \"right\")",
                 i(313) );
 
         // Storing a function in the pair.
@@ -271,10 +271,9 @@ public class SchemeObjectTest extends ScreamBaseTest
                    (make-object (\"org.smack.util.Pair:java.lang.Object,java.lang.Object\" + 313)))
                 """ );
         t.expectFco(
-                "((o left) (o right) (o right))",
+                "((o \"left\") (o \"right\") (o \"right\"))",
                 i(626) );
     }
-
 
     @Test
     @Disabled
@@ -372,7 +371,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                   (scream:java:make-instance
                     "de.michab.scream.binding.SchemeObjectTest$MakeInstance:%s"
                     %s)
-                  message
+                  "message"
                 )
                 """,
                 ctorTypes,
@@ -639,7 +638,7 @@ public class SchemeObjectTest extends ScreamBaseTest
      * @param ctorArgs
      * @return
      */
-    private String callScript( String callTypes, String callArgs )
+    private String scream_java_call( String callTypes, String callArgs )
     {
         return String.format(
                 """
@@ -654,6 +653,21 @@ public class SchemeObjectTest extends ScreamBaseTest
                 callTypes,
                 callArgs );
     }
+    private String object_call( String callTypes, String callArgs )
+    {
+        return String.format(
+                """
+                (let
+                  (
+                    (i (scream:java:make-instance
+                         "de.michab.scream.binding.SchemeObjectTest$CallInstance:"))
+                  )
+                  (i ("mcall:%s" %s))
+                )
+                """,
+                callTypes,
+                callArgs );
+    }
 
     @Test
     public void call_instance() throws Exception
@@ -661,13 +675,23 @@ public class SchemeObjectTest extends ScreamBaseTest
         var t = makeTester();
 
         t.expectFco(
-                callScript(
+                scream_java_call(
+                        StringUtil.EMPTY_STRING,
+                        StringUtil.EMPTY_STRING ),
+                str( StringUtil.EMPTY_STRING ) );
+        t.expectFco(
+                object_call(
                         StringUtil.EMPTY_STRING,
                         StringUtil.EMPTY_STRING ),
                 str( StringUtil.EMPTY_STRING ) );
 
         t.expectFco(
-                callScript(
+                scream_java_call(
+                        "java.lang.String",
+                        "\"x\""),
+                str( "String:x" ) );
+        t.expectFco(
+                object_call(
                         "java.lang.String",
                         "\"x\""),
                 str( "String:x" ) );
@@ -676,12 +700,23 @@ public class SchemeObjectTest extends ScreamBaseTest
         // float / Float
         //
         t.expectFco(
-                callScript(
+                scream_java_call(
                         "float",
                         "1.0"),
                 str( "float:1.0" ) );
         t.expectFco(
-                callScript(
+                object_call(
+                        "float",
+                        "1.0"),
+                str( "float:1.0" ) );
+
+        t.expectFco(
+                scream_java_call(
+                        "java.lang.Float",
+                        "1.0"),
+                str( "Float:1.0" ) );
+        t.expectFco(
+                object_call(
                         "java.lang.Float",
                         "1.0"),
                 str( "Float:1.0" ) );
@@ -690,18 +725,32 @@ public class SchemeObjectTest extends ScreamBaseTest
         // double
         //
         t.expectFco(
-                callScript(
+                scream_java_call(
+                    "double",
+                    "1.0"),
+                str( "double:1.0" ) );
+        t.expectFco(
+                object_call(
                     "double",
                     "1.0"),
                 str( "double:1.0" ) );
 
         t.expectFco(
-                callScript( "float,double",
+                scream_java_call( "float,double",
+                "1.0 2.0"),
+                str( "float:1.0:double:2.0" ) );
+        t.expectFco(
+                object_call( "float,double",
                 "1.0 2.0"),
                 str( "float:1.0:double:2.0" ) );
 
         t.expectFco(
-                callScript(
+                scream_java_call(
+                        "double,float",
+                        "1.0 2.0" ),
+                str( "double:1.0:float:2.0" ) );
+        t.expectFco(
+                object_call(
                         "double,float",
                         "1.0 2.0" ),
                 str( "double:1.0:float:2.0" ) );
@@ -710,28 +759,56 @@ public class SchemeObjectTest extends ScreamBaseTest
         // boolean
         //
         t.expectFco(
-                callScript(
+                scream_java_call(
                         "boolean",
                         "#t" ),
                 str( "boolean:true" ) );
         t.expectFco(
-                callScript(
+                object_call(
+                        "boolean",
+                        "#t" ),
+                str( "boolean:true" ) );
+
+        t.expectFco(
+                scream_java_call(
                         "boolean",
                         "313" ),
                 str( "boolean:true" ) );
         t.expectFco(
-                callScript(
+                object_call(
+                        "boolean",
+                        "313" ),
+                str( "boolean:true" ) );
+
+        t.expectFco(
+                scream_java_call(
                         "boolean",
                         "3.14159265" ),
                 str( "boolean:true" ) );
         t.expectFco(
-                callScript(
+                object_call(
+                        "boolean",
+                        "3.14159265" ),
+                str( "boolean:true" ) );
+
+        t.expectFco(
+                scream_java_call(
+                        "boolean",
+                        "'()" ),
+                str( "boolean:true" ) );
+        t.expectFco(
+                object_call(
                         "boolean",
                         "'()" ),
                 str( "boolean:true" ) );
 
         t.expectFco(
-                callScript(
+                scream_java_call(
+                        "boolean",
+                        "#f" ),
+                str( "boolean:false" ) );
+        t.expectFco(
+                object_call(
                         "boolean",
                         "#f" ),
                 str( "boolean:false" ) );
@@ -740,25 +817,25 @@ public class SchemeObjectTest extends ScreamBaseTest
         // byte
         //
         t.expectFco(
-                callScript(
+                scream_java_call(
                         "byte",
                         "10" ),
                 str( "byte:10" ) );
         // overflow
         t.expectFco(
-                callScript(
+                scream_java_call(
                         "byte",
                         "-1" ),
                 str( "byte:-1" ) );
         // overflow
         t.expectError(
-                callScript(
+                scream_java_call(
                         "byte",
                         "256" ),
                 Code.RANGE_EXCEEDED );
         // overflow
         t.expectError(
-                callScript(
+                scream_java_call(
                         "byte",
                         "257" ),
                 Code.RANGE_EXCEEDED );
@@ -767,12 +844,12 @@ public class SchemeObjectTest extends ScreamBaseTest
         // short
         //
         t.expectFco(
-                callScript(
+                scream_java_call(
                         "short",
                         "10" ),
                 str( "short:10" ) );
         t.expectFco(
-                callScript(
+                scream_java_call(
                         "short",
                         "-10" ),
                 str( "short:-10" ) );
@@ -781,7 +858,12 @@ public class SchemeObjectTest extends ScreamBaseTest
         // int
         //
         t.expectFco(
-                callScript(
+                scream_java_call(
+                        "int",
+                        "-10" ),
+                str( "int:-10" ) );
+        t.expectFco(
+                object_call(
                         "int",
                         "-10" ),
                 str( "int:-10" ) );
@@ -790,24 +872,30 @@ public class SchemeObjectTest extends ScreamBaseTest
         // long
         //
         t.expectFco(
-                callScript(
+                scream_java_call(
                         "long",
                         "-10" ),
                 str( "long:-10" ) );
 
         t.expectError(
-                callScript(
+                scream_java_call(
                         "double,double",
                         "1.0 2.0" ),
                 Code.METHOD_NOT_FOUND );
 
         t.expectError(
-                callScript(
+                scream_java_call(
                         "double",
                         "1.0 2.0" ),
                 Code.WRONG_NUMBER_OF_ARGUMENTS );
+
         t.expectError(
-                callScript(
+                scream_java_call(
+                        "double",
+                        StringUtil.EMPTY_STRING ),
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                object_call(
                         "double",
                         StringUtil.EMPTY_STRING ),
                 Code.WRONG_NUMBER_OF_ARGUMENTS );

@@ -456,7 +456,6 @@ public class JavaClassAdapter
      * @param name The field's name.
      * @return A reference to the field.
      * @throws RuntimeX In case the field doesn't exist.
-     * @see java.lang.Class#getField
      */
     public Field getField( String name )
             throws RuntimeX

@@ -8,7 +8,7 @@
 
 ;; Procedure type name.
 (define scream:type-procedure
-  ((scream:java:make-class "de.michab.scream.fcos.Procedure") TYPE_NAME))
+  ((scream:java:make-class "de.michab.scream.fcos.Procedure") "TYPE_NAME"))
 
 ;
 ; Returns true if none of the passed lists is null.

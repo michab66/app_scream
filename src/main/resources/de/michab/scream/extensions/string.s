@@ -10,7 +10,7 @@
 
 ;; String type name.
 (define scream:type-string
-  ((make-object "de.michab.scream.fcos.SchemeString") TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.SchemeString") "TYPE_NAME"))
 
 
 
