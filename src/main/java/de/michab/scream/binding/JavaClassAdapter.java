@@ -138,7 +138,7 @@ public class JavaClassAdapter
         }
 
         if ( result.isEmpty() )
-            throw RuntimeX.mMethodNotFound( name + braced );
+            throw RuntimeX.mMethodNotFound( nameArguments.left + braced );
         if ( result.size() > 1 )
             throw RuntimeX.mInternalError( Symbol.createObject( "notUnique" ) );
 

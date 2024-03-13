@@ -108,15 +108,16 @@
 (define (bytevector-length bytevector)
   (if (not (bytevector? bytevector))
     (error "TYPE_ERROR" scream:type-bytevector bytevector)
-    ((object bytevector) (size))))
+    ((object bytevector) ("size"))))
 
 #|
  | (bytevector-ref bytevector k)  procedure; r7rs 6.9 p50
+ TODO NO TEST
  |#
 (define (bytevector-ref bytevector k)
   (if (not (bytevector? bytevector))
     (error "TYPE_ERROR" scream:type-bytevector bytevector)
-    ((object bytevector) (get k))))
+    ((object bytevector) ("get:long" k))))
 
 #|
  | (bytevector-set! bytevector k)  procedure; r7rs 6.9 p50
@@ -124,7 +125,7 @@
 (define (bytevector-set! bytevector k byte)
   (if (not (bytevector? bytevector))
     (error "TYPE_ERROR" scream:type-bytevector bytevector)
-    ((object bytevector) (set k byte))))
+    ((object bytevector) ("set:long,long" k byte))))
 
 #|
  | (bytevector-copy bytevector)  procedure; r7rs 6.9 p50
@@ -152,7 +153,7 @@
         ((not (integer? end))
           (error "TYPE_ERROR" scream:type-integer start))
         (else
-          ((object bytevector) (copy start end)))))
+          ((object bytevector) ("copy:long,long" start end)))))
 
   ) ; case-lambda
 
@@ -187,7 +188,7 @@
         ((not (integer? end))
           (error "TYPE_ERROR" scream:type-integer end))
         (else
-          ((object to) (copyFrom at from start end)))))
+          ((object to) ("copyFrom:long,de.michab.scream.fcos.Bytevector,long,long" at from start end)))))
   ) ; case-lambda
 
   )) ; <--
@@ -205,7 +206,7 @@
       (error "TYPE_ERROR" scream:type-bytevector a))
     (if (not (bytevector? b))
       (error "TYPE_ERROR" scream:type-bytevector b))
-  ((object a) (append b)))
+  ((object a) ("append:de.michab.scream.fcos.Bytevector" b)))
 
   ; Local append transitive.
   (define bva_n
@@ -256,7 +257,7 @@
         ((not (integer? end))
           (error "TYPE_ERROR" scream:type-integer end))
         (else
-          ((object bv) (asString start end)))))
+          ((object bv) ("asString:long,long" start end)))))
   )
   )) ; <--
 )
@@ -292,6 +293,6 @@
          ((not (integer? end))
            (error "TYPE_ERROR" scream:type-integer end))
          (else
-           ((object string) (toBytevector start end))))))
+           ((object string) ("toBytevector:long,long" start end))))))
   )) ; <--
 )
