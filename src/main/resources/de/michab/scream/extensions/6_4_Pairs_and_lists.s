@@ -109,7 +109,7 @@
  |#
 (define (cdr pair)
   (if (pair? pair)
-    ((object pair) (getCdr))
+    ((object pair) ("getCdr"))
     (error "TYPE_ERROR"
            %type-cons
            (scream:typename pair))))
@@ -119,7 +119,7 @@
  |#
 (define (set-car! pair new-car)
   (if (pair? pair)
-    ((object pair) (setCar new-car))
+    ((object pair) ("setCar:de.michab.scream.fcos.FirstClassObject" new-car))
     (error "TYPE_ERROR"
            %type-cons
            (scream:typename pair)
@@ -130,7 +130,7 @@
  |#
 (define (set-cdr! pair new-cdr)
   (if (pair? pair)
-    ((object pair) (setCdr new-cdr))
+    ((object pair) ("setCdr:de.michab.scream.fcos.FirstClassObject" new-cdr))
     (error "TYPE_ERROR"
            %type-cons
            (scream:typename pair)
@@ -186,7 +186,7 @@
     (eqv? obj ())
     (and
       (pair? obj)
-      ((object obj) (isProperList)))))
+      ((object obj) ("isProperList")))))
 
 #|
  | (make-list k) procedure; r7rs 6.4 p42
@@ -212,7 +212,7 @@
     ;; If this is a non-null list...
     ((list? list)
       ;; ...ask for its length.
-      ((object list) (length)))
+      ((object list) ("length")))
     (else
       (error "EXPECTED_PROPER_LIST"))))
 
@@ -247,7 +247,7 @@
               current
               ; Calls fco.Cons#append
               ((object (assert-cons current position))
-                (append (append-impl (+ position 1) rest)))
+                ("append:de.michab.scream.fcos.FirstClassObject" (append-impl (+ position 1) rest)))
             ) ; if
           ) ; let
         ) ; define
@@ -265,7 +265,7 @@
     ((equal? list ()) 
       ())
     ((list? list)
-      ((object list) (reverse)))
+      ((object list) ("reverse")))
     (else
       (error "EXPECTED_PROPER_LIST"))
   )
@@ -276,7 +276,7 @@
  |#
 (define (list-tail list k)
   (if (pair? list)
-    ((object list) (listTail k))
+    ((object list) ("listTail:long" k))
     (error "TYPE_ERROR"
            %type-cons
            (scream:typename list)
@@ -287,7 +287,7 @@
  |#
 (define (list-ref list k)
   (if (pair? list)
-    ((object list) (listRef k))
+    ((object list) ("listRef:long" k))
     (error "TYPE_ERROR"
            %type-cons
            (scream:typename list)
