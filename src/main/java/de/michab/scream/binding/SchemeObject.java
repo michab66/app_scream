@@ -109,9 +109,28 @@ public class SchemeObject
      *
      * @param object The object to be wrapped by the new instance.
      */
-    public SchemeObject( java.lang.Object object )
+    private SchemeObject( java.lang.Object object )
     {
         this( object, JavaClassAdapter.get( object.getClass() ) );
+    }
+
+    /**
+     * Wrap the passed object as a SchemeObject.  If null is passed then
+     * null is returned.  If the passed object is already a SchemeObject
+     * then this is returned.
+     *
+     * @param object The object to wrap.
+     * @return A new SchemeObject or null if null was passed.
+     */
+    public static SchemeObject make( Object object )
+    {
+        if ( object == null )
+            return null;
+
+        if ( object instanceof SchemeObject )
+            return (SchemeObject)object;
+
+        return new SchemeObject( object );
     }
 
     private static Thunk createClass(
@@ -168,7 +187,7 @@ public class SchemeObject
             SchemeObject instance,
             String name,
             FirstClassObject[] args,
-            Cont<FirstClassObject> c )
+            Cont<SchemeObject> c )
                     throws RuntimeX
     {
         if ( name.length() == 0 )
@@ -188,7 +207,8 @@ public class SchemeObject
                 args  );
 
         // No conversion to Fco.
-        return c.accept( new SchemeObject( result ) );
+        return c.accept(
+                SchemeObject.make( result ) );
     }
 
     private Thunk _callExt(
@@ -210,6 +230,13 @@ public class SchemeObject
     public Object toJava()
     {
         return _theInstance;
+    }
+    static public Object toJava( SchemeObject object )
+    {
+        if ( object == null )
+            return object;
+
+        return object._theInstance;
     }
 
     @Override
@@ -507,11 +534,11 @@ public class SchemeObject
     }
 
     private static Thunk _convertJava2Scream(
-            FirstClassObject object,
+            SchemeObject object,
             Cont<FirstClassObject> c )
     {
         return ScreamEvaluator.CONT.get().toCont(
-                () -> convertJava2Scream( Scut.as( SchemeObject.class, object ).toJava() ),
+                () -> convertJava2Scream( SchemeObject.toJava( object ) ),
                 c );
     }
 
@@ -890,7 +917,7 @@ public class SchemeObject
                         instance,
                         arg_spec.getValue(),
                         Cons.asArray( parameters),
-                        c );
+                        so -> c.accept( so ) );
             }
         };
     }
@@ -943,14 +970,9 @@ public class SchemeObject
             {
                 checkArgumentCount( 1, args );
 
-                var a0 = args.getCar();
-
-                // If the passed object is already a SchemeObject...
-                if ( a0 == Cons.NIL || a0 instanceof SchemeObject )
-                    // ...then just return it.
-                    return c.accept( a0 );
-
-                return c.accept( new SchemeObject( a0 ) );
+                return c.accept(
+                        SchemeObject.make(
+                                args.getCar() ) );
             }
         };
     }

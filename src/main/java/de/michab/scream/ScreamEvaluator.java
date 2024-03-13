@@ -156,9 +156,10 @@ public final class ScreamEvaluator implements ScriptEngine
         _schemeReport.define(
                 Symbol.createObject( "scream:tle-interpreter" ),
                 _schemeReport );
+        // TODO : not longer needed.
         _schemeReport.define(
                 ANCHOR_SYMBOL,
-                new SchemeObject( this ) );
+                SchemeObject.make( this ) );
         // Load extensions defined in scheme source files.
         addExtensions(
         		_schemeReport,
@@ -326,6 +327,7 @@ public final class ScreamEvaluator implements ScriptEngine
         }
         catch ( Exception x )
         {
+            x.printStackTrace();
             throw RuntimeX.mInternalError( x );
         }
     }

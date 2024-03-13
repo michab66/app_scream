@@ -99,7 +99,7 @@
  |#
 (define (car pair)
   (if (pair? pair)
-    ((object pair) (getCar))
+    ((object pair) ("getCar"))
     (error "TYPE_ERROR"
            %type-cons
            (scream:typename pair))))
