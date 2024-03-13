@@ -1,9 +1,7 @@
-; $Id: char.s 8 2008-09-14 14:23:20Z binzm $
+; Scream @ https://github.com/urschleim/scream
 ;
-; Scream / Character type extensions
-;
-; Released under Gnu Public License
-; Copyright (c) 1998-2000 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
+
 
 ;;
 ;; Scream definitions.
@@ -25,7 +23,7 @@
 ;;
 (define (char->integer char)
   (if (char? char)
-    ((object char) (asInteger))
+    ((object char) ("asInteger"))
     (error "TYPE_ERROR" %type-char (scream:typename char))))
 
 
