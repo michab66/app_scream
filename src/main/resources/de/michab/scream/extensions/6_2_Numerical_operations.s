@@ -140,7 +140,7 @@
  |#
 (define (exact? x)
   (if (number? x)
-      ((object x) (isExact))
+      ((object x) ("isExact"))
       (error "TYPE_ERROR"
              %type-number
              (scream:typename x))))
@@ -182,7 +182,7 @@
  |#
 (define =
   (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp 'r7rsEqual)
+    (scream:math:to-transitive-cmp "r7rsEqual:de.michab.scream.fcos.Number")
   )) ; <--
 )
 
@@ -191,7 +191,7 @@
  |#
 (define <
   (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp 'r7rsLessThan)
+    (scream:math:to-transitive-cmp "r7rsLessThan:de.michab.scream.fcos.Number")
   )) ; <--
 )
 
@@ -200,7 +200,7 @@
  |#
 (define >
   (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp 'r7rsGreaterThan)
+    (scream:math:to-transitive-cmp "r7rsGreaterThan:de.michab.scream.fcos.Number")
   )) ; <--
 )
 
@@ -209,7 +209,7 @@
  |#
 (define <= 
   (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp 'r7rsLessOrEqualThan)
+    (scream:math:to-transitive-cmp "r7rsLessOrEqualThan:de.michab.scream.fcos.Number")
   )) ; <--
 )
   
@@ -218,7 +218,7 @@
  |#
 (define >=
   (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp 'r7rsGreaterOrEqualThan)
+    (scream:math:to-transitive-cmp "r7rsGreaterOrEqualThan:de.michab.scream.fcos.Number")
   )) ; <--
 )
 
@@ -245,7 +245,7 @@
  |#
 (define (odd? n)
   (if (integer? n)
-    ((object (exact n)) (r7rsOddQ))
+    ((object (exact n)) ("r7rsOddQ"))
     (error "TYPE_ERROR"
              %type-integer
              (scream:typename n))))
@@ -674,7 +674,7 @@
  |#
 (define (exact z)
   (if (number? z)
-    ((object z) (r7rsExact))
+    ((object z) ("r7rsExact"))
     (error "TYPE_ERROR" scream:type-number z)))
 
 ; string->number supports a radix argument up to the number of entries

@@ -31,7 +31,7 @@
         ((not (output-port? port))
           (error "TYPE_ERROR" scream:type-output-port port))
         (else
-          ((object port) (write obj))
+          ((object port) ("write:de.michab.scream.fcos.FirstClassObject" obj))
           scream:unspecified)
       ) ; cond
     )
@@ -76,7 +76,7 @@
         ((not (textual-port? port))
           (error "TYPE_ERROR" scream:type-output-port port))
         (else
-          ((object port) (display obj))
+          ((object port) ("display:de.michab.scream.fcos.FirstClassObject" obj))
           scream:unspecified)
       ) ; cond
     )
@@ -137,7 +137,7 @@
         ((not (output-port? port))
           (error "TYPE_ERROR" scream:type-output-port port))
         (else
-          ((object port) (writeCharacter character))
+          ((object port) ("writeCharacter:char" character))
           scream:unspecified)
       ) ; cond
     )
@@ -182,7 +182,7 @@
         ((not (integer? end))
           (error "TYPE_ERROR" scream:integer end))
         (else
-          ((object port) (display (substring string start end)))
+          ((object port) ("display:de.michab.scream.fcos.FirstClassObject" (substring string start end)))
           scream:unspecified)
       ) ; cond
     )
@@ -214,7 +214,7 @@
         ((not (binary-port? port))
           (error "TYPE_ERROR" scream:binary-port port))
         (else
-          ((object port) (writeByte byte))
+          ((object port) ("writeByte:de.michab.scream.fcos.Int" byte))
           scream:unspecified)
       ) ; cond
     )
@@ -252,8 +252,8 @@
         ((not (binary-port? port))
           (error "TYPE_ERROR" scream:binary-port port))
         (else
-          (let ((buffer ((object bytevector) (copy start end))))
-            ((object port) (write ((object buffer) (toJava))))
+          (let ((buffer ((object bytevector) ("copy:long,long" start end))))
+            ((object port) ("write:byte[]" ((object buffer) ("toJava"))))
             scream:unspecified))
       ) ; cond
     )
@@ -282,7 +282,7 @@
         ((not (output-port? port))
           (error "TYPE_ERROR" scream:type-output-port port))
         (else
-          ((object port) (flush))
+          ((object port) ("flush:"))
           scream:unspecified)
       ) ; cond
     )

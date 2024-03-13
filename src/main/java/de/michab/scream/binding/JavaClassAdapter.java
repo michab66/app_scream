@@ -17,12 +17,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
 import org.smack.util.Pair;
 import org.smack.util.ReflectionUtil;
+import org.smack.util.StringUtil;
 import org.smack.util.collections.OneToN;
 
 import de.michab.scream.RuntimeX;
@@ -57,30 +59,6 @@ import de.michab.scream.util.Scut;
  * defined that the first one is selected.  Reason behind this is, that
  * based on the first argument the second signature was ruled out.<br>
  *
- * At the moment it isn't clear if we should take this system to the extreme
- * and allow scream calls where we always cast numeric arguments to the maximum
- * extent possible.  That means it is technically possible to do a call in
- * scream like (object-invoke (de.michab.Angh 1)) where the method signature is
- * void Angh( double d ).  This means an implicit conversion from integer to
- * double.  Basically this seems to be in line with Scheme's dynamic nature.
- * But we have to think about this...<br>
- *
- * Another point is access efficiency.  From this class we only return unsorted
- * arrays of operations.  This is quite hairy for our clients to handle, in the
- * standard case they have to iterate over the array until they find what they
- * are looking for.  This is not a real problem at the moment, but as more and
- * more of Scream's internal functionality moves from a java implementation to
- * a more compact scheme implementation, the importance of an highly efficient
- * call mechanism raises.<br>
- *
- * TODO: If a class carries two methods
- *   class Argh
- *   {
- *     public gnah( Object param );
- *     public gnah( String param );
- *   }
- * it is not possible to call the string typed method.
- *
  * @author Michael Binz
  */
 public class JavaClassAdapter
@@ -92,9 +70,7 @@ public class JavaClassAdapter
             Logger.getLogger( JavaClassAdapter.class.getName() );
 
     /**
-     * Used to ensure the flyweigth property for instances of this class.  That
-     * means for each java.lang.Class only a single instance of this class will
-     * be ever created.
+     * Holds the already constructed ClassAdpeters.
      */
     private final static HashMap<String, JavaClassAdapter> _classAdapterInstances =
             new HashMap<String, JavaClassAdapter>();
@@ -103,11 +79,6 @@ public class JavaClassAdapter
      * The {@code java.lang.Class} this object is associated with.
      */
     private final Class<?> _clazz;
-
-    /**
-     * The array of selected constructors.
-     */
-    private final Constructor<?>[] _constructors;
 
     /**
      * A map of _methods.
@@ -129,9 +100,6 @@ public class JavaClassAdapter
         // Init attributes.
         _clazz = clazz;
 
-        _constructors =
-                initConstructors( clazz );
-
         _methods = initMethods( clazz );
 
         for ( Method c : _methods )
@@ -141,59 +109,72 @@ public class JavaClassAdapter
     }
 
     /**
-     *
+     * A map holding already resolved methods.
      */
-    private static Constructor<?>[] initConstructors( Class<?> clazz )
+    private final Map<String,Method> _methodCache =
+            new HashMap<>();
+
+    private Method getMethodImpl( String name )
+            throws RuntimeX
     {
-        HashMap<String,Constructor<?>> h =
-                new HashMap<String,Constructor<?>>();
+        ArrayList<Method> result = new ArrayList<>();
 
-        // Get the constructors from the class object and remember them temporarily
-        // in our attribute.  Note that we get only *public* constructors, excluding
-        // private, protected, package visible ones.
-        Constructor<?>[] co = clazz.getConstructors();
+        var nameArguments = JavaClassAdapter.makeNameArguments( name );
 
-        // Iterate over the constructors and filter out the ones we don't need.
-        for ( int i = 0 ; i < co.length ; i++ )
+        String braced = nameArguments.right;
+
+        for ( var c : _clazz.getMethods() )
         {
-            String mangled = mangleArguments( co[i].getParameterTypes() );
+            if ( ! c.getName().equals( nameArguments.left ) )
+                continue;
 
-            Constructor<?> previous = h.get( mangled );
-            // If we have a ctor with a similar signature...
-            if ( previous != null )
-                // ...we have to decide which one to use and set this.
-                h.put( mangled, selectConstructor( previous, co[ i ] ) );
-            else
-                h.put( mangled, co[i] );
+            if ( ! c.toString().contains( braced ) )
+                continue;
+
+            if ( c.isSynthetic() )
+                continue;
+
+            result.add( c );
         }
 
-        // Now the hash table should contain the cleaned up set of ctors to be used
-        // from scream to instantiate objects from this class.  So let's create an
-        // array from these and finally set the attribute for all times.
-        return h.values().toArray( new Constructor[ h.size() ] );
+        if ( result.isEmpty() )
+            throw RuntimeX.mMethodNotFound( name + braced );
+        if ( result.size() > 1 )
+            throw RuntimeX.mInternalError( Symbol.createObject( "notUnique" ) );
+
+        return result.get( 0 );
     }
 
-    /**
-    *
-    * @param name The method name.
-    * @param argumentList The argument list as used in method.toString.
-    * @return The method.
-    * @throws RuntimeX METHOD_NOT FOUND
-    * @throws RuntimeX INTERNAL_ERROR notUnique
+    public Method getMethod( String name  )
+            throws RuntimeX
+    {
+        if ( ! _methodCache.containsKey( name ) )
+            _methodCache.put( name, getMethodImpl( name ) );
+
+        return _methodCache.get( name );
+    }
+
+   /**
+    * A map holding already resolved constructors.
     */
-   public Method getMethod( String name, String argumentList )
+   private static final Map<String,Constructor<?>> _ctorCache =
+           new HashMap<>();
+
+   private static Constructor<?> getCtorImpl( String name )
            throws RuntimeX
    {
-       ArrayList<Method> result = new ArrayList<>();
+       var nameArguments = JavaClassAdapter.makeNameArguments( name );
 
-       String braced = "(" + argumentList + ")";
+       var cl = get( nameArguments.left );
 
-       for ( var c : _clazz.getMethods() )
+       ArrayList<Constructor<?>> result = new ArrayList<>();
+
+       for ( var c : cl._clazz.getConstructors() )
        {
-           if ( ! c.getName().equals( name ) )
+           if ( ! c.getName().equals( nameArguments.left ) )
                continue;
 
-           if ( ! c.toString().contains( braced ) )
+           if ( ! c.toString().contains( nameArguments.right ) )
                continue;
 
            if ( c.isSynthetic() )
@@ -203,7 +184,7 @@ public class JavaClassAdapter
        }
 
        if ( result.isEmpty() )
-           throw RuntimeX.mMethodNotFound( name + braced );
+           throw RuntimeX.mMethodNotFound( nameArguments.left + "<init>" + nameArguments.right );
        if ( result.size() > 1 )
            throw RuntimeX.mInternalError( Symbol.createObject( "notUnique" ) );
 
@@ -211,43 +192,23 @@ public class JavaClassAdapter
    }
 
    /**
-   *
-   * @param name A class name.
-   * @param argumentList The argument list as used in method.toString.
-   * @return The method.
-   * @throws RuntimeX METHOD_NOT FOUND
-   * @throws RuntimeX INTERNAL_ERROR notUnique
-   */
-  public Constructor<?> getCtor( String name, String argumentList )
-          throws RuntimeX
-  {
-      ArrayList<Constructor<?>> result = new ArrayList<>();
+    *
+    *
+    * @param name
+    * @return
+    * @throws RuntimeX
+    * @see {@link #makeNameArguments(String)}
+    */
+   public static Constructor<?> getCtor( String name )
+           throws RuntimeX
+   {
+       if ( ! _ctorCache.containsKey( name ) )
+           _ctorCache.put( name, getCtorImpl( name ) );
 
-      String braced = "(" + argumentList + ")";
+       return _ctorCache.get( name );
+   }
 
-      for ( var c : _clazz.getConstructors() )
-      {
-          if ( ! c.getName().equals( name ) )
-              continue;
-
-          if ( ! c.toString().contains( braced ) )
-              continue;
-
-          if ( c.isSynthetic() )
-              continue;
-
-          result.add( c );
-      }
-
-      if ( result.isEmpty() )
-          throw RuntimeX.mMethodNotFound( name + "<init>" + braced );
-      if ( result.size() > 1 )
-          throw RuntimeX.mInternalError( Symbol.createObject( "notUnique" ) );
-
-      return result.get( 0 );
-  }
-
-    /**
+   /**
      *
      */
     private static Method[] initMethods( Class<?> clazz )
@@ -421,17 +382,6 @@ public class JavaClassAdapter
         return _clazz;
     }
 
-    /**
-     * Returns the filtered set of constructors accessible from Scream.
-     *
-     * @return The transformed set of constructors accessible from Scream.
-     * @see java.lang.Class#getConstructors
-     */
-    public Constructor<?>[] getConstructors()
-    {
-        return _constructors;
-    }
-
     public List<Method> getMethods( String name, int parameterCount )
     {
         return _methodMap.getValues(
@@ -590,29 +540,6 @@ public class JavaClassAdapter
     }
 
     /**
-     * Decides which of the two passed constructors is cheaper to call from
-     * scream and returns this.
-     *
-     * @param l The first constructor.
-     * @param r The second constructor.
-     * @return The constructor that is more efficient to call.
-     */
-    private static Constructor<?> selectConstructor(
-            Constructor<?> l,
-            Constructor<?> r )
-    {
-        boolean which = selectArgumentList( l.getParameterTypes(),
-                r.getParameterTypes() );
-
-        // Return value of selectArgumentList has to be interpreted as integer, so
-        // false = 0 and true = 1.
-        if ( ! which )
-            return l;
-        else
-            return r;
-    }
-
-    /**
      * Decides which of the two passed methods is cheaper to call from
      * scream and returns this.
      *
@@ -762,7 +689,7 @@ public class JavaClassAdapter
             return "@" + formal.getName();
     }
 
-    private Object mapArray( Class<?> componentType, FirstClassObject[] fcos )
+    private static Object mapArray( Class<?> componentType, FirstClassObject[] fcos )
             throws RuntimeX
     {
         Object result = Array.newInstance(
@@ -788,7 +715,7 @@ public class JavaClassAdapter
      * @return The result array.
      * @throws RuntimeX In case of type errors.
      */
-    private Object mapArray( Class<?> componentType, Vector vector )
+    private static Object mapArray( Class<?> componentType, Vector vector )
             throws RuntimeX
     {
         return mapArray( componentType, vector.asArray() );
@@ -800,7 +727,7 @@ public class JavaClassAdapter
      * @param componentType The component type of the result array.
      * @param list A proper list of fcos.
      */
-    private Object mapArray( Class<?> componentType, Cons list )
+    private static Object mapArray( Class<?> componentType, Cons list )
             throws RuntimeX
     {
         if ( ! Cons.isProper( list ) )
@@ -816,7 +743,7 @@ public class JavaClassAdapter
      * @return
      * @throws RuntimeX
      */
-    private Object map( FirstClassObject fco, Class<?> cl )
+    private static Object map( FirstClassObject fco, Class<?> cl )
             throws RuntimeX
     {
         cl = ReflectionUtil.normalizePrimitives( cl );
@@ -867,7 +794,7 @@ public class JavaClassAdapter
         throw RuntimeX.mTypeError( SchemeObject.class, fco );
     }
 
-    public Object createInstanceVariadic(
+    public static Object createInstanceVariadic(
             Constructor<?> method,
             FirstClassObject[] args ) throws RuntimeX
     {
@@ -920,7 +847,7 @@ public class JavaClassAdapter
         }
     }
 
-    public Object createInstance( Constructor<?> ctor,
+    public static Object createInstance( Constructor<?> ctor,
             FirstClassObject[] args ) throws RuntimeX
     {
         if ( ctor.isVarArgs() )
@@ -1030,13 +957,17 @@ public class JavaClassAdapter
                     instance.toJava(),
                     initargs );
         }
-        catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
+        catch ( InvocationTargetException e )
+        {
+            throw SchemeObject.filterException( e, method );
+        }
+        catch ( IllegalAccessException | IllegalArgumentException e )
         {
             throw RuntimeX.mInvocationException( method, e );
         }
     }
 
-    private long assertImpl( Int number, long min, long max )
+    private static long assertImpl( Int number, long min, long max )
             throws RuntimeX
     {
         var value =  number.asLong();
@@ -1049,21 +980,46 @@ public class JavaClassAdapter
         return value;
     }
 
-    private byte assertByte( Int number )
+    private static byte assertByte( Int number )
             throws RuntimeX
     {
         return (byte)assertImpl( number, Byte.MIN_VALUE, Byte.MAX_VALUE );
     }
 
-    private short assertShort( Int number )
+    private static short assertShort( Int number )
             throws RuntimeX
     {
         return (short)assertImpl( number, Short.MIN_VALUE, Short.MAX_VALUE );
     }
 
-    private int assertInt( Int number )
+    private static int assertInt( Int number )
             throws RuntimeX
     {
         return (int)assertImpl( number, Integer.MIN_VALUE, Integer.MAX_VALUE );
+    }
+
+    /**
+     *
+     * @param spec "aName:float,int"
+     * @return Pair{ "aName", "(float,int) }
+     * @throws RuntimeX
+     */
+    private static Pair<String,String> makeNameArguments( String spec )
+        throws RuntimeX
+    {
+        if ( StringUtil.isEmpty( spec ) )
+            throw RuntimeX.mIllegalArgument( spec );
+
+        var split = spec.split( ":" );
+
+        if ( split.length > 2 )
+            throw RuntimeX.mIllegalArgument( spec );
+
+        return new Pair<String,String>(
+                split[ 0 ],
+                String.format( "(%s)",
+                split.length == 1 ?
+                        StringUtil.EMPTY_STRING :
+                        split[ 1 ] ) );
     }
 }

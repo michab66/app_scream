@@ -44,7 +44,7 @@
         ((not (pair? list))
           (error "TYPE_ERROR" scream:type-cons list))
         (else
-          ((object list) (isCircular)))))))
+          ((object list) ("isCircular")))))))
 
 #|
  | (scream:memx obj list compare)

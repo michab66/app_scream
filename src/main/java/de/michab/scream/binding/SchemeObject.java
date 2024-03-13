@@ -11,13 +11,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
-import org.smack.util.StringUtil;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamEvaluator;
@@ -117,42 +114,6 @@ public class SchemeObject
         this( object, JavaClassAdapter.get( object.getClass() ) );
     }
 
-    /**
-     * Splits the passed string at positions of delimiter.  Empty positions
-     * result in an empty string.
-     * <p>
-     * splitAt( "january:", ":" ) => { "january", "" }
-     * <p>
-     * splitAt( "january:february", ":" ) => { "january", "february" }
-     *
-     * @param string The string to split.
-     * @param delimiter The split delimiter.
-     * @return The split result.
-     */
-    // TODO move to Scut or Smack.
-    static List<String> splitAt( String string, String delimiter )
-    {
-        var result = new ArrayList<String>();
-
-        while ( true )
-        {
-            int pos = string.indexOf( delimiter );
-
-            if ( pos < 0 )
-            {
-                result.add( string );
-                break;
-            }
-
-            result.add(
-                    string.substring( 0, pos ) );
-            string = string.substring(
-                    pos + delimiter.length() );
-        }
-
-        return result;
-    }
-
     private static Thunk createClass(
             String classname,
             Cont<FirstClassObject> c )
@@ -179,21 +140,9 @@ public class SchemeObject
         if ( name.length() == 0 )
             throw RuntimeX.mIllegalArgument( name );
 
-        var split = splitAt( name, ":" );
+        var ctor = JavaClassAdapter.getCtor( name );
 
-        if ( split.size() > 2 )
-            throw RuntimeX.mIllegalArgument( name );
-
-        var classAdapter =
-                JavaClassAdapter.get( split.get( 0 ) );
-
-        var ctor = classAdapter.getCtor(
-                split.get( 0 ),
-                split.size() == 1 ?
-                        StringUtil.EMPTY_STRING :
-                        split.get( 1 ) );
-
-        var result = classAdapter.createInstance(
+        var result = JavaClassAdapter.createInstance(
                 ctor,
                 ctorArgs  );
 
@@ -201,7 +150,7 @@ public class SchemeObject
         return c.accept(
                 result instanceof FirstClassObject ?
                         FirstClassObject.class.cast( result ) :
-                        new SchemeObject( result ) );
+                            new SchemeObject( result ) );
     }
 
     private static Thunk _createObjectExt(
@@ -225,18 +174,13 @@ public class SchemeObject
         if ( name.length() == 0 )
             throw RuntimeX.mIllegalArgument( name );
 
-        var split = splitAt( name, ":" );
-
-        if ( split.size() > 2 )
-            throw RuntimeX.mIllegalArgument( name );
-
         var classAdapter =
                 JavaClassAdapter.get(
                         instance._isClass ?
                                 (Class<?>)instance.toJava() :
                                 instance.toJava().getClass() );
 
-        var x = classAdapter.getMethod( split.get( 0 ), split.get( 1 ) );
+        var x = classAdapter.getMethod( name );
 
         var result = classAdapter.call(
                 instance,

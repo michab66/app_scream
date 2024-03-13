@@ -1028,41 +1028,4 @@ public class SchemeObjectTest extends ScreamBaseTest
                 "(scream:java:to-fco (scream:java:call math \"sqrt:double\" 2))",
                 d( 1.4142135623730951 ) );
     }
-
-    @Test
-    public void splitAt()
-    {
-        {
-            var result = SchemeObject.splitAt( "a:b", ":" );
-            assertEquals( 2, result.size() );
-            assertEquals( "a", result.get( 0 ) );
-            assertEquals( "b", result.get( 1 ) );
-        }
-        {
-            var result = SchemeObject.splitAt( "a:", ":" );
-            assertEquals( 2, result.size() );
-            assertEquals( "a", result.get( 0 ) );
-            assertEquals( StringUtil.EMPTY_STRING, result.get( 1 ) );
-        }
-        {
-            var result = SchemeObject.splitAt( ":", ":" );
-            assertEquals( 2, result.size() );
-            assertEquals( StringUtil.EMPTY_STRING, result.get( 0 ) );
-            assertEquals( StringUtil.EMPTY_STRING, result.get( 1 ) );
-        }
-        {
-            var result = SchemeObject.splitAt( "::", ":" );
-            assertEquals( 3, result.size() );
-            assertEquals( StringUtil.EMPTY_STRING, result.get( 0 ) );
-            assertEquals( StringUtil.EMPTY_STRING, result.get( 1 ) );
-            assertEquals( StringUtil.EMPTY_STRING, result.get( 2 ) );
-        }
-        {
-            var result = SchemeObject.splitAt( "aa:bb:cc", ":" );
-            assertEquals( 3, result.size() );
-            assertEquals( "aa", result.get( 0 ) );
-            assertEquals( "bb", result.get( 1 ) );
-            assertEquals( "cc", result.get( 2 ) );
-        }
-    }
 }
