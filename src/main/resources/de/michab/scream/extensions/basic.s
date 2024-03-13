@@ -110,10 +110,10 @@
         ((null? obj) #f)
         ;; Exact match test.
         (exact-match
-          (classObject (equals ((object obj) (getClass)))))
+          (classObject (equals ((object obj) ("getClass")))))
         ;; Assignable match test.
         (else
-          (classObject (isAssignableFrom ((object obj) (getClass)))))))))
+          (classObject ("isAssignableFrom:java.lang.Class" ((object obj) ("getClass")))))))))
 
 (define scream:string?
   (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
