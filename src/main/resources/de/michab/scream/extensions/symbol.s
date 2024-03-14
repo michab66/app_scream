@@ -32,7 +32,7 @@
 ;;
 (define (symbol->string symbol)
   (if (symbol? symbol)
-    ((object symbol) (toString))
+    ((object symbol) ("toString"))
     (error "TYPE_ERROR" %type-symbol (scream:typename symbol))))
 
 
@@ -44,5 +44,5 @@
 ;;
 (define (string->symbol string)
   (if (string? string)
-    ((make-object "de.michab.scream.fcos.Symbol") (createObject string))
+    ((make-object "de.michab.scream.fcos.Symbol") ("createObject:java.lang.String" string))
     (error "TYPE_ERROR" %type-string (scream:typename symbol))))
