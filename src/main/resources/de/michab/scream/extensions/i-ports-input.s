@@ -20,7 +20,7 @@
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation
-        (scream:assert-type operation symbol? scream:type-symbol))
+        (scream:assert-type operation string? scream:type-symbol))
     )
     (if (not (textual-port? port))
       (error "EXPECTED_TEXTUAL_PORT" port)
@@ -82,19 +82,19 @@
 ;; read library procedure
 ;;
 (define (read . port)
-  (scream:exec:textual:input 'read port))
+  (scream:exec:textual:input "read" port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-char procedure
 ;;
 (define (read-char . port)
-  (scream:exec:textual:input 'readCharacter port))
+  (scream:exec:textual:input "readCharacter" port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; peek-char procedure
 ;;
 (define (peek-char . port)
-  (scream:exec:textual:input 'peekCharacter port))
+  (scream:exec:textual:input "peekCharacter" port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-line procedure
@@ -102,10 +102,8 @@
 (define (read-line . port)
   (scream:exec:with:textual:input::port 
     (lambda (port) 
-      ((object port) (readLine)))
+      ((object port) ("readLine")))
     port))
-;(define (read-line . port)
-;  (scream:exec:textual:input 'readLine port))	  
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; eof-object? procedure
@@ -129,7 +127,7 @@
 ;; char-ready? procedure
 ;;
 (define (char-ready? . port)
-  (scream:exec:textual:input 'charReady port))
+  (scream:exec:textual:input "charReady" port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; read-string procedure
@@ -137,7 +135,7 @@
 (define (read-string k . port)
   (scream:exec:with:textual:input::port 
     (lambda (port) 
-      ((object port) (readString k)))
+      ((object port) ("readString:int" k)))
     port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -146,7 +144,7 @@
 (define (read-u8 . port)
   (scream:exec:with:binary:input::port 
     (lambda (port) 
-      ((object port) (readByte)))
+      ((object port) ("readByte")))
     port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -155,7 +153,7 @@
 (define (peek-u8 . port)
   (scream:exec:with:binary:input::port 
     (lambda (port) 
-      ((object port) (peekByte)))
+      ((object port) ("peekByte")))
     port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -164,7 +162,7 @@
 (define (u8-ready? . port)
   (scream:exec:with:binary:input::port 
     (lambda (port) 
-      ((object port) (byteReady)))
+      ((object port) ("byteReady")))
     port))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

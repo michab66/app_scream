@@ -114,10 +114,10 @@ public class SchemeObjectTest extends ScreamBaseTest
                 "(Cl_StaticMembers \"publicStaticZero\")",
                 i(8) );
         t.expectFco(
-                "(Cl_StaticMembers (get313))",
+                "(Cl_StaticMembers (\"get313\"))",
                 i(313) );
         t.expectFco(
-                "(Cl_StaticMembers (add 310 3))",
+                "(Cl_StaticMembers (\"add:int,int\" 310 3))",
                 i(313) );
     }
 
@@ -158,7 +158,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         assertInstanceOf( SchemeObject.class, result );
 
         t.expectFco(
-                "(StringBuilder (toString))",
+                "(StringBuilder (\"toString\"))",
                 str("") );
     }
 
@@ -178,7 +178,7 @@ public class SchemeObjectTest extends ScreamBaseTest
         assertInstanceOf( SchemeObject.class, result );
 
         t.expectFco(
-                "(StringBuilder (toString))",
+                "(StringBuilder (\"toString\"))",
                 str("scream") );
     }
 
@@ -194,17 +194,17 @@ public class SchemeObjectTest extends ScreamBaseTest
                    (make-object ("java.lang.StringBuilder")))
                 """ );
         t.expectFco(
-                "(StringBuilder (toString))",
+                "(StringBuilder (\"toString\"))",
                 str("") );
         t.execute(
-                "(StringBuilder (append \"scream\"))" );
+                "(StringBuilder (\"append:java.lang.String\" \"scream\"))" );
         t.expectFco(
-                "(StringBuilder (toString))",
+                "(StringBuilder (\"toString\"))",
                 str( "scream" ) );
         t.execute(
-                "(StringBuilder (append 313.))" );
+                "(StringBuilder (\"append:double\" 313.))" );
         t.expectFco(
-                "(StringBuilder (toString))",
+                "(StringBuilder (\"toString\"))",
                 str( "scream313.0" ) );
     }
 
@@ -288,14 +288,14 @@ public class SchemeObjectTest extends ScreamBaseTest
                    (make-object (java.lang.StringBuilder)))
                 """ );
         t.expectFco(
-                "(StringBuilder (toString))",
+                "(StringBuilder (\"toString\"))",
                 str("") );
         t.execute(
-                "(StringBuilder (append 313))" );
+                "(StringBuilder (\"append:long\" 313))" );
 
         // Wrong method selected: Returned value is 313.0.
         t.expectFco(
-                "(StringBuilder (toString))",
+                "(StringBuilder (\"toString\"))",
                 str( "313" ) );
     }
 
@@ -647,7 +647,7 @@ public class SchemeObjectTest extends ScreamBaseTest
                     (i (scream:java:make-instance
                          "de.michab.scream.binding.SchemeObjectTest$CallInstance:"))
                   )
-                  ((scream:java:call i "mcall:%s" %s) (toString))
+                  ((scream:java:call i "mcall:%s" %s) ("toString"))
                 )
                 """,
                 callTypes,

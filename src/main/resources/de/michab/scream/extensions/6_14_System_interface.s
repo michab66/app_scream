@@ -20,7 +20,7 @@
       (file (make-object ("java.io.File:java.lang.String" filename)))
     )
 
-    (if (not (file (exists)))
+    (if (not (file ("exists")))
       (error "IO_ERROR" 'does-not-exist)
       file)))
 
@@ -47,7 +47,7 @@
       (scream:files:list scream:files:current-dir))
 
     ((dir)
-      ((scream:files:validate-exists dir) (list)))
+      ((scream:files:validate-exists dir) ("list")))
 
   ) ; case-lambda
 
@@ -66,7 +66,7 @@
       (file (make-object ("java.io.File:java.lang.String" filename)))
     )
     
-    (file (createNewFile)))
+    (file ("createNewFile")))
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -80,10 +80,10 @@
 (define (load filename)
   (let
     (
-      (evaluator ((make-object "de.michab.scream.ScreamEvaluator") (EVAL)))
+      (evaluator ((make-object "de.michab.scream.ScreamEvaluator") ("EVAL")))
     )
 
-    (evaluator (load filename (interaction-environment))))
+    (evaluator ("load:de.michab.scream.fcos.SchemeString,de.michab.scream.fcos.Environment" filename (interaction-environment))))
 )
 
 #|
@@ -95,14 +95,14 @@
       (file (make-object ("java.io.File:java.lang.String" filename)))
     )
 
-    (file (exists)))
+    (file ("exists")))
 )
 
 #|
  | (delete-file filename)  file library procedure; r7rs p60
  |#
 (define (delete-file filename)
-  ((scream:files:validate-exists filename) (delete)))
+  ((scream:files:validate-exists filename) ("delete")))
 
 ;;
 ;; Environment variable operations.
@@ -117,7 +117,7 @@
       (system
         (make-object "java.lang.System"))
       (result
-        (system (getenv name)))
+        (system ("getenv:java.lang.String" name)))
     )
     
     (if (null? result)
@@ -269,7 +269,7 @@
         (make-object "java.lang.System"))
       ; Query the environment as a map.
       (env-map
-        (system (getenv)))
+        (system ("getenv")))
       ; Create a buffer for converting the map into
       ; the result.
       (buffer (open-output-string))
@@ -311,7 +311,7 @@
  | (current-jiffy)  time library procedure; r7rs p60
  |#
 (define (current-jiffy)
-  ((make-object "java.lang.System") (currentTimeMillis)))
+  ((make-object "java.lang.System") ("currentTimeMillis")))
 
 #|
  | (jiffies-per-second)  time library procedure; r7rs p60

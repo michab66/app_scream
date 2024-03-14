@@ -16,7 +16,6 @@ import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -365,11 +364,6 @@ public class JavaClassAdapter
         return _clazz;
     }
 
-    public List<Method> getMethods( String name, int parameterCount )
-    {
-        return _methodMap.getValues(
-                new Pair<>( name, parameterCount ) );
-    }
     public  Method[] getMethods()
     {
         return _methods;

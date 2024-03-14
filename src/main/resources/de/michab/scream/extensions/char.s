@@ -111,12 +111,12 @@
   ;;
   ;; char-upcase - library procedure - r5rs p. 29
   ;;
-  (set! char-upcase (lambda (x) (char (toUpperCase x))))
+  (set! char-upcase (lambda (x) (char ("toUpperCase:char" x))))
 
   ;;
   ;; char-downcase - library procedure - r5rs p. 29
   ;;
-  (set! char-downcase (lambda (x) (char (toLowerCase x))))
+  (set! char-downcase (lambda (x) (char ("toLowerCase:char" x))))
 
 )
 

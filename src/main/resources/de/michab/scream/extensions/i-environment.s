@@ -31,4 +31,4 @@
   scream:null-environment)
 
 (define (interaction-environment)
-  (scream:evaluator (getInteraction)))
+  (scream:evaluator ("getInteraction")))

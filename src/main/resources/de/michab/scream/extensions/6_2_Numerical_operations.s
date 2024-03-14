@@ -38,7 +38,7 @@
  | Expects an operation (op z1 z2) => bool.
  | Returns an operation (op' . z).
  |
- | Evalution is:
+ | Evaluation is:
  |  (op' 1) => #t
  |  (op' 1 2 3) => (if (op 1 2)
  |                   (op' 2 3)
@@ -274,11 +274,15 @@
  | (abs x) procedure; r7rs p36
  |#
 (define (abs x)
-  (if (number? x)
-    (scream:math (abs x))
-    (error "TYPE_ERROR"
-             %type-integer
-             (scream:typename x))))
+  (cond
+    ((exact? x)
+      (scream:math ("abs:long" x)))
+    ((inexact? x)
+      (scream:math ("abs:double" x)))
+    (else
+      (error "TYPE_ERROR" %type-number (scream:typename x)))
+  )
+)
 
 #|
  | (floor/ n₁ n₂) procedure r7rs p36
@@ -292,9 +296,6 @@
  | (floor-quotient n₁ n₂) procedure r7rs p36
  |#
 (define (floor-quotient n1 n2)
-  (scream:math (floorDiv n1 n2)))
-  
-(define (floor-quotient n1 n2)
   (if (not (integer? n1))
     (error "TYPE_ERROR" %type-integer n1))
   (if (not (integer? n2))
@@ -303,7 +304,7 @@
   ((if (and (exact? n1) (exact? n2))
       exact
       inexact)
-  (scream:math (floorDiv (exact n1) (exact n2)))))
+  (scream:math ("floorDiv:long,long" (exact n1) (exact n2)))))
 
 #|
  | (floor-remainder n₁ n₂) procedure r7rs p36
@@ -444,7 +445,7 @@
     ((integer? x)
       x)
     (else
-      (round (scream:math (floor x))))))
+      (round (scream:math ("floor:double" x))))))
 
 #|
  | (ceiling x) procedure - 6.2.6 p37
@@ -456,7 +457,7 @@
     ((integer? x)
       x)
     (else
-      (round (scream:math (ceil x))))))
+      (round (scream:math ("ceil:double" x))))))
 
 #|
  | (truncate x) procedure; r7rs 6.2.6 p37
@@ -476,7 +477,7 @@
 (define (round x)
   (if (exact? x)
     x
-    (scream:math (rint x))))
+    (scream:math ("rint:double" x))))
 
 #|
  | (rationalize x y)
@@ -489,7 +490,7 @@
  |#
 (define (exp x)
   (scream:math 
-    (exp (scream:assert-number x))))
+    ("exp:double" (scream:assert-number x))))
 
 #|
  | (log z) inexact library procedure r7rs p38
@@ -502,7 +503,7 @@
   (case-lambda
 
     ((z)
-      (scream:math (log (scream:assert-number z))))
+      (scream:math ("log:double" (scream:assert-number z))))
 
     ((z1 z2)
       (/ 
@@ -519,35 +520,35 @@
  |#
 (define (sin z)
   (scream:math 
-    (sin (scream:assert-number z))))
+    ("sin:double" (scream:assert-number z))))
 
 #|
  | (cos z) procedure r7rs p38
  |#
 (define (cos z)
   (scream:math 
-    (cos (scream:assert-number z))))
+    ("cos:double" (scream:assert-number z))))
 
 #|
  | (tan z) procedure r7rs p38
  |#
 (define (tan z)
   (scream:math
-    (tan (scream:assert-number z))))
+    ("tan:double" (scream:assert-number z))))
 
 #|
  | (asin z) procedure r7rs p38
  |#
 (define (asin z)
   (scream:math 
-    (asin (scream:assert-number z))))
+    ("asin:double" (scream:assert-number z))))
 
 #|
  | (acos z) procedure r7rs p38
  |#
 (define (acos z)
   (scream:math 
-    (acos (scream:assert-number z))))
+    ("acos:double" (scream:assert-number z))))
 
 #|
  | (atan z) procedure r7rs p38
@@ -560,11 +561,11 @@
 
     ((z)
       (scream:math 
-        (atan (scream:assert-number z))))
+        ("atan:double" (scream:assert-number z))))
 
     ((x y)
       (scream:math 
-        (atan2 
+        ("atan2:double,double" 
           (scream:assert-number x) 
           (scream:assert-number y))))
 
@@ -583,7 +584,7 @@
  | (sqrt z) inexact library procedure; r7rs 38
  |#
 (define (sqrt z) 
-  (let ((result (scream:math (sqrt (scream:assert-number z)))))
+  (let ((result (scream:math ("sqrt:double" (scream:assert-number z)))))
     (if (and (exact? z) (integer? result))
   	  (exact result)
       result
@@ -602,7 +603,7 @@
   (let*
     (
       (result
-        (exact (truncate (scream:math (sqrt k)))))
+        (exact (truncate (scream:math ("sqrt:double" k)))))
       (result-square (* result result))
       (rest (- k result-square))
     )
@@ -612,13 +613,13 @@
 )
 
 #|
- | (expt z1 z2) procedure; r7rs 6.2.6 p38
+ | (expt z₁ z₂) procedure; r7rs 6.2.6 p38
  |#
 (define (expt z1 z2)
   (let 
     (
       (result 
-        (scream:math (pow (scream:assert-number z1) (scream:assert-number z2))))
+        (scream:math ("pow:double,double" (scream:assert-number z1) (scream:assert-number z2))))
     )
     
     (if (and (exact? z1) (exact? z2) (integer? result))
@@ -628,7 +629,7 @@
 )
 
 #|
- | (make-rectangular x1 x2)
+ | (make-rectangular x₁ x₂)
  |#
 (define (make-rectangular x1 x2)
   (error "NOT_IMPLEMENTED" 'make-rectangular))

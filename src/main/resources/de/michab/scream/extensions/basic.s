@@ -8,7 +8,7 @@
 ;; Define a symbol holding the current jdk-version.
 ;;
 (define %jdk-version
-  ((make-object "java.lang.System") (getProperty "java.version")))
+  ((make-object "java.lang.System") ("getProperty:java.lang.String" "java.version")))
 
 ;;
 ;; An object to be returned if the spec defines 'unspecified'.
@@ -23,7 +23,7 @@
 ;; Get the type name of the passed object.
 ;;
 (define (scream:typename x)
-  (scream:class:fco (getTypename x)))
+  (scream:class:fco ("getTypename:de.michab.scream.fcos.FirstClassObject" x)))
 
 ;;
 ;; (scream:assert-type object predicate expected-type)
@@ -105,14 +105,14 @@
 ;; accepting any single argument and returning a boolean.
 ;;
 (define (typePredicateGenerator string-type-name exact-match)
-  (let ((classObject ((make-object "java.lang.Class") (forName string-type-name))))
+  (let ((classObject ((make-object "java.lang.Class") ("forName:java.lang.String" string-type-name))))
     (lambda (obj)
       (cond
         ;; If this is NIL false is returned.
         ((null? obj) #f)
         ;; Exact match test.
         (exact-match
-          (classObject (equals ((object obj) ("getClass")))))
+          (classObject ("equals:java.lang.Object" ((object obj) ("getClass")))))
         ;; Assignable match test.
         (else
           (classObject ("isAssignableFrom:java.lang.Class" ((object obj) ("getClass")))))))))

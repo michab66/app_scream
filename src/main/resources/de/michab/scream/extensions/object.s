@@ -8,7 +8,7 @@
  |
  |#
 #;(define (get-class string)
-  ((make-object2 "java.lang.Class") (forName string)))
+  ((make-object2 "java.lang.Class") ("forName:java.lang.String" string)))
 
 #|
  |

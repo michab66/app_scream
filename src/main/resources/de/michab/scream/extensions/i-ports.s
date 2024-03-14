@@ -110,7 +110,7 @@
 ;;
 (define (binary-port? port)
   (if (port? port)
-    ((object port) (isBinary))
+    ((object port) ("isBinary"))
     #f))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -130,7 +130,7 @@
 ;;
 (define (input-port-open? port)
   (if (input-port? port)
-    (not ((object port) (isClosed)))
+    (not ((object port) ("isClosed")))
     #f))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -138,7 +138,7 @@
 ;;
 (define (output-port-open? port)
   (if (output-port? port)
-    (not ((object port) (isClosed)))
+    (not ((object port) ("isClosed")))
     #f))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -155,7 +155,7 @@
   (set! current-input-port
     (lambda ()
       (if (null? current-input-port-stack)
-        (scream:evaluator (getInPort))
+        (scream:evaluator ("getInPort"))
         (car current-input-port-stack))))
 
   (set! scream:current-input-port-push
@@ -188,7 +188,7 @@
   (set! current-output-port
     (lambda ()
       (if (null? current-output-port-stack)
-        (scream:evaluator (getOutPort))
+        (scream:evaluator ("getOutPort"))
         (car current-output-port-stack))))
 
   (set! scream:current-output-port-push
@@ -213,7 +213,7 @@
 ;; Note that the value is not cacheable since the
 ;; port may be set individually for each invocation.
 (define (current-error-port)
-  (scream:evaluator (getErrorPort)))
+  (scream:evaluator ("getErrorPort")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; with-input-from-file file library procedure
@@ -265,7 +265,7 @@
 (define (close-port port)
   (if (not (port? port))
     (error "EXPECTED_PORT"))
-  ((object port) (close)))
+  ((object port) ("close")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; close-input-port procedure
@@ -304,12 +304,12 @@
 ;;
 (define (get-output-string port)
   (let* (
-    (stream ((object port) (stream)))
-    (port-class (stream (getClass)))
+    (stream ((object port) ("stream")))
+    (port-class (stream ("getClass")))
     (writer-class (make-object "java.io.StringWriter"))
     )
     (if (equal? port-class writer-class)
-      (stream (toString))
+      (stream ("toString"))
       'EOF)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -324,7 +324,7 @@
   (make-object 
     ("de.michab.scream.fcos.PortInBinary:java.lang.String,java.io.InputStream"
       "input-bytevector" 
-      ((object bytevector) (asStream)))))
+      ((object bytevector) ("asStream")))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-output-bytevector procedure
@@ -341,8 +341,8 @@
 ;;
 (define (get-output-bytevector port)
   (let* (
-    (stream ((object port) (stream)))
-    (array ((object stream) (toByteArray))) )
+    (stream ((object port) ("stream")))
+    (array ((object stream) ("toByteArray"))) )
     
     (make-object ("de.michab.scream.fcos.Bytevector:byte[]" array))
   )

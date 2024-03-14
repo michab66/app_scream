@@ -10,7 +10,6 @@ import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -281,39 +280,6 @@ public class SchemeObject
     }
 
     /**
-     * Matches the actual parameter list of the invocation with the passed
-     * formal parameter list.
-     *
-     * @param formal An array of classes representing the formal parameter list.
-     * @param actual An array of objects representing the actual parameters.
-     * @return An array of objects converted from the scream types to java types
-     *         suitable for invoking the method.  If no match was possible null
-     *         is returned.
-     */
-    private static Object[] matchParameters(
-            Class<?>[] formal,
-            FirstClassObject[] actual )
-    {
-        // Check the length.
-        if ( formal.length != actual.length )
-            return null;
-
-        try
-        {
-            Object[] result = new Object[ formal.length ];
-
-            for ( int i = 0 ; i < result.length ; i++ )
-                result[i] = convertScream2Java( formal[i], actual[i] );
-
-            return result;
-        }
-        catch ( RuntimeX e )
-        {
-            return null;
-        }
-    }
-
-    /**
      * Converts a FirstClassObject into an object suitable for inserting into an
      * argument list for a java method call.
      * <p>
@@ -559,70 +525,6 @@ public class SchemeObject
         return new Vector( vector, false );
     }
 
-    private Thunk processInvocationImpl(
-            Environment env,
-            String methodName,
-            Cons list,
-            Cont<FirstClassObject> c )
-                    throws RuntimeX
-    {
-        Executable methodRef = null;
-
-        try
-        {
-            FirstClassObject[] argArray = Cons.asArray( list );
-
-            // Select the method to call.
-            for ( var method : _classAdapter.getMethods( methodName, argArray.length  ) )
-            {
-                java.lang.Object[] argumentList =
-                        matchParameters( method.getParameterTypes(), argArray );
-
-                if ( null != argumentList )
-                {
-                    // Check if it is tried to invoke an instance method on a class
-                    // object.  Since the VM in this case simply throws a NPE we have
-                    // to check for this condition manually.
-                    if ( _isClass && ! Modifier.isStatic( method.getModifiers() ) )
-                        throw RuntimeX.mCannotAccessInstance();
-                    // Store the method reference for the exception handler.
-                    methodRef = method;
-                    // Do the actual call.
-                    return c.accept( convertJava2Scream(
-                            method.invoke( _theInstance, argumentList ) ) );
-                }
-            }
-
-            throw RuntimeX.mMethodNotFound( methodName, list );
-        }
-        catch ( InvocationTargetException e )
-        {
-            throw filterException( e, methodRef );
-        }
-        catch ( IllegalArgumentException e )
-        {
-            // Not sure if this can be thrown under normal circumstances.  The only
-            // reason for that exception is if it is tried to invoke an
-            // instance method on a java.lang.Class object.  In that case the illegal
-            // argument is the first argument to invoke, that is on the one hand non
-            // null, but on the other hand simply the wrong reference.
-            throw RuntimeX.mInternalError( methodName );
-        }
-        catch ( IllegalAccessException e )
-        {
-            throw RuntimeX.mIllegalAccess( methodName );
-        }
-    }
-
-    private Thunk _processInvocationImpl(
-            Environment env,
-            String methodName,
-            Cons list,
-            Cont<FirstClassObject> c )
-    {
-        return () -> processInvocationImpl( env, methodName, list, c );
-    }
-
     /**
      * Processes a procedure invocation.
      *
@@ -637,23 +539,6 @@ public class SchemeObject
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        if ( FirstClassObject.is( Symbol.class, list.getCar() ))
-        {
-            var symbol = Scut.as(
-                    Symbol.class, list.getCar() );
-            var rest = Scut.as(
-                    Cons.class, list.getCdr() );
-
-            return Primitives._evalCons(
-                    env,
-                    rest,
-                    evaluated -> _processInvocationImpl(
-                            env,
-                            symbol.toString(),
-                            evaluated,
-                            c ) );
-        }
-
         var string = Scut.as(
                 SchemeString.class, list.getCar() );
         var rest = Scut.as(
