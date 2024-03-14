@@ -1,10 +1,8 @@
-; $Id: vector.s 8 2008-09-14 14:23:20Z binzm $
 ;
-; Scream / Runtime
+; Scream @ https://github.com/urschleim/scream
 ;
-; Released under Gnu Public License
-; Copyright (c) 1998-2000 Michael G. Binz
-
+; Copyright © 1998-2024 Michael G. Binz
+;
 
 
 ;;

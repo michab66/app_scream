@@ -1,6 +1,8 @@
+;
 ; Scream @ https://github.com/urschleim/scream
 ;
 ; Copyright © 2024 Michael G. Binz
+;
 
 #|
  | eq? obj₁ obj₂ ...)) r7rs 6.1 p30 procedure

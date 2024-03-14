@@ -1,6 +1,8 @@
+;
 ; Scream @ https://github.com/urschleim/scream
 ;
 ; Copyright © 1998-2022 Michael G. Binz
+;
 
 ;;
 ;; Used in error messages.
