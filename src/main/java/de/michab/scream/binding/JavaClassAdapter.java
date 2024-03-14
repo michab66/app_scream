@@ -40,24 +40,7 @@ import de.michab.scream.fcos.Vector;
 import de.michab.scream.util.Scut;
 
 /**
- * This class encapsulates information for a Java class.  This is read from the
- * Java {@code Class} object and transformed into a format that allows
- * quick access for the Scream interpreter.<br>
- *
- * The most important transformation is the removal of redundant method
- * signatures.  E.g. if a class exports {@code int doIt( float f )} as
- * well as {@code int doIt( double d )} then the first method will be
- * thrown out since double is Scream's native format for floating point
- * numbers.<br>
- *
- * Worst case are two signatures like the following: {@code <br>
- * <br>
- * 1)  void argh( double d, float f );<br>
- * 2)  void argh( float f, double d );<br>
- * <br>}
- * Both could be called, and are equally expensive.  For this case it is
- * defined that the first one is selected.  Reason behind this is, that
- * based on the first argument the second signature was ruled out.<br>
+ * Encapsulates information for an arbitrary Java class.
  *
  * @author Michael Binz
  */
@@ -97,7 +80,6 @@ public class JavaClassAdapter
      */
     private JavaClassAdapter( Class<?> clazz )
     {
-        // Init attributes.
         _clazz = clazz;
 
         _methods = initMethods( clazz );
@@ -192,10 +174,11 @@ public class JavaClassAdapter
    }
 
    /**
+    * Get a named constructor.
     *
+    * @param name Name in format "classname:ctor-arg-type,...".
+    * @return A constructor.
     *
-    * @param name
-    * @return
     * @throws RuntimeX
     * @see {@link #makeNameArguments(String)}
     */
@@ -257,7 +240,7 @@ public class JavaClassAdapter
     {
         Objects.requireNonNull( cl );
 
-        String key = cl.getName();
+        final String key = cl.getName();
 
         // Check if we have a class adapter for this class.
         JavaClassAdapter result =
