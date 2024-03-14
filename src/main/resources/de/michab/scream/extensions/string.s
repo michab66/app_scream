@@ -69,7 +69,7 @@
 
       ; Body
       (if (char? (car insert-list))
-        ((object result) (setCharAt insert-position (car insert-list)))
+        ((object result) ("setCharAt:int,char" insert-position (car insert-list)))
         (error "TYPE_ERROR"
                %type-char
                (scream:typename (car insert-list))
@@ -85,7 +85,7 @@
 ;;
 (define (string-length string)
   (if (string? string)
-    ((object string) (length))
+    ((object string) ("length"))
     (error "TYPE_ERROR" %type-string (scream:typename string))))
 
 
@@ -95,9 +95,8 @@
 ;;
 (define (string-ref string k)
   (if (string? string)
-    ((object string) (getCharAt k))
+    ((object string) ("getCharAt:int" k))
     (error "TYPE_ERROR" %type-string (scream:typename string) 1)))
-
 
 ;;
 ;; (string-set! string k char) procedure; r5rs 30
@@ -110,7 +109,7 @@
   (if (not (char? char))
     (error "TYPE_ERROR" %type-char (scream:typename char) 3))
 
-  ((object string) (setCharAt k char)))
+  ((object string) ("setCharAt:int,char" k char)))
 
 
 
@@ -124,9 +123,7 @@
     (error "TYPE_ERROR" %type-integer (scream:typename start) 2))
   (if (not (integer? end))
     (error "TYPE_ERROR" %type-integer (scream:typename end) 3))
-  ((object string) (substring start end)))
-
-
+  ((object string) ("substring:int,int" start end)))
 
 ;;
 ;; (string-append string ...) library procedure; r5rs 30
@@ -143,7 +140,7 @@
 
       ; Body
       (if (string? (car append-list))
-        (set! result ((object result) (append (car append-list))))
+        (set! result ((object result) ("append:de.michab.scream.fcos.SchemeString" (car append-list))))
         (error
           "TYPE_ERROR"
           %type-string
@@ -162,7 +159,7 @@
 ;;
 (define (string->list string)
   (if (string? string)
-    ((object string) (toCons))
+    ((object string) ("toCons"))
     (error "TYPE_ERROR" %type-string (scream:typename string))))
 
 
@@ -200,7 +197,7 @@
 ;;
 (define (string-copy string)
   (if (string? string)
-    ((object string) (copy))
+    ((object string) ("copy"))
     (error "TYPE_ERROR" %type-string (scream:typename string))))
 
 
@@ -214,7 +211,7 @@
   (if (not (char? char))
     (error "TYPE_ERROR" %type-char (scream:typename char) 2))
 
-  ((object string) (fill char)))
+  ((object string) ("fill:char" char)))
 
 
 
@@ -226,7 +223,7 @@
     (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
-  (= 0 ((object s1) (compareTo s2))))
+  (= 0 ((object s1) ("compareTo:de.michab.scream.fcos.SchemeString" s2))))
 
 ; Note that this operation was fixed but the others
 ; remain with errors, 
@@ -235,60 +232,61 @@
     (error "TYPE_ERROR" scream:type-string s1 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" scream:type-string s2 2))
-  (= 0 ((object s1) (compareToIgnoreCase s2))))
+  (= 0 ((object s1) ("compareToIgnoreCase:de.michab.scream.fcos.SchemeString" s2))))
 
 (define (string<? s1 s2)
   (if (not (string? s1))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
-  (> 0 ((object s1) (compareTo s2))))
+  (> 0 ((object s1) ("compareTo:de.michab.scream.fcos.SchemeString" s2))))
 
+; TODO NO TEST
 (define (string-ci<? s1 s2)
   (if (not (string? s1))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
-  (> 0 ((object s1) (compareToIgnoreCase s2))))
+  (> 0 ((object s1) ("compareToIgnoreCase:de.michab.scream.fcos.SchemeString" s2))))
 
 (define (string>? s1 s2)
   (if (not (string? s1))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
-  (< 0 ((object s1) (compareTo s2))))
+  (< 0 ((object s1) ("compareTo:de.michab.scream.fcos.SchemeString" s2))))
 
 (define (string-ci>? s1 s2)
   (if (not (string? s1))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
-  (< 0 ((object s1) (compareToIgnoreCase s2))))
+  (< 0 ((object s1) ("compareToIgnoreCase:de.michab.scream.fcos.SchemeString" s2))))
 
 (define (string<=? s1 s2)
   (if (not (string? s1))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
-  (>= 0 ((object s1) (compareTo s2))))
+  (>= 0 ((object s1) ("compareTo:de.michab.scream.fcos.SchemeString" s2))))
 
 (define (string-ci<=? s1 s2)
   (if (not (string? s1))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
-  (>= 0 ((object s1) (compareToIgnoreCase s2))))
+  (>= 0 ((object s1) ("compareToIgnoreCase:de.michab.scream.fcos.SchemeString" s2))))
 
 (define (string>=? s1 s2)
   (if (not (string? s1))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
-  (<= 0 ((object s1) (compareTo s2))))
+  (<= 0 ((object s1) ("compareTo:de.michab.scream.fcos.SchemeString" s2))))
 
 (define (string-ci>=? s1 s2)
   (if (not (string? s1))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 1))
   (if (not (string? s2))
     (error "TYPE_ERROR" %type-string (scream:typename s1) 2))
-  (<= 0 ((object s1) (compareToIgnoreCase s2))))
+  (<= 0 ((object s1) ("compareToIgnoreCase:de.michab.scream.fcos.SchemeString" s2))))
