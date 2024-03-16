@@ -6,14 +6,10 @@
 package de.michab.scream.binding;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.logging.Logger;
-
-import org.smack.util.JavaUtil;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamEvaluator;
@@ -158,10 +154,8 @@ public class SchemeObject
         if ( name.length() == 0 )
             throw RuntimeX.mIllegalArgument( name );
 
-        var ctor = JavaClassAdapter.getCtor( name );
-
         var result = JavaClassAdapter.createInstance(
-                ctor,
+                name,
                 ctorArgs  );
 
         // No conversion to Fco.
@@ -184,13 +178,13 @@ public class SchemeObject
 
     private static Thunk callExt(
             SchemeObject instance,
-            String name,
+            String methodSpec,
             FirstClassObject[] args,
             Cont<SchemeObject> c )
                     throws RuntimeX
     {
-        if ( name.length() == 0 )
-            throw RuntimeX.mIllegalArgument( name );
+        if ( methodSpec.length() == 0 )
+            throw RuntimeX.mIllegalArgument( methodSpec );
 
         var classAdapter =
                 JavaClassAdapter.get(
@@ -198,16 +192,13 @@ public class SchemeObject
                                 (Class<?>)instance.toJava() :
                                 instance.toJava().getClass() );
 
-        var x = classAdapter.getMethod( name );
-
-        var result = classAdapter.call(
-                instance,
-                x,
-                args  );
-
         // No conversion to Fco.
         return c.accept(
-                SchemeObject.make( result ) );
+                SchemeObject.make(
+                        classAdapter.call(
+                                instance,
+                                methodSpec,
+                                args  ) ) );
     }
 
     private Thunk _callExt(
@@ -347,12 +338,7 @@ public class SchemeObject
                 result = ((SchemeString)actual).getValue();
 
             // This handles the special case that a method is called that knows
-            // Scream's internal type system.  Currently this is used by the
-            // AwtListener class that directly accepts Cons lists.
-            // Holy cow, this is one of the most complex code lines I ever wrote.
-            // The condition is only taken if the formal argument is some kind of a
-            // FirstClassObject and the passed actual argument can be assigned to
-            // that type.
+            // Scream's internal type system.
             else if ( FirstClassObject.class.isAssignableFrom( formal ) &&
                     formal.isAssignableFrom( actual.getClass() ) )
                 result = actual;
@@ -420,39 +406,6 @@ public class SchemeObject
     }
 
     /**
-     * This method is responsible for handling
-     * {@code InvocationTargetException}s.  This means that in
-     * case the exception embedded in an {@code InvocationTargetException}
-     * is a {@code RuntimeX} then this method unpacks and returns this.  In
-     * the other case a new {@code RuntimeX} is created and returned.
-     * Embedded {@code Error}s are unpacked and simply thrown.
-     *
-     * @param ite The exception to filter.
-     * @param context A string to be used in case the embedded exception is not
-     *        an {@code Error} or {@code RuntimeX} and a generic
-     *        exception has to be created.
-     * @return An instance of a {@code RuntimeX} exception.
-     * @throws Error Embedded {@code Error} instances are thrown.
-     */
-    static RuntimeX filterException( InvocationTargetException ite,
-            Executable context )
-    {
-        Throwable t = ite.getCause();
-        JavaUtil.Assert( t != null );
-
-        try
-        {
-            return (RuntimeX)t;
-        }
-        catch ( Exception ee )
-        {
-            return RuntimeX.mInvocationException(
-                    context,
-                    t );
-        }
-    }
-
-    /**
      * Converts a Java object back into Scream's type system.
      *
      * @param object The object to be boxed.
@@ -468,7 +421,7 @@ public class SchemeObject
         if ( object.getClass().isArray() )
             return convertJavaArray2ScreamVector( object );
 
-        // Now we test for all primitive types supported by Java.
+        // Test for all primitive types supported by Java.
         if ( object instanceof java.lang.Integer ||
                 object instanceof java.lang.Byte ||
                 object instanceof java.lang.Short ||

@@ -7,13 +7,12 @@ package de.michab.scream.binding;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,6 @@ import org.smack.util.JavaUtil;
 import org.smack.util.Pair;
 import org.smack.util.ReflectionUtil;
 import org.smack.util.StringUtil;
-import org.smack.util.collections.OneToN;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Bool;
@@ -34,7 +32,6 @@ import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.SchemeString;
-import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Vector;
 import de.michab.scream.util.Scut;
 
@@ -48,11 +45,12 @@ public class JavaClassAdapter
     /**
      * The logger for this class.
      */
+    @SuppressWarnings("unused")
     private final static Logger LOG =
             Logger.getLogger( JavaClassAdapter.class.getName() );
 
     /**
-     * Holds the already constructed ClassAdpeters.
+     * Holds the already constructed ClassAdapters.
      */
     private final static HashMap<String, JavaClassAdapter> _classAdapterInstances =
             new HashMap<String, JavaClassAdapter>();
@@ -63,16 +61,6 @@ public class JavaClassAdapter
     private final Class<?> _clazz;
 
     /**
-     * A map of _methods.
-     * Maps a pair(name,parameterCount) to a list of methods.
-     */
-    private final OneToN<Pair<String, Integer>, Method, ArrayList<Method>>
-    _methodMap =
-            new OneToN<>( ArrayList<Method>::new );
-
-    private final Method[] _methods;
-
-    /**
      * Constructs a class adapter for the passed class.
      *
      * @param clazz The class to create an adapter for.
@@ -80,13 +68,6 @@ public class JavaClassAdapter
     private JavaClassAdapter( Class<?> clazz )
     {
         _clazz = clazz;
-
-        _methods = initMethods( clazz );
-
-        for ( Method c : _methods )
-            _methodMap.putValue(
-                    new Pair<>( c.getName(), c.getParameterCount() ),
-                    c );
     }
 
     /**
@@ -98,8 +79,6 @@ public class JavaClassAdapter
     private Method getMethodImpl( String name )
             throws RuntimeX
     {
-        ArrayList<Method> result = new ArrayList<>();
-
         var nameArguments = JavaClassAdapter.makeNameArguments( name );
 
         String braced = nameArguments.right;
@@ -115,15 +94,11 @@ public class JavaClassAdapter
             if ( c.isSynthetic() )
                 continue;
 
-            result.add( c );
+            return c;
         }
 
-        if ( result.isEmpty() )
-            throw RuntimeX.mMethodNotFound( _clazz.getSimpleName() + "#" + nameArguments.left + braced );
-        if ( result.size() > 1 )
-            throw RuntimeX.mInternalError( Symbol.createObject( "notUnique" ) );
-
-        return result.get( 0 );
+        throw RuntimeX.mMethodNotFound(
+                _clazz.getSimpleName() + "#" + nameArguments.left + braced );
     }
 
     public Method getMethod( String name  )
@@ -148,8 +123,6 @@ public class JavaClassAdapter
 
        var cl = get( nameArguments.left );
 
-       ArrayList<Constructor<?>> result = new ArrayList<>();
-
        for ( var c : cl._clazz.getConstructors() )
        {
            if ( ! c.getName().equals( nameArguments.left ) )
@@ -161,15 +134,11 @@ public class JavaClassAdapter
            if ( c.isSynthetic() )
                continue;
 
-           result.add( c );
+           return c;
        }
 
-       if ( result.isEmpty() )
-           throw RuntimeX.mMethodNotFound( nameArguments.left + "<init>" + nameArguments.right );
-       if ( result.size() > 1 )
-           throw RuntimeX.mInternalError( Symbol.createObject( "notUnique" ) );
-
-       return result.get( 0 );
+       throw RuntimeX.mMethodNotFound(
+               nameArguments.left + "<init>" + nameArguments.right );
    }
 
    /**
@@ -189,45 +158,6 @@ public class JavaClassAdapter
 
        return _ctorCache.get( name );
    }
-
-   /**
-     *
-     */
-    private static Method[] initMethods( Class<?> clazz )
-    {
-        HashMap<String, Method> methods =
-                new HashMap<String, Method>();
-
-        // There is no simple way
-        // to get all methods.  getMethods() below returns all public methods
-        // including the inherited ones, while getDeclaredMethods() returns *all*
-        // existing methods on the class but excludes the inherited ones.
-        for ( Method c : clazz.getMethods() )
-        {
-            if ( c.isSynthetic() )
-                continue;
-
-            // For methods the method name also has to be part of the mangled name.
-            String mangled =
-                    c.getName() +
-                    "/" +
-                    mangleArguments( c.getParameterTypes() );
-
-            Method previous = methods.get( mangled );
-            // If we have a method with a similar signature...
-            if ( previous != null )
-                // ...we have to decide which one to use and set this.
-                methods.put( mangled, selectMethod( previous, c ) );
-            else
-                methods.put( mangled, c );
-        }
-
-        // Now the hashtable contains the filtered set of Scream-callable
-        // methods. Finally filter the methods a last time so that all methods in
-        // the array are really callable.
-        return ensureCallAccess(
-                methods.values().toArray( new Method[ methods.size() ] ) );
-    }
 
     /**
      * Get a class adapter instance.
@@ -338,7 +268,7 @@ public class JavaClassAdapter
         }
         catch( InvocationTargetException e )
         {
-            throw SchemeObject.filterException( e, c );
+            throw filterException( e, c );
         }
         catch ( NoSuchMethodException e )
         {
@@ -366,7 +296,7 @@ public class JavaClassAdapter
 
     public  Method[] getMethods()
     {
-        return _methods;
+        return _clazz.getDeclaredMethods();
     }
 
     /**
@@ -406,264 +336,6 @@ public class JavaClassAdapter
     public String toString()
     {
         return _clazz.toString();
-    }
-
-    /**
-     * Computes the methods that can be called on an actual class instance.
-     * <br>
-     *
-     * Reflection FAQ (https://www2.ki.informatik.uni-frankfurt.de/doc/html/java/jdk115/guide/reflection/faq/faq.html):
-     * It is a common error to attempt to invoke an overridden
-     * method by retrieving the overriding method from the target object. This
-     * will not always work, because the overriding method will in general be
-     * defined in a class inaccessible to the caller. For example, the following
-     * code only works some of the time, and will fail when the target object's
-     * class is too private:
-     * {@code
-     *    void invokeCommandOn(Object target, String command) {
-     *      try {
-     *            Method m = target.getClass().getMethod(command, new Class[] {});
-     *            m.invoke(target, new Object[] {});
-     *      } catch ...
-     *    } }
-     *
-     * The workaround is to use a much more complicated algorithm, which starts
-     * with target.getClass() and works up the inheritance chain, looking for a
-     * version of the method in an accessible class.
-     *
-     * This method implements that much more complicated algorithm.
-     *
-     * @param methods The array of methods to be checked on callability.  In case
-     *                an alternate method is identified for calling this will be
-     *                directly entered into the original array, replacing the
-     *                existing but uncallable method.
-     * @return The methods that are allowed to be called on an actual class
-     *         instance.
-     */
-    private static Method[] ensureCallAccess( Method[] methods )
-    {
-        for ( int i = methods.length -1 ; i >= 0 ; i-- )
-        {
-            if ( Modifier.isPublic( methods[i].getDeclaringClass().getModifiers() ) )
-                continue;
-
-            methods[i] = findCallable( methods[i].getDeclaringClass(), methods[i] );
-        }
-
-        return methods;
-    }
-
-    /**
-     * Find a callable representation of the passed method in the inheritance
-     * tree of the passed class.
-     * @param c The class representing one node in the inheritance tree that is
-     *          searched.
-     * @param m The method to look for.
-     * @return A callable alternative for m or in case no alternative was found
-     *         a unmodified reference to m.
-     */
-    private static Method findCallable( Class<?> c, Method m )
-    {
-        // Note: That guy is recursive.  Strategy is to search the passed class
-        // and its interfaces for a method with the same signature like m.  If
-        // nothing is found, we go into recursion with the superclass of c.
-        // If we reached java.lang.object the superclass is null and that is the
-        // final break condition for the recursion.
-
-        // Check recursion break.
-        if ( c == null )
-        {
-            LOG.warning( "JavaClassAdapter.findCallable: " +
-                    "No replacement found.  Return original." );
-            return m;
-        }
-
-        // Get the interfaces of the passed class and search through them.
-        Class<?>[] interfaces = c.getInterfaces();
-        for ( int i = interfaces.length -1 ; i >= 0 ; i-- )
-        {
-            if ( Modifier.isPublic( interfaces[i].getModifiers() ) )
-            {
-                try
-                {
-                    m = interfaces[i].getMethod( m.getName(), m.getParameterTypes() );
-                    // Found it!  Leave...
-                    return m;
-                }
-                catch ( NoSuchMethodException e )
-                {
-                    // No success here.  Continue with the search.
-                }
-            }
-        }
-
-        // Check if the passed class itself has a callable version of the method.
-        if ( Modifier.isPublic( c.getModifiers() ) )
-        {
-            try
-            {
-                m = c.getMethod( m.getName(), m.getParameterTypes() );
-                // Found it!  Leave...
-                return m;
-            }
-            catch ( NoSuchMethodException e )
-            {
-                // No success here.  Continue with the search.
-            }
-        }
-
-        // Not found so far.  Let's try it on the Superclass
-        return findCallable( c.getSuperclass(), m );
-    }
-
-    /**
-     * Decides which of the two passed methods is cheaper to call from
-     * scream and returns this.
-     *
-     * @param l The first method.
-     * @param r The second method.
-     * @return The method that is more efficient to call.
-     */
-    private static Method selectMethod( Method l, Method r )
-    {
-        boolean which = selectArgumentList( l.getParameterTypes(),
-                r.getParameterTypes() );
-
-        // Return value of selectArgumentList has to be interpreted as integer, so
-        // false = 0 and true = 1.
-        if ( ! which )
-        {
-            System.out.println( "Select " + l );
-            System.out.println( "Delete " + r );
-            return l;
-        }
-        else
-        {
-            System.out.println( "Select " + r );
-            System.out.println( "Delete " + l );
-            return r;
-        }
-    }
-
-    /**
-     * Decides which of the two argument lists is cheaper to provide from
-     * scream and returns the according index in boolean form.
-     *
-     * @param l The first argument list.
-     * @param r The second argument list.
-     * @return true if the first arglist should be used, false otherwise.
-     */
-    private static boolean selectArgumentList( Class<?>[] l, Class<?>[] r )
-    {
-        JavaUtil.Assert( l.length == r.length );
-
-        for ( int i = 0 ; i < l.length ; i++ )
-        {
-            if ( l[i] != r[i] )
-            {
-                int am = mapJavaNumber( l[i] );
-                int bm = mapJavaNumber( r[i] );
-
-                return am < bm;
-            }
-        }
-
-        // Signatures were 100% equal? Should be not possible.
-        LOG.warning( "Assertion failed: selectArgumentList 2" );
-        return false;
-    }
-
-    /**
-     * <p>A helper method, simply mapping the Java-defined primitive numeric
-     * types to integer numbers.  Smaller sizes of the type result in a smaller
-     * number.</p>
-     * <p>The method handles all numeric types including arrays of numeric types.
-     * Arrays are mapped to their component type.  It is explicitly undefined
-     * which number is returned for what numeric type.</p>
-     *
-     * @param formal The class to map.  Has to be either one of the primitive
-     *        numeric type representations or an array of these.
-     * @return A corresponding integer.
-     */
-    private static int mapJavaNumber( Class<?> formal )
-    {
-        int result = Integer.MIN_VALUE;
-
-        if ( formal == java.lang.Byte.TYPE )
-            result = 1;
-        else if ( formal == java.lang.Short.TYPE )
-            result = 2;
-        else if ( formal == java.lang.Integer.TYPE )
-            result = 3;
-        else if ( formal == java.lang.Long.TYPE )
-            result = 4;
-        else if ( formal == java.lang.Float.TYPE )
-            result = 5;
-        else if ( formal == java.lang.Double.TYPE )
-            result = 6;
-        else if ( formal.isArray() )
-            result = mapJavaNumber( formal.getComponentType() );
-        else
-            LOG.severe( "Map number failed." );
-
-        return result;
-    }
-
-    /**
-     * Mangles a passed argument list into a string.  Used in general for typesafe
-     * linking with old linkers.  But here we use signature mangling to be able to
-     * detect similar signatures, being different only in the numeric formal args.
-     *
-     * @param formals The argument list to mangle.
-     * @return The mangled argument list.
-     */
-    private static String mangleArguments( Class<?>[] formals )
-    {
-        StringBuffer result = new StringBuffer();
-
-        // For each formal specified...
-        for ( int i = 0 ; i < formals.length ; i++ )
-            // ...append its mangled representation.
-            result.append( mangleFormal( formals[i]  ) );
-
-        return result.toString();
-    }
-
-    /**
-     * Mangles a single formal argument.  This maps java's integer and floating
-     * point primitive types to a common tag.
-     *
-     * @param formal The class to be mangled.
-     * @return The mangled class name.
-     */
-    private static String mangleFormal( Class<?> formal )
-    {
-        if ( formal == java.lang.Byte.TYPE ||
-                formal == java.lang.Short.TYPE ||
-                formal == java.lang.Integer.TYPE ||
-                formal == java.lang.Long.TYPE )
-            // Integer
-            return "I";
-
-        else if ( formal == java.lang.Float.TYPE ||
-                formal == java.lang.Double.TYPE )
-            // Real
-            return "R";
-
-        else if ( formal == java.lang.Character.TYPE )
-            // Character
-            return "C";
-
-        else if ( formal == java.lang.Boolean.TYPE )
-            // Boolean
-            return "B";
-
-        else if ( formal.isArray() )
-            return "[" + mangleFormal( formal.getComponentType() );
-
-        else
-            // Object
-            return "@" + formal.getName();
     }
 
     private static Object mapArray( Class<?> componentType, FirstClassObject[] fcos )
@@ -853,6 +525,12 @@ public class JavaClassAdapter
         }
     }
 
+    public static Object createInstance( String ctorSpec,
+            FirstClassObject[] args ) throws RuntimeX
+    {
+        return createInstance( getCtor( ctorSpec ), args );
+    }
+
     private Object callVariadic(
             SchemeObject instance,
             Method method,
@@ -903,13 +581,17 @@ public class JavaClassAdapter
                     instance.toJava(),
                     initargs );
         }
-        catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
+        catch ( InvocationTargetException e )
+        {
+            throw filterException( e, method );
+        }
+        catch ( IllegalAccessException | IllegalArgumentException e )
         {
             throw RuntimeX.mInvocationException( method, e );
         }
     }
 
-    public Object call(
+    private Object callImpl(
             SchemeObject instance,
             Method method,
             FirstClassObject[] args ) throws RuntimeX
@@ -936,12 +618,23 @@ public class JavaClassAdapter
         }
         catch ( InvocationTargetException e )
         {
-            throw SchemeObject.filterException( e, method );
+            throw filterException( e, method );
         }
         catch ( IllegalAccessException | IllegalArgumentException e )
         {
             throw RuntimeX.mInvocationException( method, e );
         }
+    }
+
+    public Object call(
+            SchemeObject instance,
+            String methodSpec,
+            FirstClassObject[] args ) throws RuntimeX
+    {
+        return callImpl(
+                instance,
+                getMethod( methodSpec ),
+                args  );
     }
 
     private static long assertImpl( Int number, long min, long max )
@@ -999,4 +692,39 @@ public class JavaClassAdapter
                         StringUtil.EMPTY_STRING :
                         split[ 1 ] ) );
     }
+
+    /**
+     * This method is responsible for handling
+     * {@code InvocationTargetException}s.  This means that in
+     * case the exception embedded in an {@code InvocationTargetException}
+     * is a {@code RuntimeX} then this method unpacks and returns this.  In
+     * the other case a new {@code RuntimeX} is created and returned.
+     * Embedded {@code Error}s are unpacked and simply thrown.
+     *
+     * @param ite The exception to filter.
+     * @param context A string to be used in case the embedded exception is not
+     *        an {@code Error} or {@code RuntimeX} and a generic
+     *        exception has to be created.
+     * @return An instance of a {@code RuntimeX} exception.
+     * @throws Error Embedded {@code Error} instances are thrown.
+     */
+    private static RuntimeX filterException( InvocationTargetException ite,
+            Executable context )
+    {
+        Throwable t = ite.getCause();
+        JavaUtil.Assert( t != null );
+
+        try
+        {
+            return (RuntimeX)t;
+        }
+        catch ( Exception ee )
+        {
+            return RuntimeX.mInvocationException(
+                    context,
+                    t );
+        }
+    }
+
+
 }
