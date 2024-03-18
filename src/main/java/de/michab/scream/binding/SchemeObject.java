@@ -11,6 +11,8 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.logging.Logger;
 
+import org.smack.util.ReflectionUtil;
+
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Bool;
@@ -273,29 +275,13 @@ public class SchemeObject
     /**
      * Converts a FirstClassObject into an object suitable for inserting into an
      * argument list for a java method call.
-     * <p>
-     * Currently not all possible conversion are done.  It would be no problem to
-     * change this method so it accepts a int scheme argument and converts this
-     * to a Java double.  This wasn't done because then we need another order of
-     * methods in JavaClassAdapter.  In JDK1.2 the method double abs( double ) is
-     * contained in the method list of java.lang.Math long abs( long ).  As a
-     * result the integer argument <i>always</i> was converted and there was no
-     * possibility to call the integer method.
-     * <p>
-     * A similar example is the trivial boolean conversion that explicitly is
-     * <i>not</i> carried out by this method:  In Scheme everything but #F is #T.
-     * If we would implement this here, the result were that if by chance the
-     * anyType method( boolean ); were the first in the classes method list we
-     * never are able to call another one argument method, since all single arg
-     * calls were catched by this.
      *
-     * @param formal The class expected in the java argument list.
+     * @param formal The class expected in the Java argument list.
      * @param actual The FirstClassObject to convert.
-     * @return An Object resulting from the conversion.  This is ready to be
-     *          inserted into the argument list for an invoke() call.
+     * @return An Object resulting from the conversion.
      * @throws ConversionFailedX Is thrown if the conversion failed.
      */
-    public static Object convertScream2Java(
+    private static Object convertScream2Java(
             Class<?> formal,
             FirstClassObject actual )
                     throws
@@ -303,76 +289,63 @@ public class SchemeObject
     {
         try
         {
-            Object result = null;
-
             // First we check the special case:  A NIL is converted to Java 'null'.
             if ( actual == Cons.NIL )
-                result = null;
+                return null;
+
+            if ( formal.isArray() )
+            {
+                return convertScreamVector2JavaArray(
+                        formal,
+                        Scut.as( Vector.class,actual ) );
+            }
+
+            formal = ReflectionUtil.normalizePrimitives( formal );
 
             // Check for java primitive types
-            else if ( formal == java.lang.Boolean.TYPE )
-                result = Boolean.valueOf( ((Bool)actual).getValue() );
+            if ( formal == java.lang.Boolean.class )
+                return Boolean.valueOf( Scut.as( Bool.class, actual ).getValue() );
 
-            else if ( formal == java.lang.Byte.TYPE )
-                result = Byte.valueOf( (byte)((Int)actual).asLong() );
+            if ( formal == java.lang.Byte.class )
+                return Byte.valueOf( (byte)Scut.as(Int.class,actual).asLong() );
 
-            else if ( formal == java.lang.Short.TYPE )
-                result = Short.valueOf( (short)((Int)actual).asLong() );
+            if ( formal == java.lang.Short.class )
+                return Short.valueOf( (short)((Int)actual).asLong() );
 
-            else if ( formal == java.lang.Integer.TYPE )
-                result = Integer.valueOf( (int)((Int)actual).asLong() );
+            if ( formal == java.lang.Integer.class )
+                return Integer.valueOf( (int)((Int)actual).asLong() );
 
-            else if ( formal == java.lang.Long.TYPE )
-                result = Long.valueOf( ((Int)actual).asLong() );
+            if ( formal == java.lang.Long.class )
+                return Long.valueOf( ((Int)actual).asLong() );
 
-            else if ( formal == java.lang.Float.TYPE )
-                result = Float.valueOf( (float)((Real)actual).asDouble() );
+            if ( formal == java.lang.Float.class )
+                return Float.valueOf( (float)((Real)actual).asDouble() );
 
-            else if ( formal == java.lang.Double.TYPE )
-                result = Double.valueOf( ((Number)actual).asDouble() );
+            if ( formal == java.lang.Double.class )
+                return Double.valueOf( ((Number)actual).asDouble() );
 
-            else if ( formal == java.lang.Character.TYPE )
-                result = Character.valueOf( ((SchemeCharacter)actual).asCharacter() );
+            if ( formal == java.lang.Character.class )
+                return Character.valueOf( ((SchemeCharacter)actual).asCharacter() );
 
-            else if ( formal == java.lang.String.class )
-                result = ((SchemeString)actual).getValue();
+            if ( formal == java.lang.String.class )
+                return ((SchemeString)actual).getValue();
 
             // This handles the special case that a method is called that knows
             // Scream's internal type system.
-            else if ( FirstClassObject.class.isAssignableFrom( formal ) &&
-                    formal.isAssignableFrom( actual.getClass() ) )
-                result = actual;
+            if ( formal.isAssignableFrom( actual.getClass() ) )
+                return actual;
 
-            // Check for and convert arrays.
-            else if ( formal.isArray() )
-            {
-                result = convertScreamVector2JavaArray(
-                        formal,
-                        (de.michab.scream.fcos.Vector)actual );
-            }
+            Object actualValue = actual.toJava();
 
-            // The last chance conversion.
-            else if ( actual instanceof FirstClassObject )
-            {
-                // According to the new rules in this class the instance must never be
-                // null.
-                Object actualValue = actual.toJava();
-
-                if ( formal.isAssignableFrom( actualValue.getClass() ) )
-                    result = actualValue;
-                else
-                    throw new ConversionFailedX( actual, formal );
-            }
-
-            else
-                throw new ConversionFailedX( actual, formal );
-
-            return result;
+            if ( formal.isAssignableFrom( actualValue.getClass() ) )
+                return actualValue;
         }
         catch ( ClassCastException e )
         {
-            throw new ConversionFailedX( actual, formal );
+            // Handle below.
         }
+
+        throw new ConversionFailedX( actual, formal );
     }
 
     /**
@@ -411,7 +384,7 @@ public class SchemeObject
      * @param object The object to be boxed.
      * @return The object representing the box.
      */
-    public static FirstClassObject convertJava2Scream( java.lang.Object object )
+    static FirstClassObject convertJava2Scream( java.lang.Object object )
     {
         // Java nulls are mapped into NIL.
         if ( null == object )

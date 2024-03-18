@@ -14,8 +14,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -33,6 +31,7 @@ import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Vector;
+import de.michab.scream.util.MapWithProducerX;
 import de.michab.scream.util.Scut;
 
 /**
@@ -40,7 +39,7 @@ import de.michab.scream.util.Scut;
  *
  * @author Michael Binz
  */
-public class JavaClassAdapter
+public final class JavaClassAdapter
 {
     /**
      * The logger for this class.
@@ -49,11 +48,9 @@ public class JavaClassAdapter
     private final static Logger LOG =
             Logger.getLogger( JavaClassAdapter.class.getName() );
 
-    /**
-     * Holds the already constructed ClassAdapters.
-     */
-    private final static HashMap<String, JavaClassAdapter> _classAdapterInstances =
-            new HashMap<String, JavaClassAdapter>();
+    private final static MapWithProducerX<Class<?>, JavaClassAdapter, RuntimeException>
+    _classAdapterCache =
+            new MapWithProducerX<>( JavaClassAdapter::new );
 
     /**
      * The {@code java.lang.Class} this object is associated with.
@@ -63,18 +60,49 @@ public class JavaClassAdapter
     /**
      * Constructs a class adapter for the passed class.
      *
-     * @param clazz The class to create an adapter for.
+     * @param cl The class to create an adapter for.
      */
-    private JavaClassAdapter( Class<?> clazz )
+    private JavaClassAdapter( Class<?> cl )
     {
-        _clazz = clazz;
+        _clazz = cl;
+    }
+
+    /**
+     * Get a class adapter instance.
+     *
+     * @param cl The class to create an adapter for.
+     * @return A class adapter for the passed class.
+     */
+    public static JavaClassAdapter get( Class<?> cl )
+    {
+        return _classAdapterCache.get(
+                Objects.requireNonNull( cl ) );
+    }
+
+    /**
+     * Get a class adapter instance.
+     *
+     * @param classname The name of the class.
+     * @return A class adapter for the passed class.
+     */
+    public static JavaClassAdapter get( String classname )
+        throws RuntimeX
+    {
+        try
+        {
+            return get( Class.forName( classname ) );
+        }
+        catch ( ClassNotFoundException e )
+        {
+            throw RuntimeX.mClassNotFound( classname );
+        }
     }
 
     /**
      * A map holding already resolved methods.
      */
-    private final Map<String,Method> _methodCache =
-            new HashMap<>();
+    private final MapWithProducerX<String, Method, RuntimeX> _methodCache =
+            new MapWithProducerX<>( this::getMethodImpl );
 
     private Method getMethodImpl( String name )
             throws RuntimeX
@@ -104,105 +132,53 @@ public class JavaClassAdapter
     public Method getMethod( String name  )
             throws RuntimeX
     {
-        if ( ! _methodCache.containsKey( name ) )
-            _methodCache.put( name, getMethodImpl( name ) );
-
         return _methodCache.get( name );
     }
 
    /**
     * A map holding already resolved constructors.
     */
-   private static final Map<String,Constructor<?>> _ctorCache =
-           new HashMap<>();
+    private static final MapWithProducerX<String,Constructor<?>,RuntimeX> _ctorCache =
+            new MapWithProducerX<>( JavaClassAdapter::getCtorImpl );
 
-   private static Constructor<?> getCtorImpl( String name )
-           throws RuntimeX
-   {
-       var nameArguments = JavaClassAdapter.makeNameArguments( name );
-
-       var cl = get( nameArguments.left );
-
-       for ( var c : cl._clazz.getConstructors() )
-       {
-           if ( ! c.getName().equals( nameArguments.left ) )
-               continue;
-
-           if ( ! c.toString().contains( nameArguments.right ) )
-               continue;
-
-           if ( c.isSynthetic() )
-               continue;
-
-           return c;
-       }
-
-       throw RuntimeX.mMethodNotFound(
-               nameArguments.left + "<init>" + nameArguments.right );
-   }
-
-   /**
-    * Get a named constructor.
-    *
-    * @param name Name in format "classname:ctor-arg-type,...".
-    * @return A constructor.
-    *
-    * @throws RuntimeX
-    * @see {@link #makeNameArguments(String)}
-    */
-   public static Constructor<?> getCtor( String name )
-           throws RuntimeX
-   {
-       if ( ! _ctorCache.containsKey( name ) )
-           _ctorCache.put( name, getCtorImpl( name ) );
-
-       return _ctorCache.get( name );
-   }
-
-    /**
-     * Get a class adapter instance.
-     *
-     * @param cl The class to create an adapter for.
-     * @return A class adapter for the passed class.
-     */
-    static JavaClassAdapter get( Class<?> cl )
+    private static Constructor<?> getCtorImpl( String name )
+            throws RuntimeX
     {
-        Objects.requireNonNull( cl );
+        var nameArguments = JavaClassAdapter.makeNameArguments( name );
 
-        final String key = cl.getName();
+        var cl = get( nameArguments.left );
 
-        // Check if we have a class adapter for this class.
-        JavaClassAdapter result =
-                _classAdapterInstances.get( key );
-
-        if ( null == result )
+        for ( var c : cl._clazz.getConstructors() )
         {
-            // We had no adapter.  So create one...
-            result = new JavaClassAdapter( cl );
-            // ...and put it in the hash table.
-            _classAdapterInstances.put( key, result );
+            if ( ! c.getName().equals( nameArguments.left ) )
+                continue;
+
+            if ( ! c.toString().contains( nameArguments.right ) )
+                continue;
+
+            if ( c.isSynthetic() )
+                continue;
+
+            return c;
         }
 
-        return result;
+        throw RuntimeX.mMethodNotFound(
+                nameArguments.left + "<init>" + nameArguments.right );
     }
 
     /**
-     * Get a class adapter instance.
+     * Get a named constructor.
      *
-     * @param classname The name of the class.
-     * @return A class adapter for the passed class.
+     * @param name Name in format "classname:ctor-arg-type,...".
+     * @return A constructor.
+     *
+     * @throws RuntimeX
+     * @see {@link #makeNameArguments(String)}
      */
-    public static JavaClassAdapter get( String classname )
-        throws RuntimeX
+    public static Constructor<?> getCtor( String name )
+            throws RuntimeX
     {
-        try
-        {
-            return get( Class.forName( classname ) );
-        }
-        catch ( ClassNotFoundException e )
-        {
-            throw RuntimeX.mClassNotFound( classname );
-        }
+        return _ctorCache.get( name );
     }
 
     /**
@@ -671,7 +647,7 @@ public class JavaClassAdapter
     /**
      *
      * @param spec "aName:float,int"
-     * @return Pair{ "aName", "(float,int) }
+     * @return Pair{ "aName", "(float,int)" }
      * @throws RuntimeX
      */
     private static Pair<String,String> makeNameArguments( String spec )
