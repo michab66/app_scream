@@ -540,13 +540,12 @@ public final class ScreamEvaluator implements ScriptEngine
             {
                 checkArgumentCount( 2, args );
 
-                var expOrDef =
-                        args.listRef( 0 );
-                Environment environment = Scut.as(
-                        Environment.class,
-                        args.listRef( 1 ) );
-
-                return expOrDef.evaluate( environment, c );
+                return FirstClassObject.evaluate(
+                        args.listRef( 0 ),
+                        Scut.as(
+                                Environment.class,
+                                args.listRef( 1 ) ),
+                        c );
             }
         };
     }

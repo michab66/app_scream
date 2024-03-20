@@ -15,7 +15,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
 import org.smack.util.Pair;
@@ -35,19 +34,12 @@ import de.michab.scream.util.MapWithProducerX;
 import de.michab.scream.util.Scut;
 
 /**
- * Encapsulates information for an arbitrary Java class.
+ * Encapsulates information on a Java class.
  *
  * @author Michael Binz
  */
 public final class JavaClassAdapter
 {
-    /**
-     * The logger for this class.
-     */
-    @SuppressWarnings("unused")
-    private final static Logger LOG =
-            Logger.getLogger( JavaClassAdapter.class.getName() );
-
     private final static MapWithProducerX<Class<?>, JavaClassAdapter, RuntimeException>
     _classAdapterCache =
             new MapWithProducerX<>( JavaClassAdapter::new );
@@ -55,7 +47,7 @@ public final class JavaClassAdapter
     /**
      * The {@code java.lang.Class} this object is associated with.
      */
-    private final Class<?> _clazz;
+    private final Class<?> _class;
 
     /**
      * Constructs a class adapter for the passed class.
@@ -64,7 +56,7 @@ public final class JavaClassAdapter
      */
     private JavaClassAdapter( Class<?> cl )
     {
-        _clazz = cl;
+        _class = Objects.requireNonNull( cl );
     }
 
     /**
@@ -111,7 +103,7 @@ public final class JavaClassAdapter
 
         String braced = nameArguments.right;
 
-        for ( var c : _clazz.getMethods() )
+        for ( var c : _class.getMethods() )
         {
             if ( ! c.getName().equals( nameArguments.left ) )
                 continue;
@@ -126,7 +118,7 @@ public final class JavaClassAdapter
         }
 
         throw RuntimeX.mMethodNotFound(
-                _clazz.getSimpleName() + "#" + nameArguments.left + braced );
+                _class.getSimpleName() + "#" + nameArguments.left + braced );
     }
 
     public Method getMethod( String name  )
@@ -148,7 +140,7 @@ public final class JavaClassAdapter
 
         var cl = get( nameArguments.left );
 
-        for ( var c : cl._clazz.getConstructors() )
+        for ( var c : cl._class.getConstructors() )
         {
             if ( ! c.getName().equals( nameArguments.left ) )
                 continue;
@@ -232,13 +224,13 @@ public final class JavaClassAdapter
     public Object instantiateInterface()
             throws RuntimeX
     {
-        if ( ! Proxy.isProxyClass( _clazz ) )
-            throw RuntimeX.mNoProxy( _clazz.getName() );
+        if ( ! Proxy.isProxyClass( _class ) )
+            throw RuntimeX.mNoProxy( _class.getName() );
 
         Constructor<?> c = null;
         try
         {
-            c = _clazz.getConstructor( new Class[]{ InvocationHandler.class } );
+            c = _class.getConstructor( new Class[]{ InvocationHandler.class } );
 
             return c.newInstance( new Object[] { new InterfaceInvocationHandler() });
         }
@@ -248,15 +240,15 @@ public final class JavaClassAdapter
         }
         catch ( NoSuchMethodException e )
         {
-            throw RuntimeX.mProxyCannotInstantiate( _clazz.getName() );
+            throw RuntimeX.mProxyCannotInstantiate( _class.getName() );
         }
         catch ( IllegalAccessException e )
         {
-            throw RuntimeX.mIllegalAccess( _clazz.getName() );
+            throw RuntimeX.mIllegalAccess( _class.getName() );
         }
         catch ( InstantiationException e )
         {
-            throw RuntimeX.mProxyCannotInstantiate( _clazz.getName() );
+            throw RuntimeX.mProxyCannotInstantiate( _class.getName() );
         }
     }
 
@@ -267,12 +259,12 @@ public final class JavaClassAdapter
      */
     public Class<?> adapterFor()
     {
-        return _clazz;
+        return _class;
     }
 
     public  Method[] getMethods()
     {
-        return _clazz.getDeclaredMethods();
+        return _class.getDeclaredMethods();
     }
 
     /**
@@ -280,7 +272,7 @@ public final class JavaClassAdapter
      */
     public Field[] getFields()
     {
-        return _clazz.getFields();
+        return _class.getFields();
     }
 
     /**
@@ -295,11 +287,30 @@ public final class JavaClassAdapter
     {
         try
         {
-            return _clazz.getField( name );
+            return _class.getField( name );
         }
         catch ( NoSuchFieldException e )
         {
             throw RuntimeX.mFieldNotFound( name );
+        }
+    }
+
+    public FirstClassObject setField( String name, Object instance, FirstClassObject value )
+            throws RuntimeX
+    {
+        try
+        {
+            Field field = getField( name );
+
+            field.set(
+                    instance,
+                    map( value, field.getType() ) );
+
+            return value;
+        }
+        catch ( IllegalAccessException e )
+        {
+            throw RuntimeX.mCannotModifyConstant( SchemeString.make( name ) );
         }
     }
 
@@ -311,7 +322,7 @@ public final class JavaClassAdapter
     @Override
     public String toString()
     {
-        return _clazz.toString();
+        return _class.toString();
     }
 
     private static Object mapArray( Class<?> componentType, FirstClassObject[] fcos )
@@ -336,7 +347,7 @@ public final class JavaClassAdapter
      * Maps a vector to a Java array.
      *
      * @param componentType The component type) of the result array.
-     * @param vector The Scheme vector to convert.
+     * @param vector The vector to convert.
      * @return The result array.
      * @throws RuntimeX In case of type errors.
      */
@@ -362,11 +373,12 @@ public final class JavaClassAdapter
     }
 
     /**
+     * Maps an FCO to a Java type.
      *
-     * @param fco
-     * @param cl
-     * @return
-     * @throws RuntimeX
+     * @param fco The FCO to map.
+     * @param cl The Java target type.
+     * @return An instance of the passed type.
+     * @throws RuntimeX TYPE_ERROR
      */
     private static Object map( FirstClassObject fco, Class<?> cl )
             throws RuntimeX
@@ -419,7 +431,7 @@ public final class JavaClassAdapter
         throw RuntimeX.mTypeError( SchemeObject.class, fco );
     }
 
-    public static Object createInstanceVariadic(
+    private static Object createInstanceVariadic(
             Constructor<?> method,
             FirstClassObject[] args ) throws RuntimeX
     {

@@ -9,9 +9,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Objects;
-import java.util.logging.Logger;
-
-import org.smack.util.ReflectionUtil;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamEvaluator;
@@ -20,7 +17,6 @@ import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Int;
-import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.SchemeCharacter;
@@ -31,7 +27,6 @@ import de.michab.scream.fcos.Vector;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
-import de.michab.scream.util.ConversionFailedX;
 import de.michab.scream.util.Scut;
 
 /**
@@ -44,12 +39,6 @@ import de.michab.scream.util.Scut;
 public class SchemeObject
     extends Syntax
 {
-    /**
-     * The logger for this class.
-     */
-    private final static Logger LOG =
-            Logger.getLogger( SchemeObject.class.getName() );
-
     /**
      * The name of the type as used by error reporting.
      *
@@ -91,6 +80,9 @@ public class SchemeObject
         {
             _isClass = true;
             _theInstance = adapter.adapterFor();
+
+//            for ( var c : ((Class<?>)_theInstance).getConstructors() )
+//                System.out.println( c );
         }
         else
         {
@@ -273,112 +265,6 @@ public class SchemeObject
     }
 
     /**
-     * Converts a FirstClassObject into an object suitable for inserting into an
-     * argument list for a java method call.
-     *
-     * @param formal The class expected in the Java argument list.
-     * @param actual The FirstClassObject to convert.
-     * @return An Object resulting from the conversion.
-     * @throws ConversionFailedX Is thrown if the conversion failed.
-     */
-    private static Object convertScream2Java(
-            Class<?> formal,
-            FirstClassObject actual )
-                    throws
-                    RuntimeX
-    {
-        try
-        {
-            // First we check the special case:  A NIL is converted to Java 'null'.
-            if ( actual == Cons.NIL )
-                return null;
-
-            if ( formal.isArray() )
-            {
-                return convertScreamVector2JavaArray(
-                        formal,
-                        Scut.as( Vector.class,actual ) );
-            }
-
-            formal = ReflectionUtil.normalizePrimitives( formal );
-
-            // Check for java primitive types
-            if ( formal == java.lang.Boolean.class )
-                return Boolean.valueOf( Scut.as( Bool.class, actual ).getValue() );
-
-            if ( formal == java.lang.Byte.class )
-                return Byte.valueOf( (byte)Scut.as(Int.class,actual).asLong() );
-
-            if ( formal == java.lang.Short.class )
-                return Short.valueOf( (short)((Int)actual).asLong() );
-
-            if ( formal == java.lang.Integer.class )
-                return Integer.valueOf( (int)((Int)actual).asLong() );
-
-            if ( formal == java.lang.Long.class )
-                return Long.valueOf( ((Int)actual).asLong() );
-
-            if ( formal == java.lang.Float.class )
-                return Float.valueOf( (float)((Real)actual).asDouble() );
-
-            if ( formal == java.lang.Double.class )
-                return Double.valueOf( ((Number)actual).asDouble() );
-
-            if ( formal == java.lang.Character.class )
-                return Character.valueOf( ((SchemeCharacter)actual).asCharacter() );
-
-            if ( formal == java.lang.String.class )
-                return ((SchemeString)actual).getValue();
-
-            // This handles the special case that a method is called that knows
-            // Scream's internal type system.
-            if ( formal.isAssignableFrom( actual.getClass() ) )
-                return actual;
-
-            Object actualValue = actual.toJava();
-
-            if ( formal.isAssignableFrom( actualValue.getClass() ) )
-                return actualValue;
-        }
-        catch ( ClassCastException e )
-        {
-            // Handle below.
-        }
-
-        throw new ConversionFailedX( actual, formal );
-    }
-
-    /**
-     * Converts a vector, something like {@code #(1 2 3 4)}, into a Java
-     * array.
-     *
-     * @param formal The array type (a.k.a. component type) for the resulting
-     *        array.
-     * @param actual The scheme vector to convert.
-     * @return The resulting array.
-     * @throws ConversionFailedX In case there were type errors.
-     */
-    private static Object convertScreamVector2JavaArray(
-            Class<?> formal,
-            de.michab.scream.fcos.Vector actual )
-                    throws
-                    RuntimeX
-    {
-        var len = actual.size();
-        Class<?> componentType = formal.getComponentType();
-
-        // Create the result array.
-        Object result = Array.newInstance( componentType, (int)len );
-
-        for ( int i = 0 ; i < len ; i++ )
-            Array.set( result, i, convertScream2Java(
-                    componentType,
-                    actual.get( i ) ) );
-
-        return result;
-    }
-
-    /**
      * Converts a Java object back into Scream's type system.
      *
      * @param object The object to be boxed.
@@ -504,10 +390,8 @@ public class SchemeObject
     /**
      * Sets an attribute on the passed object.
      *
-     * @param attribute The attribute to set.  Attribute has to be of type
-     *        symbol, in all other cases an exception will be thrown.
-     * @param value The value to set.  This has to respect the type of the
-     *        attribute parameter.
+     * @param attribute The attribute to set.
+     * @param value The value to set.
      * @return The attribute's new value.
      * @throws RuntimeX In case the attribute could not be set.
      */
@@ -517,23 +401,11 @@ public class SchemeObject
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        LOG.info( attribute + " = " + value );
-
-        try
-        {
-            Field field = _classAdapter.getField(
-                    attribute.toString() );
-
-            field.set(
-                    _theInstance,
-                    convertScream2Java( field.getType(), value ) );
-
-            return c.accept( value );
-        }
-        catch ( IllegalAccessException e )
-        {
-            throw RuntimeX.mCannotModifyConstant( attribute );
-        }
+        return c.accept(
+                _classAdapter.setField(
+                        attribute.toString(),
+                        _theInstance,
+                        value ) );
     }
 
     private Thunk _processAttributeSet(
@@ -707,6 +579,17 @@ public class SchemeObject
             protected Thunk _executeImpl( Environment e, Cons args,
                     Cont<FirstClassObject> c ) throws RuntimeX
             {
+                try {
+                    Byte by = (byte)7;
+                var xclass = by.getClass();
+                for ( var cc : xclass.getConstructors() )
+                    System.err.println( cc );
+                }
+                catch ( Exception ex )
+                {
+                    ;
+                }
+
                 if ( ! Cons.isProper( args ) )
                     throw RuntimeX.mExpectedProperList( args );
 

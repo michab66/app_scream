@@ -22,6 +22,19 @@ import de.michab.scream.util.Scut;
 public class SchemeObjectTest extends ScreamBaseTest
 {
     @Test
+    public void basic() throws Exception
+    {
+        Class<String> classString = String.class;
+        Class<?> classString2 = Class.forName( "java.lang.String" );
+
+        assertEquals( classString, classString2 );
+
+        String donald = "Donald";
+
+        assertEquals( classString, donald.getClass() );
+    }
+
+    @Test
     public void exists() throws Exception
     {
         var t = makeTester();
