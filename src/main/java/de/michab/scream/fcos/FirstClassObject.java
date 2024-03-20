@@ -61,7 +61,7 @@ public abstract class FirstClassObject
      * @return The thunk.
      * @throws RuntimeX In case the evaluation failed.
      */
-    public Thunk evaluate(
+    protected Thunk evaluate(
         Environment e,
         Cont<FirstClassObject> c )
     {
