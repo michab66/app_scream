@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -64,13 +64,12 @@ import de.michab.scream.util.Scut;
 import de.michab.scream.util.SupplierX;
 
 /**
- * The scream scipt engine.
+ * The scream script engine.
  *
  * @author Michael Binz
  */
 public final class ScreamEvaluator implements ScriptEngine
 {
-    @SuppressWarnings("unused")
     private static Logger LOG =
             Logger.getLogger( ScreamEvaluator.class.getName() );
 
