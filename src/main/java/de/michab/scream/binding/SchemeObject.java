@@ -9,6 +9,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamEvaluator;
@@ -39,6 +40,9 @@ import de.michab.scream.util.Scut;
 public class SchemeObject
     extends Syntax
 {
+    private static Logger LOG =
+            Logger.getLogger( SchemeObject.class.getName() );
+
     /**
      * The name of the type as used by error reporting.
      *
@@ -49,7 +53,7 @@ public class SchemeObject
     /**
      * The instance that is managed.  Note that this must never be null.
      */
-    private final java.lang.Object _theInstance;
+    private final java.lang.Object _delegate;
 
     /**
      * {@code True} if this object represents a Java class,
@@ -79,15 +83,15 @@ public class SchemeObject
         if ( object == null )
         {
             _isClass = true;
-            _theInstance = adapter.adapterFor();
-
-//            for ( var c : ((Class<?>)_theInstance).getConstructors() )
-//                System.out.println( c );
+            _delegate = adapter.adapterFor();
         }
         else
         {
             _isClass = false;
-            _theInstance = object;
+
+//            if ( object instanceof Class<?> )
+//                LOG.severe( ((Class<?>)object).getName() );
+            _delegate = object;
         }
 
         _classAdapter = adapter;
@@ -213,14 +217,14 @@ public class SchemeObject
     @Override
     public Object toJava()
     {
-        return _theInstance;
+        return _delegate;
     }
     static public Object toJava( SchemeObject object )
     {
         if ( object == null )
             return object;
 
-        return object._theInstance;
+        return object._delegate;
     }
 
     @Override
@@ -379,7 +383,7 @@ public class SchemeObject
         try
         {
             return c.accept( convertJava2Scream(
-                    _classAdapter.getField( attribute ).get( _theInstance ) ) );
+                    _classAdapter.getField( attribute ).get( _delegate ) ) );
         }
         catch ( IllegalAccessException e )
         {
@@ -404,7 +408,7 @@ public class SchemeObject
         return c.accept(
                 _classAdapter.setField(
                         attribute.toString(),
-                        _theInstance,
+                        _delegate,
                         value ) );
     }
 
@@ -432,7 +436,7 @@ public class SchemeObject
         {
             SchemeObject otherSo = (SchemeObject)other;
 
-            return _theInstance.equals( otherSo._theInstance );
+            return _delegate.equals( otherSo._delegate );
         }
         catch ( ClassCastException e )
         {
@@ -446,7 +450,7 @@ public class SchemeObject
     @Override
     public String toString()
     {
-        return "@Object:" + _theInstance.getClass().getName() + "=" + _theInstance;
+        return "@Object:" + _delegate.getClass().getName() + "=" + _delegate;
     }
 
     /**
