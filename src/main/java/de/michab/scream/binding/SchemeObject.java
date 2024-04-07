@@ -194,11 +194,12 @@ public class SchemeObject
         if ( methodSpec.length() == 0 )
             throw RuntimeX.mIllegalArgument( methodSpec );
 
-        var classAdapter =
+        var classAdapter = false ?
                 JavaClassAdapter.get(
                         instance._isClass ?
                                 (Class<?>)instance.toJava() :
-                                instance.toJava().getClass() );
+                                instance.toJava().getClass() ) :
+                JavaClassAdapter.get( instance._class );
 
         // No conversion to Fco.
         return c.accept(
@@ -264,6 +265,7 @@ public class SchemeObject
                     c );
         }
 
+        // TODO expect a string and throw type error.
         if ( argsLen == 2 && args0 instanceof Symbol )
         {
             Symbol symbol = (Symbol)args0;
@@ -391,7 +393,7 @@ public class SchemeObject
         try
         {
             return c.accept( convertJava2Scream(
-                    _classAdapter.getField( attribute ).get( _delegate ) ) );
+                    _classAdapter.getField( attribute ).get( _instance ) ) );
         }
         catch ( IllegalAccessException e )
         {
@@ -416,7 +418,7 @@ public class SchemeObject
         return c.accept(
                 _classAdapter.setField(
                         attribute.toString(),
-                        _delegate,
+                        _instance,
                         value ) );
     }
 
@@ -577,6 +579,38 @@ public class SchemeObject
                         Scut.asNotNil( SchemeString.class, args.getCar() );
 
                 return createClass( classname.toJava(), c );
+            }
+        };
+    }
+
+    /**
+     * (scream:java:make-class-object "class-name")
+     *
+     * Creates an object representing a class.
+     */
+    static private Procedure scream_java_make_class_object( Environment e )
+    {
+        return new Procedure( "scream:java:make-class-object", e )
+        {
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args,
+                    Cont<FirstClassObject> c ) throws RuntimeX
+            {
+                if ( ! Cons.isProper( args ) )
+                    throw RuntimeX.mExpectedProperList( args );
+
+                checkArgumentCount(
+                        1,
+                        args );
+
+                SchemeString classname =
+                        Scut.asNotNil( SchemeString.class, args.getCar() );
+
+
+                var x = SchemeObject.make(
+                        JavaClassAdapter.get( classname.toJava() ).adapterFor() );
+
+                return c.accept( x );
             }
         };
     }
@@ -762,6 +796,7 @@ public class SchemeObject
         tle.setPrimitive( scream_java_call( tle ) );
         tle.setPrimitive( describeObjectProcedure( tle ) );
         tle.setPrimitive( scream_java_make_class( tle ) );
+        tle.setPrimitive( scream_java_make_class_object( tle ) );
         tle.setPrimitive( scream_java_to_fco( tle ) );
         return tle;
     }
