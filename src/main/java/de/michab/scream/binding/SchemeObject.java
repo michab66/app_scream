@@ -54,6 +54,7 @@ public class SchemeObject
      * The instance that is managed.  Note that this must never be null.
      */
     private final java.lang.Object _delegate;
+    private final Object _instance;
 
     /**
      * {@code True} if this object represents a Java class,
@@ -65,6 +66,7 @@ public class SchemeObject
      * The instance's class adapter.
      */
     private final JavaClassAdapter _classAdapter;
+    private final Class <?> _class;
 
     /**
      * Create a new SchemeObject for a given object.  In case the
@@ -79,6 +81,9 @@ public class SchemeObject
     private SchemeObject( java.lang.Object object, JavaClassAdapter adapter )
     {
         super( adapter.adapterFor().getName() );
+
+        _instance = object;
+        _class = adapter.adapterFor();
 
         if ( object == null )
         {
@@ -124,6 +129,11 @@ public class SchemeObject
             return (SchemeObject)object;
 
         return new SchemeObject( object );
+    }
+
+    public boolean isClass()
+    {
+        return _instance == null;
     }
 
     private static Thunk createClass(
@@ -448,7 +458,11 @@ public class SchemeObject
     @Override
     public String toString()
     {
-        return "@Object:" + _delegate.getClass().getName() + "=" + _delegate;
+        return "@Object:%s=%s%nclass=%s, instance=%s".formatted(
+                _delegate.getClass().getName(),
+                _delegate,
+                _class,
+                _instance);
     }
 
     /**
@@ -581,17 +595,6 @@ public class SchemeObject
             protected Thunk _executeImpl( Environment e, Cons args,
                     Cont<FirstClassObject> c ) throws RuntimeX
             {
-                try {
-                    Byte by = (byte)7;
-                var xclass = by.getClass();
-                for ( var cc : xclass.getConstructors() )
-                    System.err.println( cc );
-                }
-                catch ( Exception ex )
-                {
-                    ;
-                }
-
                 if ( ! Cons.isProper( args ) )
                     throw RuntimeX.mExpectedProperList( args );
 
