@@ -310,9 +310,7 @@ public class SchemeObject
             return (FirstClassObject)object;
 
         // Everything else must be a Java-native type.
-        return new SchemeObject(
-                object,
-                JavaClassAdapter.get( object.getClass() ) );
+        return SchemeObject.make( object );
     }
 
     private static Thunk _convertJava2Scream(
