@@ -253,8 +253,6 @@ public final class JavaClassAdapter
     }
 
     /**
-     * Returns the class this adapter adapts to.
-     *
      * @return The class this adapter adapts to.
      */
     public Class<?> adapterFor()
@@ -314,11 +312,6 @@ public final class JavaClassAdapter
         }
     }
 
-    /**
-     * Return a string representation of this object.
-     *
-     * @return A string representation of this object.
-     */
     @Override
     public String toString()
     {
@@ -484,8 +477,10 @@ public final class JavaClassAdapter
         }
     }
 
-    public static Object createInstance( Constructor<?> ctor,
-            FirstClassObject[] args ) throws RuntimeX
+    private static Object createInstance(
+            Constructor<?> ctor,
+            FirstClassObject[] args )
+        throws RuntimeX
     {
         if ( ctor.isVarArgs() )
             return createInstanceVariadic( ctor, args );
@@ -513,10 +508,14 @@ public final class JavaClassAdapter
         }
     }
 
-    public static Object createInstance( String ctorSpec,
-            FirstClassObject[] args ) throws RuntimeX
+    public static Object createInstance(
+            String ctorSpec,
+            FirstClassObject[] args )
+        throws RuntimeX
     {
-        return createInstance( getCtor( ctorSpec ), args );
+        return createInstance(
+                getCtor( ctorSpec ),
+                args );
     }
 
     private Object callVariadic(
@@ -696,7 +695,8 @@ public final class JavaClassAdapter
      * @return An instance of a {@code RuntimeX} exception.
      * @throws Error Embedded {@code Error} instances are thrown.
      */
-    private static RuntimeX filterException( InvocationTargetException ite,
+    private static RuntimeX filterException(
+            InvocationTargetException ite,
             Executable context )
     {
         Throwable t = ite.getCause();
@@ -713,6 +713,4 @@ public final class JavaClassAdapter
                     t );
         }
     }
-
-
 }

@@ -7,6 +7,8 @@ package de.michab.scream.binding;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -146,13 +148,13 @@ public class SchemeObjectTest extends ScreamBaseTest
                 o
                 """ );
 
-        assertInstanceOf( SchemeObject.class, result );
-
-        Class<?> cl =
-                (Class<?>)result.toJava();
-        assertEquals(
-                "java.lang.StringBuilder",
-                cl.getName() );
+        var schemeObject = assertInstanceOf(
+                SchemeObject.class,
+                result );
+        assertTrue(
+                schemeObject.isClass() );
+        assertNull(
+                result.toJava() );
     }
 
     @Test

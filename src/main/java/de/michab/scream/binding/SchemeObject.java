@@ -9,7 +9,6 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamEvaluator;
@@ -32,17 +31,14 @@ import de.michab.scream.util.Scut;
 
 /**
  * An instance of this class boxes an entity from the Java object system,
- * e.g. an object or a class. This wraps the object and implements the
- * Scheme/Java call mapping in both directions.
+ * i.e. an object or a class. This wraps the object and implements the
+ * Scheme/Java call mapping.
  *
  * @author Michael G. Binz
  */
 public class SchemeObject
     extends Syntax
 {
-    private static Logger LOG =
-            Logger.getLogger( SchemeObject.class.getName() );
-
     /**
      * The name of the type as used by error reporting.
      *
@@ -51,16 +47,9 @@ public class SchemeObject
     public static final String TYPE_NAME = "object";
 
     /**
-     * The instance that is managed.  Note that this must never be null.
+     * The managed instance.  May be {@code null} for classes.
      */
-    private final java.lang.Object _delegate;
     private final Object _instance;
-
-    /**
-     * {@code True} if this object represents a Java class,
-     * {@code false} otherwise.
-     */
-    private final boolean _isClass;
 
     /**
      * The instance's class adapter.
@@ -70,10 +59,8 @@ public class SchemeObject
 
     /**
      * Create a new SchemeObject for a given object.  In case the
-     * passed object instance is {@code null} the
-     * instance will be set to the class adapter's embedded class.
-     * <p>
-     * The resulting SchemeObject then represents a class.
+     * passed object instance is {@code null} the resulting SchemeObject
+     * represents a class.
      *
      * @param object The object to be wrapped by the new instance.
      * @param adapter The class adapter for the new instance.
@@ -84,20 +71,6 @@ public class SchemeObject
 
         _instance = object;
         _class = adapter.adapterFor();
-
-        if ( object == null )
-        {
-            _isClass = true;
-            _delegate = adapter.adapterFor();
-        }
-        else
-        {
-            _isClass = false;
-
-//            if ( object instanceof Class<?> )
-//                LOG.severe( ((Class<?>)object).getName() );
-            _delegate = object;
-        }
 
         _classAdapter = adapter;
     }
@@ -148,7 +121,7 @@ public class SchemeObject
         return c.accept( x );
     }
 
-    private static Thunk createObjectExt(
+    private static Thunk createObject(
             String name,
             FirstClassObject[] ctorArgs,
             Cont<FirstClassObject> c )
@@ -173,18 +146,18 @@ public class SchemeObject
                             new SchemeObject( result ) );
     }
 
-    private static Thunk _createObjectExt(
+    private static Thunk _createObject(
             String className,
             Cons ctorArgs,
             Cont<FirstClassObject> c )
     {
-        return () -> createObjectExt(
+        return () -> createObject(
                 className,
                 Cons.asArray( ctorArgs ),
                 c );
     }
 
-    private static Thunk callExt(
+    private static Thunk call(
             SchemeObject instance,
             String methodSpec,
             FirstClassObject[] args,
@@ -194,12 +167,7 @@ public class SchemeObject
         if ( methodSpec.length() == 0 )
             throw RuntimeX.mIllegalArgument( methodSpec );
 
-        var classAdapter = false ?
-                JavaClassAdapter.get(
-                        instance._isClass ?
-                                (Class<?>)instance.toJava() :
-                                instance.toJava().getClass() ) :
-                JavaClassAdapter.get( instance._class );
+        var classAdapter = JavaClassAdapter.get( instance._class );
 
         // No conversion to Fco.
         return c.accept(
@@ -210,12 +178,12 @@ public class SchemeObject
                                 args  ) ) );
     }
 
-    private Thunk _callExt(
+    private Thunk _call(
             String methodName,
             Cons arguments,
             Cont<FirstClassObject> c )
     {
-        return () -> callExt(
+        return () -> call(
                 this,
                 methodName,
                 Cons.asArray( arguments ),
@@ -228,14 +196,14 @@ public class SchemeObject
     @Override
     public Object toJava()
     {
-        return _delegate;
+        return _instance;
     }
     static public Object toJava( SchemeObject object )
     {
         if ( object == null )
             return object;
 
-        return object._delegate;
+        return object.toJava();
     }
 
     @Override
@@ -252,7 +220,7 @@ public class SchemeObject
 
         if ( argsLen == 1 && FirstClassObject.is( Cons.class, args0 ) )
         {
-            return processInvocation(
+            return invoke(
                     e,
                     Scut.asNotNil( Cons.class, args0 ),
                     c );
@@ -274,7 +242,7 @@ public class SchemeObject
             return Primitives._eval(
                     e,
                     args1,
-                    fco -> _processAttributeSet( symbol, fco, c ) );
+                    fco -> _setAttribute( symbol, fco, c ) );
         }
 
         throw RuntimeX.mInternalError( SchemeObject.class.toString() );
@@ -335,9 +303,9 @@ public class SchemeObject
     }
 
     /**
-     * Converts a Java array into a scream vector.  The passed object must be an
-     * array, i.e. {@code Array.isArray()} must return true for it.  This is
-     * not checked inside this method.
+     * Converts a Java array into a scream vector.  The passed object must be
+     * an array, i.e. {@code Array.isArray()} must return true for it.  This
+     * is not checked inside this method.
      *
      * @param object The object to convert to a vector.
      * @return The resulting vector.
@@ -359,7 +327,7 @@ public class SchemeObject
      * @return The result of the procedure invocation.
      * @throws RuntimeX In case there where access errors.
      */
-    private Thunk processInvocation(
+    private Thunk invoke(
             Environment env,
             Cons list,
             Cont<FirstClassObject> c )
@@ -373,7 +341,7 @@ public class SchemeObject
         return Primitives._evalCons(
                 env,
                 rest,
-                evaluated -> _callExt(
+                evaluated -> _call(
                         string.getValue(),
                         evaluated,
                         c ) );
@@ -422,7 +390,7 @@ public class SchemeObject
                         value ) );
     }
 
-    private Thunk _processAttributeSet(
+    private Thunk _setAttribute(
             Symbol attribute,
             FirstClassObject value,
             Cont<FirstClassObject> c )
@@ -446,7 +414,10 @@ public class SchemeObject
         {
             SchemeObject otherSo = (SchemeObject)other;
 
-            return _delegate.equals( otherSo._delegate );
+            if ( Objects.equals( _instance, otherSo._instance ) )
+                if ( _instance == null )
+                    return Objects.equals( _class, otherSo._class );
+            return true;
         }
         catch ( ClassCastException e )
         {
@@ -460,9 +431,7 @@ public class SchemeObject
     @Override
     public String toString()
     {
-        return "@Object:%s=%s%nclass=%s, instance=%s".formatted(
-                _delegate.getClass().getName(),
-                _delegate,
+        return "@Object:class=%s, instance=%s".formatted(
                 _class,
                 _instance);
     }
@@ -515,7 +484,7 @@ public class SchemeObject
                     e,
                     arguments,
                     evaluated ->
-                    _createObjectExt(
+                    _createObject(
                             name.getValue(),
                             evaluated,
                             object
@@ -547,7 +516,7 @@ public class SchemeObject
                 Cons parameters =
                         Scut.as( Cons.class, args.getCdr() );
 
-                return createObjectExt(
+                return createObject(
                         ctor_spec.toJava(),
                         Cons.asArray( parameters),
                         c );
@@ -646,7 +615,7 @@ public class SchemeObject
                 Cons parameters =
                         Scut.as( Cons.class, args.getCdr() );
 
-                return callExt(
+                return call(
                         instance,
                         arg_spec.getValue(),
                         Cons.asArray( parameters),
