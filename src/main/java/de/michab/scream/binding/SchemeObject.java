@@ -431,7 +431,8 @@ public class SchemeObject
     @Override
     public String toString()
     {
-        return "@Object:class=%s, instance=%s".formatted(
+        return "@%s:class=%s, instance=%s".formatted(
+                TYPE_NAME,
                 _class,
                 _instance);
     }
