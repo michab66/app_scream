@@ -1,12 +1,14 @@
+;
 ; Scream @ https://github.com/urschleim/scream
 ;
 ; Copyright © 1998-2022 Michael G. Binz
+;
 
 ;;
 ;; Used in error messages.
 ;;
 (define scream:type-bool
-  ((make-object de.michab.scream.fcos.Bool) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Bool") "TYPE_NAME"))
 
 ;;
 ;; (boolean? obj) library procedure; 6.3 r7rs 40

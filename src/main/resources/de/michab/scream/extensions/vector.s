@@ -1,10 +1,8 @@
-; $Id: vector.s 8 2008-09-14 14:23:20Z binzm $
 ;
-; Scream / Runtime
+; Scream @ https://github.com/urschleim/scream
 ;
-; Released under Gnu Public License
-; Copyright (c) 1998-2000 Michael G. Binz
-
+; Copyright © 1998-2024 Michael G. Binz
+;
 
 
 ;;
@@ -23,10 +21,10 @@
   (cond
     ;; If the optional argument is not given.
     ((null? filler)
-      (make-object (de.michab.scream.fcos.Vector vlength)))
+      (make-object ("de.michab.scream.fcos.Vector:long" vlength)))
     ;; If the optional argument exists.
     ((= (length filler) 1)
-      (make-object (de.michab.scream.fcos.Vector vlength (car filler))))
+      (make-object ("de.michab.scream.fcos.Vector:long,de.michab.scream.fcos.FirstClassObject" vlength (car filler))))
     ;; If there are more than one optional arguments.
     (else (error "TOO_MANY_ARGUMENTS" 2))))
 
@@ -37,7 +35,7 @@
 ;;
 (define (vector-length v)
   (if (vector? v)
-    ((object v) (size))
+    ((object v) ("size"))
     (error "TYPE_ERROR" %type-vector (scream:typename v))))
 
 
@@ -47,7 +45,7 @@
 ;;
 (define (vector-ref v idx )
   (if (vector? v)
-    ((object v) (get idx))
+    ((object v) ("get:long" idx))
     (error "TYPE_ERROR" %type-vector (scream:typename v) 1)))
 
 
@@ -57,7 +55,7 @@
 ;;
 (define (vector-set! v idx obj)
   (if (vector? v)
-    ((object v) (set idx obj))
+    ((object v) ("set:long,de.michab.scream.fcos.FirstClassObject" idx obj))
     (error "TYPE_ERROR" %type-vector (scream:typename v) 1)))
 
 
@@ -119,5 +117,5 @@
 ;;
 (define (vector-fill! v filler)
   (if (vector? v)
-    ((object v) (fill filler))
+    ((object v) ("fill:de.michab.scream.fcos.FirstClassObject" filler))
     (error "TYPE_ERROR" %type-vector (scream:typename v) 1)))

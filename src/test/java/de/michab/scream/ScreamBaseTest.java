@@ -12,7 +12,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import org.junit.jupiter.api.Test;
@@ -224,30 +223,6 @@ public class ScreamBaseTest
                 return Scut.as(
                         cl,
                         execute( script ) );
-            }
-        };
-    }
-
-    /**
-     * Creates a consumer that performs {@link #expectFco(String, FirstClassObject)}
-     * on the passed parameters.  Used if state should be kept between tests.
-     *
-     * @return A consumer.
-     */
-    protected BiConsumer<String, FirstClassObject>
-    expectFcoConsumer()
-    {
-        ScreamEvaluator se = scriptEngine();
-
-        return (expression, expected) ->
-        {
-            try
-            {
-                expectFco( se, expression, expected );
-            }
-            catch ( RuntimeX e )
-            {
-                fail( e );
             }
         };
     }

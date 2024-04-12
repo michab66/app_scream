@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -10,15 +10,7 @@ import java.util.Arrays;
 import de.michab.scream.RuntimeX;
 
 /**
- * Vectors are heterogeneous structures whose elements are indexed by integers.
- * A vector typically occupies less space than a list of the same length, and
- * the average time required to access a randomly chosen element is typically
- * less for the vector than for the list.  The length of a vector is the number
- * of elements that it contains. This number is a non-negative integer that is
- * fixed when the vector is created. The valid indexes of a vector are the
- * exact non-negative integers less than the length of the vector. The first
- * element in a vector is indexed by zero, and the last element is indexed by
- * one less than the length of the vector.
+ * Implements the Scheme vector type.
  */
 public class Vector
     extends FirstClassObject
@@ -50,7 +42,7 @@ public class Vector
      * Creates an array of the specified size and initializes its slots
      * to the specified value.  Note that each slot is set to the same
      * initial object, so that the elements are equal in the sense of
-     * the scheme predicate eqv?.
+     * the Scheme predicate eqv?.
      *
      * @param size The size of the array to be created.
      * @param initialiser The initial value for the array slots.
@@ -228,5 +220,13 @@ public class Vector
             result[i] = _theArray[i].toJava();
 
         return result;
+    }
+
+    /**
+     * @return An array of fcos holding the vector's elements.
+     */
+    public FirstClassObject[] asArray()
+    {
+        return Arrays.copyOf( _theArray, _theArray.length );
     }
 }

@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream;
 
@@ -64,13 +64,12 @@ import de.michab.scream.util.Scut;
 import de.michab.scream.util.SupplierX;
 
 /**
- * The scream scipt engine.
+ * The scream script engine.
  *
  * @author Michael Binz
  */
 public final class ScreamEvaluator implements ScriptEngine
 {
-    @SuppressWarnings("unused")
     private static Logger LOG =
             Logger.getLogger( ScreamEvaluator.class.getName() );
 
@@ -156,9 +155,10 @@ public final class ScreamEvaluator implements ScriptEngine
         _schemeReport.define(
                 Symbol.createObject( "scream:tle-interpreter" ),
                 _schemeReport );
+        // TODO : not longer needed.
         _schemeReport.define(
                 ANCHOR_SYMBOL,
-                new SchemeObject( this ) );
+                SchemeObject.make( this ) );
         // Load extensions defined in scheme source files.
         addExtensions(
         		_schemeReport,
@@ -326,6 +326,7 @@ public final class ScreamEvaluator implements ScriptEngine
         }
         catch ( Exception x )
         {
+            x.printStackTrace();
             throw RuntimeX.mInternalError( x );
         }
     }
@@ -337,7 +338,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * kernel.schemeExtensions key.
      *
      * @param env The environment used for evaluating the extensions.
-     * @param fileNames The files to load.
+     * @param filename The files to load.
      */
     private void addExtensions(
             Environment env,
@@ -538,13 +539,12 @@ public final class ScreamEvaluator implements ScriptEngine
             {
                 checkArgumentCount( 2, args );
 
-                var expOrDef =
-                        args.listRef( 0 );
-                Environment environment = Scut.as(
-                        Environment.class,
-                        args.listRef( 1 ) );
-
-                return expOrDef.evaluate( environment, c );
+                return FirstClassObject.evaluate(
+                        args.listRef( 0 ),
+                        Scut.as(
+                                Environment.class,
+                                args.listRef( 1 ) ),
+                        c );
             }
         };
     }

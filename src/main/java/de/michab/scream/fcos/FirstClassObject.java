@@ -39,8 +39,11 @@ public abstract class FirstClassObject
      * @return A thunk.
      * @throws RuntimeX In case the evaluation failed.
      */
-    public static Thunk evaluate( FirstClassObject fco, Environment env, Cont<FirstClassObject> c )
-            throws RuntimeX
+    public static Thunk evaluate(
+            FirstClassObject fco,
+            Environment env,
+            Cont<FirstClassObject> c )
+        throws RuntimeX
     {
         if ( fco == Cons.NIL )
             return c.accept( fco );
@@ -58,7 +61,7 @@ public abstract class FirstClassObject
      * @return The thunk.
      * @throws RuntimeX In case the evaluation failed.
      */
-    public Thunk evaluate(
+    protected Thunk evaluate(
         Environment e,
         Cont<FirstClassObject> c )
     {
@@ -285,23 +288,6 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Mark a {@code FirstClassObject} as constant.  Note that it is not
-     * possible to switch from constant to variable, only the state change from
-     * variable to constant is allowed.  Handles NIL values.
-     *
-     * @param fco The {@code FirstClassObject} to modify.
-     * @param what The new value.
-     * @throws IllegalArgumentException In case it has been tried to change the
-     *         state of the {@code FirstClassObject} from constant to
-     *         variable.
-     */
-    static void setConstant( FirstClassObject fco, boolean what )
-    {
-        if ( Cons.NIL != fco )
-            fco.setConstant( what );
-    }
-
-    /**
      * Mark a {@code FirstClassObject} as constant. Handles NIL values.
      *
      * @param fco The {@code FirstClassObject} to modify.
@@ -315,24 +301,8 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Can be used to mark a {@code FirstClassObject} as constant.  Note
-     * that it is not possible to switch from constant to variable, only the
-     * state change from variable to constant is allowed.
-     *
-     * @param what The new value.
-     * @throws IllegalArgumentException In case it has been tried to change the
-     *         state of the {@code FirstClassObject} from constant to
-     *         variable.
+     * Mark a {@code FirstClassObject} as constant.
      */
-    @Deprecated
-    private void setConstant( boolean what )
-    {
-        if ( _isConstant && !what )
-            throw new IllegalArgumentException(
-                    "Constant->variable change not allowed." );
-
-        _isConstant = what;
-    }
     public FirstClassObject setConstant()
     {
         _isConstant = true;

@@ -1,16 +1,15 @@
-; $Id: symbol.s 8 2008-09-14 14:23:20Z binzm $
 ;
-; Scream / String type extensions
+; Scream @ https://github.com/urschleim/scream
 ;
-; Released under Gnu Public License
-; Copyright (c) 1998-2000 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
+;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; scream specific
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (define scream:type-symbol
-  ((make-object de.michab.scream.fcos.Symbol) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.Symbol") "TYPE_NAME"))
 
 ;;
 ;; (symbol? symbol) procedure; r5rs 30
@@ -33,7 +32,7 @@
 ;;
 (define (symbol->string symbol)
   (if (symbol? symbol)
-    ((object symbol) (toString))
+    ((object symbol) ("toString"))
     (error "TYPE_ERROR" %type-symbol (scream:typename symbol))))
 
 
@@ -45,5 +44,5 @@
 ;;
 (define (string->symbol string)
   (if (string? string)
-    ((make-object de.michab.scream.fcos.Symbol) (createObject string))
+    ((make-object "de.michab.scream.fcos.Symbol") ("createObject:java.lang.String" string))
     (error "TYPE_ERROR" %type-string (scream:typename symbol))))

@@ -92,14 +92,24 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
         var e = expectError(
                 "(bytevector 3 1 256)",
                 Code.RANGE_EXCEEDED );
-        assertEquals( i(256), e.getArgument( 0 ) );
+        assertEquals( "256", e.getArgument( 0 ) );
         }
-        {
-        var e = expectError(
+
+        expectFco(
                 "(bytevector 3 1 -1)",
-                Code.RANGE_EXCEEDED );
-        assertEquals( i(-1), e.getArgument( 0 ) );
-        }
+                parse( "#u8(3 1 255)" ) );
+    }
+
+    public void make_bytevector() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "make-bytevector 0 13",
+                parse( "#u8(#x0d #x0d)" ) );
+        t.expectFco(
+                "make-bytevector 2 13",
+                parse( "#u8()" ) );
     }
 
     /**

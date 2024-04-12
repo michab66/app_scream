@@ -1,6 +1,8 @@
+;
 ; Scream @ https://github.com/urschleim/scream
 ;
 ; Copyright © 1998-2024 Michael G. Binz
+;
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Scream definitions.
@@ -8,7 +10,7 @@
 
 ;; Procedure type name.
 (define scream:type-procedure
-  ((make-object de.michab.scream.fcos.Procedure) TYPE_NAME))
+  ((scream:java:make-class "de.michab.scream.fcos.Procedure") "TYPE_NAME"))
 
 ;
 ; Returns true if none of the passed lists is null.
