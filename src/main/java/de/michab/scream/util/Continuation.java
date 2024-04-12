@@ -10,6 +10,7 @@ import java.util.Stack;
 import java.util.function.Consumer;
 
 import org.smack.util.Holder;
+import org.smack.util.JavaUtil.SupplierX;
 
 /**
  * Continuation infrastructure.
@@ -182,6 +183,21 @@ public class Continuation<T, X extends Exception>
             throw exception.get();
 
         return _result.get();
+    }
+
+    private Thunk _toContImpl( SupplierX<T> supplier, Cont<T> c )
+        throws Exception
+    {
+        return c.accept( supplier.get() );
+    }
+    private Thunk _toCont( SupplierX<T> supplier, Cont<T> c )
+    {
+        return () -> _toContImpl( supplier, c );
+    }
+
+    public Thunk toCont( SupplierX<T> supplier, Cont<T> c )
+    {
+        return _toCont( supplier, c );
     }
 
     public void pushExceptionHandler( Cont<X> handler )

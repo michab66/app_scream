@@ -337,7 +337,7 @@ extends FirstClassObject
     {
         Scut.asNotNil( formal, received );
     }
-    
+
     /**
      * Checks if the passed formals represent a valid argument list.
      * <p>
@@ -426,5 +426,11 @@ extends FirstClassObject
                 "#<%s %s>",
                 typename(),
                 getName() );
+    }
+
+    @Override
+    public Object toJava() throws RuntimeX
+    {
+        return this;
     }
 }

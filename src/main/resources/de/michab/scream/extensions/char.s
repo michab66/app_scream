@@ -1,16 +1,15 @@
-; $Id: char.s 8 2008-09-14 14:23:20Z binzm $
 ;
-; Scream / Character type extensions
+; Scream @ https://github.com/urschleim/scream
 ;
-; Released under Gnu Public License
-; Copyright (c) 1998-2000 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
+;
 
 ;;
 ;; Scream definitions.
 ;;
 
 (define scream:type-character
-  ((make-object de.michab.scream.fcos.SchemeCharacter) TYPE_NAME))
+  ((make-object "de.michab.scream.fcos.SchemeCharacter") "TYPE_NAME"))
 
 ;;
 ;; (char? obj) procedure; r5rs 29
@@ -25,7 +24,7 @@
 ;;
 (define (char->integer char)
   (if (char? char)
-    ((object char) (asInteger))
+    ((object char) ("asInteger"))
     (error "TYPE_ERROR" %type-char (scream:typename char))))
 
 
@@ -35,7 +34,7 @@
 ;;
 (define (integer->char i)
   (if (integer? i)
-    ((make-object de.michab.scream.SchemeCharacter) (createObject i))
+    ((make-object "de.michab.scream.SchemeCharacter") (createObject i))
     (error "TYPE_ERROR" %type-integer (scream:typename i))))
 
 
@@ -82,7 +81,7 @@
 ;; Open a special scope to keep the java.lang.Character instance in the local closures.
 ;; Replace the TLE bindings with the function implementations in the let expression.
 ;;
-(let ((char (make-object java.lang.Character)))
+(let ((char (make-object "java.lang.Character")))
 
   ;;
   ;; char-alphabetic? - library procedure - r5rs p. 29
@@ -112,12 +111,12 @@
   ;;
   ;; char-upcase - library procedure - r5rs p. 29
   ;;
-  (set! char-upcase (lambda (x) (char (toUpperCase x))))
+  (set! char-upcase (lambda (x) (char ("toUpperCase:char" x))))
 
   ;;
   ;; char-downcase - library procedure - r5rs p. 29
   ;;
-  (set! char-downcase (lambda (x) (char (toLowerCase x))))
+  (set! char-downcase (lambda (x) (char ("toLowerCase:char" x))))
 
 )
 

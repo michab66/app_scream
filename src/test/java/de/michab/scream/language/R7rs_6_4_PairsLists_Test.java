@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Bool;
+import de.michab.scream.fcos.Cons;
 
 /**
  * rsr7 6.4 Pairs and lists.
@@ -228,7 +228,9 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void schemeMake_List_1() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(make-list 2 3)",
                 "(3 3)" );
     }
