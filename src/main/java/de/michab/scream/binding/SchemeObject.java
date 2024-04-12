@@ -6,8 +6,6 @@
 package de.michab.scream.binding;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Objects;
 
 import de.michab.scream.RuntimeX;
@@ -82,7 +80,7 @@ public class SchemeObject
      */
     private SchemeObject( java.lang.Object object )
     {
-        this( object, JavaClassAdapter.get( object.getClass() ) );
+        this( object, JavaClassAdapter.make( object.getClass() ) );
     }
 
     /**
@@ -114,11 +112,10 @@ public class SchemeObject
             Cont<FirstClassObject> c )
                     throws RuntimeX
     {
-        var x = new SchemeObject(
+        return c.accept(
+            new SchemeObject(
                 null,
-                JavaClassAdapter.get( classname ) );
-
-        return c.accept( x );
+                JavaClassAdapter.make( classname ) ) );
     }
 
     private static Thunk createObject(
@@ -167,7 +164,7 @@ public class SchemeObject
         if ( methodSpec.length() == 0 )
             throw RuntimeX.mIllegalArgument( methodSpec );
 
-        var classAdapter = JavaClassAdapter.get( instance._class );
+        var classAdapter = JavaClassAdapter.make( instance._class );
 
         // No conversion to Fco.
         return c.accept(
@@ -578,7 +575,7 @@ public class SchemeObject
 
 
                 var x = SchemeObject.make(
-                        JavaClassAdapter.get( classname.toJava() ).adapterFor() );
+                        JavaClassAdapter.make( classname.toJava() ).adapterFor() );
 
                 return c.accept( x );
             }
@@ -700,55 +697,6 @@ public class SchemeObject
     }
 
     /**
-     * (describe-object obj) -> #f
-     *
-     * TODO: return a more scheme like representation...
-     */
-    static private Procedure describeObjectProcedure( Environment e )
-    {
-        return new Procedure( "describe-object", e )
-        {
-            @Override
-            public Thunk _apply( Cons args, Cont<FirstClassObject> c )
-                    throws RuntimeX
-            {
-                checkArgumentCount( 1, args );
-
-                try
-                {
-                    SchemeObject so = Scut.as(
-                            SchemeObject.class,
-                            args.listRef( 0 ) );
-
-                    int i;
-
-                    Method[] methods =
-                            so._classAdapter.getMethods();
-                    FirstClassObject[] methodsV =
-                            new FirstClassObject[ methods.length ];
-                    for ( i = 0 ; i < methods.length ; i++ )
-                        methodsV[i] = SchemeString.make( methods[i].toString() );
-
-                    Field[] attributes = so._classAdapter.getFields();
-                    FirstClassObject[] fieldsV = new FirstClassObject[ attributes.length ];
-                    for ( i = 0 ; i < attributes.length ; i++ )
-                        fieldsV[i] = SchemeString.make( attributes[i].toString() );
-
-                    var result =
-                            new Cons( new Vector( methodsV, false ),
-                                    new Vector( fieldsV, false ) );
-
-                    return c.accept( result );
-                }
-                catch ( ClassCastException e )
-                {
-                    throw RuntimeX.mInternalError();
-                }
-            }
-        };
-    }
-
-    /**
      * Object operations setup.
      *
      * @param tle The environment to extend.
@@ -764,7 +712,6 @@ public class SchemeObject
 
         tle.setPrimitive( scream_java_make_instance( tle ) );
         tle.setPrimitive( scream_java_call( tle ) );
-        tle.setPrimitive( describeObjectProcedure( tle ) );
         tle.setPrimitive( scream_java_make_class( tle ) );
         tle.setPrimitive( scream_java_make_class_object( tle ) );
         tle.setPrimitive( scream_java_to_fco( tle ) );

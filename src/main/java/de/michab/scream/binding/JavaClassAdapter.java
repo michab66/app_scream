@@ -38,7 +38,7 @@ import de.michab.scream.util.Scut;
  *
  * @author Michael Binz
  */
-public final class JavaClassAdapter
+final class JavaClassAdapter
 {
     private final static MapWithProducerX<Class<?>, JavaClassAdapter, RuntimeException>
     _classAdapterCache =
@@ -65,7 +65,7 @@ public final class JavaClassAdapter
      * @param cl The class to create an adapter for.
      * @return A class adapter for the passed class.
      */
-    public static JavaClassAdapter get( Class<?> cl )
+    static JavaClassAdapter make( Class<?> cl )
     {
         return _classAdapterCache.get(
                 Objects.requireNonNull( cl ) );
@@ -77,12 +77,12 @@ public final class JavaClassAdapter
      * @param classname The name of the class.
      * @return A class adapter for the passed class.
      */
-    public static JavaClassAdapter get( String classname )
+    static JavaClassAdapter make( String classname )
         throws RuntimeX
     {
         try
         {
-            return get( Class.forName( classname ) );
+            return make( Class.forName( classname ) );
         }
         catch ( ClassNotFoundException e )
         {
@@ -138,7 +138,7 @@ public final class JavaClassAdapter
     {
         var nameArguments = JavaClassAdapter.makeNameArguments( name );
 
-        var cl = get( nameArguments.left );
+        var cl = make( nameArguments.left );
 
         for ( var c : cl._class.getConstructors() )
         {
@@ -258,19 +258,6 @@ public final class JavaClassAdapter
     public Class<?> adapterFor()
     {
         return _class;
-    }
-
-    public  Method[] getMethods()
-    {
-        return _class.getDeclaredMethods();
-    }
-
-    /**
-     * @return The filtered set of fields accessible from Scream.
-     */
-    public Field[] getFields()
-    {
-        return _class.getFields();
     }
 
     /**

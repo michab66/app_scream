@@ -4,6 +4,30 @@
 ; Copyright © 2001-2024 Michael G. Binz
 ;
 
+#| utility-library candidate.
+ |
+ | SO: https://stackoverflow.com/questions/4261604/sorting-a-list-in-scheme
+ |#
+(define (qsort le? to-sort)
+  (if
+    (or (null? to-sort) (<= (length to-sort) 1)) to-sort
+    (let loop (
+      (left '())
+      (right '())
+      (pivot (car to-sort)) (rest (cdr to-sort)))
+      (if (null? rest)
+        (append (append (qsort le? left) (list pivot)) (qsort le? right))
+             (if (le? (car rest) pivot)
+                  (loop (append left (list (car rest))) right pivot (cdr rest))
+                  (loop left (append right (list (car rest))) pivot (cdr rest)))))))
+
+#| string-library candidate.
+ |
+ | Sorts the passed list of strings.
+ |#
+(define (sort-strings strings)
+  (qsort string<=? strings))
+
 #| string-library candidate.
  |
  | Joins the strings delimited by the delimiter.
@@ -32,7 +56,14 @@
 )
 
 #|
+ | Returns information on the constructors, methods and fields of the passed
+ | class.  The resulting list is intended to be used with (assoc ...), do not
+ | expect a particular order of the sublists.
  |
+ | (describe-class class-name)
+ |   => ((constructors "c1" "c2" ...)
+ |       (methods "m1" "m2" ...)
+ |       (fields "f1" "f2" ...))
  |#
 (define (describe-class class-name)
 
@@ -105,52 +136,64 @@
     (list
       (cons 
         'constructors
-        (vector-map
+        (vector->list (vector-map
           ctor->string 
-          constructors
+          constructors)
         )
       )
       (cons 
         'methods
-        (vector-map
+        (vector->list (vector-map
           method->string
-          methods
+          methods)
         )
       )
       (cons 
         'fields
-        (vector-map 
+        (vector->list (vector-map 
           field->string
           fields)
+        )
       )
     )
   )
 )
 
 #|
+ | Prints information on the constructors, methods and fields
+ | of the passed class.
+ |
+ | (display-class java-class-name)
  |
  |#
-(define (display-object class)
-  (define exp `(let* 
+(define (display-class class)
+  (define (do-display what what-list)
+    (scream:display-ln ";" what)
+    (if (null? what-list)
+      (scream:display-ln "None.")
+      (for-each
+        scream:display-ln
+        (sort-strings what-list))))
+
+  (let* 
     (
-      (class-info (make-object ,class))
-      (info (describe-object class-info))      
+      (class-info
+        (describe-class class))
+      (constructors (cdr
+        (assoc 'constructors class-info)))
+      (methods (cdr
+        (assoc 'methods class-info)))
+      (fields (cdr
+        (assoc 'fields class-info)))
     )
-    (scream:display-ln "Operations:")
-    (vector-for-each
-      (lambda (i) (scream:display-ln i))
-      (car info))
-    (scream:display-ln "Members:")
-    (vector-for-each
-      (lambda (i) (scream:display-ln i))
-      (cdr info))
+
+    (do-display "Constructors" constructors)
+    (do-display "Methods" methods)
+    (do-display "Fields" fields)
 
      scream:unspecified
-  ))
-
-  (scream:eval exp)
+  )
 )
-
 #|
  |
  |#
