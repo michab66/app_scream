@@ -7,7 +7,7 @@
 ;;
 ;; Define a symbol holding the current jdk-version.
 ;;
-(define %jdk-version
+(define scream:java:jdk-version
   ((make-object "java.lang.System") ("getProperty:java.lang.String" "java.version")))
 
 ;;
