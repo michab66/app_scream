@@ -12,8 +12,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import org.smack.util.JavaUtil;
@@ -90,6 +93,11 @@ final class JavaClassAdapter
         }
     }
 
+    private static boolean isPublic( Class<?> cl )
+    {
+        return Modifier.isPublic( cl.getModifiers() );
+    }
+
     /**
      * A map holding already resolved methods.
      */
@@ -114,7 +122,9 @@ final class JavaClassAdapter
             if ( c.isSynthetic() )
                 continue;
 
-            return c;
+            // Handle the behavior described here:
+            // https://bugs.java.com/bugdatabase/view_bug?bug_id=4053737
+            return isPublic( _class ) ? c  : findCallable( _class, c ) ;
         }
 
         throw RuntimeX.mMethodNotFound(
@@ -594,7 +604,11 @@ final class JavaClassAdapter
         {
             throw filterException( e, method );
         }
-        catch ( IllegalAccessException | IllegalArgumentException e )
+        catch ( IllegalArgumentException e )
+        {
+            throw RuntimeX.mInvocationException( method, e );
+        }
+        catch ( IllegalAccessException e )
         {
             throw RuntimeX.mInvocationException( method, e );
         }
@@ -699,5 +713,83 @@ final class JavaClassAdapter
                     context,
                     t );
         }
+    }
+
+    /**
+     * Computes the methods that can be called on an actual class instance.
+     *
+     * See https://bugs.java.com/bugdatabase/view_bug?bug_id=4053737
+     *
+     * Reflection FAQ: https://www.cs.cmu.edu/afs/cs/academic/class/15212-s98/www/java/jdk1.1.5/docs/guide/reflection/faq/faq.html
+     * Q: It seems that Method.invoke() sometimes throws an
+     *    IllegalAccessException when invoking a public method. What's going on?
+     * A: It is a common error to attempt to invoke an overridden
+     * method by retrieving the overriding method from the target object. This
+     * will not always work, because the overriding method will in general be
+     * defined in a class inaccessible to the caller. For example, the following
+     * code only works some of the time, and will fail when the target object's
+     * class is too private:
+     * {@code
+     *    void invokeCommandOn(Object target, String command) {
+     *      try {
+     *            Method m = target.getClass().getMethod(command, new Class[] {});
+     *            m.invoke(target, new Object[] {});
+     *      } catch ...
+     *    } }
+     *
+     * The workaround is to use a much more complicated algorithm, which starts
+     * with target.getClass() and works up the inheritance chain, looking for a
+     * version of the method in an accessible class.
+     *
+     * This method implements that much more complicated algorithm.
+     *
+     * @param cl The starting class for the search.
+     * @param method The sought method.
+     *
+     * @return A callable method, or the passed method unmodified if no
+     * replacement was found.
+     */
+    private static Method findCallable( Class<?> cl, Method method )
+    {
+        while ( true )
+        {
+            // We could not find a replacement method.  Return the original
+            // method, resulting in a proper exception on further execution.
+            if ( cl == null )
+                return method;
+
+            var classes =
+                    new ArrayList<>( Arrays.asList( cl.getInterfaces() ) );
+            classes.add(
+                    cl );
+
+            var result = findCallableImpl( classes, method );
+            if ( result != null )
+                return result;
+
+            cl = cl.getSuperclass();
+        }
+    }
+
+    private static Method findCallableImpl( List<Class<?>> classes, Method method )
+    {
+        for ( var c : classes )
+        {
+            if ( ! isPublic( c ) )
+                continue;
+
+            try
+            {
+                return c.getMethod(
+                        method.getName(),
+                        method.getParameterTypes() );
+            }
+            catch ( NoSuchMethodException ignore )
+            {
+                // No success here.  Continue with the search.
+            }
+        }
+
+        return null;
     }
 }
