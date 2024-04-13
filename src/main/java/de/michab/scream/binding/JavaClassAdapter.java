@@ -12,6 +12,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
 import java.util.Objects;
@@ -594,7 +595,22 @@ final class JavaClassAdapter
         {
             throw filterException( e, method );
         }
-        catch ( IllegalAccessException | IllegalArgumentException e )
+        catch ( IllegalArgumentException e )
+        {
+            throw RuntimeX.mInvocationException( method, e );
+        }
+        catch ( IllegalAccessException ignored )
+        {
+            System.out.println( Modifier.isPublic( _class.getModifiers() ) );
+        }
+
+        method = findCallable( instance.toJava().getClass(), method );
+        try {
+            return method.invoke(
+                    instance.toJava(),
+                    initargs );
+        }
+        catch ( Exception e )
         {
             throw RuntimeX.mInvocationException( method, e );
         }
@@ -699,5 +715,107 @@ final class JavaClassAdapter
                     context,
                     t );
         }
+    }
+
+    /**
+     * Computes the methods that can be called on an actual class instance.  This
+     * is the result of a complex algorithm, it is not possible to just call
+     * the methods of a inner class instance implementing a public interface.
+     * See https://bugs.java.com/bugdatabase/view_bug?bug_id=4053737 and the following text from the Reflection FAQ
+     * for descriptions of the non-intuitive behaviors of the reflection API.
+     * And honestly: Though this behaves really like designed, IMHO this is
+     * really a design error.  While one can life with the default behavior, it
+     * doesn't make sense at all, nobody can *use* the default behavior since
+     * it's just simply not working as expected.<br>
+     *
+     * https://bugs.java.com/bugdatabase/view_bug?bug_id=4053737
+     *
+     * Reflection FAQ: https://www.cs.cmu.edu/afs/cs/academic/class/15212-s98/www/java/jdk1.1.5/docs/guide/reflection/faq/faq.html
+     * It seems that Method.invoke() sometimes throws an IllegalAccessException when invoking a public method. What's going on?
+     * It is a common error to attempt to invoke an overridden
+     * method by retrieving the overriding method from the target object. This
+     * will not always work, because the overriding method will in general be
+     * defined in a class inaccessible to the caller. For example, the following
+     * code only works some of the time, and will fail when the target object's
+     * class is too private:
+     * {@code
+     *    void invokeCommandOn(Object target, String command) {
+     *      try {
+     *            Method m = target.getClass().getMethod(command, new Class[] {});
+     *            m.invoke(target, new Object[] {});
+     *      } catch ...
+     *    } }
+     *
+     * The workaround is to use a much more complicated algorithm, which starts
+     * with target.getClass() and works up the inheritance chain, looking for a
+     * version of the method in an accessible class.
+     *
+     * This method implements that much more complicated algorithm.
+     *
+     * @param methods The array of methods to be checked on callability.  In case
+     *                an alternate method is identified for calling this will be
+     *                directly entered into the original array, replacing the
+     *                existing but uncallable method.
+     * @return The methods that are allowed to be called on an actual class
+     *         instance.
+     *
+     * Find a callable representation of the passed method in the inheritance
+     * tree of the passed class.
+     * @param cl The class representing one node in the inheritance tree that is
+     *          searched.
+     * @param m The method to look for.
+     * @return A callable alternative for m or in case no alternative was found
+     *         a unmodified reference to m.
+     */
+    private static Method findCallable( Class<?> cl, Method m )
+    {
+        // Note: This is recursive.  Strategy is to search the passed class
+        // and its interfaces for a method with the same signature like m.  If
+        // nothing is found, we go into recursion with the superclass of c.
+        // If we reached java.lang.object the superclass is null and that is the
+        // final break condition for the recursion.
+
+        System.out.println( "Handle" );
+        // Check recursion break.
+        if ( cl == null )
+        {
+            System.err.println( "JavaClassAdapter.findCallable: " +
+                    "No replacement found.  Return original." );
+            return m;
+        }
+
+        // Get the interfaces of the passed class and search through them.
+        for ( var c : cl.getInterfaces() )
+        {
+            if ( Modifier.isPublic( c.getModifiers() ) )
+            {
+                try
+                {
+                    return c.getMethod(
+                            m.getName(),
+                            m.getParameterTypes() );
+                }
+                catch ( NoSuchMethodException e )
+                {
+                    // No success here.  Continue with the search.
+                }
+            }
+        }
+
+        // Check if the passed class itself has a callable version of the method.
+        if ( Modifier.isPublic( cl.getModifiers() ) )
+        {
+            try
+            {
+                return cl.getMethod( m.getName(), m.getParameterTypes() );
+            }
+            catch ( NoSuchMethodException e )
+            {
+                // No success here.  Continue with the search.
+            }
+        }
+
+        // Not found so far.  Let's try it on the Superclass
+        return findCallable( cl.getSuperclass(), m );
     }
 }

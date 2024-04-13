@@ -249,15 +249,15 @@
 (define (get-environment-variables)
   (let*
     (
-      (system (make-object java.lang.System))
-      (env (system (getenv)))
-      (keySet (env (keySet)))
-      (keyVector (keySet (toArray)))
+      (system (make-object "java.lang.System"))
+      (env (system ("getenv")))
+      (keySet (env ("keySet")))
+      (keyVector (keySet ("toArray")))
     )
 
     (vector->list (vector-map
       (lambda (key)
-        (cons key (env (get key))))
+        (cons key (env ("get:java.lang.Object" key))))
       keyVector))
   )
 )
