@@ -72,10 +72,16 @@ public class RuntimeX
     private final Code _code;
 
     /**
+     * Passed by ctor.
+     */
+    //private final String _msg;
+
+    /**
      * A reference to the arguments to be formatted into the error message.
      * This is never {@code null}.
      */
     private final Object[] _errorArguments;
+    private final Cons _irritants;
 
     /**
      * The name of the operation where the exception occurred.
@@ -183,6 +189,7 @@ public class RuntimeX
                 args == null ?
                     new String[0] :
                     args;
+        _irritants = Cons.NIL;
     }
 
     public RuntimeX( Code c, Object ... args )
@@ -193,6 +200,50 @@ public class RuntimeX
                 args == null ?
                     new String[0] :
                     args;
+        _irritants = Cons.NIL;
+    }
+
+    private static String validateMessage( SchemeString ss )
+    {
+        var result = Objects.requireNonNull( ss ).getValue();
+
+        if ( result.isBlank() )
+            throw new IllegalArgumentException( "Empty message." );
+
+        return result;
+    }
+
+    /**
+     * Strategic target ctor.
+     *
+     * @param operation
+     * @param msg
+     * @param irritants
+     */
+    public RuntimeX(
+            Symbol operation,
+            SchemeString msg,
+            Cons irritants )
+    {
+        super( validateMessage( msg ) );
+
+        _operationName =
+                Objects.requireNonNull( operation );
+
+        _code =
+                getCode( msg.getValue() );
+        _irritants =
+                irritants;
+
+        _errorArguments = new Object[0];
+    }
+
+    /**
+     * @return The list of irritants.
+     */
+    public Cons getIrritants()
+    {
+        return _irritants;
     }
 
     /**
@@ -366,6 +417,31 @@ public class RuntimeX
         };
     }
 
+ /**
+  * (error-ext message-string operation-name [irritant1, ...])
+  */
+ static private Procedure errorExtProcedure( Environment e )
+ {
+     return new Procedure( "error-ext", e )
+     {
+         @Override
+         protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                 throws RuntimeX
+         {
+             checkArgumentCount( 2, Integer.MAX_VALUE, args );
+
+             SchemeString message =
+                     Scut.asNotNil( SchemeString.class, args.listRef( 0 ) );
+             Symbol operationName =
+                     Scut.asNotNil( Symbol.class, args.listRef( 1 ) );
+             Cons irritants =
+                     args.listTail( 2 );
+
+             throw new RuntimeX( operationName, message, irritants );
+         }
+     };
+ }
+
     /**
      * @param tle The top-level environment to be extended.
      * @throws RuntimeX
@@ -374,6 +450,7 @@ public class RuntimeX
             throws RuntimeX
     {
         tle.setPrimitive( errorProcedure( tle ) );
+        tle.setPrimitive( errorExtProcedure( tle ) );
         return tle;
     }
 
