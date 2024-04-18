@@ -17,7 +17,7 @@ import de.michab.scream.util.Scut;
  *
  * @author micbinz
  */
-public class Continuation extends Procedure
+public class Continuation extends Procedure implements Cont<FirstClassObject>
 {
     private final Cont<FirstClassObject> _cont;
 
@@ -26,7 +26,7 @@ public class Continuation extends Procedure
      *
      * @param continuation The continuation to execute.
      */
-    private Continuation(
+    public Continuation(
             Cont<FirstClassObject> continuation,
             Environment closure )
     {
@@ -134,5 +134,11 @@ public class Continuation extends Procedure
         tle.define( Symbol.createObject( "call/cc" ), ccc );
 
         return tle;
+    }
+
+    @Override
+    public Thunk accept( FirstClassObject result )
+    {
+        return _cont.accept( result );
     }
 }

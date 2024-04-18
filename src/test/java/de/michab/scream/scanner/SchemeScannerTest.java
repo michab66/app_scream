@@ -19,8 +19,8 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.Real;
 import de.michab.scream.fcos.Int;
+import de.michab.scream.fcos.Real;
 import de.michab.scream.frontend.SchemeScanner7;
 import de.michab.scream.frontend.Token;
 import de.michab.scream.frontend.Token.Tk;
@@ -99,7 +99,8 @@ public class SchemeScannerTest extends ScreamBaseTest
         catch ( RuntimeX rx )
         {
             assertEquals( Code.SCAN_UNEXPECTED_CHAR, rx.getCode() );
-            assertEquals( "#\\xFFFF1", rx.getArgument( 2 ) );
+            assertEquals(
+                    str( "#\\xFFFF1" ), rx.getArgument( 2 ) );
         }
     }
     @Test
@@ -114,7 +115,7 @@ public class SchemeScannerTest extends ScreamBaseTest
         catch ( RuntimeX rx )
         {
             assertEquals( Code.SCAN_UNEXPECTED_CHAR, rx.getCode() );
-            assertEquals( "#\\xFFFyF", rx.getArgument( 2 ) );
+            assertEquals( str("#\\xFFFyF"), rx.getArgument( 2 ) );
         }
     }
     @Test
@@ -136,7 +137,9 @@ public class SchemeScannerTest extends ScreamBaseTest
         catch ( RuntimeX rx )
         {
             assertEquals( Code.SCAN_UNEXPECTED_CHAR, rx.getCode() );
-            assertEquals( "#\\error", rx.getArgument( 2 ) );
+            assertEquals(
+                    str("#\\error"),
+                    rx.getArgument( 2 ) );
         }
     }
 

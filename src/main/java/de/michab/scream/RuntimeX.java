@@ -14,10 +14,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.smack.util.CachedHolder;
+import org.smack.util.StringUtil;
 
 import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Continuation;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
@@ -27,6 +30,7 @@ import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.ErrorMessages;
 import de.michab.scream.util.Scut;
+import de.michab.scream.util.SourcePosition;
 
 /**
  * An exception to be thrown at run-time of a Scheme program.
@@ -192,7 +196,7 @@ public class RuntimeX
         _irritants = Cons.NIL;
     }
 
-    public RuntimeX( Code c, Object ... args )
+    public RuntimeX( Code c, FirstClassObject ... args )
     {
         super( Objects.requireNonNull( c ).toString() );
         _code = c;
@@ -200,7 +204,7 @@ public class RuntimeX
                 args == null ?
                     new String[0] :
                     args;
-        _irritants = Cons.NIL;
+        _irritants = Cons.create( args );
     }
 
     private static String validateMessage( SchemeString ss )
@@ -456,6 +460,7 @@ public class RuntimeX
 
     //    INTERNAL_ERROR = \
     //    Internal error.
+    @Deprecated(forRemoval = true  )
     public static RuntimeX mInternalError()
     {
         return new RuntimeX(
@@ -464,11 +469,11 @@ public class RuntimeX
 
     //    INTERNAL_ERROR_1 = \
     //    Internal error: {0}.
-    public static RuntimeX mInternalError( Object msg )
+    public static RuntimeX mInternalError( Object ... msg )
     {
         return new RuntimeX(
                 Code.INTERNAL_ERROR,
-                Objects.toString( msg ) );
+                SchemeString.make( StringUtil.concatenate( ", ", msg ) ) );
     }
 
     //    # This functionality is not implemented.
@@ -483,17 +488,20 @@ public class RuntimeX
     public static RuntimeX mNotImplemented( String message )
     {
         return new RuntimeX(
-                Code.NOT_IMPLEMENTED, message );
+                Code.NOT_IMPLEMENTED,
+                SchemeString.make( message ) );
     }
 
-    //    # A symbol is not defined.  The argument should give the symbol name.
-    //    #
-    //    SYMBOL_NOT_DEFINED_1 = \
-    //    Symbol ''{0}'' not defined.
-    public static RuntimeX mSymbolNotDefined( FirstClassObject fco )
+    /**
+     *  A symbol is not defined.  The argument should give the symbol name.
+     *  Symbol ''{0}'' not defined.
+     * @param symbol
+     * @return
+     */
+    public static RuntimeX mSymbolNotDefined( Symbol symbol )
     {
         return new RuntimeX(
-                Code.SYMBOL_NOT_DEFINED, fco );
+                Code.SYMBOL_NOT_DEFINED, symbol );
     }
 
     //    # Error message is related to the scheme set! special form.  Only bound symbols
@@ -503,10 +511,10 @@ public class RuntimeX
     //    #
     //    SYMBOL_NOT_ASSIGNABLE_1 = \
     //    Symbol ''{0}'' is not assignable.
-    public static RuntimeX mSymbolNotAssignable( FirstClassObject fco )
+    public static RuntimeX mSymbolNotAssignable( Symbol symbol )
     {
         return new RuntimeX(
-                Code.SYMBOL_NOT_ASSIGNABLE, fco );
+                Code.SYMBOL_NOT_ASSIGNABLE, symbol );
     }
 
     //    TOO_MANY_SUBEXPRESSIONS = \
@@ -572,22 +580,20 @@ public class RuntimeX
                 actual );
     }
 
-    //    INDEX_OUT_OF_BOUNDS_1 = \
     //    Index out of bounds: {0}
     public static RuntimeX mIndexOutOfBounds( long actual )
     {
         return new RuntimeX(
                 Code.INDEX_OUT_OF_BOUNDS,
-                actual );
+                Int.make( actual ) );
     }
 
-    //    CALLED_NON_PROCEDURAL_1 = \
     //    Attempt to call non-procedural object {0}.
     public static RuntimeX mCalledNonProcedural( FirstClassObject fco )
     {
         return new RuntimeX(
                 Code.CALLED_NON_PROCEDURAL,
-                FirstClassObject.toString( fco ) );
+                fco );
     }
 
     //    INVALID_ASSOC_LIST_1 = \
@@ -623,8 +629,8 @@ public class RuntimeX
 
         return new RuntimeX(
                 Code.TYPE_ERROR,
-                FirstClassObject.typename( expected ),
-                msg );
+                SchemeString.make( FirstClassObject.typename( expected ) ),
+                SchemeString.make( msg ) );
     }
 
     //    TYPE_ERROR_3 = \
@@ -634,9 +640,9 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.TYPE_ERROR,
-                FirstClassObject.typename( expected ),
-                FirstClassObject.typename( found ),
-                argumentIdx );
+                SchemeString.make( FirstClassObject.typename( expected ) ),
+                SchemeString.make( FirstClassObject.typename( found ) ),
+                Int.createObject( argumentIdx ) );
     }
 
     //    NOT_ENOUGH_ARGUMENTS_1 = \
@@ -645,7 +651,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.NOT_ENOUGH_ARGUMENTS,
-                minExpected );
+                Int.make( minExpected ) );
     }
 
     //    NOT_ENOUGH_ARGUMENTS_2 = \
@@ -654,8 +660,8 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.NOT_ENOUGH_ARGUMENTS,
-                minExpected,
-                received );
+                Int.make( minExpected ),
+                Int.make( received ) );
     }
 
     //    TOO_MANY_ARGUMENTS_1 = \
@@ -664,7 +670,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.TOO_MANY_ARGUMENTS,
-                maxExpected );
+                Int.make( maxExpected ) );
     }
 
     //    TOO_MANY_ARGUMENTS_2 = \
@@ -673,8 +679,8 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.TOO_MANY_ARGUMENTS,
-                maxExpected,
-                received );
+                Int.make( maxExpected ),
+                Int.make( received ) );
     }
 
     //    # arg 0: Number of received parameters
@@ -682,7 +688,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.WRONG_NUMBER_OF_ARGUMENTS,
-                received );
+                Int.make( received ) );
     }
 
     //    # arg 0: Number of expected parameters
@@ -694,8 +700,8 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.WRONG_NUMBER_OF_ARGUMENTS,
-                expected,
-                received );
+                Int.make( expected ),
+                Int.make( received ) );
     }
 
     //    # Procedure (map) specific.  First passed argument has to be a procedure, all
@@ -771,7 +777,7 @@ public class RuntimeX
                 Code.EXPECTED_OUTPUT_PORT );
     }
 
-    //    # An I/O error has occured.
+    //    # An I/O error has occurred.
     //    #
     //    # arg 0:  The system message.
     //    #
@@ -781,7 +787,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.IO_ERROR,
-                e.getMessage() );
+                SchemeString.make( e.getMessage() ) );
     }
 
     //    DUPLICATE_FORMAL_1 = \
@@ -808,7 +814,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.CLASS_NOT_FOUND,
-                name );
+                SchemeString.make( name ) );
     }
 
     //    FIELD_NOT_FOUND_1 = \
@@ -817,7 +823,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.FIELD_NOT_FOUND,
-                name );
+                SchemeString.make( name ) );
     }
 
     //    METHOD_NOT_FOUND_1 = \
@@ -826,7 +832,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.METHOD_NOT_FOUND,
-                name );
+                SchemeString.make( name ) );
     }
     //    METHOD_NOT_FOUND_1 = \
     //    Method not found: {0}
@@ -834,7 +840,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.METHOD_NOT_FOUND,
-                name + FirstClassObject.toString( arguments ) );
+                SchemeString.make( name + FirstClassObject.toString( arguments ) ) );
     }
 
     //    ILLEGAL_ACCESS_1 = \
@@ -843,7 +849,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.ILLEGAL_ACCESS,
-                name );
+                SchemeString.make( name ) );
     }
 
     //    # A method invoked by reflection threw an exception.  Note that this exception
@@ -855,8 +861,8 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.INVOCATION_EXCEPTION,
-                method,
-                e.toString() );
+                SchemeString.make( method.toString() ),
+                SchemeString.make( e.toString() ) );
     }
 
     //    # It has been tried to access instance information on a class.
@@ -877,7 +883,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.CREATION_FAILED,
-                name );
+                SchemeString.make( name ) );
     }
 
     //    # An illegal argument was passed into a reflective invocation of a method.
@@ -889,7 +895,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.ILLEGAL_ARGUMENT,
-                name );
+                SchemeString.make( name ) );
     }
 
     //    # An unbalanced quote has been found.
@@ -904,23 +910,40 @@ public class RuntimeX
 
     //    SCAN_UNBALANCED_QUOTE_2 = \
     //    Unbalanced quote found at line {0}, column {1}.
+    @Deprecated
     public static RuntimeX mScanUnbalancedQuote( int line, int column )
     {
         return new RuntimeX(
                 Code.SCAN_UNBALANCED_QUOTE,
-                line,
-                column );
+                Int.make( line ),
+                Int.make( column ) );
+    }
+    public static RuntimeX mScanUnbalancedQuote( SourcePosition position )
+    {
+        return new RuntimeX(
+                Code.SCAN_UNBALANCED_QUOTE,
+                Int.make( position.line() ),
+                Int.make( position.column() ) );
     }
 
     //    SCAN_UNEXPECTED_CHAR_3 = \
     //    Unexpected character ''{2}'' found at line {0}, column {1}.
+    @Deprecated
     public static RuntimeX mScanUnexpectedCharacter( int line, int col, String character )
     {
         return new RuntimeX(
                 Code.SCAN_UNEXPECTED_CHAR,
-                line,
-                col,
-                character );
+                Int.make( line ),
+                Int.make( col ),
+                SchemeString.make( character ) );
+    }
+    public static RuntimeX mScanUnexpectedChar( SourcePosition position, String character )
+    {
+        return new RuntimeX(
+                Code.SCAN_UNEXPECTED_CHAR,
+                Int.make( position.line() ),
+                Int.make( position.column() ),
+                SchemeString.make( character ) );
     }
 
     //    ERROR = \
@@ -941,7 +964,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.PARSE_EXPECTED,
-                token );
+                SchemeString.make( token.toString() ) );
     }
 
     //    # The parser found a premature end of file.
@@ -962,7 +985,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.PARSE_UNEXPECTED,
-                token );
+                SchemeString.make( token.toString() ) );
     }
 
     //    INTERRUPTED = \
@@ -998,7 +1021,7 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.NO_PROXY,
-                name );
+                SchemeString.make( name ) );
     }
 
     //    PROXY_CANT_INSTANCIATE = \
@@ -1014,20 +1037,20 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.PROXY_CANNOT_INSTANTIATE,
-                name );
+                SchemeString.make( name ) );
     }
 
     //    # Will be used in automatic regression testing.
     //    #
     //    TEST_FAILED_2 = \
     //    Test {0}#{1} failed.
-    public static RuntimeX mTestFailed( String group, String name )
-    {
-        return new RuntimeX(
-                Code.TEST_FAILED,
-                group,
-                name );
-    }
+//    public static RuntimeX mTestFailed( String group, String name )
+//    {
+//        return new RuntimeX(
+//                Code.TEST_FAILED,
+//                group,
+//                name );
+//    }
 
     //    ONLY_IN_QUASIQUOTE_CONTEXT = \
     //    Only applicable in quasiquote template.
@@ -1043,8 +1066,8 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.RADIX_NOT_SUPPORTED,
-                radix,
-                maxRadix );
+                Int.createObject( radix ),
+                Int.createObject( maxRadix ) );
     }
 
     //    # A list contained a duplicate element.  Used in case-syntax.
@@ -1078,12 +1101,12 @@ public class RuntimeX
 
     // SCAN_UNBALANCED_COMMENT_2 = \
     // Unbalanced comment found at line {0}, column {1}.
-    public static RuntimeX mScanUnbalancedComment( int line, int column )
+    public static RuntimeX mScanUnbalancedComment( SourcePosition position )
     {
         return new RuntimeX(
                 Code.SCAN_UNBALANCED_COMMENT,
-                line,
-                column );
+                Int.make( position.line() ),
+                Int.make( position.column() ) );
     }
 
     // RANGE_EXCEEDED_1 = \
@@ -1093,7 +1116,7 @@ public class RuntimeX
         return new RuntimeX(
                 Code.RANGE_EXCEEDED,
                 fco,
-                rangeDescription );
+                SchemeString.make( rangeDescription ) );
     }
 
     /**
@@ -1117,7 +1140,9 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.RAISE,
-                continuable,
+                continuable == null ?
+                        null :
+                        new Continuation( continuable, null ),
                 fco );
     }
 

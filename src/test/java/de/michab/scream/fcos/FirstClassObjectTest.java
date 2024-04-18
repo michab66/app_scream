@@ -37,8 +37,8 @@ public class FirstClassObjectTest extends ScreamBaseTest
         catch ( RuntimeX rx )
         {
             assertEquals( Code.TYPE_ERROR, rx.getCode() );
-            assertEquals( "symbol", rx.getArgument(0) );
-            assertEquals( "string=\"123\"", rx.getArgument(1) );
+            assertEquals( SchemeString.make( "symbol" ), rx.getArgument(0) );
+            assertEquals( SchemeString.make( "string=\"123\"" ), rx.getArgument(1) );
         }
     }
 }

@@ -306,8 +306,25 @@ public class SchemeString
         uncheckedFill( filler );
     }
 
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( obj == null )
+            return false;
+        if ( this == obj )
+            return true;
+        try {
+            return getValue().equals(
+                    getClass().cast( obj ).getValue() );
+        }
+        catch ( ClassCastException ignored )
+        {
+            return false;
+        }
+    }
+
     /**
-     * The implementation of the scheme equal? procedure.  This is the least
+     * The implementation of the Scheme equal? procedure.  This is the least
      * efficient one since lists and arrays are deep compared. For other types
      * eqv? is used.
      *

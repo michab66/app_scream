@@ -51,7 +51,7 @@ public class RuntimeXTest extends ScreamBaseTest
                 ErrorMessages.map.containsKey( Code.BAD_BINDING.toString() )
         );
 
-        var se = new RuntimeX( Code.BAD_BINDING, "unknown" );
+        var se = new RuntimeX( Code.BAD_BINDING, s( "unknown" ) );
 
         assertEquals(
                 Code.BAD_BINDING,
@@ -190,7 +190,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mInternalError( "313" ),
                 Code.INTERNAL_ERROR,
-                "313" );
+                str("313") );
     }
     @Test
     public void _0_notImplemented() throws Exception
@@ -205,7 +205,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mNotImplemented( "donald" ),
                 Code.NOT_IMPLEMENTED,
-                "donald" );
+                str( "donald" ) );
     }
     @Test
     public void _1_symbolNotDefined() throws Exception
@@ -281,7 +281,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mIndexOutOfBounds( 7 ),
                 Code.INDEX_OUT_OF_BOUNDS,
-                7L );
+                i(7) );
     }
     @Test
     public void _8_calledNonProcedural() throws Exception
@@ -289,7 +289,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mCalledNonProcedural( s313 ),
                 Code.CALLED_NON_PROCEDURAL,
-                s313.toJava() );
+                s313 );
     }
     @Test
     public void _9_invalidAssocList() throws Exception
@@ -313,8 +313,8 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mTypeError( Cons.class, d(313) ),
                 Code.TYPE_ERROR,
-                FirstClassObject.typename( Cons.class ),
-                FirstClassObject.typename( Real.class ) + "=313.0" );
+                str( FirstClassObject.typename( Cons.class ) ),
+                str( FirstClassObject.typename( Real.class ) + "=313.0" ) );
     }
     @Test
     public void _11_typeError3() throws Exception
@@ -322,9 +322,9 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mTypeError( Cons.class, Port.class, 313 ),
                 Code.TYPE_ERROR,
-                FirstClassObject.typename( Cons.class ),
-                FirstClassObject.typename( Port.class ),
-                313 );
+                str( FirstClassObject.typename( Cons.class ) ),
+                str( FirstClassObject.typename( Port.class ) ),
+                i313 );
     }
     @Test
     public void _12_notEnoughArguments() throws Exception
@@ -332,7 +332,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mNotEnoughArguments( 313 ),
                 Code.NOT_ENOUGH_ARGUMENTS,
-                313L );
+                i313 );
     }
     @Test
     public void _12_notEnoughArguments2() throws Exception
@@ -340,8 +340,8 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mNotEnoughArguments( 313, 314 ),
                 Code.NOT_ENOUGH_ARGUMENTS,
-                313L,
-                314L );
+                i313,
+                i(314) );
     }
     @Test
     public void _13_tooManyArguments1() throws Exception
@@ -349,7 +349,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mTooManyArguments( 313 ),
                 Code.TOO_MANY_ARGUMENTS,
-                313L );
+                i313 );
     }
     @Test
     public void _13_tooManyArguments2() throws Exception
@@ -357,8 +357,8 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mTooManyArguments( 313, 314 ),
                 Code.TOO_MANY_ARGUMENTS,
-                313L,
-                314L );
+                i313,
+                i(314) );
     }
     @Test
     public void _14_wrongNumberOfArguments1() throws Exception
@@ -366,7 +366,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mWrongNumberOfArguments( 313 ),
                 Code.WRONG_NUMBER_OF_ARGUMENTS,
-                313L );
+                i313 );
     }
     @Test
     public void _14_wrongNumberOfArguments2() throws Exception
@@ -374,8 +374,8 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mWrongNumberOfArguments( 313, 314 ),
                 Code.WRONG_NUMBER_OF_ARGUMENTS,
-                313L,
-                314L );
+                i313,
+                i(314) );
     }
     @Test
     public void _15_requiresEquivalentConsLen() throws Exception
@@ -437,7 +437,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mIoError( iox ),
                 Code.IO_ERROR,
-                iox.getMessage() );
+                str( iox.getMessage() ) );
     }
     @Test
     public void _23_duplicateFormal1() throws Exception
@@ -463,7 +463,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mClassNotFound( what ),
                 Code.CLASS_NOT_FOUND,
-                what );
+                str( what ) );
     }
     @Test
     public void _26_fieldNotFound1() throws Exception
@@ -473,7 +473,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mFieldNotFound( what ),
                 Code.FIELD_NOT_FOUND,
-                what );
+                str( what ) );
     }
     @Test
     public void _27_methodNotFound1() throws Exception
@@ -483,7 +483,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mMethodNotFound( what ),
                 Code.METHOD_NOT_FOUND,
-                what );
+                str( what ) );
     }
     @Test
     public void _27_methodNotFound2() throws Exception
@@ -493,7 +493,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mMethodNotFound( what, Cons.create( i1, i2 ) ),
                 Code.METHOD_NOT_FOUND,
-                "what(1 2)" );
+                str( "what(1 2)" ) );
     }
     @Test
     public void _28_illegalAccess1() throws Exception
@@ -503,7 +503,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mIllegalAccess( what ),
                 Code.ILLEGAL_ACCESS,
-                what );
+                str( what ) );
     }
     @Test
     public void _29_invocationException1() throws Exception
@@ -514,8 +514,8 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mInvocationException( executable, throwable ),
                 Code.INVOCATION_EXCEPTION,
-                executable,
-                throwable.toString() );
+                str( executable.toString() ),
+                str( throwable.toString() ) );
     }
     @Test
     public void _30_cannotAcessInstance1() throws Exception
@@ -532,7 +532,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mCreationFailed( what ),
                 Code.CREATION_FAILED,
-                what );
+                str( what ) );
     }
     @Test
     public void _32_illegalArgument() throws Exception
@@ -542,7 +542,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mIllegalArgument( what ),
                 Code.ILLEGAL_ARGUMENT,
-                what );
+                str( what ) );
     }
     @Test
     public void _33_scanUnbalancedQuote() throws Exception
@@ -557,8 +557,8 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mScanUnbalancedQuote( 1, 2 ),
                 Code.SCAN_UNBALANCED_QUOTE,
-                1,
-                2 );
+                i1,
+                i2 );
     }
     @Test
     public void _34_scanUnexpectedCharacter() throws Exception
@@ -568,9 +568,9 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mScanUnexpectedCharacter( 1, 2, what ),
                 Code.SCAN_UNEXPECTED_CHAR,
-                1,
-                2,
-                what );
+                i1,
+                i2,
+                str( what ) );
     }
     @Test
     public void _35_error() throws Exception
@@ -585,7 +585,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mParseExpected( Tk.Dot ),
                 Code.PARSE_EXPECTED,
-                Tk.Dot );
+                str( Tk.Dot.toString() ) );
     }
     @Test
     public void _37_parseUnexpectedEof() throws Exception
@@ -604,7 +604,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mParseUnexpected( token ),
                 Code.PARSE_UNEXPECTED,
-                token );
+                str( token.toString() ) );
     }
     @Test
     public void _39_interrupted() throws Exception
@@ -636,7 +636,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mNoProxy( what ),
                 Code.NO_PROXY,
-                what );
+                str( what ) );
     }
     @Test
     public void _42_ProxyCannotInstantiate() throws Exception
@@ -653,19 +653,7 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mProxyCannotInstantiate( what ),
                 Code.PROXY_CANNOT_INSTANTIATE,
-                what );
-    }
-    @Test
-    public void _43_testFailed2() throws Exception
-    {
-        var a = "a";
-        var b = "b";
-
-        validateMessageAndType(
-                RuntimeX.mTestFailed( a, b ),
-                Code.TEST_FAILED,
-                a,
-                b );
+                str( what ) );
     }
     @Test
     public void _44_onlyInQuasiquoteContext() throws Exception
@@ -680,8 +668,8 @@ public class RuntimeXTest extends ScreamBaseTest
         validateMessageAndType(
                 RuntimeX.mRadixNotSupported( 1, 2 ),
                 Code.RADIX_NOT_SUPPORTED,
-                1,
-                2 );
+                i(1),
+                i(2) );
     }
     @Test
     public void _46_duplicateElement_1() throws Exception
@@ -711,10 +699,10 @@ public class RuntimeXTest extends ScreamBaseTest
     public void _49_scanUnbalancedComment() throws Exception
     {
         validateMessageAndType(
-                RuntimeX.mScanUnbalancedComment( 1, 1 ),
+                RuntimeX.mScanUnbalancedComment( new SourcePosition( 1, 1, null ) ),
                 Code.SCAN_UNBALANCED_COMMENT,
-                1,
-                1);
+                i1,
+                i1);
     }
     @Test
     public void _50_rangeExceeded() throws Exception
@@ -723,6 +711,6 @@ public class RuntimeXTest extends ScreamBaseTest
                 RuntimeX.mRangeExceeded( i313, "> 256" ),
                 Code.RANGE_EXCEEDED,
                 i313,
-                "> 256" );
+                str( "> 256" ) );
     }
 }

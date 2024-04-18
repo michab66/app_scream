@@ -9,6 +9,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Continuation;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Procedure;
@@ -56,9 +57,8 @@ public abstract class R7RsExceptions_6_11
                     {
                         // The continuation to use if we are continuable. This
                         // may be null if the exception is not continuable.
-                        @SuppressWarnings("unchecked")
-                        final Cont<FirstClassObject> continuableContinuation =
-                                (Cont<FirstClassObject>)rx.getArgument( 0 );
+                        final Continuation continuableContinuation =
+                                (Continuation)rx.getArgument( 0 );
 
                         Cont<FirstClassObject> _exit = result -> {
                             return () -> {

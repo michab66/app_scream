@@ -163,7 +163,7 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
             (substring "xxx" 2 8)
             """,
             Code.INDEX_OUT_OF_BOUNDS );
-        assertEquals( 8L, rx.getArgument(0) );
+        assertEquals( i(8), rx.getArgument(0) );
 
         // MIT Scheme examples
         t.expectFco(

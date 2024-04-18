@@ -19,10 +19,11 @@ import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Int;
 import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.Operation;
 import de.michab.scream.fcos.Real;
-import de.michab.scream.fcos.Int;
+import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 
 public class ScutTest extends ScreamBaseTest
@@ -127,7 +128,7 @@ public class ScutTest extends ScreamBaseTest
         {
             assertEquals( Code.TYPE_ERROR, rx.getCode() );
             assertEquals(
-                    FirstClassObject.toString( Cons.NIL ),
+                    SchemeString.make( FirstClassObject.toString( Cons.NIL ) ),
                     rx.getArgument(1) );
         }
     }
@@ -340,10 +341,10 @@ public class ScutTest extends ScreamBaseTest
                     Code.TYPE_ERROR,
                     x.getCode() );
             assertEquals(
-                    FirstClassObject.typename( Int.class ),
+                    SchemeString.make( FirstClassObject.typename( Int.class ) ),
                     x.getArguments()[0] );
             assertEquals(
-                    FirstClassObject.typename( Real.class ) + "=2.0",
+                    SchemeString.make( FirstClassObject.typename( Real.class ) + "=2.0" ),
                     x.getArguments()[1] );
         }
     }

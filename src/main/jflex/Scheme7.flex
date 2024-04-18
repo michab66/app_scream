@@ -410,10 +410,9 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
         matched = matched.replace( "#e", "" );
 
     if ( inexact && exact )
-        throw new FrontendX(
+        throw RuntimeX.mInternalError(
             sourcePosition(),
-            Code.INTERNAL_ERROR,
-            "inexact && exact : " + yytext() );
+            "inexact && exact", yytext() );
 
     if ( ! exact && ! inexact )
         // Default is exact.
@@ -457,9 +456,8 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     }
     catch ( NumberFormatException e )
     {
-        throw new FrontendX(
+        throw RuntimeX.mInternalError(
             sourcePosition(),
-            Code.INTERNAL_ERROR,
             e.getMessage() );
     }
   }
@@ -476,10 +474,9 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
         matched = matched.replace( "#e", "" );
 
     if ( inexact && exact )
-        throw new FrontendX(
+        throw RuntimeX.mInternalError(
             sourcePosition(),
-            Code.INTERNAL_ERROR,
-            "inexact && exact : " + yytext() );
+            "inexact && exact", yytext() );
 
     if ( ! exact && ! inexact )
         // Default is inexact.
@@ -495,10 +492,9 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     }
     catch ( NumberFormatException e )
     {
-        throw new FrontendX(
+        throw RuntimeX.mInternalError(
             sourcePosition(),
-            Code.INTERNAL_ERROR,
-            e.getMessage() );
+            e );
     }
   }
 
@@ -546,21 +542,20 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
   // Catch unbalanced double quotes
   \"({stringelement})*{line_ending} {
-    throw new FrontendX( sourcePosition(), Code.SCAN_UNBALANCED_QUOTE );
+    throw RuntimeX.mScanUnbalancedQuote( sourcePosition() );
   }
 
   // Catch unmatched characters.
   . {
-    throw new FrontendX( 
+    throw RuntimeX.mScanUnexpectedChar( 
         sourcePosition(),
-        Code.SCAN_UNEXPECTED_CHAR,
         yytext() );
   }
 
   // Catch unmatched nested comments.  An NC_END token must never
   // be visible in YYINITIAL.
   {NC_END} {
-      throw RuntimeX.mScanUnbalancedComment( getLine(), getColumn() );
+      throw RuntimeX.mScanUnbalancedComment( sourcePosition() );
   }
 }
 
@@ -578,7 +573,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     else if ( commentNestCount > 0 )
       ;
     else
-      throw RuntimeX.mScanUnbalancedComment( getLine(), getColumn() );
+      throw RuntimeX.mScanUnbalancedComment( sourcePosition() );
   }
 
   /* The first pattern consumes everything but the characters
@@ -596,7 +591,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
 <<EOF>> {
   if ( commentNestCount > 0 )
-      throw RuntimeX.mScanUnbalancedComment( getLine(), getColumn() );
+      throw RuntimeX.mScanUnbalancedComment( sourcePosition() );
 
   return new Token( Tk.Eof, sourcePosition() );
 }
