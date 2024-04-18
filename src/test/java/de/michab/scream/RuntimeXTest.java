@@ -34,7 +34,7 @@ public class RuntimeXTest extends ScreamBaseTest
     {
         try
         {
-            new RuntimeX( "" );
+            new RuntimeX( str("") );
             fail();
         }
         catch ( IllegalArgumentException expected )
@@ -61,7 +61,7 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void internalError() throws Exception
     {
-        var se = new RuntimeX( Code.INTERNAL_ERROR.name() );
+        var se = new RuntimeX( str( Code.INTERNAL_ERROR.name() ) );
 
         assertEquals(
                 Code.INTERNAL_ERROR,
@@ -73,7 +73,7 @@ public class RuntimeXTest extends ScreamBaseTest
     {
         final var name = "Gobbledigoog";
 
-        var se = new RuntimeX( name );
+        var se = new RuntimeX( str( name ) );
 
         assertEquals(
                 Code.ERROR,
@@ -89,7 +89,7 @@ public class RuntimeXTest extends ScreamBaseTest
     public void undefinedNameAndIrritants() throws Exception
     {
         var se = new RuntimeX(
-                "Gobbledigoog",
+                str( "Gobbledigoog" ),
                 i313,
                 i1,
                 s313,
@@ -120,7 +120,10 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void _badBinding() throws Exception
     {
-        var se = new RuntimeX( Code.BAD_BINDING.name(), "a1", "a2" );
+        var se = new RuntimeX(
+                str( Code.BAD_BINDING.name() ),
+                str( "a1" ),
+                str( "a2" ) );
 
         assertEquals(
                 Code.BAD_BINDING,
@@ -152,7 +155,7 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void unknownCode() throws Exception
     {
-        var rx = new RuntimeX( "duck" );
+        var rx = new RuntimeX( str( "duck" ) );
         assertEquals( Code.ERROR, rx.getCode() );
         assertEquals( Code.ERROR + " : duck", rx.getMessage() );
     }
@@ -160,7 +163,9 @@ public class RuntimeXTest extends ScreamBaseTest
     @Test
     public void unknownName() throws Exception
     {
-            var sex = new RuntimeX( ".UNKNOWN", 1, 2, 3 );
+            var sex = new RuntimeX(
+                    str( ".UNKNOWN" ),
+                    i1, i2, i3 );
             assertEquals( Code.ERROR, sex.getCode() );
             assertEquals( Code.ERROR + " : .UNKNOWN 1 2 3", sex.getMessage() );
     }

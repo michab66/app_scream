@@ -92,7 +92,7 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
         var e = expectError(
                 "(bytevector 3 1 256)",
                 Code.RANGE_EXCEEDED );
-        assertEquals( "256", e.getArgument( 0 ) );
+        assertEquals( i(256), e.getArgument( 0 ) );
         }
 
         expectFco(

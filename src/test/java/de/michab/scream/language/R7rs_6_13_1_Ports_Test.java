@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Procedure;
-import de.michab.scream.fcos.Bool;
 
 /**
  * r7rs 6.13.1 Ports p56
@@ -72,15 +72,15 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
     public void call_with_port_err_2() throws Exception
     {
         RuntimeX rx = expectError( "(call-with-port 1 2)", Code.TYPE_ERROR );
-        assertEquals( "port", rx.getArgument( 0 ) );
-        assertEquals( "integer",rx.getArgument( 1 ) );
+        assertEquals( str( "port" ), rx.getArgument( 0 ) );
+        assertEquals( str( "integer" ),rx.getArgument( 1 ) );
     }
     @Test
     public void call_with_port_err_3() throws Exception
     {
         var rx = expectError( "(call-with-port (current-input-port) 2)", Code.TYPE_ERROR );
-        assertEquals( "procedure", rx.getArgument( 0 ) );
-        assertEquals( "integer", rx.getArgument( 1 ) );
+        assertEquals( str( "procedure" ), rx.getArgument( 0 ) );
+        assertEquals( str( "integer" ) , rx.getArgument( 1 ) );
     }
 
     /**
@@ -263,7 +263,7 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
         var se = scriptEngine();
 
         {
-        	expectFco( 
+        	expectFco(
         			se,
                 """
                 (define ibv (open-input-bytevector #u8(1 2 3)))
@@ -272,25 +272,25 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
                bTrue );
         }
         {
-        	expectFco( 
+        	expectFco(
         			se,
         			"(read-u8 ibv)",
         			i(1) );
         }
         {
-        	expectFco( 
+        	expectFco(
         			se,
         			"(read-u8 ibv)",
         			i(2) );
         }
         {
-        	expectFco( 
+        	expectFco(
         			se,
         			"(read-u8 ibv)",
         			i(3) );
         }
         {
-        	expectFco( 
+        	expectFco(
         			se,
         			"(eof-object? (read-u8 ibv))",
         			bTrue );
@@ -301,7 +301,7 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
         var se = scriptEngine();
 
         {
-        	expectFco( 
+        	expectFco(
         			se,
                 """
                 (define ibv (open-input-bytevector #u8()))
@@ -310,7 +310,7 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
                bTrue );
         }
         {
-        	expectFco( 
+        	expectFco(
         			se,
         			"(eof-object? (read-u8 ibv))",
         			bTrue );
@@ -319,10 +319,10 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
     @Test
     public void open_input_bytevector_err() throws Exception
     {
-    	expectError( 
+    	expectError(
     			"(open-input-bytevector 3)",
     			Code.TYPE_ERROR );
-    	expectError( 
+    	expectError(
     			"(open-input-bytevector \"string\")",
     			Code.TYPE_ERROR );
     }

@@ -164,7 +164,7 @@ public class RuntimeX
             new CachedHolder<String>( this::makeMessage );
 
     /**
-     * Creates a Scream exception.
+     * Creates a Scream exception.  Used by the {@code (error ...)} procedure.
      *
      * @param msg The message that will be used as a key into Scream's error
      * message properties. This must be neither null nor a blank string.
@@ -175,20 +175,22 @@ public class RuntimeX
      * @throws NullPointerException In case the passed message was
      * @{code null}.
      */
-    public RuntimeX( String msg, Object ... args )
+    RuntimeX( SchemeString msg, FirstClassObject ... args  )
     {
-        super( Objects.requireNonNull( msg ) );
+        super( Objects.requireNonNull( msg.getValue() ) );
 
-        if ( msg.isBlank() )
+        var msgValue = msg.getValue();
+
+        if ( msgValue.isBlank() )
             throw new IllegalArgumentException( "Empty message." );
 
         _code =
-                getCode( msg );
+                getCode( msg.getValue() );
         _errorArguments =
                 args == null ?
                     new String[0] :
                     args;
-        _irritants = Cons.NIL;
+        _irritants = Cons.create( args );
     }
 
     RuntimeX( Code c, FirstClassObject ... args )
@@ -370,7 +372,7 @@ public class RuntimeX
     }
 
     /**
-     * Scream specific {@code (error ...)} procedure.  Interrupts the
+     * Scream specific {@code (error ...)} procedure.  Stops the
      * current computation with a runtime error.
      */
     static private Procedure errorProcedure( Environment e )
@@ -383,36 +385,40 @@ public class RuntimeX
             {
                 checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
-                String message = createReadable(
-                        Scut.asNotNil( SchemeString.class, args.listRef( 0 ) ) );
+                SchemeString message =
+                        Scut.asNotNil( SchemeString.class, args.listRef( 0 ) );
 
-                Object[] arguments = new Object[ (int)(args.length() -1) ];
-                for ( int i = 1 ; i < (int)(args.length()) ; i++ )
-                    arguments[i-1] = createReadable( args.listRef( i ) );
+//                Object[] arguments = new Object[ (int)(args.length() -1) ];
+//                for ( int i = 1 ; i < (int)(args.length()) ; i++ )
+//                    arguments[i-1] = createReadable( args.listRef( i ) );
 
-                RuntimeX result = new RuntimeX( message, arguments );
+//                RuntimeX result = new RuntimeX( message, arguments );
+                RuntimeX result = new RuntimeX(
+                        message,
+                        Cons.asArray(
+                                Scut.as( Cons.class, args.getCdr() ) ) );
 
                 result.setOperationName( e.getName() );
 
                 throw result;
             }
 
-            /**
-             * Makes a human readable string from a FirstClassObject.  That means for
-             * a Scheme string that the double quotes are removed -- gnah instead
-             * of "gnah" -- and that for all other cases the FCO.toString is called.
-             */
-            private String createReadable( FirstClassObject o )
-            {
-                String result;
-
-                if ( o instanceof SchemeString )
-                    result = ((SchemeString)o).getValue();
-                else
-                    result = FirstClassObject.toString( o );
-
-                return result;
-            }
+//            /**
+//             * Makes a human readable string from a FirstClassObject.  That means for
+//             * a Scheme string that the double quotes are removed -- gnah instead
+//             * of "gnah" -- and that for all other cases the FCO.toString is called.
+//             */
+//            private String createReadable( FirstClassObject o )
+//            {
+//                String result;
+//
+//                if ( o instanceof SchemeString )
+//                    result = ((SchemeString)o).getValue();
+//                else
+//                    result = FirstClassObject.toString( o );
+//
+//                return result;
+//            }
         };
     }
 
