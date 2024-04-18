@@ -76,11 +76,6 @@ public class RuntimeX
     private final Code _code;
 
     /**
-     * Passed by ctor.
-     */
-    //private final String _msg;
-
-    /**
      * A reference to the arguments to be formatted into the error message.
      * This is never {@code null}.
      */
@@ -141,7 +136,7 @@ public class RuntimeX
         CANNOT_MODIFY_CONSTANT,
         NO_PROXY,
         PROXY_CANNOT_INSTANTIATE,
-        TEST_FAILED,
+        _UNUSED_,
         ONLY_IN_QUASIQUOTE_CONTEXT,
         RADIX_NOT_SUPPORTED,
         DUPLICATE_ELEMENT,
@@ -196,7 +191,7 @@ public class RuntimeX
         _irritants = Cons.NIL;
     }
 
-    public RuntimeX( Code c, FirstClassObject ... args )
+    RuntimeX( Code c, FirstClassObject ... args )
     {
         super( Objects.requireNonNull( c ).toString() );
         _code = c;
@@ -910,14 +905,6 @@ public class RuntimeX
 
     //    SCAN_UNBALANCED_QUOTE_2 = \
     //    Unbalanced quote found at line {0}, column {1}.
-    @Deprecated
-    public static RuntimeX mScanUnbalancedQuote( int line, int column )
-    {
-        return new RuntimeX(
-                Code.SCAN_UNBALANCED_QUOTE,
-                Int.make( line ),
-                Int.make( column ) );
-    }
     public static RuntimeX mScanUnbalancedQuote( SourcePosition position )
     {
         return new RuntimeX(
@@ -928,15 +915,6 @@ public class RuntimeX
 
     //    SCAN_UNEXPECTED_CHAR_3 = \
     //    Unexpected character ''{2}'' found at line {0}, column {1}.
-    @Deprecated
-    public static RuntimeX mScanUnexpectedCharacter( int line, int col, String character )
-    {
-        return new RuntimeX(
-                Code.SCAN_UNEXPECTED_CHAR,
-                Int.make( line ),
-                Int.make( col ),
-                SchemeString.make( character ) );
-    }
     public static RuntimeX mScanUnexpectedChar( SourcePosition position, String character )
     {
         return new RuntimeX(

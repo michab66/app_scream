@@ -178,13 +178,6 @@ public class RuntimeXTest extends ScreamBaseTest
     }
 
     @Test
-    public void _m1_internalError() throws Exception
-    {
-        validateMessageAndType(
-                RuntimeX.mInternalError(),
-                Code.INTERNAL_ERROR );
-    }
-    @Test
     public void _m1_internalError1() throws Exception
     {
         validateMessageAndType(
@@ -555,7 +548,8 @@ public class RuntimeXTest extends ScreamBaseTest
     public void _33_scanUnbalancedQuote2() throws Exception
     {
         validateMessageAndType(
-                RuntimeX.mScanUnbalancedQuote( 1, 2 ),
+                RuntimeX.mScanUnbalancedQuote(
+                        new SourcePosition( 1, 2, null ) ),
                 Code.SCAN_UNBALANCED_QUOTE,
                 i1,
                 i2 );
@@ -566,7 +560,9 @@ public class RuntimeXTest extends ScreamBaseTest
         var what = "what";
 
         validateMessageAndType(
-                RuntimeX.mScanUnexpectedCharacter( 1, 2, what ),
+                RuntimeX.mScanUnexpectedChar(
+                        new SourcePosition( 1, 2, null ),
+                        what ),
                 Code.SCAN_UNEXPECTED_CHAR,
                 i1,
                 i2,

@@ -347,7 +347,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     {
     }
     
-    throw RuntimeX.mScanUnexpectedCharacter( getLine(), getColumn(), yytext() );
+    throw RuntimeX.mScanUnexpectedChar( sourcePosition(), yytext() );
   }
 
   {CHARACTER_NAME} {
@@ -375,7 +375,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
       case "tab":
         return new Token( '\t', sourcePosition() );
       default:
-        throw RuntimeX.mScanUnexpectedCharacter( getLine(), getColumn(), yytext() );
+        throw RuntimeX.mScanUnexpectedChar( sourcePosition(), yytext() );
     }
   }
 
