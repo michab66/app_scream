@@ -427,31 +427,6 @@ public class RuntimeX
     }
 
     /**
-     * (error-ext message-string operation-name [irritant1, ...])
-     */
-    static private Procedure errorExtProcedure( Environment e )
-    {
-        return new Procedure( "error-ext", e )
-        {
-            @Override
-            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                    throws RuntimeX
-            {
-                checkArgumentCount( 2, Integer.MAX_VALUE, args );
-
-                SchemeString message =
-                        Scut.asNotNil( SchemeString.class, args.listRef( 0 ) );
-                Symbol operationName =
-                        Scut.asNotNil( Symbol.class, args.listRef( 1 ) );
-                Cons irritants =
-                        args.listTail( 2 );
-
-                throw new RuntimeX( operationName, message, irritants.asArray() );
-            }
-        };
-    }
-
-    /**
      * @param tle The top-level environment to be extended.
      * @throws RuntimeX
      */
@@ -459,7 +434,6 @@ public class RuntimeX
             throws RuntimeX
     {
         tle.setPrimitive( errorProcedure( tle ) );
-        tle.setPrimitive( errorExtProcedure( tle ) );
         return tle;
     }
 
