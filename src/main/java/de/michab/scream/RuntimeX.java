@@ -76,14 +76,15 @@ public class RuntimeX
     private final Code _code;
 
     /**
-     * A reference to the arguments to be formatted into the error message.
+     * A reference to the arguments passed in the constructors.
+     * Kept as an array for efficient access.
+     *
      * This is never {@code null}.
      */
-    private final Object[] _errorArguments;
-    private final Cons _irritants;
+    private final FirstClassObject[] _irritants;
 
     /**
-     * The name of the operation where the exception occurred.
+     * The name of the operation that caused the exception.
      */
     private Symbol _operationName = null;
 
@@ -160,9 +161,6 @@ public class RuntimeX
             }
     );
 
-    private final CachedHolder<String> _message =
-            new CachedHolder<String>( this::makeMessage );
-
     /**
      * Creates a Scream exception.  Used by the {@code (error ...)} procedure.
      *
@@ -186,22 +184,18 @@ public class RuntimeX
 
         _code =
                 getCode( msg.getValue() );
-        _errorArguments =
-                args == null ?
-                    new String[0] :
-                    args;
-        _irritants = Cons.create( args );
+        _irritants =
+                Objects.requireNonNull( args );
     }
 
     RuntimeX( Code c, FirstClassObject ... args )
     {
         super( Objects.requireNonNull( c ).toString() );
-        _code = c;
-        _errorArguments =
-                args == null ?
-                    new String[0] :
-                    args;
-        _irritants = Cons.create( args );
+
+        _code =
+                c;
+        _irritants =
+                Objects.requireNonNull( args );
     }
 
     private static String validateMessage( SchemeString ss )
@@ -224,19 +218,25 @@ public class RuntimeX
     public RuntimeX(
             Symbol operation,
             SchemeString msg,
-            Cons irritants )
+            FirstClassObject ... irritants )
     {
         super( validateMessage( msg ) );
 
         _operationName =
                 Objects.requireNonNull( operation );
-
         _code =
                 getCode( msg.getValue() );
         _irritants =
-                irritants;
+                Objects.requireNonNull( irritants );
+    }
 
-        _errorArguments = new Object[0];
+    private final CachedHolder<Cons> _cachedIrritants =
+            new CachedHolder<>(
+                    () -> { return Cons.create( getIrritantsImpl() ); } );
+
+    private FirstClassObject[] getIrritantsImpl()
+    {
+        return _irritants;
     }
 
     /**
@@ -244,7 +244,7 @@ public class RuntimeX
      */
     public Cons getIrritants()
     {
-        return _irritants;
+        return _cachedIrritants.get();
     }
 
     /**
@@ -307,13 +307,13 @@ public class RuntimeX
     /**
      * @return Never {@code null}.
      */
-    public Object[] getArguments()
+    public FirstClassObject[] getArguments()
     {
-        return _errorArguments;
+        return _irritants;
     }
-    public Object getArgument( int idx )
+    public FirstClassObject getArgument( int idx )
     {
-        return _errorArguments[idx];
+        return getArguments()[ idx ];
     }
 
     /**
@@ -323,6 +323,9 @@ public class RuntimeX
     {
         return _code;
     }
+
+    private final CachedHolder<String> _message =
+            new CachedHolder<String>( this::makeMessage );
 
     /**
      * @return This exception's message.
@@ -349,20 +352,25 @@ public class RuntimeX
         if ( getOperationName() != null )
             result.append( getOperationName() ).append( " : " );
 
-        final var messageKey = _errorArguments.length > 0 ?
-                messageId + "_" + _errorArguments.length :
+        Object[] fmtArgs = new String[_irritants.length];
+        int i = 0;
+        for ( var c : _irritants )
+            fmtArgs[i++] = FirstClassObject.toString( c );
+
+        final var messageKey = fmtArgs.length > 0 ?
+                messageId + "_" + fmtArgs.length :
                 messageId;
 
         if ( ErrorMessages.map.containsKey( messageKey ) )
         {
             return result.toString() + MessageFormat.format(
                     ErrorMessages.map.get( messageKey ),
-                    _errorArguments );
+                    fmtArgs );
         }
 
         result.append( messageId );
 
-        for ( var c : _errorArguments )
+        for ( var c : fmtArgs )
         {
             result.append( " " );
             result.append( c );
@@ -388,64 +396,60 @@ public class RuntimeX
                 SchemeString message =
                         Scut.asNotNil( SchemeString.class, args.listRef( 0 ) );
 
-//                Object[] arguments = new Object[ (int)(args.length() -1) ];
-//                for ( int i = 1 ; i < (int)(args.length()) ; i++ )
-//                    arguments[i-1] = createReadable( args.listRef( i ) );
+                var splitMessage = message.getValue().split( ":" );
 
-//                RuntimeX result = new RuntimeX( message, arguments );
-                RuntimeX result = new RuntimeX(
-                        message,
+                var irritants =
                         Cons.asArray(
-                                Scut.as( Cons.class, args.getCdr() ) ) );
+                        Scut.as( Cons.class, args.getCdr() ) );
 
-                result.setOperationName( e.getName() );
+                if ( splitMessage.length == 1 )
+                {
+                    RuntimeX result = new RuntimeX(
+                            message,
+                            irritants );
 
-                throw result;
+                    result.setOperationName( e.getName() );
+
+                    throw result;
+                }
+                else if ( splitMessage.length == 2 )
+                {
+                    RuntimeX result = new RuntimeX(
+                            Symbol.createObject( splitMessage[0] ),
+                            SchemeString.make( splitMessage[1] ),
+                            irritants );
+                    throw result;
+                }
+
+                throw mSyntaxError( message ).setOperationName( getName() );
             }
-
-//            /**
-//             * Makes a human readable string from a FirstClassObject.  That means for
-//             * a Scheme string that the double quotes are removed -- gnah instead
-//             * of "gnah" -- and that for all other cases the FCO.toString is called.
-//             */
-//            private String createReadable( FirstClassObject o )
-//            {
-//                String result;
-//
-//                if ( o instanceof SchemeString )
-//                    result = ((SchemeString)o).getValue();
-//                else
-//                    result = FirstClassObject.toString( o );
-//
-//                return result;
-//            }
         };
     }
 
- /**
-  * (error-ext message-string operation-name [irritant1, ...])
-  */
- static private Procedure errorExtProcedure( Environment e )
- {
-     return new Procedure( "error-ext", e )
-     {
-         @Override
-         protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                 throws RuntimeX
-         {
-             checkArgumentCount( 2, Integer.MAX_VALUE, args );
+    /**
+     * (error-ext message-string operation-name [irritant1, ...])
+     */
+    static private Procedure errorExtProcedure( Environment e )
+    {
+        return new Procedure( "error-ext", e )
+        {
+            @Override
+            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                    throws RuntimeX
+            {
+                checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
-             SchemeString message =
-                     Scut.asNotNil( SchemeString.class, args.listRef( 0 ) );
-             Symbol operationName =
-                     Scut.asNotNil( Symbol.class, args.listRef( 1 ) );
-             Cons irritants =
-                     args.listTail( 2 );
+                SchemeString message =
+                        Scut.asNotNil( SchemeString.class, args.listRef( 0 ) );
+                Symbol operationName =
+                        Scut.asNotNil( Symbol.class, args.listRef( 1 ) );
+                Cons irritants =
+                        args.listTail( 2 );
 
-             throw new RuntimeX( operationName, message, irritants );
-         }
-     };
- }
+                throw new RuntimeX( operationName, message, irritants.asArray() );
+            }
+        };
+    }
 
     /**
      * @param tle The top-level environment to be extended.
