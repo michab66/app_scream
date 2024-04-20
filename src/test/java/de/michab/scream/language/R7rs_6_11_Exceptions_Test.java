@@ -11,8 +11,10 @@ import org.junit.jupiter.api.Test;
 import org.smack.util.io.Redirect;
 import org.smack.util.io.Redirect.StdStream;
 
+import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.fcos.SchemeString;
 
 /**
  * rsr7 6.11 Exceptions, p54
@@ -120,6 +122,7 @@ public class R7rs_6_11_Exceptions_Test extends ScreamBaseTest
 """,
               Code.SYMBOL_NOT_DEFINED );
     }
+
     /**
      * r7rs 6.11 p54
      */
@@ -190,5 +193,63 @@ public class R7rs_6_11_Exceptions_Test extends ScreamBaseTest
                   (lambda () (+ (raise 17) 8)))))
 """,
                 Code.NOT_CONTINUABLE );
+    }
+
+    /**
+     * https://www.scheme.com/tspl4/exceptions.html
+     */
+    @Test
+    public void error_formatting() throws Exception
+    {
+        var t = makeTester();
+
+        RuntimeX x;
+
+        x = t.expectError(
+                "(error donald 1 2 3)",
+                Code.SYMBOL_NOT_DEFINED );
+        assertEqualq(
+                s("donald"),
+                x.getArgument( 0 ) );
+
+        x = t.expectError(
+                "(error 'donald 1 2 3)",
+                Code.TYPE_ERROR );
+        assertEqualq(
+                str(SchemeString.TYPE_NAME),
+                x.getArgument( 0 ) );
+        assertEqualq(
+                str("symbol=donald"),
+                x.getArgument( 1 ) );
+
+        x = t.expectError(
+                "(error \"donald\" 1 2 3)",
+                Code.ERROR );
+        assertEquals(
+                "ERROR : tle-common : donald 1 2 3",
+                x.getMessage() );
+
+        x = t.expectError(
+                "(error \"operation:EXPECTED_PROPER_LIST\" 1 2 3)",
+                Code.EXPECTED_PROPER_LIST );
+        assertEquals(
+                "EXPECTED_PROPER_LIST : operation : EXPECTED_PROPER_LIST 1 2 3",
+                x.getMessage() );
+        x = t.expectError(
+                "(error \"operation : EXPECTED_PROPER_LIST\" 1 2 3)",
+                Code.EXPECTED_PROPER_LIST );
+        assertEquals(
+                "EXPECTED_PROPER_LIST : operation : EXPECTED_PROPER_LIST 1 2 3",
+                x.getMessage() );
+
+        x = t.expectError(
+                "(error \"operation:EXPECTED_PROPER_LIST\" '(1 . 2))",
+                Code.EXPECTED_PROPER_LIST );
+        assertEqualq(
+                parse("(1 . 2)"),
+                x.getArgument(0) );
+        assertEqualq(
+                parse("((1 . 2))"),
+                x.getIrritants() );
     }
 }

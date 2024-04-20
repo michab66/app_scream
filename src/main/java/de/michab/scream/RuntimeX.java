@@ -415,13 +415,15 @@ public class RuntimeX
                 else if ( splitMessage.length == 2 )
                 {
                     RuntimeX result = new RuntimeX(
-                            Symbol.createObject( splitMessage[0] ),
-                            SchemeString.make( splitMessage[1] ),
+                            Symbol.createObject( splitMessage[0].strip() ),
+                            SchemeString.make( splitMessage[1].strip() ),
                             irritants );
                     throw result;
                 }
 
-                throw mSyntaxError( message ).setOperationName( getName() );
+                throw mSyntaxErrorF(
+                        getName(),
+                        message );
             }
         };
     }
@@ -530,6 +532,13 @@ public class RuntimeX
     {
         return new RuntimeX(
                 Code.SYNTAX_ERROR,
+                fco );
+    }
+    public static RuntimeX mSyntaxErrorF( Symbol function, FirstClassObject fco )
+    {
+        return new RuntimeX(
+                function,
+                SchemeString.make( Code.SYNTAX_ERROR.toString() ),
                 fco );
     }
 
