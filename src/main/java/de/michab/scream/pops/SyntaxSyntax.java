@@ -5,6 +5,7 @@
  */
 package de.michab.scream.pops;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -40,13 +41,13 @@ public class SyntaxSyntax extends Syntax
                 Cons.class,
                 args.listRef( 0 ),
                 s-> {
-                    throw RuntimeX.mSyntaxError();
+                    throw Raise.mSyntaxError();
                 } );
         Symbol name = Scut.as(
                 Symbol.class,
                 signature.listRef( 0 ),
                 s -> {
-                    throw RuntimeX.mDefineError();
+                    throw Raise.mDefineError();
                 } );
         FirstClassObject parameterList =
                 signature.getCdr();

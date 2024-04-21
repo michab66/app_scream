@@ -7,6 +7,7 @@ package de.michab.scream.fcos;
 
 import java.util.Arrays;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 
 /**
@@ -93,7 +94,7 @@ public class Vector
         throws RuntimeX
     {
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         try
         {
@@ -101,7 +102,7 @@ public class Vector
         }
         catch ( ArrayIndexOutOfBoundsException e )
         {
-            throw RuntimeX.mIndexOutOfBounds( idx );
+            throw Raise.mIndexOutOfBounds( idx );
         }
     }
 
@@ -120,7 +121,7 @@ public class Vector
         }
         catch ( IndexOutOfBoundsException e )
         {
-            throw RuntimeX.mIndexOutOfBounds( idx );
+            throw Raise.mIndexOutOfBounds( idx );
         }
     }
 
@@ -143,7 +144,7 @@ public class Vector
     public void fill( FirstClassObject filler ) throws RuntimeX
     {
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         Arrays.fill( _theArray, filler );
     }

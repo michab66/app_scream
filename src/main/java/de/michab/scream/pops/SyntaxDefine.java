@@ -5,6 +5,7 @@
  */
 package de.michab.scream.pops;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -50,7 +51,7 @@ public class SyntaxDefine extends Syntax
                 Cons.class,
                 args.getCdr(),
                 s-> {
-                    throw RuntimeX.mSyntaxError();
+                    throw Raise.mSyntaxError();
                 } );
 
         if ( variableSlot instanceof Symbol ) {
@@ -71,14 +72,14 @@ public class SyntaxDefine extends Syntax
                 Cons.class,
                 variableSlot,
                 s-> {
-                    throw RuntimeX.mSyntaxError();
+                    throw Raise.mSyntaxError();
                 } );
 
         Symbol name = Scut.as(
                 Symbol.class,
                 signature.listRef( 0 ),
                 s -> {
-                    throw RuntimeX.mDefineError();
+                    throw Raise.mDefineError();
                 } );
         FirstClassObject parameterList =
                 signature.getCdr();

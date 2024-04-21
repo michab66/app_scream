@@ -5,6 +5,7 @@
  */
 package de.michab.scream.fcos;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 
 /**
@@ -89,7 +90,7 @@ public class Real extends
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw RuntimeX.mInternalError( getClass() );
+            throw Raise.mInternalError( getClass() );
         }
     }
 
@@ -112,7 +113,7 @@ public class Real extends
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw RuntimeX.mInternalError( getClass() );
+            throw Raise.mInternalError( getClass() );
         }
     }
 
@@ -135,7 +136,7 @@ public class Real extends
             // other than scream.Number this has to fail...
             Operation.checkArgument( 1, Number.class, other );
             // ...or we found an internal error.
-            throw RuntimeX.mInternalError( getClass() );
+            throw Raise.mInternalError( getClass() );
         }
     }
 

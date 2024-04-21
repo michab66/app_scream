@@ -10,6 +10,7 @@
 
 package de.michab.scream.frontend;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.Number;
@@ -347,7 +348,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     {
     }
     
-    throw RuntimeX.mScanUnexpectedChar( sourcePosition(), yytext() );
+    throw Raise.mScanUnexpectedChar( sourcePosition(), yytext() );
   }
 
   {CHARACTER_NAME} {
@@ -375,7 +376,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
       case "tab":
         return new Token( '\t', sourcePosition() );
       default:
-        throw RuntimeX.mScanUnexpectedChar( sourcePosition(), yytext() );
+        throw Raise.mScanUnexpectedChar( sourcePosition(), yytext() );
     }
   }
 
@@ -410,7 +411,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
         matched = matched.replace( "#e", "" );
 
     if ( inexact && exact )
-        throw RuntimeX.mInternalError(
+        throw Raise.mInternalError(
             sourcePosition(),
             "inexact && exact", yytext() );
 
@@ -456,7 +457,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     }
     catch ( NumberFormatException e )
     {
-        throw RuntimeX.mInternalError(
+        throw Raise.mInternalError(
             sourcePosition(),
             e.getMessage() );
     }
@@ -474,7 +475,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
         matched = matched.replace( "#e", "" );
 
     if ( inexact && exact )
-        throw RuntimeX.mInternalError(
+        throw Raise.mInternalError(
             sourcePosition(),
             "inexact && exact", yytext() );
 
@@ -492,7 +493,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     }
     catch ( NumberFormatException e )
     {
-        throw RuntimeX.mInternalError(
+        throw Raise.mInternalError(
             sourcePosition(),
             e );
     }
@@ -542,12 +543,12 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
   // Catch unbalanced double quotes
   \"({stringelement})*{line_ending} {
-    throw RuntimeX.mScanUnbalancedQuote( sourcePosition() );
+    throw Raise.mScanUnbalancedQuote( sourcePosition() );
   }
 
   // Catch unmatched characters.
   . {
-    throw RuntimeX.mScanUnexpectedChar( 
+    throw Raise.mScanUnexpectedChar( 
         sourcePosition(),
         yytext() );
   }
@@ -555,7 +556,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   // Catch unmatched nested comments.  An NC_END token must never
   // be visible in YYINITIAL.
   {NC_END} {
-      throw RuntimeX.mScanUnbalancedComment( sourcePosition() );
+      throw Raise.mScanUnbalancedComment( sourcePosition() );
   }
 }
 
@@ -573,7 +574,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
     else if ( commentNestCount > 0 )
       ;
     else
-      throw RuntimeX.mScanUnbalancedComment( sourcePosition() );
+      throw Raise.mScanUnbalancedComment( sourcePosition() );
   }
 
   /* The first pattern consumes everything but the characters
@@ -591,7 +592,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
 
 <<EOF>> {
   if ( commentNestCount > 0 )
-      throw RuntimeX.mScanUnbalancedComment( sourcePosition() );
+      throw Raise.mScanUnbalancedComment( sourcePosition() );
 
   return new Token( Tk.Eof, sourcePosition() );
 }

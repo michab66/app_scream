@@ -38,7 +38,7 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Primitives;
-import de.michab.scream.pops.R7RsExceptions_6_11;
+import de.michab.scream.pops.Exceptions_6_11;
 import de.michab.scream.pops.SyntaxAnd;
 import de.michab.scream.pops.SyntaxAssign;
 import de.michab.scream.pops.SyntaxBegin;
@@ -327,7 +327,7 @@ public final class ScreamEvaluator implements ScriptEngine
         catch ( Exception x )
         {
             x.printStackTrace();
-            throw RuntimeX.mInternalError( x );
+            throw Raise.mInternalError( x );
         }
     }
 
@@ -409,7 +409,7 @@ public final class ScreamEvaluator implements ScriptEngine
         }
         catch ( IOException ioe )
         {
-            throw RuntimeX.mIoError( ioe );
+            throw Raise.mIoError( ioe );
         }
     }
 
@@ -618,13 +618,12 @@ public final class ScreamEvaluator implements ScriptEngine
 
         try
         {
-            RuntimeX.extendTopLevelEnvironment( result );
             result.setPrimitive( evalProcedure( result ) );
             result.setPrimitive( applyProcedure( result ) );
             de.michab.scream.fcos.Continuation.extendTopLevelEnvironment( result );
             Number.extendTopLevelEnvironment( result );
             SchemeObject.extendTopLevelEnvironment( result );
-            R7RsExceptions_6_11.extendEnvironment( result );
+            Exceptions_6_11.extendEnvironment( result );
         }
         catch ( Exception e )
         {

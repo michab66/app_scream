@@ -7,6 +7,7 @@ package de.michab.scream.fcos;
 
 import java.util.Objects;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Cont;
@@ -402,7 +403,7 @@ public abstract class FirstClassObject
             return c.cast( this );
         }
         catch (ClassCastException e) {
-            throw RuntimeX.mTypeError( c, this );
+            throw Raise.mTypeError( c, this );
         }
     }
 }

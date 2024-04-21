@@ -14,6 +14,7 @@ import java.util.HashSet;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
@@ -82,7 +83,7 @@ public class ScutTest extends ScreamBaseTest
         {
             Scut.as( Int.class,
                     fco,
-                    (s) -> { throw RuntimeX.mDuplicateElement( s ); } );
+                    (s) -> { throw Raise.mDuplicateElement( s ); } );
             fail();
         }
         catch ( RuntimeX e )

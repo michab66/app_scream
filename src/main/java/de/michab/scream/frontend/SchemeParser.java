@@ -9,12 +9,13 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Bytevector;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Port;
-import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
@@ -177,7 +178,7 @@ public class SchemeParser
             Token token = getNextToken();
 
             if ( Tk.Number != token.getType() )
-                throw RuntimeX.mParseExpected( Tk.Number );
+                throw Raise.mParseExpected( Tk.Number );
 
             collector.add(
                     Scut.assertByte( token.numberValue().asLong() ) );
@@ -226,7 +227,7 @@ public class SchemeParser
 
             // List has to be finished.
             if ( Tk.End != getNextToken().getType() )
-                throw RuntimeX.mParseExpected( Tk.End );
+                throw Raise.mParseExpected( Tk.End );
         }
         else
             cdr = parseList();
@@ -293,10 +294,10 @@ public class SchemeParser
             return Bool.createObject( token.booleanValue() );
 
         case Eof:
-            throw RuntimeX.mParseUnexpectedEof();
+            throw Raise.mParseUnexpectedEof();
 
         default:
-            throw RuntimeX.mParseUnexpected( token );
+            throw Raise.mParseUnexpected( token );
         }
     }
 

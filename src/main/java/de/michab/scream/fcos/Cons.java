@@ -12,6 +12,7 @@ import java.util.Objects;
 
 import org.smack.util.Holder;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Lambda.L;
 import de.michab.scream.util.Continuation.Cont;
@@ -156,7 +157,7 @@ public class Cons
             throws RuntimeX
     {
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         _car = car;
     }
@@ -182,7 +183,7 @@ public class Cons
             throws RuntimeX
     {
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         _cdr = cdr;
     }
@@ -199,7 +200,7 @@ public class Cons
             throws RuntimeX
     {
         if ( ! isProperList() )
-            throw RuntimeX.mExpectedProperList();
+            throw Raise.mExpectedProperList();
 
         // Copy the list (but not the contents).
         Cons result = Cons.create( asArray() );
@@ -225,7 +226,7 @@ public class Cons
             throws RuntimeX
     {
         if ( ! isProperList() )
-            throw RuntimeX.mExpectedProperList();
+            throw Raise.mExpectedProperList();
 
         FirstClassObject[] result = asArray();
 
@@ -260,7 +261,7 @@ public class Cons
             throws RuntimeX
     {
         if ( k > length() || k < 0 )
-            throw RuntimeX.mIndexOutOfBounds( k );
+            throw Raise.mIndexOutOfBounds( k );
 
         Cons result = this;
 
@@ -284,7 +285,7 @@ public class Cons
         var result = listTail( k );
 
         if ( result == Cons.NIL )
-            throw RuntimeX.mIndexOutOfBounds( k );
+            throw Raise.mIndexOutOfBounds( k );
 
         return result.getCar();
     }
@@ -372,7 +373,7 @@ public class Cons
             FirstClassObject subList = listRef( i );
 
             if ( ! (subList instanceof Cons) )
-                throw RuntimeX.mInvalidAssocList(  this );
+                throw Raise.mInvalidAssocList(  this );
 
             FirstClassObject subListsCar = ((Cons)subList)._car;
 
@@ -430,7 +431,7 @@ public class Cons
         }
         catch ( RuntimeX rx )
         {
-            throw RuntimeX.mCalledNonProcedural( op ).addCause( rx );
+            throw Raise.mCalledNonProcedural( op ).addCause( rx );
         }
     }
 
@@ -447,7 +448,7 @@ public class Cons
     protected Lambda _compile( Environment env ) throws RuntimeX
     {
         if ( ! isProperList() )
-            throw RuntimeX.mExpectedProperList();
+            throw Raise.mExpectedProperList();
 
         var car = getCar();
         var cdr = Scut.as( Cons.class, getCdr() );
@@ -525,7 +526,7 @@ public class Cons
             throws RuntimeX
     {
         if ( isCircular() )
-            throw RuntimeX.mIllegalArgument( "circular list" );
+            throw Raise.mIllegalArgument( "circular list" );
 
         return new Cons(
                 copy( _car ),
@@ -606,7 +607,7 @@ public class Cons
 
         // Circular.
         if ( pc[0] )
-            throw RuntimeX.mExpectedProperList();
+            throw Raise.mExpectedProperList();
 
         return lengthOut.get();
     }
@@ -631,7 +632,7 @@ public class Cons
 
         // Not proper.
         if ( ! pc[1] )
-            throw RuntimeX.mExpectedProperList();
+            throw Raise.mExpectedProperList();
 
         return lengthOut.get();
     }

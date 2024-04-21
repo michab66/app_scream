@@ -5,6 +5,7 @@
  */
 package de.michab.scream.pops;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -39,7 +40,7 @@ public class SyntaxDefineValues extends Syntax
                 Cons.class,
                 args.listRef( 0 ),
                 s-> {
-                    throw RuntimeX.mSyntaxError();
+                    throw Raise.mSyntaxError();
                 } );
 
         // Get the second argument, an expression.

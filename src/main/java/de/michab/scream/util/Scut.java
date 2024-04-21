@@ -7,6 +7,7 @@ package de.michab.scream.util;
 
 import java.util.HashSet;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
@@ -33,7 +34,7 @@ public class Scut
         throws RuntimeX
     {
         if ( ! Cons.isProper( cons ) )
-            throw RuntimeX.mExpectedProperList( cons );
+            throw Raise.mExpectedProperList( cons );
 
         var length = Cons.length( cons );
 
@@ -79,7 +80,7 @@ public class Scut
     public static <T extends FirstClassObject> T as( Class<T> c, FirstClassObject v ) throws RuntimeX
     {
         FunctionX<FirstClassObject, T, RuntimeX> fail = (s) ->
-            { throw RuntimeX.mTypeError( c, s );  };
+            { throw Raise.mTypeError( c, s );  };
 
         return as(
                 c,
@@ -91,7 +92,7 @@ public class Scut
             throws RuntimeX
     {
         if ( Cons.NIL == v )
-            throw RuntimeX.mTypeError( c, Cons.NIL );
+            throw Raise.mTypeError( c, Cons.NIL );
 
         return as( c, v );
     }
@@ -135,7 +136,7 @@ public class Scut
             var cdr = cons.getCdr();
 
             if ( ! unifier.add( car ) )
-                throw RuntimeX.mDuplicateElement( car );
+                throw Raise.mDuplicateElement( car );
 
             if ( Cons.NIL == cdr )
                 break;
@@ -146,7 +147,7 @@ public class Scut
             }
 
             if ( ! unifier.add( cdr ) )
-                throw RuntimeX.mDuplicateElement( cdr );
+                throw Raise.mDuplicateElement( cdr );
             break;
         }
 
@@ -156,7 +157,7 @@ public class Scut
     public static int assertIndex( long idx ) throws RuntimeX
     {
         if ( idx < 0 || idx >= Integer.MAX_VALUE )
-            throw RuntimeX.mRangeExceeded(
+            throw Raise.mRangeExceeded(
                     Int.createObject( idx ),
                     "[0.." + Integer.MAX_VALUE + "]" );
 
@@ -166,11 +167,11 @@ public class Scut
     public static <A> int assertMaxIndex( int maximum, long idx ) throws RuntimeX
     {
         if ( idx < 0 || idx > Integer.MAX_VALUE )
-            throw RuntimeX.mRangeExceeded(
+            throw Raise.mRangeExceeded(
                     Int.createObject( idx ),
                     "[0.." + Integer.MAX_VALUE + "]" );
         if ( idx > maximum )
-            throw RuntimeX.mIndexOutOfBounds( idx );
+            throw Raise.mIndexOutOfBounds( idx );
 
         return (int)idx;
     }
@@ -178,7 +179,7 @@ public class Scut
     public static int assertLength( long len ) throws RuntimeX
     {
         if ( len < 0 || len > Integer.MAX_VALUE )
-            throw RuntimeX.mRangeExceeded(
+            throw Raise.mRangeExceeded(
                     Int.createObject( len ),
                     "[0.." + Integer.MAX_VALUE + "]" );
 
@@ -188,7 +189,7 @@ public class Scut
     public static byte assertByte( long idx ) throws RuntimeX
     {
         if ( idx < 0 || idx > 0xff )
-            throw RuntimeX.mRangeExceeded(
+            throw Raise.mRangeExceeded(
                     Int.createObject( idx ),
                     "[0..255]" );
 
@@ -209,7 +210,7 @@ public class Scut
         throws RuntimeX
     {
         if ( ! Cons.isProper( list ) )
-            throw RuntimeX.mExpectedProperList();
+            throw Raise.mExpectedProperList();
 
         for ( var c : list )
             as( type, c );

@@ -8,6 +8,7 @@ package de.michab.scream.frontend;
 import java.io.IOException;
 import java.io.Reader;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.SourcePosition;
@@ -57,7 +58,7 @@ public class SchemeScanner
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 }

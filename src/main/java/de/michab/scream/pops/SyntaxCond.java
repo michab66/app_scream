@@ -5,11 +5,12 @@
  */
 package de.michab.scream.pops;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Continuation.Cont;
@@ -40,14 +41,14 @@ public class SyntaxCond extends Syntax
         {
             var fco = arg.getCar();
             if ( ! (fco instanceof Cons) )
-                throw RuntimeX.mBadClause( fco );
+                throw Raise.mBadClause( fco );
             Cons clause = Scut.as( Cons.class, fco);
 
             // TODO unexpected ELSE message.
             if ( eqv( ELSE, clause.getCar() ) )
             {
                 if ( Cons.NIL != arg.getCdr() )
-                    throw RuntimeX.mBadClause( fco );
+                    throw Raise.mBadClause( fco );
                 clause.setCar( Bool.T );
             }
         }
