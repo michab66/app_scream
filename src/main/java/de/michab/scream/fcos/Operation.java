@@ -318,8 +318,7 @@ extends FirstClassObject
         if ( formalCount < receivedCount && isVariadic() )
             return;
 
-        throw Raise.mWrongNumberOfArguments( formalCount, receivedCount ).
-            setOperationName( getName() );
+        throw Raise.mWrongNumberOfArgumentsF( getName(), formalCount, receivedCount );
     }
 
     /**

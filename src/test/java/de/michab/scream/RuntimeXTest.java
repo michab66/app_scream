@@ -129,24 +129,11 @@ public class RuntimeXTest extends ScreamBaseTest
     }
 
     @Test
-    public void operationName() throws Exception
-    {
-        var se = Raise.mDivisionByZero().setOperationName( s313 );
-
-        assertEquals(
-                Code.DIVISION_BY_ZERO,
-                se.getCode() );
-
-        var splitMessage = se.getMessage().split( " : " );
-        assertEquals( s313.toString(), splitMessage[1] );
-    }
-
-    @Test
     public void unknownCode() throws Exception
     {
         var rx = new RuntimeX( str( "duck" ) );
         assertEquals( Code.ERROR, rx.getCode() );
-        assertEquals( Code.ERROR + " : duck", rx.getMessage() );
+        assertEquals( Code.ERROR + " : unknown : duck", rx.getMessage() );
     }
 
     @Test
@@ -156,6 +143,6 @@ public class RuntimeXTest extends ScreamBaseTest
                     str( ".UNKNOWN" ),
                     i1, i2, i3 );
             assertEquals( Code.ERROR, sex.getCode() );
-            assertEquals( Code.ERROR + " : .UNKNOWN 1 2 3", sex.getMessage() );
+            assertEquals( Code.ERROR + " : unknown : .UNKNOWN 1 2 3", sex.getMessage() );
     }
 }

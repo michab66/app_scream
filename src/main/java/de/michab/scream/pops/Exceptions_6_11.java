@@ -158,10 +158,9 @@ public abstract class Exceptions_6_11
                 if ( splitMessage.length == 1 )
                 {
                     RuntimeX result = new RuntimeX(
+                            e.getName(),
                             message,
                             irritants );
-
-                    result.setOperationName( e.getName() );
 
                     throw result;
                 }

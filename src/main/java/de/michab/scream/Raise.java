@@ -282,6 +282,17 @@ public class Raise
                 Int.make( expected ),
                 Int.make( received ) );
     }
+    public static RuntimeX mWrongNumberOfArgumentsF(
+            Symbol function,
+            long expected,
+            long received )
+    {
+        return new RuntimeX(
+                function,
+                SchemeString.make( Code.WRONG_NUMBER_OF_ARGUMENTS.toString() ),
+                Int.make( expected ),
+                Int.make( received ) );
+    }
 
     //    # Procedure (map) specific.  First passed argument has to be a procedure, all
     //    # remaining arguments have to be lists of the same length.

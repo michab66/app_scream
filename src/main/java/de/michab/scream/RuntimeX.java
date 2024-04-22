@@ -73,7 +73,7 @@ public class RuntimeX
     /**
      * The name of the operation that caused the exception.
      */
-    private Symbol _operationName = null;
+    private final Symbol _operationName;
 
     /**
      * Predefined error codes.
@@ -169,6 +169,8 @@ public class RuntimeX
         if ( msgValue.isBlank() )
             throw new IllegalArgumentException( "Empty message." );
 
+        _operationName =
+                Symbol.createObject( "unknown" );
         _code =
                 getCode( msg.getValue() );
         _irritants =
@@ -179,6 +181,8 @@ public class RuntimeX
     {
         super( Objects.requireNonNull( c ).toString() );
 
+        _operationName =
+                Symbol.createObject( "unknown" );
         _code =
                 c;
         _irritants =
@@ -266,21 +270,6 @@ public class RuntimeX
             return result;
 
         return Code.ERROR;
-    }
-
-    /**
-     * Sets the name of the throwing operation.  Note that this is only set
-     * once and locked.  Further calls to set do <i>not</i> change the
-     * operation name set by the first call to this method.
-     *
-     * @param operation The name of the throwing operation.
-     */
-    public RuntimeX setOperationName( Symbol operation )
-    {
-        if ( _operationName == null )
-            _operationName = operation;
-
-        return this;
     }
 
     /**
