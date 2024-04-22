@@ -67,8 +67,6 @@ public class PortIn
      * Create a named port.  The passed name is used for opening the file.
      *
      * @param name The name of the file to open.
-     * @param inout An enum value defining whether this is an input or output
-     *        file.
      * @throws RuntimeX If an error occurred.
      */
     public PortIn( String name )

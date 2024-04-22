@@ -76,13 +76,13 @@ public class Raise
                 Code.SYMBOL_NOT_DEFINED, symbol );
     }
 
-    //    # Error message is related to the scheme set! special form.  Only bound symbols
-    //    # can be assigned using this.  In case the symbol is not bound this error
-    //    # message is thrown.
-    //    # The argument gives the symbol name that was tried to be assigned.
-    //    #
-    //    SYMBOL_NOT_ASSIGNABLE_1 = \
-    //    Symbol ''{0}'' is not assignable.
+    /**
+     * An error related to the scheme set! special form.  Only bound symbols
+     * can be assigned.
+     *
+     * @param symbol The name that could not be assigned.
+     * @return An initialized exception.
+     */
     public static RuntimeX mSymbolNotAssignable( Symbol symbol )
     {
         return new RuntimeX(
@@ -602,18 +602,6 @@ public class Raise
                 SchemeString.make( name ) );
     }
 
-    //    # Will be used in automatic regression testing.
-    //    #
-    //    TEST_FAILED_2 = \
-    //    Test {0}#{1} failed.
-//    public static RuntimeX mTestFailed( String group, String name )
-//    {
-//        return new RuntimeX(
-//                Code.TEST_FAILED,
-//                group,
-//                name );
-//    }
-
     //    ONLY_IN_QUASIQUOTE_CONTEXT = \
     //    Only applicable in quasiquote template.
     public static RuntimeX mOnlyInQuasiquoteContext()
@@ -632,10 +620,12 @@ public class Raise
                 Int.createObject( maxRadix ) );
     }
 
-    //    # A list contained a duplicate element.  Used in case-syntax.
-    //    #
-    //    DUPLICATE_ELEMENT_1 = \
-    //    Duplicate element : {0}
+    /**
+     * A list contained a duplicate element.  Used in case-syntax.
+     *
+     * @param duplicate The duplicate element.
+     * @return
+     */
     public static RuntimeX mDuplicateElement( FirstClassObject duplicate )
     {
         return new RuntimeX(
@@ -696,8 +686,6 @@ public class Raise
      * @param fco The raise procedure's parameter.
      * @return The initialized exception.
      */
-    // RAISE_1 = \
-    // ...
     public static RuntimeX mRaise( Cont<FirstClassObject> continuable, FirstClassObject fco )
     {
         return new RuntimeX(
@@ -713,7 +701,6 @@ public class Raise
      * handler of a (raise ...)-call finished.
      * @return The initialized exception.
      */
-    // ...
     public static RuntimeX mNotContinuable()
     {
         return new RuntimeX(
