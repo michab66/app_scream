@@ -8,6 +8,7 @@ package de.michab.scream.binding;
 import java.lang.reflect.Array;
 import java.util.Objects;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Bool;
@@ -130,7 +131,7 @@ public class SchemeObject
                 ctorArgs );
 
         if ( name.length() == 0 )
-            throw RuntimeX.mIllegalArgument( name );
+            throw Raise.mIllegalArgument( name );
 
         var result = JavaClassAdapter.createInstance(
                 name,
@@ -162,7 +163,7 @@ public class SchemeObject
                     throws RuntimeX
     {
         if ( methodSpec.length() == 0 )
-            throw RuntimeX.mIllegalArgument( methodSpec );
+            throw Raise.mIllegalArgument( methodSpec );
 
         var classAdapter = JavaClassAdapter.make( instance._class );
 
@@ -242,7 +243,7 @@ public class SchemeObject
                     fco -> _setAttribute( symbol, fco, c ) );
         }
 
-        throw RuntimeX.mInternalError( SchemeObject.class.toString() );
+        throw Raise.mInternalError( SchemeObject.class.toString() );
     }
 
     /**
@@ -362,7 +363,7 @@ public class SchemeObject
         }
         catch ( IllegalAccessException e )
         {
-            throw RuntimeX.mIllegalAccess( attribute );
+            throw Raise.mIllegalAccess( attribute );
         }
     }
 
@@ -502,7 +503,7 @@ public class SchemeObject
                     Cont<FirstClassObject> c ) throws RuntimeX
             {
                 if ( ! Cons.isProper( args ) )
-                    throw RuntimeX.mExpectedProperList( args );
+                    throw Raise.mExpectedProperList( args );
 
                 checkArgumentCount(
                         1,
@@ -536,7 +537,7 @@ public class SchemeObject
                     Cont<FirstClassObject> c ) throws RuntimeX
             {
                 if ( ! Cons.isProper( args ) )
-                    throw RuntimeX.mExpectedProperList( args );
+                    throw Raise.mExpectedProperList( args );
 
                 checkArgumentCount(
                         1,
@@ -564,7 +565,7 @@ public class SchemeObject
                     Cont<FirstClassObject> c ) throws RuntimeX
             {
                 if ( ! Cons.isProper( args ) )
-                    throw RuntimeX.mExpectedProperList( args );
+                    throw Raise.mExpectedProperList( args );
 
                 checkArgumentCount(
                         1,
@@ -597,7 +598,7 @@ public class SchemeObject
                     Cont<FirstClassObject> c ) throws RuntimeX
             {
                 if ( ! Cons.isProper( args ) )
-                    throw RuntimeX.mExpectedProperList( args );
+                    throw Raise.mExpectedProperList( args );
 
                 checkArgumentCount(
                         2,
@@ -638,7 +639,7 @@ public class SchemeObject
                     Cont<FirstClassObject> c ) throws RuntimeX
             {
                 if ( ! Cons.isProper( args ) )
-                    throw RuntimeX.mExpectedProperList( args );
+                    throw Raise.mExpectedProperList( args );
 
                 checkArgumentCount(
                         1,

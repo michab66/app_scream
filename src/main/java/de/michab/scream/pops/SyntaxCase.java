@@ -7,11 +7,12 @@ package de.michab.scream.pops;
 
 import java.util.HashSet;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
+import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.util.Continuation.Cont;
@@ -51,14 +52,14 @@ public class SyntaxCase extends Syntax
         {
             // must be last clause.
             if ( Cons.NIL != clause.getCdr() )
-                throw RuntimeX.mBadClause( clause.getCdr() );
+                throw Raise.mBadClause( clause.getCdr() );
         }
         else
         {
             Cons cdatum = Scut.as(
                     Cons.class,
                     datum,
-                    s -> { throw RuntimeX.mBadClause( clause ); });
+                    s -> { throw Raise.mBadClause( clause ); });
             // datum must be at least a one element list.
             checkArgumentCount(
                     1,
@@ -88,7 +89,7 @@ public class SyntaxCase extends Syntax
             final var ct = Scut.as(
                     Cons.class,
                     i.getCar(),
-                    s -> { throw RuntimeX.mBadClause( fi ); } );
+                    s -> { throw Raise.mBadClause( fi ); } );
 
             validateClause( unifier, ct );
         }

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Objects;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 
 /**
@@ -63,7 +64,7 @@ public class PortOutBinary
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 
@@ -90,7 +91,7 @@ public class PortOutBinary
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         try
         {
@@ -99,7 +100,7 @@ public class PortOutBinary
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 
@@ -113,7 +114,7 @@ public class PortOutBinary
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         try
         {
@@ -122,7 +123,7 @@ public class PortOutBinary
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 
@@ -135,7 +136,7 @@ public class PortOutBinary
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         try
         {
@@ -144,7 +145,7 @@ public class PortOutBinary
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 

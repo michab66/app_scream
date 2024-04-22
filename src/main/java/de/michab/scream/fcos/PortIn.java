@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Objects;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.frontend.SchemeParser;
 
@@ -66,8 +67,6 @@ public class PortIn
      * Create a named port.  The passed name is used for opening the file.
      *
      * @param name The name of the file to open.
-     * @param inout An enum value defining whether this is an input or output
-     *        file.
      * @throws RuntimeX If an error occurred.
      */
     public PortIn( String name )
@@ -83,7 +82,7 @@ public class PortIn
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 
@@ -98,7 +97,7 @@ public class PortIn
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         // In case no parser exists...
         if ( null == _parser )
@@ -119,7 +118,7 @@ public class PortIn
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         try
         {
@@ -127,7 +126,7 @@ public class PortIn
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 
@@ -145,7 +144,7 @@ public class PortIn
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         if ( _peeked == NOT_PEEKED )
         {
@@ -155,7 +154,7 @@ public class PortIn
             }
             catch ( IOException e )
             {
-                throw RuntimeX.mIoError( e );
+                throw Raise.mIoError( e );
             }
         }
 
@@ -175,7 +174,7 @@ public class PortIn
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         int c;
         if ( _peeked != NOT_PEEKED )
@@ -189,7 +188,7 @@ public class PortIn
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
 
         if ( c == -1 )
@@ -222,7 +221,7 @@ public class PortIn
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 
@@ -246,7 +245,7 @@ public class PortIn
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 }

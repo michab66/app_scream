@@ -11,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.smack.util.Holder;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
@@ -151,7 +152,7 @@ public class ContinuationTest extends ScreamBaseTest
     private Thunk throwRtx( Int si1, Int si2, Cont<FirstClassObject> cont )
             throws RuntimeX
     {
-        return () -> { throw RuntimeX.mDivisionByZero(); };
+        return () -> { throw Raise.mDivisionByZero(); };
     }
 
     @Test

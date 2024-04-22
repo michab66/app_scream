@@ -12,6 +12,7 @@ import java.util.logging.Logger;
 
 import org.smack.util.JavaUtil;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.frontend.SchemeParser;
 
@@ -170,7 +171,7 @@ public abstract class Port<T extends Closeable>
         if ( isClosed() )
             return;
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         try
         {
@@ -186,7 +187,7 @@ public abstract class Port<T extends Closeable>
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 

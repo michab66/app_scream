@@ -5,6 +5,7 @@
  */
 package de.michab.scream.fcos;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Cont;
@@ -64,7 +65,7 @@ public abstract class Number
         if ( Math.rint( value ) == value )
             return Int.createObject( Math.round( value ) );
 
-        throw RuntimeX.mTypeError(
+        throw Raise.mTypeError(
                 Int.class,
                 Real.createObject( value ) );
     }
@@ -159,7 +160,7 @@ public abstract class Number
         if ( asLong() == asDouble() )
             return Int.createObject( asLong() );
 
-        throw RuntimeX.mIllegalArgument( toString() );
+        throw Raise.mIllegalArgument( toString() );
     }
 
     /**
@@ -303,13 +304,13 @@ public abstract class Number
             throws RuntimeX
     {
         if ( other == Cons.NIL )
-            throw RuntimeX.mTypeError( Number.class, other );
+            throw Raise.mTypeError( Number.class, other );
 
         double otherDouble =
                 other.as( Number.class ).asDouble();
 
         if ( 0.0 == otherDouble )
-            throw RuntimeX.mDivisionByZero();
+            throw Raise.mDivisionByZero();
 
         return Real.createObject(
                 asDouble() / otherDouble );
@@ -348,7 +349,7 @@ public abstract class Number
         }
         catch ( ArithmeticException aex )
         {
-            throw RuntimeX.mDivisionByZero();
+            throw Raise.mDivisionByZero();
         }
     }
 

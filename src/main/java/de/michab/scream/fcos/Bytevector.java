@@ -11,6 +11,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.util.Scut;
 
@@ -46,7 +47,7 @@ public final class Bytevector
         Objects.requireNonNull( bytes );
 
         if ( ! Cons.isProper( bytes ) )
-            throw RuntimeX.mExpectedProperList( bytes );
+            throw Raise.mExpectedProperList( bytes );
 
         if ( 0 == Cons.length( bytes ) )
         {
@@ -89,7 +90,7 @@ public final class Bytevector
     public Bytevector set( long idx, long value ) throws RuntimeX
     {
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         try
         {
@@ -99,7 +100,7 @@ public final class Bytevector
         }
         catch ( ArrayIndexOutOfBoundsException e )
         {
-            throw RuntimeX.mIndexOutOfBounds( idx );
+            throw Raise.mIndexOutOfBounds( idx );
         }
     }
 
@@ -118,7 +119,7 @@ public final class Bytevector
         }
         catch ( ArrayIndexOutOfBoundsException e )
         {
-            throw RuntimeX.mIndexOutOfBounds( idx );
+            throw Raise.mIndexOutOfBounds( idx );
         }
     }
 
@@ -260,7 +261,7 @@ public final class Bytevector
         var iTo =
                 Scut.assertMaxIndex( _vector.length, to );
         if ( start > to )
-            throw RuntimeX.mIllegalArgument( "start > to" );
+            throw Raise.mIllegalArgument( "start > to" );
 
         return new Bytevector(
                 Arrays.copyOfRange( _vector, iStart, iTo ) );
@@ -284,10 +285,10 @@ public final class Bytevector
         throws RuntimeX
     {
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         if ( endIdx < srcIdx )
-            throw RuntimeX.mIllegalArgument( "endIdx < srcIndex" );
+            throw Raise.mIllegalArgument( "endIdx < srcIndex" );
 
         int iTgtIdx =
                 Scut.assertIndex( tgtIdx );
@@ -304,12 +305,12 @@ public final class Bytevector
         if ( toCopy == 0 )
             return this;
         if ( toCopy < 0 )
-            throw RuntimeX.mIllegalArgument( "toCopy < 0" );
+            throw Raise.mIllegalArgument( "toCopy < 0" );
 
 
         // Prevent ioob below.
         if ( copyable < toCopy )
-            throw RuntimeX.mIndexOutOfBounds( _vector.length );
+            throw Raise.mIndexOutOfBounds( _vector.length );
 
         try
         {
@@ -340,7 +341,7 @@ public final class Bytevector
             throws RuntimeX
     {
         if ( endIdx < startIdx )
-            throw RuntimeX.mIllegalArgument( "end < start" );
+            throw Raise.mIllegalArgument( "end < start" );
         var length =
                 size();
         var iStart =

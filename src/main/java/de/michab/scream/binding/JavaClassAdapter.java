@@ -24,6 +24,7 @@ import org.smack.util.Pair;
 import org.smack.util.ReflectionUtil;
 import org.smack.util.StringUtil;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
@@ -89,7 +90,7 @@ final class JavaClassAdapter
         }
         catch ( ClassNotFoundException e )
         {
-            throw RuntimeX.mClassNotFound( classname );
+            throw Raise.mClassNotFound( classname );
         }
     }
 
@@ -127,7 +128,7 @@ final class JavaClassAdapter
             return isPublic( _class ) ? c  : findCallable( _class, c ) ;
         }
 
-        throw RuntimeX.mMethodNotFound(
+        throw Raise.mMethodNotFound(
                 _class.getSimpleName() + "#" + nameArguments.left + braced );
     }
 
@@ -164,7 +165,7 @@ final class JavaClassAdapter
             return c;
         }
 
-        throw RuntimeX.mMethodNotFound(
+        throw Raise.mMethodNotFound(
                 nameArguments.left + "<init>" + nameArguments.right );
     }
 
@@ -235,7 +236,7 @@ final class JavaClassAdapter
             throws RuntimeX
     {
         if ( ! Proxy.isProxyClass( _class ) )
-            throw RuntimeX.mNoProxy( _class.getName() );
+            throw Raise.mNoProxy( _class.getName() );
 
         Constructor<?> c = null;
         try
@@ -250,15 +251,15 @@ final class JavaClassAdapter
         }
         catch ( NoSuchMethodException e )
         {
-            throw RuntimeX.mProxyCannotInstantiate( _class.getName() );
+            throw Raise.mProxyCannotInstantiate( _class.getName() );
         }
         catch ( IllegalAccessException e )
         {
-            throw RuntimeX.mIllegalAccess( _class.getName() );
+            throw Raise.mIllegalAccess( _class.getName() );
         }
         catch ( InstantiationException e )
         {
-            throw RuntimeX.mProxyCannotInstantiate( _class.getName() );
+            throw Raise.mProxyCannotInstantiate( _class.getName() );
         }
     }
 
@@ -286,7 +287,7 @@ final class JavaClassAdapter
         }
         catch ( NoSuchFieldException e )
         {
-            throw RuntimeX.mFieldNotFound( name );
+            throw Raise.mFieldNotFound( name );
         }
     }
 
@@ -305,7 +306,7 @@ final class JavaClassAdapter
         }
         catch ( IllegalAccessException e )
         {
-            throw RuntimeX.mCannotModifyConstant( SchemeString.make( name ) );
+            throw Raise.mCannotModifyConstant( SchemeString.make( name ) );
         }
     }
 
@@ -357,7 +358,7 @@ final class JavaClassAdapter
             throws RuntimeX
     {
         if ( ! Cons.isProper( list ) )
-            throw RuntimeX.mExpectedProperList( list );
+            throw Raise.mExpectedProperList( list );
 
         return mapArray( componentType, Cons.asArray( list ) );
     }
@@ -384,7 +385,7 @@ final class JavaClassAdapter
         if ( cl.isArray() && FirstClassObject.is( Cons.class, fco ) )
             return mapArray( cl.getComponentType(), Scut.as( Cons.class, fco ) );
         if ( cl.isArray() )
-            throw RuntimeX.mTypeError( Vector.class, fco );
+            throw Raise.mTypeError( Vector.class, fco );
 
         // Handle SchemeObjects.
         if ( fco instanceof SchemeObject )
@@ -418,7 +419,7 @@ final class JavaClassAdapter
             return fco.toJava();
 
         // TODO cannot express the target type.
-        throw RuntimeX.mTypeError( SchemeObject.class, fco );
+        throw Raise.mTypeError( SchemeObject.class, fco );
     }
 
     private static Object createInstanceVariadic(
@@ -426,7 +427,7 @@ final class JavaClassAdapter
             FirstClassObject[] args ) throws RuntimeX
     {
         if ( args.length < method.getParameterCount()-1 )
-            throw RuntimeX.mWrongNumberOfArguments(
+            throw Raise.mWrongNumberOfArguments(
                     method.getParameterCount(),
                     args.length );
 
@@ -470,7 +471,7 @@ final class JavaClassAdapter
         }
         catch ( InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e )
         {
-            throw RuntimeX.mCreationFailed( method.getName() );
+            throw Raise.mCreationFailed( method.getName() );
         }
     }
 
@@ -483,7 +484,7 @@ final class JavaClassAdapter
             return createInstanceVariadic( ctor, args );
 
         if ( args.length != ctor.getParameterCount() )
-            throw RuntimeX.mWrongNumberOfArguments( ctor.getParameterCount(), args.length );
+            throw Raise.mWrongNumberOfArguments( ctor.getParameterCount(), args.length );
 
         Class<?>[] initTypes =
                 ctor.getParameterTypes();
@@ -501,7 +502,7 @@ final class JavaClassAdapter
         catch ( InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException e )
         {
-            throw RuntimeX.mCreationFailed( ctor.getName() );
+            throw Raise.mCreationFailed( ctor.getName() );
         }
     }
 
@@ -522,7 +523,7 @@ final class JavaClassAdapter
         throws RuntimeX
     {
         if ( args.length < method.getParameterCount()-1 )
-            throw RuntimeX.mWrongNumberOfArguments(
+            throw Raise.mWrongNumberOfArguments(
                     method.getParameterCount(),
                     args.length );
 
@@ -571,7 +572,7 @@ final class JavaClassAdapter
         }
         catch ( IllegalAccessException | IllegalArgumentException e )
         {
-            throw RuntimeX.mInvocationException( method, e );
+            throw Raise.mInvocationException( method, e );
         }
     }
 
@@ -584,7 +585,7 @@ final class JavaClassAdapter
             return callVariadic( instance, method, args );
 
         if ( args.length != method.getParameterCount() )
-            throw RuntimeX.mWrongNumberOfArguments( method.getParameterCount(), args.length );
+            throw Raise.mWrongNumberOfArguments( method.getParameterCount(), args.length );
 
         Class<?>[] initTypes =
                 method.getParameterTypes();
@@ -606,11 +607,11 @@ final class JavaClassAdapter
         }
         catch ( IllegalArgumentException e )
         {
-            throw RuntimeX.mInvocationException( method, e );
+            throw Raise.mInvocationException( method, e );
         }
         catch ( IllegalAccessException e )
         {
-            throw RuntimeX.mInvocationException( method, e );
+            throw Raise.mInvocationException( method, e );
         }
     }
 
@@ -631,7 +632,7 @@ final class JavaClassAdapter
         var value =  number.asLong();
 
         if ( value < min || value > max )
-            throw RuntimeX.mRangeExceeded(
+            throw Raise.mRangeExceeded(
                     number,
                     String.format( "[%d..%d]", min, max ) );
 
@@ -666,12 +667,12 @@ final class JavaClassAdapter
         throws RuntimeX
     {
         if ( StringUtil.isEmpty( spec ) )
-            throw RuntimeX.mIllegalArgument( spec );
+            throw Raise.mIllegalArgument( spec );
 
         var split = spec.split( ":" );
 
         if ( split.length > 2 )
-            throw RuntimeX.mIllegalArgument( spec );
+            throw Raise.mIllegalArgument( spec );
 
         return new Pair<String,String>(
                 split[ 0 ],
@@ -709,7 +710,7 @@ final class JavaClassAdapter
         }
         catch ( Exception ee )
         {
-            return RuntimeX.mInvocationException(
+            return Raise.mInvocationException(
                     context,
                     t );
         }

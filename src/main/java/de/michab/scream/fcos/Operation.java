@@ -8,6 +8,7 @@ package de.michab.scream.fcos;
 import java.util.HashSet;
 import java.util.Set;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.util.Continuation.Cont;
@@ -107,7 +108,7 @@ extends FirstClassObject
 
         // The formal arguments must be a list.
         if ( ! (formalArguments instanceof Cons) )
-            throw RuntimeX.mSyntaxError( formalArguments );
+            throw Raise.mSyntaxError( formalArguments );
 
         // Remember the formal argument list.
         Cons fac = _formalArguments = (Cons)formalArguments;
@@ -127,12 +128,12 @@ extends FirstClassObject
 
                 // Set.add() returns false if the element is already contained.
                 if ( false == unifier.add( symbolName ) )
-                    throw RuntimeX.mDuplicateFormal( car );
+                    throw Raise.mDuplicateFormal( car );
 
                 // This cell was fine.
             }
             else
-                throw RuntimeX.mInvalidFormals(  car );
+                throw Raise.mInvalidFormals(  car );
 
             // Check the cdr.
             FirstClassObject cdr = fac.getCdr();
@@ -149,7 +150,7 @@ extends FirstClassObject
                 // A 'rest' symbol was defined.
                 // Set.add() returns false if the element is already contained.
                 if ( false == unifier.add( cdr.toString() ) )
-                    throw RuntimeX.mDuplicateFormal( cdr );
+                    throw Raise.mDuplicateFormal( cdr );
                 else
                 {
                     // Terminate the formal argument list...
@@ -161,7 +162,7 @@ extends FirstClassObject
                 break;
             }
             else
-                throw RuntimeX.mInvalidFormals( cdr );
+                throw Raise.mInvalidFormals( cdr );
         }
     }
 
@@ -256,7 +257,7 @@ extends FirstClassObject
                     throws RuntimeX
     {
         if ( expected != received.length )
-            throw RuntimeX.mWrongNumberOfArguments(
+            throw Raise.mWrongNumberOfArguments(
                     expected,
                     received.length
                     );
@@ -282,13 +283,13 @@ extends FirstClassObject
 
         if ( argumentCount < min )
         {
-            throw RuntimeX.mNotEnoughArguments(
+            throw Raise.mNotEnoughArguments(
                     min,
                     argumentCount );
         }
         if ( argumentCount > max )
         {
-            throw RuntimeX.mTooManyArguments(
+            throw Raise.mTooManyArguments(
                     max,
                     argumentCount );
         }
@@ -317,8 +318,7 @@ extends FirstClassObject
         if ( formalCount < receivedCount && isVariadic() )
             return;
 
-        throw RuntimeX.mWrongNumberOfArguments( formalCount, receivedCount ).
-            setOperationName( getName() );
+        throw Raise.mWrongNumberOfArgumentsF( getName(), formalCount, receivedCount );
     }
 
     /**
@@ -355,7 +355,7 @@ extends FirstClassObject
         if ( FirstClassObject.is( Cons.class, formals ) )
             return;
 
-        throw RuntimeX.mInvalidFormals( formals );
+        throw Raise.mInvalidFormals( formals );
     }
 
     /**
@@ -413,7 +413,7 @@ extends FirstClassObject
     protected final Lambda _compile( Environment env, Cons args ) throws RuntimeX
     {
         // See #160
-        throw RuntimeX.mInternalError( getClass() );
+        throw Raise.mInternalError( getClass() );
     }
 
     /**

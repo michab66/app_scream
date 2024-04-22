@@ -5,7 +5,7 @@
  */
 package de.michab.scream.pops;
 
-import de.michab.scream.RuntimeX;
+import de.michab.scream.Raise;
 import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -269,7 +269,7 @@ public class Primitives
             var receivedValueCount = v_.length();
 
             if ( receivedValueCount != symbols.length() )
-                throw RuntimeX.mWrongNumberOfArguments(
+                throw Raise.mWrongNumberOfArguments(
                         symbols.length(),
                         receivedValueCount );
 

@@ -13,6 +13,7 @@ import org.smack.util.CachedHolder;
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 
 /**
@@ -128,7 +129,7 @@ public final class Environment
     public Environment define( Symbol symbol, FirstClassObject value ) throws RuntimeX
     {
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         _symbolMap.put( symbol, value );
         return this;
@@ -148,7 +149,7 @@ public final class Environment
         if ( _symbolMap.containsKey( symbol ) )
         {
             if ( isConstant() )
-                throw RuntimeX.mCannotModifyConstant( symbol );
+                throw Raise.mCannotModifyConstant( symbol );
 
             _symbolMap.remove( symbol );
         }
@@ -209,7 +210,7 @@ public final class Environment
         if ( _symbolMap.containsKey( symbol ) )
         {
             if ( isConstant() )
-                throw RuntimeX.mCannotModifyConstant( this );
+                throw Raise.mCannotModifyConstant( this );
 
             return define( symbol, value );
         }
@@ -217,7 +218,7 @@ public final class Environment
         if ( _parent != null )
             return _parent.assign( symbol, value  );
 
-        throw RuntimeX.mSymbolNotAssignable( symbol );
+        throw Raise.mSymbolNotAssignable( symbol );
     }
 
     /**
@@ -235,7 +236,7 @@ public final class Environment
         if ( _parent != null )
             return _parent.get( symbol );
 
-        throw RuntimeX.mSymbolNotDefined( symbol );
+        throw Raise.mSymbolNotDefined( symbol );
     }
 
     /**

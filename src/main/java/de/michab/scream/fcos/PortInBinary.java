@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 
 /**
@@ -68,7 +69,7 @@ public class PortInBinary
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 
@@ -83,7 +84,7 @@ public class PortInBinary
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         try
         {
@@ -91,7 +92,7 @@ public class PortInBinary
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
     }
 
@@ -109,7 +110,7 @@ public class PortInBinary
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         if ( _peeked == NOT_PEEKED )
         {
@@ -119,7 +120,7 @@ public class PortInBinary
             }
             catch ( IOException e )
             {
-                throw RuntimeX.mIoError( e );
+                throw Raise.mIoError( e );
             }
         }
 
@@ -139,7 +140,7 @@ public class PortInBinary
             throws RuntimeX
     {
         if ( isClosed() )
-            throw RuntimeX.mPortClosed();
+            throw Raise.mPortClosed();
 
         int c;
         if ( _peeked != NOT_PEEKED )
@@ -153,7 +154,7 @@ public class PortInBinary
         }
         catch ( IOException e )
         {
-            throw RuntimeX.mIoError( e );
+            throw Raise.mIoError( e );
         }
 
         if ( c == -1 )

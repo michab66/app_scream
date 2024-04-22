@@ -44,7 +44,7 @@ public class R7rs_4_2_9_CaseLambda_Test extends ScreamBaseTest
             var rx = t.expectError(
                     "(range 1 2 3 4)",
                     Code.WRONG_NUMBER_OF_ARGUMENTS );
-            assertEquals( "4", rx.getArgument( 0 ) );
+            assertEquals( i4, rx.getArgument( 0 ) );
     }
 
     @Test
@@ -82,6 +82,6 @@ public class R7rs_4_2_9_CaseLambda_Test extends ScreamBaseTest
         var rx = t.expectError(
                 "(default3 1 2 3 4)",
                 Code.WRONG_NUMBER_OF_ARGUMENTS );
-        assertEquals( "4", rx.getArgument( 0 ) );
+        assertEquals( i4, rx.getArgument( 0 ) );
     }
 }

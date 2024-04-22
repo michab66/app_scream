@@ -7,6 +7,7 @@ package de.michab.scream.fcos;
 
 import java.nio.charset.StandardCharsets;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.util.Scut;
 
@@ -139,7 +140,7 @@ public class SchemeString
             throws RuntimeX
     {
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         try
         {
@@ -147,7 +148,7 @@ public class SchemeString
         }
         catch ( StringIndexOutOfBoundsException e )
         {
-            throw RuntimeX.mIndexOutOfBounds( idx );
+            throw Raise.mIndexOutOfBounds( idx );
         }
     }
 
@@ -167,7 +168,7 @@ public class SchemeString
         }
         catch ( StringIndexOutOfBoundsException e )
         {
-            throw RuntimeX.mIndexOutOfBounds( idx );
+            throw Raise.mIndexOutOfBounds( idx );
         }
     }
 
@@ -191,7 +192,7 @@ public class SchemeString
         }
         catch ( StringIndexOutOfBoundsException e )
         {
-            throw RuntimeX.mIndexOutOfBounds( end );
+            throw Raise.mIndexOutOfBounds( end );
         }
     }
 
@@ -262,7 +263,7 @@ public class SchemeString
             long endIdx ) throws RuntimeX
     {
         if ( endIdx < startIdx )
-            throw RuntimeX.mIllegalArgument( "end < start" );
+            throw Raise.mIllegalArgument( "end < start" );
         var length =
                 length();
         var iStart =
@@ -301,13 +302,30 @@ public class SchemeString
             throws RuntimeX
     {
         if ( isConstant() )
-            throw RuntimeX.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstant( this );
 
         uncheckedFill( filler );
     }
 
+    @Override
+    public boolean equals( Object obj )
+    {
+        if ( obj == null )
+            return false;
+        if ( this == obj )
+            return true;
+        try {
+            return getValue().equals(
+                    getClass().cast( obj ).getValue() );
+        }
+        catch ( ClassCastException ignored )
+        {
+            return false;
+        }
+    }
+
     /**
-     * The implementation of the scheme equal? procedure.  This is the least
+     * The implementation of the Scheme equal? procedure.  This is the least
      * efficient one since lists and arrays are deep compared. For other types
      * eqv? is used.
      *

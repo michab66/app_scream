@@ -5,6 +5,7 @@
  */
 package de.michab.scream.pops;
 
+import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
@@ -40,7 +41,7 @@ public abstract class SyntaxLetValues
     {
         final var originalBindings = bindings;
         ConsumerX<Long> ic = s -> {
-            throw RuntimeX.mBadBinding( getName(), originalBindings );
+            throw Raise.mBadBinding( getName(), originalBindings );
         };
 
         Scut.checkProperLength(
@@ -57,7 +58,7 @@ public abstract class SyntaxLetValues
                     Cons.class,
                     c,
                     s-> {
-                        throw RuntimeX.mBadBinding( getName(), originalBindings );
+                        throw Raise.mBadBinding( getName(), originalBindings );
                     });
             // Of length 2.
             Scut.checkProperLength(
@@ -71,11 +72,11 @@ public abstract class SyntaxLetValues
                     Cons.class,
                     binding.getCar(),
                     s -> {
-                        throw RuntimeX.mBadBinding( getName(), binding );
+                        throw Raise.mBadBinding( getName(), binding );
                     } );
             // Must be proper.
             if ( ! Cons.isProper( symbolList ) )
-                throw RuntimeX.mExpectedProperList();
+                throw Raise.mExpectedProperList();
             Scut.assertUnique( symbolList );
             Scut.assertHomogeneous( symbolList, Symbol.class );
         }
