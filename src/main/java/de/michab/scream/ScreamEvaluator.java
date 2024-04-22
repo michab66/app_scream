@@ -243,7 +243,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * @return The evaluation result.
      * @throws RuntimeX In case of an error.
      */
-    public FirstClassObject evalFco(Reader reader) throws RuntimeX
+    private FirstClassObject evalFco(Reader reader) throws RuntimeX
     {
         return evalImpl(
                 _interaction,

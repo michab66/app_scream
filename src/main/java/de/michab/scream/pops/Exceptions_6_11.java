@@ -126,7 +126,7 @@ public abstract class Exceptions_6_11
             {
                 checkArgumentCount( 1, args );
 
-                // Non-continuable.
+                // Continuable.
                 return () ->  { throw Raise.mRaise( c, args ); };
             }
         };
