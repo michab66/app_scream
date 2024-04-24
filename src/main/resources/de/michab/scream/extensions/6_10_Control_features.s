@@ -223,10 +223,12 @@
 #|
  | (map proc list₁ list₂ ... ) r7rs 6.10 p51 procedure
  |#
-(define (map proc . lists)
-;  (scream:display-ln 'map lists)
-
-  (let ((slicer (apply scream:list-slicer lists)))
+(define (map proc first . lists)
+  (let* 
+    (
+      (lists (append (list first) lists)) 
+      (slicer (apply scream:list-slicer lists))
+    )
 
     (define (_map result)
       (let ((current (slicer)))
@@ -236,7 +238,7 @@
             (cons (apply proc current) result)))))
 
     (if (apply scream:circular? lists)
-      (error "ILLEGAL_ARGUMENT" 'all-circular)
+      (error "map:ILLEGAL_ARGUMENT" 'all-circular)
       (_map '()))))
 
 #|
