@@ -77,7 +77,7 @@ public class SchemeParser
      */
     public SchemeParser( Reader source, String filename )
     {
-        _scanner = new SchemeScanner( source, filename );
+        _scanner = new SchemeScanner( source, filename, this );
     }
 
     /**
@@ -242,7 +242,7 @@ public class SchemeParser
      * @return An expression.
      * @throws RuntimeX In case of an error.
      */
-    private FirstClassObject parseDatum()
+    public FirstClassObject parseDatum()
             throws RuntimeX
     {
         Token token = getNextToken();
@@ -254,10 +254,6 @@ public class SchemeParser
 
         case Char:
             return SchemeCharacter.createObject( token.characterValue() );
-
-        case DatumComment:
-            parseDatum();
-            return parseDatum();
 
         case Symbol:
             return Symbol.createObject( token.stringValue() );

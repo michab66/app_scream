@@ -19,14 +19,13 @@ import de.michab.scream.util.SourcePosition;
 public final class Token
 {
     /**
-     * The Scheme tokens used by the frontend.
+     * The Scheme-tokens used by the frontend.
      */
     public enum Tk {
         Array,
         Boolean,
         Bytevector,
         Char,
-        DatumComment,
         Dot,
         End,
         Eof,
