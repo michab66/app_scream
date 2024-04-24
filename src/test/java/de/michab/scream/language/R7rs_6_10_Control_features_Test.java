@@ -111,6 +111,12 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
         t.expectFco(
                 "(map + '(1 2 3) '(4 5 6 7))",
                 "(5 7 9)" );
+        t.expectError(
+                "(map +)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        t.expectError(
+                "(map + (scream:make-circular! (list 1 2)) (scream:make-circular! (list 3 4)))",
+                Code.ILLEGAL_ARGUMENT );
     }
 
     /**
