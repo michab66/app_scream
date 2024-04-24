@@ -31,7 +31,8 @@ public class SchemeScannerTest extends ScreamBaseTest
     {
         return new SchemeScanner7(
                 new StringReader( script ),
-                getClass().getSimpleName() );
+                getClass().getSimpleName(),
+                null );
     }
 
     /**
@@ -176,15 +177,6 @@ public class SchemeScannerTest extends ScreamBaseTest
 
         assertEquals( Token.Tk.Number, t.getType() );
         assertEquals( 313, t.numberValue().asLong() );
-    }
-
-    @Test
-    public void datumComment_plain() throws Exception
-    {
-        var t = toToken(
-                "#;" );
-
-        assertEquals( Tk.DatumComment, t.getType() );
     }
 
     @Test

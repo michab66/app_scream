@@ -16,6 +16,7 @@ import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.Number;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.SourcePosition;
+import de.michab.scream.frontend.SchemeParser;
 
 %%
 
@@ -24,8 +25,10 @@ import de.michab.scream.util.SourcePosition;
 %public
 %final
 %ctorarg String filename
+%ctorarg SchemeParser parser
 %init{
   _filename = filename;
+  _parser = parser;
 %init}
 
 // Create a main function in the scanner class for testing purposes.
@@ -56,6 +59,8 @@ private int getColumn()
 }
 
 private final String _filename;
+
+private final SchemeParser _parser;
 
 private SourcePosition sourcePosition()
 {
@@ -534,7 +539,7 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   }
 
   {DATUM_COMMENT} {
-      return new Token( Tk.DatumComment, sourcePosition() );
+      _parser.parseDatum();
   }
 
   /*

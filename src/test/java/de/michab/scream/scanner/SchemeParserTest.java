@@ -138,7 +138,9 @@ public class SchemeParserTest extends ScreamBaseTest
     @Test
     public void datumComment() throws RuntimeX
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
 """
             (+
               (+ 1 1)
@@ -148,5 +150,16 @@ public class SchemeParserTest extends ScreamBaseTest
             )
 """,
             i(14) );
+
+        t.expectFco(
+"""
+            (+
+              (+ 1 1)
+              (+ 2 2)
+              #; (+ 3 3)
+              #; (+ 4 4)
+            )
+""",
+            i(6) );
     }
 }
