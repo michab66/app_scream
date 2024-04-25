@@ -881,14 +881,16 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void list_copy() throws Exception
     {
-        expectError(
+        var t = makeTester();
+
+        t.expectError(
 """
         (define a '(1 8 2 8))
         (set-car! a '3)
 """,
         Code.CANNOT_MODIFY_CONSTANT );
 
-        expectFco(
+        t.expectFco(
 """
         (define a '(1 8 2 8))
         (define b (list-copy a))
@@ -896,19 +898,24 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
         b
 """,
         "(3 8 2 8)" );
-    }
 
-    /**
-     * p43
-     */
-    @Test
-    public void list_copy_err_type() throws Exception
-    {
-        expectError(
-"""
-        (list-copy 5)
-""",
-        Code.TYPE_ERROR );
-    }
+        // Improper list.
+        t.expectFco(
+                "(list-copy '(1 2 . 4))",
+                "(1 2 . 4)" );
 
+        // "An obj which is not a list is
+        // returned unchanged."
+        t.expectFco(
+                "(list-copy 5)",
+                i(5));
+
+        // "It is an error if obj is a circular list."
+        var rx = t.expectError(
+                "(list-copy (scream:make-circular! (list 1 2)))",
+                Code.ILLEGAL_ARGUMENT );
+        assertEqualq(
+                s("list-copy"),
+                rx.getOperationName() );
+    }
 }
