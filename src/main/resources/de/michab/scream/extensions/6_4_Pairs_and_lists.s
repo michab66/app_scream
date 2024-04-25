@@ -354,7 +354,21 @@
  | (list-copy obj) procedure r7rs 6.4 p43
  |#
 (define (list-copy list)
-  (if (null? list)
-      '()
-      (cons (car list)
-            (list-copy (cdr list)))))
+  (define (_list-copy list)
+    (cond
+      ((not (pair? list))
+        list)
+      (else
+        (cons (car list)
+              (_list-copy (cdr list))))
+    )
+  )
+
+  (cond
+    ; circular? is expensive. Check only once in setup.
+    ((and (pair? list) (scream:circular? list))
+      (error "list-copy:ILLEGAL_ARGUMENT" 'circular))
+    (else
+      (_list-copy list))
+  )
+)
