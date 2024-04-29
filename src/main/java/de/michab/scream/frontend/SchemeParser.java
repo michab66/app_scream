@@ -8,6 +8,11 @@ package de.michab.scream.frontend;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
+import org.smack.util.Holder;
 
 import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
@@ -15,6 +20,7 @@ import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Bytevector;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Number;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.SchemeCharacter;
 import de.michab.scream.fcos.SchemeString;
@@ -22,6 +28,7 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Vector;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.Scut;
+import de.michab.scream.util.Scut.ConsumerX;
 
 /**
  * An LL(1) parser for scheme.  Parses the non-terminal {@code <datum>}
@@ -138,11 +145,12 @@ public class SchemeParser
 
     /**
      * Parses a Scheme array.
+     * @param labels
      *
      * @return An array structure.
      * @throws RuntimeX In case of an error.
      */
-    private FirstClassObject parseArray()
+    private FirstClassObject parseArray(Map<Long, Holder<FirstClassObject>> labels)
             throws RuntimeX
     {
         ArrayList<FirstClassObject> collector =
@@ -151,7 +159,7 @@ public class SchemeParser
         // As long as we find no array end...
         while ( Tk.End != peekNextToken().getType() )
             // ...just add the expressions to our local vector.
-            collector.add( parseDatum() );
+            collector.add( parseDatum(labels) );
 
         // Consume the End token.
         getNextToken();
@@ -196,44 +204,100 @@ public class SchemeParser
 
     /**
      * Parses a Scheme list.
+     * @param labels
      *
      * @return A list structure.
      * @throws RuntimeX In case of an error.
      */
-    private FirstClassObject parseList()
+    private FirstClassObject parseList(Map<Long, Holder<FirstClassObject>> labels)
+    //HashMap<Long,Cons> labelMap )
             throws RuntimeX
     {
-        // If this is the end of the list...
-        if ( Tk.End == peekNextToken().getType() )
+        Cons result = Cons.NIL;
+        Cons resultTail = Cons.NIL;
+
+        while ( true )
         {
-            // ...consume the token...
-            getNextToken();
-            // ...and return the empty list.
-            return Cons.NIL;
+
+            if ( Tk.End == peekNextToken().getType() )
+            {
+                getNextToken();
+                return result;
+            }
+
+            Cons c = new Cons( Cons.NIL, Cons.NIL );
+
+            if ( result == Cons.NIL ) {
+                result = c;
+                resultTail = c;
+            }
+            else
+            {
+                resultTail.setCdr( c );
+                resultTail = c;
+            }
+
+            c.setCar( parseDatum(labels) );
+
+            // Check if we are reading a proper list.
+            if ( Tk.Dot == peekNextToken().getType() )
+            {
+                // Not proper.
+                getNextToken();
+                c.setCdr( parseDatum(labels) );
+
+                // List has to be finished.
+                if ( Tk.End != getNextToken().getType() )
+                    throw Raise.mParseExpected( Tk.End );
+
+                return result;
+            }
         }
+    }
 
-        // Read the car part of the list.
-        FirstClassObject car = parseDatum();
-        // ...and prepare for the cdr.
-        FirstClassObject cdr = Cons.NIL;
+    private FirstClassObject parseLabeledDatum(
+            Number number,
+            Map<Long, Holder<FirstClassObject>> labels )
+        throws RuntimeX
+    {
+        Long labelNumber = number.asLong();
 
-        // Check if we are reading a proper list.
-        if ( Tk.Dot == peekNextToken().getType() )
-        {
-            // Not proper.  Consume token...
-            getNextToken();
-            // ...and fill cdr.
-            cdr = parseDatum();
+        // TODO adjust type.
+        if ( labels.containsKey( labelNumber ) )
+            throw Raise.mDuplicateElement( number );
 
-            // List has to be finished.
-            if ( Tk.End != getNextToken().getType() )
-                throw Raise.mParseExpected( Tk.End );
-        }
-        else
-            cdr = parseList();
+        Holder<FirstClassObject> fcoh =
+                new Holder<FirstClassObject>( Cons.NIL ) {
+            @Override
+            public String toString()
+            {
+                return "";
+            }
+        };
 
-        // Finally create the cons cell and return that.
-        return new Cons( car, cdr );
+        labels.put( labelNumber, fcoh );
+
+        var result = parseDatum( labels );
+
+        fcoh.set( result );
+
+        return result;
+    }
+
+    private FirstClassObject parseLabelReference(
+            Number number,
+            Map<Long, Holder<FirstClassObject>> labels )
+        throws RuntimeX
+    {
+        Long labelNumber = number.asLong();
+
+        var holder = labels.get( labelNumber );
+
+        // TODO adjust type.
+        if ( holder == null )
+            throw Raise.mFieldNotFound( "" + number );
+
+        return new Proxy( labelNumber, holder );
     }
 
     /**
@@ -242,7 +306,7 @@ public class SchemeParser
      * @return An expression.
      * @throws RuntimeX In case of an error.
      */
-    public FirstClassObject parseDatum()
+    private FirstClassObject parseDatum( Map<Long, Holder<FirstClassObject>> labels )
             throws RuntimeX
     {
         Token token = getNextToken();
@@ -262,21 +326,21 @@ public class SchemeParser
             return token.numberValue();
 
         case Array:
-            return parseArray();
+            return parseArray( labels );
 
         case List:
-            return parseList();
+            return parseList(labels);
 
         case String:
             return SchemeString.makeEscaped( token.stringValue() );
 
         case Quote:
             return new Cons( QUOTE_SYMBOL,
-                    new Cons( parseDatum() ) );
+                    new Cons( parseDatum( labels ) ) );
 
         case QuasiQuote:
             return new Cons( QUASIQUOTE_SYMBOL,
-                    new Cons( parseDatum() ) );
+                    new Cons( parseDatum( labels ) ) );
 
         case Unquote:
             return new Cons( UNQUOTE_SYMBOL,
@@ -284,10 +348,16 @@ public class SchemeParser
 
         case UnquoteSplicing:
             return new Cons( UNQUOTE_SPLICING_SYMBOL,
-                    new Cons( parseDatum() ) );
+                    new Cons( parseDatum( labels ) ) );
 
         case Boolean:
             return Bool.createObject( token.booleanValue() );
+
+        case Label:
+            return parseLabeledDatum( token.numberValue(), labels  );
+
+        case LabelReference:
+            return parseLabelReference( token.numberValue(), labels );
 
         case Eof:
             throw Raise.mParseUnexpectedEof();
@@ -295,6 +365,16 @@ public class SchemeParser
         default:
             throw Raise.mParseUnexpected( token );
         }
+    }
+
+    /**
+     * Swallows a datum, used in the scanner with datum comments.
+     * @return
+     * @throws RuntimeX
+     */
+    public FirstClassObject parseDatum() throws RuntimeX
+    {
+        return parseDatum( new HashMap<>() );
     }
 
     /**
@@ -313,6 +393,104 @@ public class SchemeParser
         if ( token.getType() == Tk.Eof )
             return Port.EOF;
 
-        return parseDatum();
+        Map<Long, Holder<FirstClassObject>> referenceCollector =
+                new HashMap<>() ;
+        var result =
+                parseDatum( referenceCollector );
+
+        if ( referenceCollector.size() == 0 )
+            return result;
+
+        visitNodes( result, this::replaceProxies );
+
+        return result;
+    }
+
+    private void replaceProxies(
+            FirstClassObject fco,
+            ConsumerX<FirstClassObject> parentSetter )
+        throws RuntimeX
+    {
+        if ( ! FirstClassObject.is( Proxy.class, fco ) )
+            return;
+
+        var proxy = Scut.as( Proxy.class, fco );
+
+        parentSetter.accept( proxy.value() );
+    }
+
+    private void visitConsElements(
+            Cons cons,
+            BiConsumerX<FirstClassObject, ConsumerX<FirstClassObject>> visitor )
+    throws RuntimeX
+    {
+        if ( cons == Cons.NIL )
+            return;
+
+        while ( true )
+        {
+            var currentFco = cons.getCar();
+            visitor.accept(
+                    currentFco,
+                    cons::setCar );
+            var visitedFco = cons.getCar();
+            visitNodes( visitedFco, visitor );
+
+            var next = cons.getCdr();
+
+            if ( Cons.NIL == next )
+                break;
+            else if ( FirstClassObject.is( Cons.class, next ) )
+                cons = Scut.as( Cons.class, next );
+            else
+            {
+                visitor.accept(
+                        next,
+                        cons::setCdr );
+                break;
+            }
+        }
+    }
+
+    private void visitVectorElements(
+            Vector vector,
+            BiConsumerX<FirstClassObject, ConsumerX<FirstClassObject>> visitor )
+            throws RuntimeX
+    {
+        for ( long i = 0 ; i < vector.size() ; i++ )
+        {
+            final var ii = i;
+            visitor.accept(
+                    vector.get( ii ),
+                    replacement -> { vector.set( ii, replacement ); } );
+
+        }
+    }
+
+    @FunctionalInterface
+    public interface BiConsumerX<T, U> {
+
+        /**
+         * Performs this operation on the given arguments.
+         *
+         * @param t the first input argument
+         * @param u the second input argument
+         */
+        void accept(T t, U u) throws RuntimeX;
+    }
+
+
+    private FirstClassObject visitNodes(
+        FirstClassObject root,
+        BiConsumerX<FirstClassObject,ConsumerX<FirstClassObject>> visitor ) throws RuntimeX
+    {
+        Objects.requireNonNull( root );
+
+        if ( FirstClassObject.is( Cons.class, root ) )
+            visitConsElements( Scut.as( Cons.class, root ), visitor );
+        else if ( FirstClassObject.is( Vector.class, root ) )
+            visitVectorElements( Scut.as( Vector.class, root ), visitor );
+
+        return root;
     }
 }

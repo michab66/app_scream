@@ -58,7 +58,7 @@ public final class Token
      */
     private final SourcePosition _sourcePosition;
 
-    private Token( Tk type, Object value, SourcePosition sourcePosition )
+    public Token( Tk type, Object value, SourcePosition sourcePosition )
     {
         _type = type;
         _value = value;
@@ -87,9 +87,9 @@ public final class Token
     {
         this( type, (Object)value, sourcePosition );
 
-        if ( type != Tk.String &&
-                type != Tk.Symbol )
-            throw new IllegalArgumentException( "Type neither string nor symbol." );
+//        if ( type != Tk.String &&
+//                type != Tk.Symbol )
+//            throw new IllegalArgumentException( "Type neither string nor symbol." );
     }
 
     /**
@@ -159,13 +159,19 @@ public final class Token
         case Eof:
             result = "TkEof";
             break;
+        case Label:
+            result = String.format( "%s(#%s=)", _type, _value );
+            break;
+        case LabelReference:
+            result = String.format( "%s(#%s#)", _type, _value );
+            break;
         default:
-            result = "UnknownTokenValue";
+            result = _type.toString();
             break;
         }
 
         return String.format(
-                "%s%n%s",
+                "%s @ %s",
                 result,
                 _sourcePosition );
     }

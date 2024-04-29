@@ -9,6 +9,7 @@ package de.michab.scream.fcos;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
 
 import org.smack.util.Holder;
 
@@ -157,7 +158,9 @@ public class Cons
             throws RuntimeX
     {
         if ( isConstant() )
-            throw Raise.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstantF(
+                    Symbol.createObject( "set-car!" ),
+                    this );
 
         _car = car;
     }
@@ -694,9 +697,58 @@ public class Cons
     @Override
     public FirstClassObject setConstant()
     {
-        setConstant( _car );
-        setConstant( _cdr );
-        return super.setConstant();
+        HashSet<Cons> collector = new HashSet<>();
+
+        setConstant( collector );
+
+        return this;
+    }
+
+    private void setSuperConstant()
+    {
+        super.setConstant();
+    }
+
+    private void setConstant( Set<Cons> collector )
+    {
+        var currentCons = this;
+
+        while ( true )
+        {
+            if ( collector.contains( currentCons ) )
+                return;
+            collector.add( currentCons );
+
+            currentCons.setSuperConstant();
+
+            if ( _car == Cons.NIL )
+            {
+            }
+            else if ( _car instanceof Cons )
+            {
+                Cons consCar  = (Cons)_car;
+                consCar.setConstant( collector );
+            }
+            else
+                _car.setConstant();
+
+            if ( currentCons._cdr == Cons.NIL )
+            {
+                // Normal end.
+                break;
+            }
+            else if ( currentCons._cdr instanceof Cons )
+            {
+                // More to come.
+                currentCons = (Cons)currentCons._cdr;
+            }
+            else
+            {
+                // Improper list.
+                currentCons._cdr.setConstant();
+                break;
+            }
+        }
     }
 
     private static class Iterator_ implements java.util.Iterator<FirstClassObject>

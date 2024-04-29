@@ -17,6 +17,7 @@ import de.michab.scream.fcos.Number;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.SourcePosition;
 import de.michab.scream.frontend.SchemeParser;
+import org.smack.util.StringUtil;
 
 %%
 
@@ -315,8 +316,8 @@ UNQUOTE =
 UNQUOTE_SPLICING =
   ",@"
 
-LABEL = "#" {uinteger_10} "#"
-LABEL_REFERENCE = "#" {uinteger_10} "="
+LABEL = "#" {uinteger_10} "="
+LABEL_REFERENCE = "#" {uinteger_10} "#"
 
 %%
 
@@ -386,11 +387,21 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   }
 
   {LABEL} {
-    return new Token( Tk.Label, sourcePosition() );
+    var number = yytext();
+   
+    return new Token( 
+        Tk.Label,
+        Number.make( Long.parseLong( number.substring( 1, number.length()-1 ) ) ),
+        sourcePosition() );
   }
-  
+
   {LABEL_REFERENCE} {
-    return new Token( Tk.LabelReference, sourcePosition() );
+    var number = yytext();
+   
+    return new Token( 
+        Tk.LabelReference,
+        Number.make( Long.parseLong( number.substring( 1, number.length()-1 ) ) ),
+        sourcePosition() );
   }
 
   {START_BYTEVECTOR} {

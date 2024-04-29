@@ -585,6 +585,13 @@ public class Raise
                 Code.CANNOT_MODIFY_CONSTANT,
                 constant );
     }
+    public static RuntimeX mCannotModifyConstantF( Symbol function, FirstClassObject constant )
+    {
+        return new RuntimeX(
+                function,
+                SchemeString.make( Code.CANNOT_MODIFY_CONSTANT.toString() ),
+                constant );
+    }
 
     //    # arg 0: The name of the class that has been tried to instantiate as a proxy.
     //    #
