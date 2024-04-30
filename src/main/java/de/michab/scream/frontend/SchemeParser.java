@@ -479,7 +479,6 @@ public class SchemeParser
         void accept(T t, U u) throws RuntimeX;
     }
 
-
     private FirstClassObject visitNodes(
         FirstClassObject root,
         BiConsumerX<FirstClassObject,ConsumerX<FirstClassObject>> visitor ) throws RuntimeX
