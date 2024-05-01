@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.frontend;
 
@@ -199,7 +199,7 @@ public class SchemeParser
         for ( int i = 0 ; i < result.length ; i++ )
             result[i] = collector.get( i );
 
-        return  FirstClassObject.setConstant( new Bytevector( result ) );
+        return new Bytevector( result );
     }
 
     /**

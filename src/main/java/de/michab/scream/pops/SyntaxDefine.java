@@ -37,31 +37,20 @@ public class SyntaxDefine extends Syntax
     {
         checkArgumentCount( 2, Integer.MAX_VALUE, args );
 
-        // The args represent a source code position and thus
-        // must not be modified.
-        // TODO: check if this can be generalized.
-        // args always copy and *can* thus be modified
-        // in compilation.
-        FirstClassObject.setConstant( args );
-        args = args.copy();
+        // TODO assert non circular
+        var first =
+                args.listRef( 0 );
+        var second =
+                args.listRef( 1 );
 
-        var variableSlot = args.getCar();
-
-        var rest = Scut.as(
-                Cons.class,
-                args.getCdr(),
-                s-> {
-                    throw Raise.mSyntaxError();
-                } );
-
-        if ( variableSlot instanceof Symbol ) {
-            checkArgumentCount( 1, rest );
+        if ( first instanceof Symbol )
+        {
             return Primitives._eval(
                     e,
-                    rest.getCar(),
+                    second,
                     fco -> Primitives._define(
                             e,
-                            (Symbol)variableSlot,
+                            (Symbol)first,
                             fco,
                             ignored -> c.accept( Cons.NIL ) ) );
         }
@@ -70,7 +59,7 @@ public class SyntaxDefine extends Syntax
 
         Cons signature = Scut.as(
                 Cons.class,
-                variableSlot,
+                first,
                 s-> {
                     throw Raise.mSyntaxError();
                 } );

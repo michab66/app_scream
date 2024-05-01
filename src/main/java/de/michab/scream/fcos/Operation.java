@@ -111,7 +111,8 @@ extends FirstClassObject
             throw Raise.mSyntaxError( formalArguments );
 
         // Remember the formal argument list.
-        Cons fac = _formalArguments = (Cons)formalArguments;
+        Cons fac = _formalArguments =
+                Scut.as( Cons.class, formalArguments ).copy();
 
         // The formal argument list must be a list of unique symbols.
         Set<String> unifier = new HashSet<String>();
