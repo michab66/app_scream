@@ -7,10 +7,25 @@ package de.michab.scream.language;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX;
 import de.michab.scream.ScreamBaseTest;
 
 public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
 {
+    private void addStepperEngine( Tester t ) throws RuntimeX
+    {
+        t.execute(
+"""
+(define (stepper list)
+  (let ((current list))
+     (lambda ()
+       (let ((result (car current)))
+         (set! current (cdr current))
+         result))))
+"""
+         );
+    }
+
     /**
      * r7rs 2.4 p9
      */
@@ -31,13 +46,47 @@ public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
     {
         var t = makeTester();
 
+        addStepperEngine( t );
+
         t.execute(
 """
                 (define circular
                   '#0=(a b c . #0#)
                 )
 """
-         );
+                );
+        t.execute(
+"""
+                (define nx (stepper circular))"""
+                );
+        t.expectFco( "(nx)", s("a") );
+        t.expectFco( "(nx)", s("b") );
+        t.expectFco( "(nx)", s("c") );
+        t.expectFco( "(nx)", s("a") );
+    }
+
+    @Test
+    public void iterate_simple_1() throws Exception
+    {
+        var t = makeTester();
+
+        addStepperEngine( t );
+
+        t.execute(
+"""
+                (define circular
+                  '(a . #0=(b c . #0#))
+                )
+"""
+                );
+        t.execute(
+"""
+                (define nx (stepper circular))"""
+                );
+        t.expectFco( "(nx)", s("a") );
+        t.expectFco( "(nx)", s("b") );
+        t.expectFco( "(nx)", s("c") );
+        t.expectFco( "(nx)", s("b") );
     }
 
     /**
