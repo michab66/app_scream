@@ -8,6 +8,7 @@ package de.michab.scream.language;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 
 public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
@@ -32,13 +33,24 @@ public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
     @Test
     public void r7rs_example() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
 """
                 (scream:circular?
                   '#0=(a b c . #0#)
                 )
 """,
                 bTrue );
+        t.expectError(
+                "#0= #0#",
+                Code.SYNTAX_ERROR );
+        t.expectError(
+                "#0=#0#",
+                Code.SYNTAX_ERROR );
+        t.expectError(
+                "#313=#0#",
+                Code.SYNTAX_ERROR );
     }
 
     @Test

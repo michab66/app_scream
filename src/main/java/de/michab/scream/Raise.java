@@ -132,6 +132,13 @@ public class Raise
                 SchemeString.make( Code.SYNTAX_ERROR.toString() ),
                 fco );
     }
+    public static RuntimeX mSyntaxErrorF( Symbol function, String fco )
+    {
+        return new RuntimeX(
+                function,
+                SchemeString.make( Code.SYNTAX_ERROR.toString() ),
+                SchemeString.make( fco ) );
+    }
 
     //    DEFINE_ERROR = \
     //    Invalid identifier for define.
