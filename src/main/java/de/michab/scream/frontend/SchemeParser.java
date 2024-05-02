@@ -430,13 +430,15 @@ public class SchemeParser
         while ( true )
         {
             var currentFco = cons.getCar();
+
+            visitNodes( currentFco, visitor );
+
+            var next = cons.getCdr();
+
             visitor.accept(
                     currentFco,
                     cons::setCar );
-            var visitedFco = cons.getCar();
-            visitNodes( visitedFco, visitor );
 
-            var next = cons.getCdr();
 
             if ( Cons.NIL == next )
                 break;

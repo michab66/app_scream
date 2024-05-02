@@ -5,11 +5,17 @@
  */
 package de.michab.scream.language;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+
+import java.util.HashMap;
+
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
+import de.michab.scream.fcos.Cons;
 
 public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
 {
@@ -110,5 +116,53 @@ public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
         expectFco(
                 "(let ((x '(#1=(a b) #1#))) (eq? (car x) (cadr x)))",
                 bTrue );
+    }
+
+    @Test
+    public void toDatumLabels() throws Exception
+    {
+       var fco =
+               parse( "(1 #0=(11 . #1=(12 . #0#)) 2 . #1#)" );
+       var cons =
+               assertInstanceOf( Cons.class, fco );
+
+
+       var nodeMap = Cons.enumerateNodes( cons );
+       assertEquals( 5, nodeMap.size() );
+    }
+
+    @Test
+    public void toDatumCollections() throws Exception
+    {
+        var fco =
+                parse( "(1 #0=(11 . #1=(12 . #0#)) 2 . #1#)" );
+        var cons =
+                assertInstanceOf( Cons.class, fco );
+
+
+        HashMap<Cons,Long> nodes =
+                new HashMap<>();
+        HashMap<Cons,Long> refs =
+                new HashMap<>();
+
+        Cons.collectNodes( cons, nodes, refs );
+
+        assertEquals(
+                5,
+                nodes.size() );
+        assertEquals(
+                2,
+                refs.size() );
+    }
+
+    @Test
+    public void toDatumLabelString() throws Exception
+    {
+        var fco =
+                parse( "(1 #2=(11 . #3=(12 . #2#)) 2 . #3#)" );
+        var cons =
+                assertInstanceOf( Cons.class, fco );
+
+        Cons.prepareNodes( cons );
     }
 }
