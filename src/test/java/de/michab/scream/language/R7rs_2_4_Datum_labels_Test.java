@@ -5,6 +5,7 @@
  */
 package de.michab.scream.language;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
 import org.junit.jupiter.api.Test;
@@ -145,6 +146,49 @@ public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
 
         System.out.println( cts );
     }
+
+    @Test
+    public void plainProper() throws Exception
+    {
+        var expected = "(m i c b i n z)";
+
+        var cons = Scut.as(
+                Cons.class,
+                parse( expected ) );
+
+        var cts = new ConsToString( cons ).toString();
+
+        assertEquals( expected, cts );
+    }
+
+    @Test
+    public void plainProperNested() throws Exception
+    {
+        var expected = "((m 1) (i 2) (c 3) (b 4) (i 5) (n 6) (z 7))";
+
+        var cons = Scut.as(
+                Cons.class,
+                parse( expected ) );
+
+        var cts = new ConsToString( cons ).toString();
+
+        assertEquals( expected, cts );
+    }
+
+    @Test
+    public void plainImproper() throws Exception
+    {
+        var expected = "(m i c b i n z . 313)";
+
+        var cons = Scut.as(
+                Cons.class,
+                parse( expected ) );
+
+        var cts = new ConsToString( cons ).toString();
+
+        assertEquals( expected, cts );
+    }
+
     @Test
     public void toDatumLabelString2() throws Exception
     {
