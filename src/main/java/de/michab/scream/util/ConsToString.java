@@ -8,7 +8,7 @@ package de.michab.scream.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 
 import org.smack.util.JavaUtil;
 import org.smack.util.StringUtil;
@@ -22,14 +22,15 @@ import de.michab.scream.fcos.FirstClassObject;
  */
 public class ConsToString
 {
-    private long enumId = 0;
+    private long _enumId = 0;
 
     private final StringBuilder _string =
             new StringBuilder();
 
     private final HashMap<Cons,Long> _nodes = new HashMap<>();
     private final HashMap<Cons,Long> _references = new HashMap<>();
-    private final HashMap<Long, Cons> _id2cons = new HashMap<>();
+
+    private HashSet<Long> _referred;
 
     public ConsToString( Cons cons )
     {
@@ -39,7 +40,7 @@ public class ConsToString
             return;
         }
 
-        collectNodes( cons, _nodes, _references );
+        collectNodes( cons );
 
         if ( _references.isEmpty() )
         {
@@ -47,8 +48,7 @@ public class ConsToString
             return;
         }
 
-        for ( var c : _references.keySet() )
-            _id2cons.put( _references.get( c ), c );
+        _referred = new HashSet<Long>( _references.values() );
 
         writeCons( cons );
     }
@@ -56,7 +56,7 @@ public class ConsToString
 
     private long nextEnumId()
     {
-        return enumId++;
+        return _enumId++;
     }
 
     private void append( String format, Object ... objects )
@@ -77,9 +77,7 @@ public class ConsToString
 
     private void collectNodes(
             Cons cons,
-            Cons previous,
-            Map<Cons,Long> node2id,
-            Map<Cons,Long> references )
+            Cons previous )
     {
         while ( true )
         {
@@ -87,17 +85,17 @@ public class ConsToString
                 // Proper list end.
                 break;
 
-            if ( node2id.containsKey( cons ) )
+            if ( _nodes.containsKey( cons ) )
             {
                 // Circle detected.
-                references.put(
+                _references.put(
                         previous,
-                        node2id.get( cons ) );
+                        _nodes.get( cons ) );
                 break;
             }
 
             // Remember and label the current node.
-            node2id.put(
+            _nodes.put(
                     cons,
                     nextEnumId() );
 
@@ -106,9 +104,7 @@ public class ConsToString
             if ( FirstClassObject.is( Cons.class, cCar ) )
                 collectNodes(
                         (Cons)cCar,
-                        Cons.NIL,
-                        node2id,
-                        references );
+                        Cons.NIL );
 
             var cCdr = cons.getCdr();
 
@@ -124,18 +120,16 @@ public class ConsToString
     }
 
     private void collectNodes(
-            Cons cons,
-            HashMap<Cons,Long> nodes,
-            HashMap<Cons,Long> references )
+            Cons cons )
     {
-        collectNodes( cons, Cons.NIL, nodes, references );
+        collectNodes( cons, Cons.NIL );
     }
 
     private String needsLabel( Cons cons )
     {
         var id = _nodes.get( cons );
 
-        if ( _id2cons.containsKey( id ) )
+        if ( _referred.contains( id ) )
             return "#" + id + "=";
 
         return StringUtil.EMPTY_STRING;
@@ -153,7 +147,7 @@ public class ConsToString
             var cCar = cons.getCar();
 
             if ( FirstClassObject.is( Cons.class, cCar ) )
-                writers.add( () ->  writeCons( (Cons)cCar )  );
+                writers.add( () ->  writeConsSimple( (Cons)cCar )  );
             else
                 writers.add(  () -> writeDataSimple( cCar ) );
 
