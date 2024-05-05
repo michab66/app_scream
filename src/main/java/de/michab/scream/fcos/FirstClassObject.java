@@ -6,6 +6,7 @@
 package de.michab.scream.fcos;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
@@ -405,5 +406,13 @@ public abstract class FirstClassObject
         catch (ClassCastException e) {
             throw Raise.mTypeError( c, this );
         }
+    }
+
+    public <T extends FirstClassObject> Optional<T> as( Class<T> cl, FirstClassObject fco )
+    {
+        if ( is( cl, fco ) )
+            return Optional.of( cl.cast( fco ) );
+
+        return Optional.empty();
     }
 }

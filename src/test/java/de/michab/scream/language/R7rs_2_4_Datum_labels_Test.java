@@ -5,10 +5,7 @@
  */
 package de.michab.scream.language;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-
-import java.util.HashMap;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,6 +13,8 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
+import de.michab.scream.util.ConsToString;
+import de.michab.scream.util.Scut;
 
 public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
 {
@@ -118,51 +117,85 @@ public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
                 bTrue );
     }
 
-    @Test
-    public void toDatumLabels() throws Exception
+
+    private void prefixEquals( String prefix, Cons cons ) throws RuntimeX
     {
-       var fco =
-               parse( "(1 #0=(11 . #1=(12 . #0#)) 2 . #1#)" );
-       var cons =
-               assertInstanceOf( Cons.class, fco );
+        var prefixCons = Scut.as( Cons.class, parse( prefix ) );
 
-
-       var nodeMap = Cons.enumerateNodes( cons );
-       assertEquals( 5, nodeMap.size() );
+        for ( var fco : prefixCons )
+        {
+            assertEqualq( fco, cons.getCar() );
+            cons = Scut.as( Cons.class, cons.getCdr() );
+        }
     }
 
     @Test
-    public void toDatumCollections() throws Exception
+    public void toDatumLabelString1() throws Exception
     {
-        var fco =
-                parse( "(1 #0=(11 . #1=(12 . #0#)) 2 . #1#)" );
-        var cons =
-                assertInstanceOf( Cons.class, fco );
+        var cons = Scut.as(
+                Cons.class,
+                parse( "()" ) );
 
+        var cts = new ConsToString( cons );
 
-        HashMap<Cons,Long> nodes =
-                new HashMap<>();
-        HashMap<Cons,Long> refs =
-                new HashMap<>();
+        System.out.println( cts );
+    }
+    @Test
+    public void toDatumLabelString2() throws Exception
+    {
+        var cons = Scut.as(
+                Cons.class,
+                parse( "(m i c b i n z)" ) );
 
-        Cons.collectNodes( cons, nodes, refs );
+        var cts = new ConsToString( cons ).toString();
 
-        assertEquals(
-                5,
-                nodes.size() );
-        assertEquals(
-                2,
-                refs.size() );
+        prefixEquals(
+                "(m i c b i n z)",
+                Scut.as(
+                        Cons.class,
+                        parse( cts ) ) );
     }
 
     @Test
-    public void toDatumLabelString() throws Exception
+    public void toDatumLabelString209() throws Exception
     {
-        var fco =
-                parse( "(1 #2=(11 . #3=(12 . #2#)) 2 . #3#)" );
-        var cons =
-                assertInstanceOf( Cons.class, fco );
+        var cons = Scut.as(
+                Cons.class,
+                parse( "#0=(a b c . #0#)" ) );
 
-        Cons.prepareNodes( cons );
+        var cts = new ConsToString( cons ).toString();
+
+        prefixEquals(
+                "(a b c a)",
+                Scut.as(
+                        Cons.class,
+                        parse( cts ) ) );
+    }
+    @Test
+    public void toDatumLabelString234() throws Exception
+    {
+        var cons = Scut.as(
+                Cons.class,
+                parse( "(a . #0=(b c . #0#))" ) );
+
+        var cts = new ConsToString( cons ).toString();
+
+        prefixEquals(
+                "(a b c b c)",
+                Scut.as(
+                        Cons.class,
+                        parse( cts ) ) );
+    }
+
+    @Test
+    public void toDatumLabelString3() throws Exception
+    {
+        var cons = assertInstanceOf(
+                Cons.class,
+                parse( "(1 #2=(11 . #3=(12 . #2#)) 2 . #3#)" ) );
+
+        var cts = new ConsToString( cons );
+
+        System.out.println( cts );
     }
 }
