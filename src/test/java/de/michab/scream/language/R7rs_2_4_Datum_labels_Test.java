@@ -13,6 +13,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
+import de.michab.scream.fcos.Symbol;
 import de.michab.scream.util.ConsToString;
 import de.michab.scream.util.Scut;
 
@@ -120,11 +121,15 @@ public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
 
     private void prefixEquals( String prefix, Cons cons ) throws RuntimeX
     {
+        Symbol skip = Symbol.createObject( "*" );
+
         var prefixCons = Scut.as( Cons.class, parse( prefix ) );
 
         for ( var fco : prefixCons )
         {
-            assertEqualq( fco, cons.getCar() );
+            if ( ! skip.eq( fco ) )
+                assertEqualq( fco, cons.getCar() );
+
             cons = Scut.as( Cons.class, cons.getCdr() );
         }
     }
@@ -194,8 +199,12 @@ public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
                 Cons.class,
                 parse( "(1 #2=(11 . #3=(12 . #2#)) 2 . #3#)" ) );
 
-        var cts = new ConsToString( cons );
+        var cts = new ConsToString( cons ).toString();
 
-        System.out.println( cts );
+        prefixEquals(
+                "(1 * 2 12 11 12 11)",
+                Scut.as(
+                        Cons.class,
+                        parse( cts ) ) );
     }
 }
