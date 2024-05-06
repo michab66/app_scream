@@ -220,6 +220,7 @@ public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
                         Cons.class,
                         parse( cts ) ) );
     }
+
     @Test
     public void toDatumLabelString234() throws Exception
     {
@@ -250,5 +251,58 @@ public class R7rs_2_4_Datum_labels_Test extends ScreamBaseTest
                 Scut.as(
                         Cons.class,
                         parse( cts ) ) );
+    }
+
+    private void testLabelAdjustment( String in, String out ) throws Exception
+    {
+        var cons = assertInstanceOf(
+                Cons.class,
+                parse( in ) );
+
+        assertEquals(
+                out,
+                new ConsToString( cons ).toString() );
+    }
+
+    @Test
+    public void labelAdjustment0() throws Exception
+    {
+        testLabelAdjustment(
+                // Labels 2 3 ...
+                "(1 #2=(11 . #3=(12 . #2#)) 2 . #3#)",
+                // ... 0 1
+                "(1 #0=(11 . #1=(12 . #0#)) 2 . #1#)" );
+    }
+
+    @Test
+    public void labelAdjustment1() throws Exception
+    {
+        testLabelAdjustment(
+                "(1 #313=(11 . #0=(12 . #313#)) 2 . #0#)",
+                "(1 #0=(11 . #1=(12 . #0#)) 2 . #1#)" );
+    }
+
+    @Test
+    public void labelAdjustment2() throws Exception
+    {
+        testLabelAdjustment(
+                "(a . #0=(b c . #0#))",
+                "(a . #0=(b c . #0#))" );
+    }
+
+    @Test
+    public void labelAdjustment3() throws Exception
+    {
+        testLabelAdjustment(
+                "(a . #9=(b c . #9#))",
+                "(a . #0=(b c . #0#))" );
+    }
+
+    @Test
+    public void labelAdjustment4() throws Exception
+    {
+        testLabelAdjustment(
+                "#1=(a b c . #1#)",
+                "#0=(a b c . #0#)" );
     }
 }

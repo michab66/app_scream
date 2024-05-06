@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.smack.util.JavaUtil;
+import org.smack.util.LongHolder;
 import org.smack.util.StringUtil;
 
 import de.michab.scream.fcos.Cons;
@@ -22,15 +23,38 @@ import de.michab.scream.fcos.FirstClassObject;
  */
 public class ConsToString
 {
+    /**
+     * A counter for generating ids.
+     */
     private long _enumId = 0;
 
+    /**
+     * The result string.
+     */
     private final StringBuilder _string =
             new StringBuilder();
 
-    private final HashMap<Cons,Long> _nodes = new HashMap<>();
-    private final HashMap<Cons,Long> _references = new HashMap<>();
+    /**
+     * Holds all the nodes found while parsing with an assigned unique id.
+     */
+    private final HashMap<Cons,LongHolder> _nodes =
+            new HashMap<>();
+    /**
+     * Holds all nodes in parsing order.
+     */
+    private final ArrayList<Cons> _nodesOrdered =
+            new ArrayList<>();
 
-    private HashSet<Long> _referred;
+    /**
+     * Holds the nodes that refer to a node in _nodes.
+     */
+    private final HashMap<Cons,LongHolder> _references
+        = new HashMap<>();
+
+    /**
+     * Holds the referred node ids.
+     */
+    private HashSet<LongHolder> _referred;
 
     public ConsToString( Cons cons )
     {
@@ -48,15 +72,26 @@ public class ConsToString
             return;
         }
 
-        _referred = new HashSet<Long>( _references.values() );
+        _referred = new HashSet<LongHolder>( _references.values() );
+
+        // Normalize the labels, i.e. renumber the labels starting with 0.
+
+        _nodesOrdered.removeIf( t -> {
+            return ! _referred.contains( _nodes.get( t ) ); } );
+
+        JavaUtil.Assert( _nodesOrdered.size() == _references.size() );
+
+        int idx = 0;
+        for ( Cons c : _nodesOrdered )
+            _nodes.get( c ).set( idx++ );
 
         writeCons( cons );
     }
 
-
-    private long nextEnumId()
+    private void addNode( Cons cons )
     {
-        return _enumId++;
+        _nodes.put( cons, new LongHolder( _enumId++ ) );
+        _nodesOrdered.add( cons );
     }
 
     private void append( String format, Object ... objects )
@@ -95,9 +130,7 @@ public class ConsToString
             }
 
             // Remember and label the current node.
-            _nodes.put(
-                    cons,
-                    nextEnumId() );
+            addNode( cons );
 
             var cCar = cons.getCar();
 
@@ -201,7 +234,7 @@ public class ConsToString
             var ref = _references.get( cons );
             if ( ref != null )
             {
-                append( ". #%d#", ref );
+                append( ". #%s#", ref );
                 break;
             }
 
