@@ -1,8 +1,9 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
+
 package de.michab.scream.fcos;
 
 import java.io.BufferedWriter;
@@ -31,9 +32,8 @@ public class PortOut
      */
     public static final String TYPE_NAME = "output-port";
 
-
     /**
-     * Create an output port.  The name that is passed is used for generating
+     * Create an output port.  The passed name is used for generating
      * correct file references in case of errors.
      *
      * @param name A name to use for this port.
@@ -47,11 +47,9 @@ public class PortOut
     }
 
     /**
-     * Create a named port.  The passed name is used for opening the file.
+     * Create a named port.
      *
      * @param name The name of the file to open.
-     * @param inout An enum value defining whether this is an input or output
-     *        file.
      * @throws RuntimeX If an error occurred.
      */
     public PortOut( String name )
@@ -61,8 +59,9 @@ public class PortOut
 
         try
         {
-            stream( new BufferedWriter(
-                    new FileWriter( name ) ) );
+            stream(
+                    new BufferedWriter(
+                            new FileWriter( name ) ) );
         }
         catch ( IOException e )
         {
@@ -71,21 +70,7 @@ public class PortOut
     }
 
     /**
-     * Write the passed object to the port.
-     *
-     * @param o The object to write.
-     * @return The port.
-     * @throws RuntimeX In case an error occurred.
-     */
-    public PortOut write( FirstClassObject o )
-            throws RuntimeX
-    {
-        return write( toString( o ) );
-    }
-
-    /**
-     * Write a string to the port.  This writes the external string
-     * representation including quotes.
+     * Write a string to the port.
      *
      * @param s The string to write.
      * @return The port.
@@ -109,32 +94,7 @@ public class PortOut
     }
 
     /**
-     * Write a single character to this output port.
-     *
-     * @param c The character to write.
-     * @return The port.
-     * @throws RuntimeX In case something went wrong.
-     */
-    public PortOut writeCharacter( char c )
-            throws RuntimeX
-    {
-        if ( isClosed() )
-            throw Raise.mPortClosed();
-
-        try
-        {
-            stream().write( c );
-            return this;
-        }
-        catch ( IOException e )
-        {
-            throw Raise.mIoError( e );
-        }
-    }
-
-    /**
-     * Write a human readable string for this FCO.  Human readable means that the
-     * double quotes and quotes are not printed.
+     * Write a human-readable string for this FCO.
      *
      * @param o The object to display.
      * @throws RuntimeX In case an error occurred.
@@ -142,13 +102,20 @@ public class PortOut
     public PortOut display( FirstClassObject o )
             throws RuntimeX
     {
-        if ( o instanceof SchemeString )
-            return write( ((SchemeString)o).getValue() ).flush();
+        return write( forDisplay( o ) ).flush();
+    }
 
-        if ( o instanceof SchemeCharacter )
-            return write( "" + ((SchemeCharacter)o).asCharacter() ).flush();
-
-        return write( o ).flush();
+    /**
+     * Write the passed object to the port.
+     *
+     * @param o The object to write.
+     * @return The port.
+     * @throws RuntimeX In case an error occurred.
+     */
+    public PortOut write( FirstClassObject o )
+            throws RuntimeX
+    {
+        return write( forWrite( o ) );
     }
 
     @Override

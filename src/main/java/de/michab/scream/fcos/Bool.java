@@ -1,24 +1,12 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
 /**
- * Represents the Scheme boolean type.  The following is the description from
- * the Scheme R5 spec:  The standard boolean objects for true and false are
- * written as {@code #t} and {@code #f}. What really matters, though,
- * are the objects that the Scheme conditional expressions (if, cond, and, or,
- * do) treat as true or false. The phrase <i>a true value</i> or sometimes just
- * <i>true</i>) means any object treated as true by the conditional
- * expressions, and the phrase <i>a false value</i> (or <i>false</i>) means any
- * object treated as false by the conditional expressions.
- * <p>
- * Of all the standard Scheme values, only #f counts as false in conditional
- * expressions. Except for #f, all standard Scheme values, including #t, pairs,
- * the empty list, symbols, numbers, strings, vectors, and procedures, count as
- * true.
+ * Represents the Scheme boolean type.
  *
  * @author Michael Binz
  */

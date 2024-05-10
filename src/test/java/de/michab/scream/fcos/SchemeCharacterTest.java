@@ -50,7 +50,7 @@ public class SchemeCharacterTest
         SchemeCharacter c = SchemeCharacter.createObject( '\n' );
         assertNotNull( c );
         assertTrue( c == SchemeCharacter.NEWLINE );
-        assertEquals( "#\\newline", c.toString() );
+        assertEquals( "#\\newline", c.forRead() );
     }
 
     @Test
@@ -59,7 +59,7 @@ public class SchemeCharacterTest
         SchemeCharacter c = SchemeCharacter.createObject( ' ' );
         assertNotNull( c );
         assertTrue( c == SchemeCharacter.SPACE );
-        assertEquals( "#\\space", c.toString() );
+        assertEquals( "#\\space", c.forRead() );
     }
 
     @Test
@@ -67,6 +67,6 @@ public class SchemeCharacterTest
     {
         SchemeCharacter c = SchemeCharacter.createObject( '8' );
         assertNotNull( c );
-        assertEquals( "#\\8", c.toString() );
+        assertEquals( "#\\8", c.forRead() );
     }
 }

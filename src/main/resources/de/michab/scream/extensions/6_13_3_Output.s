@@ -138,7 +138,7 @@
         ((not (output-port? port))
           (error "TYPE_ERROR" scream:type-output-port port))
         (else
-          ((object port) ("writeCharacter:char" character))
+          ((object port) ("display:de.michab.scream.fcos.FirstClassObject" character))
           scream:unspecified)
       ) ; cond
     )

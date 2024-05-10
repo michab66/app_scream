@@ -113,6 +113,18 @@ public class SchemeCharacter
     @Override
     public String toString()
     {
+        return "%s:'%s'".formatted( typename(), _character );
+    }
+
+    @Override
+    public String forDisplay()
+    {
+        return Character.toString( _character );
+    }
+
+    @Override
+    public String forRead()
+    {
         if ( '\n' == _character )
             return "#\\newline";
         else if ( ' ' == _character )

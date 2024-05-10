@@ -84,14 +84,6 @@ public class PortTest extends ScreamBaseTest
             assertEquals( Code.PORT_CLOSED, rx.getCode() );
         }
         try {
-            po.writeCharacter( (char)0 );
-            fail();
-        }
-        catch ( RuntimeX rx )
-        {
-            assertEquals( Code.PORT_CLOSED, rx.getCode() );
-        }
-        try {
             po.flush();
             fail();
         }
@@ -100,6 +92,7 @@ public class PortTest extends ScreamBaseTest
             assertEquals( Code.PORT_CLOSED, rx.getCode() );
         }
     }
+
     @Test
     public void textualWrite() throws Exception
     {
@@ -120,14 +113,10 @@ public class PortTest extends ScreamBaseTest
         assertTrue( po.isBinary() == Bool.F );
         assertFalse( po.isClosed() );
 
-        po.writeCharacter( content );
+        // Performs an implicit flush.
+        po.display( SchemeCharacter.createObject( content ) );
 
-        // Exists but content is yet buffered.
         assertTrue( file.exists() );
-        assertEquals( 0, file.length() );
-
-        // Content is flushed.
-        po.flush();
         assertEquals( Character.BYTES, file.length() );
 
         po.close();
@@ -220,7 +209,7 @@ public class PortTest extends ScreamBaseTest
     @Test
     public void constant() throws Exception
     {
-        // Portin
+        // PortIn
         try
         {
             var ip = FirstClassObject.setConstant(
@@ -284,4 +273,3 @@ public class PortTest extends ScreamBaseTest
         assertTrue( Port.EOF.isConstant() );
     }
 }
-

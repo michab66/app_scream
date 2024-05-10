@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2023 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 package de.michab.scream.fcos;
 
@@ -12,10 +12,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.util.Scut;
 
 /**
- * Represents the scheme string type.  Strings are sequences of characters.
- * Strings are written as sequences of characters enclosed within double quotes
- * (").  A double quote can be written inside a string only by escaping it with
- * a backslash (\), as in "The word \"recursion\" has many meanings."
+ * Represents the Scheme string type.
  *
  * @author Michael Binz
  */
@@ -35,7 +32,7 @@ public class SchemeString
     private final StringBuilder _value;
 
     /**
-     * Create a new string in a specified length, initialised with the passed
+     * Create a new string in a specified length, initialized with the passed
      * character.
      *
      * @param length The length of the new string.
@@ -348,6 +345,18 @@ public class SchemeString
         }
     }
 
+    @Override
+    public String forRead()
+    {
+        return "\"" + toStringLiteral() + "\"";
+    }
+
+    @Override
+    public String forDisplay()
+    {
+        return getValue();
+    }
+
     /**
      * This returns the literal representation of the string object in Scheme
      * syntax.  Use the {@code getValue()} for the physical string.
@@ -435,6 +444,6 @@ public class SchemeString
     @Override
     public String toJava()
     {
-        return _value.toString();
+        return getValue();
     }
 }

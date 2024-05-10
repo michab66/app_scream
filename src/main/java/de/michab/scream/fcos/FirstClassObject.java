@@ -166,13 +166,63 @@ public abstract class FirstClassObject
     }
 
     /**
-     * Create a string from the passed object suitable for the read() operation.
-     * To be able to also convert NILs to a string representation this is
-     * implemented as a static method.
+     * Create a human-readable string.  Best example is the Scheme character
+     * type: For this the actual character is returned, not the escaped
+     * notation.  This default implementation maps to {@link #toString()}.
      *
-     * @param object The object to be transformed to its string representation.
      * @return The string representation of the object.
      * @see java.lang.Object#toString
+     */
+    protected String forDisplay()
+    {
+        return toString();
+    }
+    public static String forDisplay( FirstClassObject fco )
+    {
+        if ( fco == Cons.NIL )
+            return "()";
+
+        return fco.forDisplay();
+    }
+
+    /**
+     * Create a machine-readable string.  Best example is the Scheme character
+     * type: For this the escaped notation is returned.
+     * This default implementation maps to {@link #toString()}.
+     *
+     * @return The string representation of the object.
+     * @see java.lang.Object#toString
+     */
+    protected String forRead()
+    {
+        return toString();
+    }
+    public static String forWrite( FirstClassObject fco )
+    {
+        if ( fco == Cons.NIL )
+            return "'()";
+
+        return fco.forRead();
+    }
+
+    /**
+     * Create a string from this object.
+     *
+     * @return The object's string representation.
+     */
+    @Override
+    public String toString()
+    {
+        return "%s : fcoId=%d".formatted( typename(), id() );
+    }
+
+    /**
+     * Create a string from this object.  This is used in debugging
+     * and represents by default the base for the {@link #forRead()}
+     * and {@link #forDisplay()} operations.
+     *
+     * @param object The object to be transformed.
+     * @return The passed object as a string.
      */
     static public String toString( FirstClassObject object )
     {
@@ -181,14 +231,6 @@ public abstract class FirstClassObject
         else
             return object.toString();
     }
-
-    /**
-     * Create a string from this object suitable for the read() operation.
-     *
-     * @return The object's string representation.
-     */
-    @Override
-    public abstract String toString();
 
     /**
      * Clone this scheme object.  The default implementation just returns itself.
