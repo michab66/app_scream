@@ -75,21 +75,15 @@ public final class Token
     }
 
     /**
-     * Creates a new Token for the given type value pair.  Two token types are
-     * string-valued, TkString and TkSymbol.  If the passed type is not one of
-     * these an IllegalArgumentException is thrown.
+     * Creates a new Token for the given type value pair.
      *
-     * @param type Either SchemeParser.TkString or SchemeParser.TkSymbol.
+     * @param type The token's type.
      * @param value The token's value.
-     * @throws IllegalArgumentException Wrong value for the type parameter.
+     * @param sourcePosition The source position.
      */
     public Token( Tk type, String value, SourcePosition sourcePosition )
     {
         this( type, (Object)value, sourcePosition );
-
-//        if ( type != Tk.String &&
-//                type != Tk.Symbol )
-//            throw new IllegalArgumentException( "Type neither string nor symbol." );
     }
 
     /**
