@@ -9,6 +9,7 @@ package de.michab.scream.util;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.StringJoiner;
 
 import org.smack.util.JavaUtil;
 import org.smack.util.LongHolder;
@@ -31,8 +32,7 @@ public class ConsToString
     /**
      * The result string.
      */
-    private final StringBuilder _string =
-            new StringBuilder();
+    private final String _string;
 
     /**
      * Holds all the nodes found while parsing with an assigned unique id.
@@ -60,7 +60,7 @@ public class ConsToString
     {
         if ( Cons.NIL == cons )
         {
-            append( "()" );
+            _string = "()";
             return;
         }
 
@@ -68,7 +68,7 @@ public class ConsToString
 
         if ( _references.isEmpty() )
         {
-            writeConsSimple( cons );
+            _string = writeConsx( cons );
             return;
         }
 
@@ -85,7 +85,7 @@ public class ConsToString
         for ( Cons c : _nodesOrdered )
             _nodes.get( c ).set( idx++ );
 
-        writeCons( cons );
+        _string = writexx( cons );
     }
 
     private void addNode( Cons cons )
@@ -94,20 +94,10 @@ public class ConsToString
         _nodesOrdered.add( cons );
     }
 
-    private void append( String format, Object ... objects )
-    {
-        if ( objects.length == 0 )
-            _string.append( format );
-        else
-            _string.append( format.formatted( objects ) );
-    }
-
     @Override
     public String toString()
     {
-        var result = _string.toString().trim();
-        System.out.println( result );
-        return result;
+        return _string.toString().trim();
     }
 
     private void collectNodes(
@@ -168,9 +158,9 @@ public class ConsToString
         return StringUtil.EMPTY_STRING;
     }
 
-    private void writeConsSimple( Cons cons )
+    private String writeConsx( Cons cons )
     {
-        ArrayList<Runnable> writers = new ArrayList<>();
+        StringJoiner result = new StringJoiner( " ", "(", ")" );
 
         while ( true )
         {
@@ -180,43 +170,39 @@ public class ConsToString
             var cCar = cons.getCar();
 
             if ( FirstClassObject.is( Cons.class, cCar ) )
-                writers.add( () ->  writeConsSimple( (Cons)cCar )  );
+                result.add( writeConsx( (Cons)cCar )  );
             else
-                writers.add(  () -> writeDataSimple( cCar ) );
+                result.add( write( cCar ) );
 
             var cCdr = cons.getCdr();
 
             if ( ! FirstClassObject.is( Cons.class, cCdr ) )
             {
                 // Improper.
-                writers.add( () -> append( "." ) );
-                writers.add( () -> writeDataSimple( cCdr ) );
+                result.add( "." );
+                result.add( write( cCdr ) );
                 break;
             }
 
             cons = (Cons)cCdr;
         }
 
-        append( "(" );
+        return result.toString();
 
-        for ( int i = 0 ; i < writers.size() ; i++ )
-        {
-            if ( i > 0 )
-                append( " " );
-            writers.get( i ).run();
-        }
-
-        append( ")" );
     }
 
-    private void writeCons(
+    private String writexx(
             Cons cons )
     {
         // Check if this node needs a label.
         var label = needsLabel( cons );
-        if ( ! label.isEmpty() )
-            append( label );
-        append( "(" );
+
+        StringJoiner j = new StringJoiner(
+                " ",
+                label.isEmpty() ?
+                        "(" :
+                        label + "(",
+                ")" );
 
         while ( true )
         {
@@ -226,15 +212,16 @@ public class ConsToString
             var cCar = cons.getCar();
 
             if ( FirstClassObject.is( Cons.class, cCar ) )
-                writeCons( (Cons)cCar );
+                j.add( writexx( (Cons)cCar ) );
             else
-                writeData( cCar );
+                j.add( write( cCar ) );
 
             // Check if node is followed by a reference.
             var ref = _references.get( cons );
             if ( ref != null )
             {
-                append( ". #%s#", ref );
+                j.add( "." );
+                j.add( "#%s#".formatted( ref ) );
                 break;
             }
 
@@ -243,65 +230,28 @@ public class ConsToString
             if ( ! FirstClassObject.is( Cons.class, cCdr ) )
             {
                 // Improper.
-                append( ". " );
-                writeData( cCdr );
+                j.add( "." );
+                j.add( write( cCdr ) );
                 break;
             }
 
             Cons next = (Cons)cCdr;
             if ( ! needsLabel( next ).isEmpty() )
             {
-                append( ". " );
-                writeCons( next );
+                j.add( "." );
+                j.add( writexx( next ) );
                 break;
             }
 
             cons = next;
         }
 
-        appendTrimmed( ")" );
+        return j.toString();
     }
 
-    private void appendTrimmed( String string )
+    private String write(
+            FirstClassObject fco )
     {
-        char lastchar = JavaUtil.make(
-                () -> {
-                    char[] result = new char[1];
-                    var length = _string.length();
-
-                    _string.getChars( length-1, length, result, 0 );
-
-                    return result[0];
-                } );
-
-        if ( lastchar == ' ' )
-            _string.deleteCharAt( _string.length()-1 );
-
-        append( string );
-    }
-
-    private void writeData(
-            FirstClassObject cons )
-    {
-        char lastchar = JavaUtil.make(
-                () -> {
-                    char[] result = new char[1];
-                    var length = _string.length();
-
-                    _string.getChars( length-1, length, result, 0 );
-
-                    return result[0];
-                } );
-
-        if ( lastchar == ')' )
-            append( " " );
-
-        append( "%s ", cons );
-    }
-
-    private void writeDataSimple(
-            FirstClassObject cons )
-    {
-        append( "%s", cons );
+        return FirstClassObject.toString( fco );
     }
 }

@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 
 package de.michab.scream.fcos;
@@ -16,18 +16,13 @@ import org.smack.util.Holder;
 import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Lambda.L;
+import de.michab.scream.util.ConsToString;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
 /**
- * Represents a list cell.  A list cell consists of two references called car
- * and cdr.  Car is a reference to the value of the current node of the list
- * while cdr is a reference to the next list cell.  Lists are made up of cons
- * cells where each car points to an object and the cdrs are pointing to the
- * cons in the list.
- * <p>
- * A list is called proper when the last cdr is NIL.
+ * Represents a list cell.
  *
  * @author Michael G. Binz
  */
@@ -494,30 +489,12 @@ public class Cons
     }
 
     /**
-     * @return A string representation for this list.
+     * @return A string representation of this list.
      */
     @Override
     public String toString()
     {
-        if ( isCircular() )
-            return "#circular#";
-
-        if ( _cdr instanceof Cons || _cdr == NIL )
-        {
-            // Stringise the cdr.  This will lead to something like "(n0 n1 ...)".
-            String result = toString( _cdr );
-            // We have to insert our stringised car just after the leading brace to
-            // get proper list notation.  So first remove the leading brace...
-            result = result.substring( 1 );
-            // ..and glue a new brace and the stringised car to the beginning of the
-            // result string.
-            return "(" +
-            toString( _car ) +
-            ((! result.startsWith( ")" )) ? " " : "") +
-            result;
-        }
-
-        return "(" + toString( _car ) + " . " + toString( _cdr ) + ")";
+        return new ConsToString( this ).toString();
     }
 
     /**
@@ -789,225 +766,4 @@ public class Cons
     {
         return new Iterator_( this );
     }
-
-//    private static long enumId = 0;
-//
-//    private static long nextEnumId()
-//    {
-//        return enumId++;
-//    }
-//
-//    public static Map<Cons,Long> enumerateNodes( Cons cons,   Map<Cons,Long> node2id )
-//    {
-//        Cons currentNode = cons;
-//
-//        while ( true )
-//        {
-//            // Proper list end.
-//            if ( currentNode == NIL )
-//                break;
-//            // Circle detected.
-//            if ( node2id.containsKey( currentNode ) )
-//                break;
-//
-//            node2id.put( currentNode, nextEnumId() );
-//
-//            var cCar = currentNode._car;
-//
-//            if ( is( Cons.class, cCar ) )
-//                enumerateNodes( (Cons)cCar, node2id );
-//
-//            var cCdr = currentNode._cdr;
-//
-//            if ( ! is( Cons.class, cCdr ) )
-//                // Improper.
-//                break;
-//
-//            currentNode = (Cons)cCdr;
-//        }
-//
-//        return node2id;
-//    }
-//
-//    public static void collectNodes(
-//            Cons cons,
-//            Cons previous,
-//            Map<Cons,Long> node2id,
-//            Map<Cons,Long> references )
-//    {
-//        while ( true )
-//        {
-//            if ( cons == NIL )
-//                // Proper list end.
-//                break;
-//
-//            if ( node2id.containsKey( cons ) )
-//            {
-//                // Circle detected.
-//                references.put(
-//                        previous,
-//                        node2id.get( cons ) );
-//                break;
-//            }
-//
-//            // Remember and label the current node.
-//            node2id.put(
-//                    cons,
-//                    nextEnumId() );
-//
-//            var cCar = cons._car;
-//
-//            if ( is( Cons.class, cCar ) )
-//                collectNodes(
-//                        (Cons)cCar,
-//                        Cons.NIL,
-//                        node2id,
-//                        references );
-//
-//            var cCdr = cons._cdr;
-//
-//            if ( ! is( Cons.class, cCdr ) )
-//                // Improper.
-//                break;
-//
-//            previous =
-//                    cons;
-//            cons =
-//                    (Cons)cCdr;
-//        }
-//    }
-//
-//    public static Map<Cons,Long> enumerateNodes( Cons cons )
-//    {
-//        enumId = 0;
-//        return enumerateNodes( cons, new HashMap<Cons,Long>() );
-//    }
-//
-//    public static void collectNodes(
-//            Cons cons,
-//            HashMap<Cons,Long> nodes,
-//            HashMap<Cons,Long> references )
-//    {
-//        enumId = 0;
-//        collectNodes( cons, Cons.NIL, nodes, references );
-//    }
-//
-//    private static void prepareFollowupNodesImpl(
-//            Cons cons,
-//            HashMap<Cons,Long> nodes,
-//            HashMap<Cons,Long> references,
-//            // Maps ids to nodes?
-//            HashMap<Long,Cons> idRefs )
-//    {
-//        while ( true )
-//        {
-//            if ( cons == NIL )
-//                // Proper list end.
-//                System.out.print( ")" );
-//
-//            // Check if this node needs a label.
-//            var id = nodes.get( cons );
-//            if ( idRefs.containsKey( id ) )
-//                System.out.format( " . #%d=(", id );
-//
-//            var cCar = cons._car;
-//
-//            if ( is( Cons.class, cCar ) )
-//            {
-//                prepareNodesImpl(
-//                        (Cons)cCar,
-//                        nodes,
-//                        references,
-//                        idRefs );
-//            }
-//            else
-//                System.out.format( " %s", cCar );
-//
-//            // Check if node is followed by a reference.
-//            var ref = references.get( cons );
-//            if ( ref != null )
-//            {
-//                System.out.format( " . #%d#)", ref );
-//                break;
-//            }
-//
-//            var cCdr = cons._cdr;
-//
-//            if ( ! is( Cons.class, cCdr ) )
-//            {
-//                // Improper.
-//                System.out.format( " %s )", cCdr );
-//                break;
-//            }
-//
-//            cons =
-//                    (Cons)cCdr;
-//        }
-//    }
-//
-//    private static void prepareNodesImpl(
-//            Cons cons,
-//            HashMap<Cons,Long> nodes,
-//            HashMap<Cons,Long> references,
-//            // Maps ids to nodes?
-//            HashMap<Long,Cons> idRefs )
-//    {
-//        // Check if this node needs a label.
-//        var id = nodes.get( cons );
-//        if ( idRefs.containsKey( id ) )
-//            System.out.format( " #%d=", id );
-//        System.out.print( "(" );
-//
-//        var cCar = cons._car;
-//
-//        if ( is( Cons.class, cCar ) )
-//        {
-//            prepareNodesImpl(
-//                    (Cons)cCar,
-//                    nodes,
-//                    references,
-//                    idRefs );
-//        }
-//        else
-//            System.out.format( "%s", cCar );
-//
-//        // Check if node is followed by a reference.
-//        var ref = references.get( cons );
-//        if ( ref != null )
-//        {
-//            System.out.format( " . #%d#)", ref );
-//            return;
-//        }
-//
-//        var cCdr = cons._cdr;
-//
-//        if ( ! is( Cons.class, cCdr ) )
-//        {
-//            // Improper.
-//            System.out.format( " %s )", cCdr );
-//            return;
-//        }
-//
-//        prepareFollowupNodesImpl(
-//                (Cons)cCdr,
-//                nodes,
-//                references,
-//                idRefs );
-//    }
-//
-//    public static void prepareNodes(
-//            Cons cons )
-//    {
-//        HashMap<Cons,Long> nodes = new HashMap<>();
-//        HashMap<Cons,Long> references = new HashMap<>();
-//
-//        collectNodes( cons, nodes, references );
-//
-//        HashMap<Long, Cons> id2cons = new HashMap<>();
-//
-//        for ( var c : references.keySet() )
-//            id2cons.put( references.get( c ), c );
-//
-//        prepareNodesImpl( cons, nodes, references, id2cons );
-//    }
 }

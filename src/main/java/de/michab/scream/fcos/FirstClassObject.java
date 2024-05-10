@@ -408,7 +408,7 @@ public abstract class FirstClassObject
         }
     }
 
-    public <T extends FirstClassObject> Optional<T> as( Class<T> cl, FirstClassObject fco )
+    public static <T extends FirstClassObject> Optional<T> as( Class<T> cl, FirstClassObject fco )
     {
         if ( is( cl, fco ) )
             return Optional.of( cl.cast( fco ) );

@@ -10,7 +10,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 import org.smack.util.Holder;
 
@@ -344,7 +343,7 @@ public class SchemeParser
 
         case Unquote:
             return new Cons( UNQUOTE_SYMBOL,
-                    new Cons( parseDatum() ) );
+                    new Cons( parseDatum( labels ) ) );
 
         case UnquoteSplicing:
             return new Cons( UNQUOTE_SPLICING_SYMBOL,
@@ -446,6 +445,10 @@ public class SchemeParser
                 cons = Scut.as( Cons.class, next );
             else
             {
+                visitNodes(
+                        next,
+                        visitor );
+
                 visitor.accept(
                         next,
                         cons::setCdr );
@@ -462,10 +465,14 @@ public class SchemeParser
         for ( long i = 0 ; i < vector.size() ; i++ )
         {
             final var ii = i;
+
+            var current = vector.get( ii );
+
             visitor.accept(
-                    vector.get( ii ),
+                    current,
                     replacement -> { vector.set( ii, replacement ); } );
 
+            visitNodes( current, visitor );
         }
     }
 
@@ -485,9 +492,9 @@ public class SchemeParser
         FirstClassObject root,
         BiConsumerX<FirstClassObject,ConsumerX<FirstClassObject>> visitor ) throws RuntimeX
     {
-        Objects.requireNonNull( root );
-
-        if ( FirstClassObject.is( Cons.class, root ) )
+        if ( root == Cons.NIL )
+            ;
+        else if ( FirstClassObject.is( Cons.class, root ) )
             visitConsElements( Scut.as( Cons.class, root ), visitor );
         else if ( FirstClassObject.is( Vector.class, root ) )
             visitVectorElements( Scut.as( Vector.class, root ), visitor );

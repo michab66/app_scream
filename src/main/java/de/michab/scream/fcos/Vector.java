@@ -6,6 +6,7 @@
 package de.michab.scream.fcos;
 
 import java.util.Arrays;
+import java.util.StringJoiner;
 
 import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
@@ -185,20 +186,15 @@ public class Vector
     @Override
     public String toString()
     {
-        StringBuilder result = new StringBuilder( "#(" );
+        StringJoiner result = new StringJoiner(
+                " ",
+                "#(",
+                ")" );
 
-        // Add one vector element after the other.
-        for ( int i = 0 ; i < _theArray.length ; i++ )
-        {
-            result.append( toString( _theArray[i] ) );
-            result.append( ' ' );
-        }
+        for ( var c : _theArray )
+            result.add( toString( c ) );
 
-        // Remove the space at the end added in the above loop.
-        if ( _theArray.length > 0 )
-            result.setLength( result.length() -1 );
-
-        return result.append( ')' ).toString();
+        return result.toString();
     }
 
     @Override
