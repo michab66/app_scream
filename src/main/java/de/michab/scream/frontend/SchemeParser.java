@@ -296,7 +296,7 @@ public class SchemeParser
         if ( holder == null )
             throw Raise.mFieldNotFound( "" + number );
 
-        return new Proxy( labelNumber, holder );
+        return new Proxy( holder );
     }
 
     /**

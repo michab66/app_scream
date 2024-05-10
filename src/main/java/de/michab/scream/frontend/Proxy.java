@@ -9,8 +9,14 @@ import java.util.Objects;
 
 import org.smack.util.Holder;
 
+import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 
+/**
+ * An fco that represents another fco as a reference.  Used by
+ * datum label processing.  Elements of this type must not be
+ * visible after the parsing phase.
+ */
 class Proxy extends FirstClassObject
 {
     /**
@@ -22,14 +28,15 @@ class Proxy extends FirstClassObject
 
     private final Holder<FirstClassObject> _fcoHolder;
 
-    private final long _labelNumber;
-
-    Proxy( long labelNumber, Holder<FirstClassObject> fcoHolder )
+    Proxy( Holder<FirstClassObject> fcoHolder )
     {
-        _fcoHolder = Objects.requireNonNull( fcoHolder );
-        _labelNumber = labelNumber;
+        _fcoHolder =
+                Objects.requireNonNull( fcoHolder );
     }
 
+    /**
+     * @return The proxied element.
+     */
     public FirstClassObject value()
     {
         return _fcoHolder.get();
@@ -38,6 +45,10 @@ class Proxy extends FirstClassObject
     @Override
     public String toString()
     {
-        return String.format( "%s:%d=%s", TYPE_NAME, _labelNumber, _fcoHolder );
+        long fcoId = _fcoHolder.get() == Cons.NIL ?
+                0 :
+                _fcoHolder.get().id();
+
+        return String.format( "%s:fcoId=%d", TYPE_NAME, fcoId );
     }
 }
