@@ -1,7 +1,7 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
 
 package de.michab.scream.fcos;
@@ -9,24 +9,20 @@ package de.michab.scream.fcos;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Set;
 
 import org.smack.util.Holder;
 
 import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Lambda.L;
+import de.michab.scream.util.ConsToString;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
 
 /**
- * Represents a list cell.  A list cell consists of two references called car
- * and cdr.  Car is a reference to the value of the current node of the list
- * while cdr is a reference to the next list cell.  Lists are made up of cons
- * cells where each car points to an object and the cdrs are pointing to the
- * cons in the list.
- * <p>
- * A list is called proper when the last cdr is NIL.
+ * Represents a list cell.
  *
  * @author Michael G. Binz
  */
@@ -157,7 +153,9 @@ public class Cons
             throws RuntimeX
     {
         if ( isConstant() )
-            throw Raise.mCannotModifyConstant( this );
+            throw Raise.mCannotModifyConstantF(
+                    Symbol.createObject( "set-car!" ),
+                    this );
 
         _car = car;
     }
@@ -491,30 +489,12 @@ public class Cons
     }
 
     /**
-     * @return A string representation for this list.
+     * @return A string representation of this list.
      */
     @Override
     public String toString()
     {
-        if ( isCircular() )
-            return "#circular#";
-
-        if ( _cdr instanceof Cons || _cdr == NIL )
-        {
-            // Stringise the cdr.  This will lead to something like "(n0 n1 ...)".
-            String result = toString( _cdr );
-            // We have to insert our stringised car just after the leading brace to
-            // get proper list notation.  So first remove the leading brace...
-            result = result.substring( 1 );
-            // ..and glue a new brace and the stringised car to the beginning of the
-            // result string.
-            return "(" +
-            toString( _car ) +
-            ((! result.startsWith( ")" )) ? " " : "") +
-            result;
-        }
-
-        return "(" + toString( _car ) + " . " + toString( _cdr ) + ")";
+        return new ConsToString( this ).toString();
     }
 
     /**
@@ -694,9 +674,58 @@ public class Cons
     @Override
     public FirstClassObject setConstant()
     {
-        setConstant( _car );
-        setConstant( _cdr );
-        return super.setConstant();
+        HashSet<Cons> collector = new HashSet<>();
+
+        setConstant( collector );
+
+        return this;
+    }
+
+    private void setSuperConstant()
+    {
+        super.setConstant();
+    }
+
+    private void setConstant( Set<Cons> collector )
+    {
+        var currentCons = this;
+
+        while ( true )
+        {
+            if ( collector.contains( currentCons ) )
+                return;
+            collector.add( currentCons );
+
+            currentCons.setSuperConstant();
+
+            if ( _car == Cons.NIL )
+            {
+            }
+            else if ( _car instanceof Cons )
+            {
+                Cons consCar  = (Cons)_car;
+                consCar.setConstant( collector );
+            }
+            else
+                _car.setConstant();
+
+            if ( currentCons._cdr == Cons.NIL )
+            {
+                // Normal end.
+                break;
+            }
+            else if ( currentCons._cdr instanceof Cons )
+            {
+                // More to come.
+                currentCons = (Cons)currentCons._cdr;
+            }
+            else
+            {
+                // Improper list.
+                currentCons._cdr.setConstant();
+                break;
+            }
+        }
     }
 
     private static class Iterator_ implements java.util.Iterator<FirstClassObject>

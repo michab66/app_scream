@@ -14,9 +14,11 @@ import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.fcos.Number;
+import de.michab.scream.fcos.Symbol;
 import de.michab.scream.frontend.Token.Tk;
 import de.michab.scream.util.SourcePosition;
 import de.michab.scream.frontend.SchemeParser;
+import org.smack.util.StringUtil;
 
 %%
 
@@ -48,6 +50,8 @@ import de.michab.scream.frontend.SchemeParser;
 
 %{
 private int commentNestCount = 0;
+
+private static Symbol SCANNER_NAME = Symbol.createObject( "scanner" );
 
 private int getLine()
 {
@@ -315,8 +319,8 @@ UNQUOTE =
 UNQUOTE_SPLICING =
   ",@"
 
-LABEL = "#" {uinteger_10} "#"
-LABEL_REFERENCE = "#" {uinteger_10} "="
+LABEL = "#" {uinteger_10} "="
+LABEL_REFERENCE = "#" {uinteger_10} "#"
 
 %%
 
@@ -386,11 +390,21 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   }
 
   {LABEL} {
-    return new Token( Tk.Label, sourcePosition() );
+    var number = yytext();
+   
+    return new Token( 
+        Tk.Label,
+        Number.make( Long.parseLong( number.substring( 1, number.length()-1 ) ) ),
+        sourcePosition() );
   }
-  
+
   {LABEL_REFERENCE} {
-    return new Token( Tk.LabelReference, sourcePosition() );
+    var number = yytext();
+   
+    return new Token( 
+        Tk.LabelReference,
+        Number.make( Long.parseLong( number.substring( 1, number.length()-1 ) ) ),
+        sourcePosition() );
   }
 
   {START_BYTEVECTOR} {
@@ -562,6 +576,12 @@ LABEL_REFERENCE = "#" {uinteger_10} "="
   // be visible in YYINITIAL.
   {NC_END} {
       throw Raise.mScanUnbalancedComment( sourcePosition() );
+  }
+  
+  {LABEL} {INTERTOKEN_SPACE}? {LABEL_REFERENCE} {
+    throw Raise.mSyntaxErrorF(
+      SCANNER_NAME,
+      yytext() + " @ " + sourcePosition() );
   }
 }
 

@@ -132,6 +132,13 @@ public class Raise
                 SchemeString.make( Code.SYNTAX_ERROR.toString() ),
                 fco );
     }
+    public static RuntimeX mSyntaxErrorF( Symbol function, String fco )
+    {
+        return new RuntimeX(
+                function,
+                SchemeString.make( Code.SYNTAX_ERROR.toString() ),
+                SchemeString.make( fco ) );
+    }
 
     //    DEFINE_ERROR = \
     //    Invalid identifier for define.
@@ -583,6 +590,13 @@ public class Raise
     {
         return new RuntimeX(
                 Code.CANNOT_MODIFY_CONSTANT,
+                constant );
+    }
+    public static RuntimeX mCannotModifyConstantF( Symbol function, FirstClassObject constant )
+    {
+        return new RuntimeX(
+                function,
+                SchemeString.make( Code.CANNOT_MODIFY_CONSTANT.toString() ),
                 constant );
     }
 

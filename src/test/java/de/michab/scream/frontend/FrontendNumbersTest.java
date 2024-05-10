@@ -3,7 +3,7 @@
  *
  * Copyright © 1998-2023 Michael G. Binz
  */
-package de.michab.scream.scanner;
+package de.michab.scream.frontend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

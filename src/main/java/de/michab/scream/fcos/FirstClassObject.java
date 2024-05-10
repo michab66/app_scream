@@ -357,7 +357,7 @@ public abstract class FirstClassObject
     /**
      * @return Get the unique id of this fco for debugging.
      */
-    protected final int id()
+    public final int id()
     {
         return _id;
     }

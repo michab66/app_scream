@@ -1,12 +1,13 @@
 /*
  * Scream @ https://github.com/urschleim/scream
  *
- * Copyright © 1998-2022 Michael G. Binz
+ * Copyright © 1998-2024 Michael G. Binz
  */
-package de.michab.scream.scanner;
+package de.michab.scream.frontend;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -18,7 +19,6 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Port;
 import de.michab.scream.fcos.Vector;
-import de.michab.scream.frontend.SchemeParser;
 
 public class SchemeParserTest extends ScreamBaseTest
 {
@@ -97,42 +97,26 @@ public class SchemeParserTest extends ScreamBaseTest
     @Test
     public void unbalanced()
     {
-        try
-        {
-            // Missing closing brace.
-            new SchemeParser( ")" ).getExpression();
-            fail();
-        }
-        catch( RuntimeX e )
-        {
-            assertEquals(
-                    Code.PARSE_UNEXPECTED,
-                    e.getCode() );
-        }
+        assertEquals(
+                Code.PARSE_UNEXPECTED,
+                assertThrows(
+                        RuntimeX.class,
+                        () -> { new SchemeParser( ")" ).getExpression(); } ).getCode() );
     }
 
     @Test
-    public void biExpression()
+    public void biExpression() throws Exception
     {
         var x1 = "(+ 300 13)";
         var x2 = "(+ 4 5)";
 
-        try
-        {
-            SchemeParser sp = new SchemeParser( x1 + x2 );
-            var x = sp.getExpression();
-            assertEquals( x1, x.toString() );
-            var y = sp.getExpression();
-            assertEquals( x2, y.toString() );
-            var z = sp.getExpression();
-            assertEquals( Port.EOF, z );
-        }
-        catch( RuntimeX e )
-        {
-            // TODO remove try catch.  This is never executed.
-            // Unexpected end of input.
-            assertEquals( Code.PARSE_EXPECTED, e.getCode() );
-        }
+        SchemeParser sp = new SchemeParser( x1 + x2 );
+        var x = sp.getExpression();
+        assertEquals( x1, x.toString() );
+        var y = sp.getExpression();
+        assertEquals( x2, y.toString() );
+        var z = sp.getExpression();
+        assertEquals( Port.EOF, z );
     }
 
     @Test

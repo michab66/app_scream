@@ -58,7 +58,7 @@ public final class Token
      */
     private final SourcePosition _sourcePosition;
 
-    private Token( Tk type, Object value, SourcePosition sourcePosition )
+    public Token( Tk type, Object value, SourcePosition sourcePosition )
     {
         _type = type;
         _value = value;
@@ -75,21 +75,15 @@ public final class Token
     }
 
     /**
-     * Creates a new Token for the given type value pair.  Two token types are
-     * string-valued, TkString and TkSymbol.  If the passed type is not one of
-     * these an IllegalArgumentException is thrown.
+     * Creates a new Token for the given type value pair.
      *
-     * @param type Either SchemeParser.TkString or SchemeParser.TkSymbol.
+     * @param type The token's type.
      * @param value The token's value.
-     * @throws IllegalArgumentException Wrong value for the type parameter.
+     * @param sourcePosition The source position.
      */
     public Token( Tk type, String value, SourcePosition sourcePosition )
     {
         this( type, (Object)value, sourcePosition );
-
-        if ( type != Tk.String &&
-                type != Tk.Symbol )
-            throw new IllegalArgumentException( "Type neither string nor symbol." );
     }
 
     /**
@@ -159,13 +153,19 @@ public final class Token
         case Eof:
             result = "TkEof";
             break;
+        case Label:
+            result = String.format( "%s(#%s=)", _type, _value );
+            break;
+        case LabelReference:
+            result = String.format( "%s(#%s#)", _type, _value );
+            break;
         default:
-            result = "UnknownTokenValue";
+            result = _type.toString();
             break;
         }
 
         return String.format(
-                "%s%n%s",
+                "%s @ %s",
                 result,
                 _sourcePosition );
     }
