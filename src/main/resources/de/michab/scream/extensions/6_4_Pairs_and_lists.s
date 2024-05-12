@@ -12,11 +12,6 @@
 ;; Scream definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Init type name.
-(define scream:type-cons
-  ((make-object "de.michab.scream.fcos.Cons") "TYPE_NAME"))
-
-
 #|
  | (scream:make-circular! list)
  |
@@ -44,7 +39,7 @@
         ((null? list)
           #f)
         ((not (pair? list))
-          (error "TYPE_ERROR" scream:type-cons list))
+          (error "TYPE_ERROR" scream:type:cons list))
         (else
           ((object list) ("isCircular")))))))
 
@@ -88,7 +83,7 @@
  | (pair? obj) procedure p41
  |#
 (define pair?
-  (typePredicateGenerator "de.michab.scream.fcos.Cons" #t))
+  scream:cons?)
 
 #|
  | (cons obj1 obj2) procedure p41
@@ -100,43 +95,29 @@
  | (car pair) procedure p41
  |#
 (define (car pair)
-  (if (pair? pair)
-    ((object pair) ("getCar"))
-    (error "TYPE_ERROR"
-           scream:type:cons
-           (scream:typename pair))))
+  ((object (scream:assert:cons 'car pair)) ("getCar"))
+)
 
 #|
  | (cdr pair) procedure p41
  |#
 (define (cdr pair)
-  (if (pair? pair)
-    ((object pair) ("getCdr"))
-    (error "TYPE_ERROR"
-           scream:type:cons
-           (scream:typename pair))))
+  ((object (scream:assert:cons 'cdr pair)) ("getCdr"))
+)
 
 #|
  | (set-car! pair new-car) procedure p41
  |#
 (define (set-car! pair new-car)
-  (if (pair? pair)
-    ((object pair) ("setCar:de.michab.scream.fcos.FirstClassObject" new-car))
-    (error "TYPE_ERROR"
-           scream:type:cons
-           (scream:typename pair)
-           1)))
+  ((object (scream:assert:cons 'set-car! pair)) ("setCar:de.michab.scream.fcos.FirstClassObject" new-car))
+)
 
 #|
  | (set-cdr! pair new-cdr) procedure p41
  |#
 (define (set-cdr! pair new-cdr)
-  (if (pair? pair)
-    ((object pair) ("setCdr:de.michab.scream.fcos.FirstClassObject" new-cdr))
-    (error "TYPE_ERROR"
-           scream:type:cons
-           (scream:typename pair)
-           1)))
+    ((object (scream:assert:cons 'set-cdr! pair)) ("setCdr:de.michab.scream.fcos.FirstClassObject" new-cdr))
+)
 
 #|
  | (caar pair) p42
@@ -216,7 +197,7 @@
       ;; ...ask for its length.
       ((object list) ("length")))
     (else
-      (error "EXPECTED_PROPER_LIST"))))
+      (error "length:EXPECTED_PROPER_LIST"))))
 
 #|
  | (append list ...) procedure; r7rs 6.4 p42
@@ -269,7 +250,7 @@
     ((list? list)
       ((object list) ("reverse")))
     (else
-      (error "EXPECTED_PROPER_LIST"))
+      (error "reverse:EXPECTED_PROPER_LIST"))
   )
 )
 
@@ -277,23 +258,16 @@
  | (list-tail list k) procedure; r7rs p42
  |#
 (define (list-tail list k)
-  (if (pair? list)
-    ((object list) ("listTail:long" k))
-    (error "TYPE_ERROR"
-           scream:type:cons
-           (scream:typename list)
-           1)))
+  ((object (scream:assert:cons 'list-tail list)) ("listTail:long" k))
+)
 
 #|
  | (list-ref list k) procedure; r7rs 6.4 p42
  |#
 (define (list-ref list k)
-  (if (pair? list)
-    ((object list) ("listRef:long" k))
-    (error "TYPE_ERROR"
-           scream:type:cons
-           (scream:typename list)
-           1)))
+  ((object (scream:assert:cons 'list-ref list)) ("listRef:long" k))
+)
+
 #|
  | (list-set! list k obj) procedure r7rs 6.4 p43
  |#

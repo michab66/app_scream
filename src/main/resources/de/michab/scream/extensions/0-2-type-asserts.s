@@ -87,6 +87,9 @@
 (define scream:bytevector?
   (typePredicateGenerator "de.michab.scream.fcos.Bytevector" #t))
 
+(define scream:cons?
+  (typePredicateGenerator "de.michab.scream.fcos.Cons" #t))
+
 (define scream:integer?
   (typePredicateGenerator "de.michab.scream.fcos.Int" #t))
 
@@ -99,6 +102,10 @@
 
 (define (scream:assert:bytevector func-name value)
   (scream:assert func-name value scream:bytevector? scream:type:bytevector)
+)
+
+(define (scream:assert:cons func-name value)
+  (scream:assert func-name value scream:cons? scream:type:cons)
 )
 
 (define (scream:assert:char func-name value)

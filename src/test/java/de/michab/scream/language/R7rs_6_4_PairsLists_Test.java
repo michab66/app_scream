@@ -5,7 +5,6 @@
  */
 package de.michab.scream.language;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.michab.scream.RuntimeX.Code;
@@ -24,20 +23,14 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p41
      */
     @Test
-    public void schemeListNotation_1() throws Exception
+    public void schemeListNotation() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
             "'(a . (b . (c . (d . (e . ())))))",
             "(a b c d e)" );
-    }
-
-    /**
-     * p41
-     */
-    @Test
-    public void schemeListNotation_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
             "'(a . (b . (c . d)))",
             "(a b c . d)" );
     }
@@ -46,42 +39,20 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p41
      */
     @Test
-    public void schemePair_1() throws Exception
+    public void pairQ() throws Exception
     {
-        expectFco(
-            "(pair? '(a . b))",
-            bTrue );
-    }
+        var t = makeTester();
 
-    /**
-     * p41
-     */
-    @Test
-    public void schemePair_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
+                "(pair? '(a . b))",
+                bTrue );
+        t.expectFco(
                 "(pair? '(a b c))",
                 bTrue );
-    }
-
-    /**
-     * p41
-     */
-    @Test
-    public void schemePair_3() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(pair? '())",
                 bFalse );
-    }
-
-    /**
-     * p41
-     */
-    @Test
-    public void schemePair_4() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(pair? '#(a b))",
                 bFalse );
     }
@@ -90,56 +61,26 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p41
      */
     @Test
-    public void schemeCons_1() throws Exception
+    public void cons() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(cons 'a '())",
                 "(a)" );
-    }
-
-    /**
-     * p41
-     */
-    @Test
-    public void schemeCons_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(cons '(a) '(b c d))",
                 "((a) b c d)" );
-    }
-
-    /**
-     * p41
-     */
-    @Test
-    public void schemeCons_3() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 """
                 (cons "a" '(b c))
                 ""","""
                 ("a" b c)
                 """ );
-    }
-
-    /**
-     * p41
-     */
-    @Test
-    public void schemeCons_4() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(cons 'a 3)",
                 "(a . 3)" );
-    }
-
-    /**
-     * p41
-     */
-    @Test
-    public void schemeCons_5() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(cons '(a b) 'c)",
                 "((a b) . c)" );
     }
@@ -148,23 +89,68 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p42
      */
     @Test
-    public void schemeNull_x1() throws Exception
+    public void car() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
+                "(car '(1))",
+                i1 );
+        t.expectFco(
+                "(car '(1 . 2))",
+                i1 );
+        t.expectFco(
+                "(car '(1 2))",
+                i1 );
+        var rx = t.expectError(
+                "(car '())",
+                Code.TYPE_ERROR );
+        assertEqualq(
+                s("car"),
+                rx.getOperationName() );
+    }
+
+    /**
+     * p42
+     */
+    @Test
+    public void cdr() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(cdr '(1))",
+                Cons.NIL );
+        t.expectFco(
+                "(cdr '(1 . 2))",
+                i2 );
+        t.expectFco(
+                "(cdr '(1 2))",
+                "(2)" );
+        var rx = t.expectError(
+                "(cdr '())",
+                Code.TYPE_ERROR );
+        assertEqualq(
+                s("cdr"),
+                rx.getOperationName() );
+    }
+
+    /**
+     * p42
+     */
+    @Test
+    public void nullQ() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
                 "(null? '(a b c))",
                 bFalse );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeNull_x2() throws Exception
-    {
-        expectFco(
-                """
-                (null? '())
-                """,
+        t.expectFco(
+                "(null? '())",
+                Bool.T );
+        t.expectFco(
+                "(list? '(a b c))",
                 Bool.T );
     }
 
@@ -172,48 +158,21 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p42
      */
     @Test
-    public void schemeListQ_1() throws Exception
+    public void listQ() throws Exception
     {
-        expectFco(
-                """
-                (list? '(a b c))
-                """,
-                Bool.T );
-    }
+        var t = makeTester();
 
-    /**
-     * p42
-     */
-    @Test
-    public void schemeListQ_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 """
                 (list? '())
                 """,
                 Bool.T );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeListQ_3() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 """
                 (list? '(a . c))
                 """,
                 Bool.F );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeListQ_4() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 """
                 (let ((x (list 'a)))
                   (set-cdr! x x)
@@ -226,32 +185,17 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p42
      */
     @Test
-    public void schemeMake_List_1() throws Exception
+    public void make_list() throws Exception
     {
         var t = makeTester();
 
         t.expectFco(
                 "(make-list 2 3)",
                 "(3 3)" );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeMake_List_x1() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(make-list 2)",
                 "(() ())" );
-    }
-    /**
-     * p42
-     */
-    @Test
-    public void schemeMake_List_error_1() throws Exception
-    {
-        expectError(
+        t.expectError(
                 "(make-list 'symbol)",
                 Code.TYPE_ERROR );
     }
@@ -260,20 +204,14 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p42
      */
     @Test
-    public void schemeList_1() throws Exception
+    public void schemeList() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(list 'a (+ 3 4) 'c)",
                 "(a 7 c)" );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeList_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(list)",
                 "()" );
     }
@@ -282,49 +220,25 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p42
      */
     @Test
-    public void schemeLength_1() throws Exception
+    public void length() throws Exception
     {
-        expectFco(
-                """
-                (length '(a b c))
-                """,
-                i(3) );
-    }
+        var t = makeTester();
 
-    /**
-     * p42
-     */
-    @Test
-    public void schemeLength_2() throws Exception
-    {
-        expectFco(
-                """
-                (length '(a (b) (c d e)))
-                """,
+        t.expectFco(
+                "(length '(a b c))",
                 i(3) );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeLength_3() throws Exception
-    {
-        expectFco(
-                """
-                (length '())
-                """,
+        t.expectFco(
+                "(length '(a (b) (c d e)))",
+                i(3) );
+        t.expectFco(
+                "(length '())",
                 i(0) );
-    }
-
-    @Test
-    public void schemeLength_improperFail() throws Exception
-    {
-        expectError(
-                """
-                (length '(a b . c))
-                """,
+        var rx = t.expectError(
+                "(length '(1 . 2))",
                 Code.EXPECTED_PROPER_LIST );
+        assertEqualq(
+                s("length"),
+                rx.getOperationName() );
     }
 
     /**
@@ -333,123 +247,48 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void schemeAppend_1() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(append '(x) '(y))",
                 "(x y)" );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeAppend_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(append '(a) '(b c d))",
                 "(a b c d)" );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeAppend_3() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(append '(a (b)) '((c)))",
                 "(a (b) (c))" );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeAppend_4() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(append '(a b) '(c . d))",
                 "(a b c . d)" );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeAppend_5() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(append '() 'a)",
                 s( "a" ));
-    }
-
-    /**
-     * p42
-     * If there are no arguments, the empty list is returned.
-     */
-    @Test
-    public void schemeAppend_x1() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(append)",
                 Cons.NIL );
-    }
-
-    /**
-     * p42
-     * If there is exactly one argument, it is returned.
-     */
-    @Test
-    public void schemeAppend_oneArgument() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(append 'a)",
                 s( "a" ) );
-        expectFco(
+        t.expectFco(
                 "(append 1)",
                 i( 1 ) );
-        expectFco(
+        t.expectFco(
                 "(append '())",
                 Cons.NIL );
-    }
-
-    /**
-     * p42
-     * Append different types.
-     */
-    @Test
-    public void schemeAppend_variousCdrs() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(append '(a) 1)",
                 "(a . 1)" );
-        expectFco(
+        t.expectFco(
                 "(append '(a) 'b)",
                 "(a . b)" );
-    }
-
-    /**
-     * p42
-     * In-line with Chez-Scheme.
-     */
-    @Test
-    public void schemeAppend_trailingNil() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(append '() '(1) 2)",
                 "(1 . 2)" );
-        expectFco(
+        t.expectFco(
                 "(append '() '(1) '(2) 3)",
                 "(1 2 . 3)" );
-    }
-
-    /**
-     * p42
-     * In-line with Chez-Scheme.
-     */
-    @Test
-    public void schemeAppend_trailingNilError() throws Exception
-    {
-        expectError(
+        t.expectError(
                 "(append '() 1 2)",
                 Code.TYPE_ERROR );
     }
@@ -458,137 +297,102 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p42
      */
     @Test
-    public void schemeReverse_1() throws Exception
+    public void reverse() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
             "(reverse '(a b c))",
             "(c b a)" );
-    }
-
-    /**
-     * p42
-     */
-    @Test
-    public void schemeReverse_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
             "(reverse '(a (b c) d (e (f))))",
             "((e (f)) d (b c) a)" );
-    }
-
-    /**
-     * Reverse empty list.
-     */
-    @Test
-    public void schemeReverse_x1() throws Exception
-    {
-        expectFco(
+        t.expectFco(
             "(reverse '())",
             Cons.NIL );
-    }
+        t.expectFco(
+                "(reverse '(313))",
+                "(313)" );
 
-    /**
-     * Single element list.
-     */
-    @Test
-    public void schemeReverse_x2() throws Exception
-    {
-        expectFco(
-            "(reverse '(313))",
-            "(313)" );
+        var rx = t.expectError(
+                "(reverse '(313 . 314))",
+                Code.EXPECTED_PROPER_LIST );
+        assertEqualq(
+                s("reverse"),
+                rx.getOperationName() );
     }
 
     /**
      *
      */
     @Test
-    public void schemeList_Tail_x1() throws Exception
+    public void list_tail() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
            "(list-tail '(a b c d) 2)",
            "(c d)" );
-    }
-
-    /**
-     *
-     */
-    @Test
-    public void schemeList_Tail_x2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
               "(list-tail '(a b c d) 0)",
               "(a b c d)" );
-    }
+        t.expectFco(
+                "(list-tail '(a b c d) 4)",
+                Cons.NIL );
 
-    /**
-     *
-     */
-    @Test
-    public void schemeList_Tail_x3() throws Exception
-    {
-        expectFco(
-             "(list-tail '(a b c d) 4)",
-             Cons.NIL );
+        assertEqualq(
+                s("list-tail"),
+                t.expectError(
+                        "(list-tail 0 4)",
+                        Code.TYPE_ERROR ).getOperationName() );
     }
 
     /**
      * p43
      */
     @Test
-    public void schemeList_Ref_1() throws Exception
+    public void list_ref() throws Exception
     {
-        expectFco( "(list-ref '(a b c d) 2)",
+        var t = makeTester();
+
+        t.expectFco( "(list-ref '(a b c d) 2)",
                 "c" );
-    }
+        t.expectFco(
+                "(list-ref '(a b c d) (exact (round 1.8)))",
+                s("c") );
 
-    /**
-     * p43
-     */
-    @Disabled
-    @Test
-    public void schemeList_Ref_2() throws Exception
-    {
-        expectFco( """
-                (equal?
-                'c
-                (list-ref '(a b c d) (exact (round 1.8)))
-                )
-                """,
-                bTrue );
+        assertEqualq(
+                s("list-ref"),
+                t.expectError(
+                        "(list-ref 0 4)",
+                        Code.TYPE_ERROR ).getOperationName() );
     }
 
     /**
      * p43
      */
     @Test
-    public void list_setBang_1() throws Exception
+    public void list_setE() throws Exception
     {
+        var t = makeTester();
+
         expectFco( """
                 (let ((ls (list 'one 'two 'five!)))
                   (list-set! ls 2 'three)
                     ls)
                 """,
                 "(one two three)" );
-    }
 
-    /**
-     * p43
-     */
-    @Test
-    public void list_setBang_2() throws Exception
-    {
-        var se = makeTester();
-
-        se.expectError(
+        t.expectError(
                 "(list-set! '(0 1 2) 1 'oops)",
                 Code.CANNOT_MODIFY_CONSTANT );
-        se.expectError(
+        t.expectError(
                 "(list-set! '(0 1 2) 7 'oops)",
                 Code.INDEX_OUT_OF_BOUNDS );
-        se.expectError(
+        t.expectError(
                 "(list-set! '(0 1 2) -1 'oops)",
                 Code.INDEX_OUT_OF_BOUNDS );
-        se.expectError(
+        t.expectError(
                 "(list-set! (scream:make-circular! (list 0 1 2)) 1 'oops)",
                 Code.EXPECTED_PROPER_LIST );
     }
@@ -809,36 +613,18 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
     @Test
     public void assq_1() throws Exception
     {
-        expectFco( """
-                (define e '((a 1)(b 2)(c 3)))
-                (assq 'a e)
-                """,
+        var t = makeTester();
+
+        t.execute( "(define e '((a 1)(b 2)(c 3)))" );
+
+        t.expectFco(
+                "(assq 'a e)",
                 "(a 1)" );
-    }
-
-    /**
-     * p43
-     */
-    @Test
-    public void assq_2() throws Exception
-    {
-        expectFco( """
-                (define e '((a 1)(b 2)(c 3)))
-                (assq 'b e)
-                """,
+        t.expectFco(
+                "(assq 'b e)",
                 "(b 2)" );
-    }
-
-    /**
-     * p43
-     */
-    @Test
-    public void assq_3() throws Exception
-    {
-        expectFco( """
-                (define e '((a 1)(b 2)(c 3)))
-                (assq 'd e)
-                """,
+        t.expectFco(
+                "(assq 'd e)",
                 bFalse );
     }
 
@@ -846,7 +632,7 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p43
      */
     @Test
-    public void assv_1() throws Exception
+    public void assv() throws Exception
     {
         expectFco(
                 "(assv 5 '((2 3)(5 7) (11 13)))",
@@ -857,20 +643,14 @@ public class R7rs_6_4_PairsLists_Test extends ScreamBaseTest
      * p43
      */
     @Test
-    public void assoc_1() throws Exception
+    public void assoc() throws Exception
     {
-        expectFco(
+        var t = makeTester();
+
+        t.expectFco(
                 "(assoc (list 'a) '(((a)) ((b)) ((c))))",
                 "((a))" );
-    }
-
-    /**
-     * p43
-     */
-    @Test
-    public void assoc_2() throws Exception
-    {
-        expectFco(
+        t.expectFco(
                 "(assoc 2.0 '((1 1) (2 4) (3 9)) =)",
                 "(2 4)" );
     }

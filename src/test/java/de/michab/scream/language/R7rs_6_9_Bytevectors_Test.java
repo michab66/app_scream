@@ -36,7 +36,7 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
     @Test
     public void basic_type_error() throws Exception
     {
-        var e = expectError(
+        expectError(
                 "#u8(0 x 5)",
                 Code.PARSE_EXPECTED );
     }
@@ -47,7 +47,7 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
     @Test
     public void basic_range_error() throws Exception
     {
-        var e = expectError(
+        expectError(
                 "#u8(0 313 5)",
                 Code.RANGE_EXCEEDED );
     }
@@ -82,6 +82,22 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
      * p49
      */
     @Test
+    public void make_bytevector() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(make-bytevector 2 13)",
+                parse( "#u8(#x0d #x0d)" ) );
+        t.expectFco(
+                "(make-bytevector 0 13)",
+                parse( "#u8()" ) );
+    }
+
+    /**
+     * p49
+     */
+    @Test
     public void bytevector() throws Exception
     {
         expectFco(
@@ -100,18 +116,6 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
                 parse( "#u8(3 1 255)" ) );
     }
 
-    public void make_bytevector() throws Exception
-    {
-        var t = makeTester();
-
-        t.expectFco(
-                "make-bytevector 0 13",
-                parse( "#u8(#x0d #x0d)" ) );
-        t.expectFco(
-                "make-bytevector 2 13",
-                parse( "#u8()" ) );
-    }
-
     /**
      * p50
      */
@@ -125,6 +129,33 @@ public class R7rs_6_9_Bytevectors_Test extends ScreamBaseTest
         expectError(
                 "(bytevector-length 3)",
                 Code.TYPE_ERROR );
+    }
+
+    /**
+     * p50
+     */
+    @Test
+    public void bytevector_u8_ref() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(bytevector-u8-ref (bytevector 255 1 3) 0)",
+                i(255) );
+        t.expectFco(
+                "(bytevector-u8-ref (bytevector 255 1 3) 1)",
+                i1 );
+        t.expectFco(
+                "(bytevector-u8-ref (bytevector 255 1 3) 2)",
+                i3 );
+
+        var rx = t.expectError(
+                "(bytevector-u8-ref '() 3)",
+                Code.TYPE_ERROR );
+
+        assertEqualq(
+                s("bytevector-u8-ref"),
+                rx.getOperationName() );
     }
 
     /**

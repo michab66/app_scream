@@ -96,24 +96,26 @@
  | (bytevector-length byte ...)  procedure; r7rs 6.9 p50
  |#
 (define (bytevector-length bytevector)
-    ((object (scream:assert:bytevector 'bytevector-length bytevector)) ("size")))
+    ((object (scream:assert:bytevector 'bytevector-length bytevector)) ("size"))
+)
 
 #|
- | (bytevector-ref bytevector k)  procedure; r7rs 6.9 p50
- TODO NO TEST
+ | (bytevector-u8-ref bytevector k)  procedure; r7rs 6.9 p50
  |#
-(define (bytevector-ref bytevector k)
-  (if (not (bytevector? bytevector))
-    (error "TYPE_ERROR" scream:type:bytevector bytevector)
-    ((object bytevector) ("get:long" k))))
+(define (bytevector-u8-ref bytevector k)
+  (
+    (object 
+      (scream:assert:bytevector 'bytevector-u8-ref bytevector)
+    ) 
+    ("get:long" k))
+)
 
 #|
  | (bytevector-set! bytevector k)  procedure; r7rs 6.9 p50
  |#
 (define (bytevector-set! bytevector k byte)
-  (if (not (bytevector? bytevector))
-    (error "TYPE_ERROR" scream:type:bytevector bytevector)
-    ((object bytevector) ("set:long,long" k byte))))
+    ((object (scream:assert:bytevector 'bytevector-set! bytevector)) ("set:long,long" k byte))
+)
 
 #|
  | (bytevector-copy bytevector)  procedure; r7rs 6.9 p50
