@@ -84,8 +84,21 @@
 (define scream:boolean?
   (typePredicateGenerator "de.michab.scream.fcos.Bool" #t))
 
+(define scream:bytevector?
+  (typePredicateGenerator "de.michab.scream.fcos.Bytevector" #t))
+
+(define scream:integer?
+  (typePredicateGenerator "de.michab.scream.fcos.Int" #t))
+
+#|
+ | Type assertions.
+ |#
 (define (scream:assert:boolean func-name value)
-  (scream:assert func-name value boolean? scream:type:boolean)
+  (scream:assert func-name value scream:boolean? scream:type:boolean)
+)
+
+(define (scream:assert:bytevector func-name value)
+  (scream:assert func-name value scream:bytevector? scream:type:bytevector)
 )
 
 (define (scream:assert:char func-name value)
@@ -95,6 +108,11 @@
 (define (scream:assert:cons func-name value)
   (scream:assert func-name value pair? scream:type:cons)
 )
+
+(define (scream:assert:integer func-name value)
+  (scream:assert func-name value scream:integer? scream:type:bytevector)
+)
+
 (define (scream:assert:list func-name value)
   (scream:assert func-name value list? "list")
 )

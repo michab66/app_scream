@@ -28,7 +28,7 @@
  | Checks if the passed object if of type Int.
  |#
 (define scream:integer?
-  (typePredicateGenerator "de.michab.scream.fcos.Int" #t))
+  scream:integer?)
 (define scream:double?
   (typePredicateGenerator "de.michab.scream.fcos.Real" #t))
 

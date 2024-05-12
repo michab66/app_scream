@@ -307,7 +307,7 @@
   (scream:assert-type 
     bytevector
     bytevector?
-    scream:type-bytevector)
+    scream:type:bytevector)
   
   (make-object 
     ("de.michab.scream.fcos.PortInBinary:java.lang.String,java.io.InputStream"
