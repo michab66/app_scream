@@ -55,9 +55,9 @@
     `(lambda (z1 z2)
       (cond
         ((not (number? z1))
-          (error "TYPE_ERROR" %type-number z1))
+          (error "TYPE_ERROR" scream:type:number z1))
         ((not (number? z2))
-          (error "TYPE_ERROR" %type-number z2))
+          (error "TYPE_ERROR" scream:type:number z2))
         (else
           ((object z1) (,cmp-operation z2))))))
 
@@ -66,7 +66,7 @@
   (define (transitiver first . rest)
     (cond
          ((not (number? first))
-           (error "TYPE_ERROR" %type-number first))
+           (error "TYPE_ERROR" scream:type:number first))
          ((null? rest)
            #t)
          ((comparer first (car rest))
@@ -99,7 +99,7 @@
 (define (scream:assert-number n)
   (if (number? n)
     n
-    (error "TYPE_ERROR" %type-number n)))
+    (error "TYPE_ERROR" scream:type:number n)))
    
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
@@ -144,7 +144,7 @@
   (if (number? x)
       ((object x) ("isExact"))
       (error "TYPE_ERROR"
-             %type-number
+             scream:type:number
              (scream:typename x))))
 
 #|
@@ -249,7 +249,7 @@
   (if (integer? n)
     ((object (exact n)) ("r7rsOddQ"))
     (error "TYPE_ERROR"
-             %type-integer
+             scream:type:integer
              (scream:typename n))))
 
 #|
@@ -280,7 +280,7 @@
     ((inexact? x)
       (scream:math ("abs:double" x)))
     (else
-      (error "TYPE_ERROR" %type-number (scream:typename x)))
+      (error "TYPE_ERROR" scream:type:number (scream:typename x)))
   )
 )
 
@@ -297,9 +297,9 @@
  |#
 (define (floor-quotient n1 n2)
   (if (not (integer? n1))
-    (error "TYPE_ERROR" %type-integer n1))
+    (error "TYPE_ERROR" scream:type:integer n1))
   (if (not (integer? n2))
-    (error "TYPE_ERROR" %type-integer n2))
+    (error "TYPE_ERROR" scream:type:integer n2))
     
   ((if (and (exact? n1) (exact? n2))
       exact
@@ -376,7 +376,7 @@
         ((= 1 (length arguments))
           (if (number? (car arguments))
             (car arguments)
-            (error "TYPE_ERROR" %type-integer n1)))
+            (error "TYPE_ERROR" scream:type:integer n1)))
         (else
           (apply _gcd-transitive arguments))))
   )
@@ -417,7 +417,7 @@
         ((= 1 (length arguments))
           (if (number? (car arguments))
             (car arguments)
-            (error "TYPE_ERROR" %type-integer n1)))
+            (error "TYPE_ERROR" scream:type:integer n1)))
         (else
           (apply _lcm-transitive arguments))))
   )
@@ -441,7 +441,7 @@
 (define (floor x)
   (cond
     ((not (number? x))
-      (error "TYPE_ERROR" %type-number x))
+      (error "TYPE_ERROR" scream:type:number x))
     ((integer? x)
       x)
     (else
@@ -453,7 +453,7 @@
 (define (ceiling x)
   (cond
     ((not (number? x))
-      (error "TYPE_ERROR" %type-number x))
+      (error "TYPE_ERROR" scream:type:number x))
     ((integer? x)
       x)
     (else

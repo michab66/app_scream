@@ -289,11 +289,11 @@
       ((string start end)
        (cond
          ((not (string? string))
-           (error "TYPE_ERROR" scream:type-string string))
+           (error "TYPE_ERROR" scream:type:string string))
          ((not (integer? start))
-           (error "TYPE_ERROR" scream:type-integer start))
+           (error "TYPE_ERROR" scream:type:integer start))
          ((not (integer? end))
-           (error "TYPE_ERROR" scream:type-integer end))
+           (error "TYPE_ERROR" scream:type:integer end))
          (else
            ((object string) ("toBytevector:long,long" start end))))))
   )) ; <--

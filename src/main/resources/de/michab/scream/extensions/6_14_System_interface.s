@@ -78,12 +78,8 @@
  | (load filename environment-specifier)  file library procedure; r7rs p59
  |#
 (define (load filename)
-  (let
-    (
-      (evaluator ((make-object "de.michab.scream.ScreamEvaluator") ("EVAL")))
-    )
-
-    (evaluator ("load:de.michab.scream.fcos.SchemeString,de.michab.scream.fcos.Environment" filename (interaction-environment))))
+  (scream:evaluator 
+    ("load:de.michab.scream.fcos.SchemeString,de.michab.scream.fcos.Environment" filename (interaction-environment)))
 )
 
 #|
@@ -104,6 +100,12 @@
 (define (delete-file filename)
   ((scream:files:validate-exists filename) ("delete")))
 
+#|
+ | (emergency-exit) process-context library procdure; r7rs p60
+ |#
+(define (emergency-exit)
+  (scream:java:lang:system ("exit:int" 0)))
+
 ;;
 ;; Environment variable operations.
 ;;
@@ -114,10 +116,8 @@
 (define (get-environment-variable name)
   (let*
     (
-      (system
-        (make-object "java.lang.System"))
       (result
-        (system ("getenv:java.lang.String" name)))
+        (scream:java:lang:system ("getenv:java.lang.String" name)))
     )
     
     (if (null? result)
@@ -249,8 +249,7 @@
 (define (get-environment-variables)
   (let*
     (
-      (system (make-object "java.lang.System"))
-      (env (system ("getenv")))
+      (env (scream:java:lang:system ("getenv")))
       (keySet (env ("keySet")))
       (keyVector (keySet ("toArray")))
     )
@@ -262,65 +261,6 @@
   )
 )
 
-#|
-(define (get-environment-variables)
-
-  ; Support: "a=b" => ("a" . "b")
-  (define (split-at-equals string)
-    (let
-      (
-        (split
-          (string-split "=" string))
-      )
-    
-      ; Compensate for (string-split ...) delivering
-      ; its elements in reverse.
-      (cons (cadr split) (car split))
-    )
-  )
-
-  (let*
-    (
-      ; Get a reference to java.lang.System
-      (system
-        (make-object "java.lang.System"))
-      ; Query the environment as a map.
-      (env-map
-        (system ("getenv")))
-      ; Create a buffer for converting the map into
-      ; the result.
-      (buffer (open-output-string))
-      ; Write the toString representation into the buffer.
-      (_ (write env-map buffer))
-      ; Convert the toString presentation into a string.
-      (environment-string
-        (get-output-string buffer))
-      ; Get the position of the first {.
-      (brace-op
-        (string-first #\{ environment-string))
-      ; Get the position of the lsst {.
-      (brace-cl
-        (string-last #\} environment-string))
-    )
-    
-;    (scream:display-ln brace-op brace-cl)
-    (let*
-      (
-        ; Get the contents between the braces.
-        (content-string
-          (substring environment-string (+ brace-op 1) brace-cl))
-        ; Split this at the ', ' positions.
-        (variable-list
-          (string-split ", " content-string))
-      )
-
-      ; Create the result list.
-      (map split-at-equals variable-list)
-    )
-  )
-)
-|#
-
 ;;
 ;; Time operations
 ;;
@@ -329,7 +269,7 @@
  | (current-jiffy)  time library procedure; r7rs p60
  |#
 (define (current-jiffy)
-  ((make-object "java.lang.System") ("currentTimeMillis")))
+  (scream:java:lang:system ("currentTimeMillis")))
 
 #|
  | (jiffies-per-second)  time library procedure; r7rs p60

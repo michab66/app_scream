@@ -1,7 +1,7 @@
 ;
 ; Scream @ https://github.com/urschleim/scream
 ;
-; Copyright © 1998-2023 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
 ;
 
 ;;
@@ -11,18 +11,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Scream definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-;; Port type name.
-(define scream:type-port
-  ((make-object "de.michab.scream.fcos.Port") "TYPE_NAME"))
-
-;; Output port type name.
-(define scream:type-output-port
-  ((make-object "de.michab.scream.fcos.PortOut") "TYPE_NAME"))
-
-;; Input port type name.
-(define scream:type-input-port
-  ((make-object "de.michab.scream.fcos.PortIn") "TYPE_NAME"))
 
 ;; Predicates for the port implementation types.
 (define scream:input-port?
@@ -45,7 +33,7 @@
   (scream:assert-type 
     port
     port?
-    scream:type-port)
+    scream:type:port)
   (scream:assert-type
     proc
     procedure?
@@ -62,7 +50,7 @@
   (scream:assert-type 
     string
     string?
-    scream:type-string)
+    scream:type:string)
   (scream:assert-type
     proc
     procedure?
@@ -79,7 +67,7 @@
   (scream:assert-type 
     string
     string?
-    scream:type-string)
+    scream:type:string)
   (scream:assert-type
     proc
     procedure?
@@ -164,7 +152,7 @@
       (scream:assert-type 
         port
         input-port?
-        scream:type-port)
+        scream:type:port)
 
       (set! current-input-port-stack (cons port current-input-port-stack))))
 
@@ -197,7 +185,7 @@
       (scream:assert-type 
         port
         output-port?
-        scream:type-port)
+        scream:type:port)
 
       (set! current-output-port-stack (cons port current-output-port-stack))))
 

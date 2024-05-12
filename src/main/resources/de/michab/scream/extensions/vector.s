@@ -36,7 +36,7 @@
 (define (vector-length v)
   (if (vector? v)
     ((object v) ("size"))
-    (error "TYPE_ERROR" %type-vector (scream:typename v))))
+    (error "TYPE_ERROR" scream:type:vector (scream:typename v))))
 
 
 
@@ -46,7 +46,7 @@
 (define (vector-ref v idx )
   (if (vector? v)
     ((object v) ("get:long" idx))
-    (error "TYPE_ERROR" %type-vector (scream:typename v) 1)))
+    (error "TYPE_ERROR" scream:type:vector (scream:typename v) 1)))
 
 
 
@@ -56,7 +56,7 @@
 (define (vector-set! v idx obj)
   (if (vector? v)
     ((object v) ("set:long,de.michab.scream.fcos.FirstClassObject" idx obj))
-    (error "TYPE_ERROR" %type-vector (scream:typename v) 1)))
+    (error "TYPE_ERROR" scream:type:vector (scream:typename v) 1)))
 
 
 
@@ -100,7 +100,7 @@
       ;; Body
       (set! result (cons (vector-ref v idx) result)))
 
-    (error "TYPE_ERROR" %type-vector (scream:typename v))))
+    (error "TYPE_ERROR" scream:type:vector (scream:typename v))))
 
 
 
@@ -118,4 +118,4 @@
 (define (vector-fill! v filler)
   (if (vector? v)
     ((object v) ("fill:de.michab.scream.fcos.FirstClassObject" filler))
-    (error "TYPE_ERROR" %type-vector (scream:typename v) 1)))
+    (error "TYPE_ERROR" scream:type:vector (scream:typename v) 1)))

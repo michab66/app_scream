@@ -103,7 +103,7 @@
   (if (pair? pair)
     ((object pair) ("getCar"))
     (error "TYPE_ERROR"
-           %type-cons
+           scream:type:cons
            (scream:typename pair))))
 
 #|
@@ -113,7 +113,7 @@
   (if (pair? pair)
     ((object pair) ("getCdr"))
     (error "TYPE_ERROR"
-           %type-cons
+           scream:type:cons
            (scream:typename pair))))
 
 #|
@@ -123,7 +123,7 @@
   (if (pair? pair)
     ((object pair) ("setCar:de.michab.scream.fcos.FirstClassObject" new-car))
     (error "TYPE_ERROR"
-           %type-cons
+           scream:type:cons
            (scream:typename pair)
            1)))
 
@@ -134,7 +134,7 @@
   (if (pair? pair)
     ((object pair) ("setCdr:de.michab.scream.fcos.FirstClassObject" new-cdr))
     (error "TYPE_ERROR"
-           %type-cons
+           scream:type:cons
            (scream:typename pair)
            1)))
 
@@ -239,7 +239,7 @@
           (if (pair? o)
             o
             (error "TYPE_ERROR"
-              %type-cons
+              scream:type:cons
               (scream:typename o)
               position)))
         ; Implement the actual append.
@@ -280,7 +280,7 @@
   (if (pair? list)
     ((object list) ("listTail:long" k))
     (error "TYPE_ERROR"
-           %type-cons
+           scream:type:cons
            (scream:typename list)
            1)))
 
@@ -291,7 +291,7 @@
   (if (pair? list)
     ((object list) ("listRef:long" k))
     (error "TYPE_ERROR"
-           %type-cons
+           scream:type:cons
            (scream:typename list)
            1)))
 #|

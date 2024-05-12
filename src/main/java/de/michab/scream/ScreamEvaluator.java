@@ -37,8 +37,8 @@ import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.frontend.SchemeParser;
-import de.michab.scream.pops.Primitives;
 import de.michab.scream.pops.Exceptions_6_11;
+import de.michab.scream.pops.Primitives;
 import de.michab.scream.pops.SyntaxAnd;
 import de.michab.scream.pops.SyntaxAssign;
 import de.michab.scream.pops.SyntaxBegin;
@@ -88,19 +88,7 @@ public final class ScreamEvaluator implements ScriptEngine
      * The name of the file that holds the Scheme-implemented parts of the
      * engine common to all script engine instance.
      */
-    private static final String schemeExtensions = "common-init.s";
-
-    /**
-     * The name of the file that holds the Scheme-implemented parts that are
-     * specific for each script engine.
-     */
-    private static final String schemeInstanceExtensions = "instance-init.s";
-
-    /**
-     * The symbol being bound to an object reference of the interpreter itself.
-     */
-    private final static Symbol ANCHOR_SYMBOL =
-            Symbol.createObject( "scream:evaluator" );
+    private static final String schemeExtensions = "0-boot.s";
 
     /**
      * The interaction environment.
@@ -155,17 +143,11 @@ public final class ScreamEvaluator implements ScriptEngine
         _schemeReport.define(
                 Symbol.createObject( "scream:tle-interpreter" ),
                 _schemeReport );
-        // TODO : not longer needed.
-        _schemeReport.define(
-                ANCHOR_SYMBOL,
-                SchemeObject.make( this ) );
+
         // Load extensions defined in scheme source files.
         addExtensions(
         		_schemeReport,
         		schemeExtensions );
-        addExtensions(
-                _schemeReport,
-                schemeInstanceExtensions );
         FirstClassObject.setConstant(
                 _schemeReport );
         _interaction = _schemeReport.extend(

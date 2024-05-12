@@ -1,20 +1,14 @@
 ;
 ; Scream @ https://github.com/urschleim/scream
 ;
-; Copyright © 1998-2022 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
 ;
-
-;;
-;; Used in error messages.
-;;
-(define scream:type-bool
-  ((make-object "de.michab.scream.fcos.Bool") "TYPE_NAME"))
 
 ;;
 ;; (boolean? obj) library procedure; 6.3 r7rs 40
 ;;
-(define (boolean? obj)
-  (or (eqv? obj #t) (eqv? obj #f)))
+(define boolean?
+  scream:boolean?)
 
 ;;
 ;; (not obj) library procedure; r7rs 6.3 p40
@@ -30,10 +24,12 @@
   (define (boolean-impl position result list)
     (if (null? list)
       #t
-      (let ((first (car list)) (rest (cdr list)))
+      (let
+        (
+          (first (scream:assert:boolean 'boolean=? (car list)))
+          (rest (cdr list))
+        )
         (cond
-          ((not (boolean? first))
-            (error "TYPE_ERROR" scream:type-bool (scream:typename first) position))
           ((eq? result first)
             (boolean-impl (+ position 1) result rest))
           (else

@@ -4,27 +4,15 @@
 ; Copyright © 1998-2024 Michael G. Binz
 ;
 
-;;
-;; Define a symbol holding the current jdk-version.
-;;
-(define scream:java:jdk-version
-  ((make-object "java.lang.System") ("getProperty:java.lang.String" "java.version")))
-
-;;
-;; An object to be returned if the spec defines 'unspecified'.
-;;
-(define scream:unspecified '())
-
-;;
-(define scream:class:fco
-  (make-object "de.michab.scream.fcos.FirstClassObject"))
-
-;;
-;; Get the type name of the passed object.
-;;
+#|
+ | (scream:typename obj)
+ |
+ | Get the typename of the passed object as a string.
+ | The typename of '() is "NIL".
+ |#
 (define (scream:typename x)
   (scream:class:fco ("getTypename:de.michab.scream.fcos.FirstClassObject" x)))
-
+ 
 ;;
 ;; (scream:assert-type object predicate expected-type)
 ;;
@@ -71,18 +59,8 @@
       (apply scream:display-ln (cdr rest))))
 )
 
-;;
-;; Exits the interpreter.  Note that this implementation is *very* straight-
-;; forward: On calling (exit) the system will be shut down by System.exit(0)
-;; which is definitely no good strategy in case a fancy user interface is
-;; installed in front of Scream, so in this case this implementation has to be
-;; overridden.
-;;
-(define (exit)
-  ((make-object "java.lang.System") (exit 0)))
-
 (define (scream:gc)
-  ((make-object "java.lang.System") (gc)))
+  (scream:java:lang:system (gc)))
 
 ;;
 ;;
@@ -116,9 +94,6 @@
         ;; Assignable match test.
         (else
           (classObject ("isAssignableFrom:java.lang.Class" ((object obj) ("getClass")))))))))
-
-(define scream:string?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
 
 ;;
 ;; (transitiveBoolean proc)
@@ -176,25 +151,3 @@
     (if (null? list)
       #f
       (apply _make-transitive list))))
-
-;;
-;;
-;;
-(define %type-symbol
-  ((make-object "de.michab.scream.fcos.Symbol") "TYPE_NAME"))
-(define %type-cons
-  ((make-object "de.michab.scream.fcos.Cons") "TYPE_NAME"))
-(define %type-vector
-  ((make-object "de.michab.scream.fcos.Vector") "TYPE_NAME"))
-(define %type-string
-  ((make-object "de.michab.scream.fcos.SchemeString") "TYPE_NAME"))
-(define %type-char
-  ((make-object "de.michab.scream.fcos.SchemeCharacter") "TYPE_NAME"))
-(define %type-number
-  ((make-object "de.michab.scream.fcos.Number") "TYPE_NAME"))
-(define %type-integer
-  ((make-object "de.michab.scream.fcos.Int") "TYPE_NAME"))
-(define %type-real
-  ((make-object "de.michab.scream.fcos.Real") "TYPE_NAME"))
-(define %type-port
-  ((make-object "de.michab.scream.fcos.Port") "TYPE_NAME"))

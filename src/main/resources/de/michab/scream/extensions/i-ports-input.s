@@ -16,7 +16,7 @@
           ((null? port)
             (current-input-port))
           ((= 1 (length port))
-            (scream:assert-type (car port) input-port? scream:type-input-port) )
+            (scream:assert-type (car port) input-port? scream:type:input-port) )
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation
@@ -39,7 +39,7 @@
           ((null? port)
             (current-input-port))
           ((= 1 (length port))
-            (scream:assert-type (car port) input-port? scream:type-input-port) )
+            (scream:assert-type (car port) input-port? scream:type:input-port) )
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation
@@ -60,7 +60,7 @@
           ((null? port)
             (current-input-port))
           ((= 1 (length port))
-            (scream:assert-type (car port) input-port? scream:type-input-port) )
+            (scream:assert-type (car port) input-port? scream:type:input-port) )
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation

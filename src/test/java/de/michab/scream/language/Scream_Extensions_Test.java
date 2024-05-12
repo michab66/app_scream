@@ -101,4 +101,64 @@ public class Scream_Extensions_Test extends ScreamBaseTest
                 "(numbers? 1 'a 3 4 5)",
                 bFalse );
     }
+
+    @Test
+    public void runtime$scream_typename()
+            throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(scream:typename '())",
+                str( "NIL" ) );
+        t.expectFco(
+                "(scream:typename #t)",
+                str( "boolean" ) );
+        t.expectFco(
+                "(scream:typename 1)",
+                str( "integer" ) );
+        t.expectFco(
+                "(scream:typename 3.14)",
+                str( "real" ) );
+        t.expectFco(
+                "(scream:typename \"donald\")",
+                str( "string" ) );
+        t.expectFco(
+                "(scream:typename '(1 2))",
+                str( "cons" ) );
+        t.expectFco(
+                "(scream:typename '#(1 2))",
+                str( "vector" ) );
+    }
+
+    @Test
+    public void runtime$scream_assert()
+            throws Exception
+    {
+        var t = makeTester();
+
+        // String.
+        t.expectError(
+                "(scream:assert:string 'mic '())",
+                Code.TYPE_ERROR );
+        t.expectFco(
+                "(scream:assert:string 'mic \"symbol\")",
+                str( "symbol" ) );
+
+        // Symbol.
+        t.expectError(
+                "(scream:assert:symbol 'mic '())",
+                Code.TYPE_ERROR );
+        t.expectFco(
+                "(scream:assert:symbol 'mic 'symbol)",
+                "symbol" );
+
+        // Vector.
+        t.expectError(
+                "(scream:assert:vector 'test '())",
+                Code.TYPE_ERROR );
+        t.expectFco(
+                "(scream:assert:vector 'test '#())",
+                "#()" );
+    }
 }
