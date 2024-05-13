@@ -43,7 +43,7 @@
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation
-        (scream:assert-type operation procedure? scream:type-procedure))
+        (scream:assert-type operation procedure? scream:type:procedure))
     )
     (if (not (textual-port? port))
       (error "EXPECTED_TEXTUAL_PORT" port)
@@ -64,7 +64,7 @@
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation
-        (scream:assert-type operation procedure? scream:type-procedure))
+        (scream:assert-type operation procedure? scream:type:procedure))
     )
     (if (not (binary-port? port))
       (error "EXPECTED_BINARY_PORT" port)

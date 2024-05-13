@@ -51,7 +51,7 @@
 (define (scream:memx obj list compare)
   (cond
     ((not (procedure? compare))
-      (error "TYPE_ERROR" scream:type-procedure compare))
+      (error "TYPE_ERROR" scream:type:procedure compare))
     ((null? list)
       #f)
     ((compare obj (car list))
@@ -67,7 +67,7 @@
 (define (scream:assx obj alist compare)
   (cond
     ((not (procedure? compare))
-      (error "TYPE_ERROR" scream:type-procedure compare))
+      (error "TYPE_ERROR" scream:type:procedure compare))
     ((null? alist)
       #f)
     ((compare obj (caar alist))

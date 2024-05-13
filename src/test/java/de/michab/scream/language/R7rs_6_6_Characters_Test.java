@@ -7,6 +7,7 @@ package de.michab.scream.language;
 
 import org.junit.jupiter.api.Test;
 
+import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
 
 /**
@@ -36,20 +37,38 @@ public class R7rs_6_6_Characters_Test extends ScreamBaseTest
 //      (char? #\ä)
 //      #t)
 //
-//    ;;
-//    ;; Test (char->integer char) procedure; r5rs 29
-//    ;;
-//    (%positive-test sourcefile 2
-//      (char->integer #\@)
-//      64)
-//
-//    ;;
-//    ;; Test (integer->char n) procedure; r5rs 29
-//    ;;
-//    (%positive-test sourcefile 3
-//      (integer->char 64)
-//      #\@)
-//
+
+    @Test
+    public void char_integer() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(char->integer #\\@)",
+                i(64) );
+        assertEqualq(
+                s("char->integer"),
+                t.expectError(
+                        "(char->integer 3.14)",
+                        Code.TYPE_ERROR ).getOperationName() );
+    }
+
+    @Test
+    public void integer_char() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectFco(
+                "(integer->char 64)",
+                "#\\@");
+
+        assertEqualq(
+                s("integer->char"),
+                t.expectError(
+                        "(integer->char 3.14)",
+                        Code.TYPE_ERROR ).getOperationName() );
+    }
+
 //    ;;
 //    ;; Test char=?
 //    ;;

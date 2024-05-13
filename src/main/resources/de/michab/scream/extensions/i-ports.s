@@ -37,7 +37,7 @@
   (scream:assert-type
     proc
     procedure?
-    scream:type-procedure)
+    scream:type:procedure)
   
   (let ((result (proc port)))
     (close-port port)
@@ -54,7 +54,7 @@
   (scream:assert-type
     proc
     procedure?
-    scream:type-procedure)
+    scream:type:procedure)
 
   (call-with-port
     (open-input-file string)
@@ -71,7 +71,7 @@
   (scream:assert-type
     proc
     procedure?
-    scream:type-procedure)
+    scream:type:procedure)
 
   (call-with-port
     (open-output-file string)

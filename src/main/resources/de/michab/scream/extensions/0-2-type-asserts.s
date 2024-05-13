@@ -66,7 +66,7 @@
   ((make-object "de.michab.scream.fcos.PortOut") "TYPE_NAME"))
 (define scream:type:port
   ((make-object "de.michab.scream.fcos.Port") "TYPE_NAME"))
-(define scream:type-procedure
+(define scream:type:procedure
   ((make-object "de.michab.scream.fcos.Procedure") "TYPE_NAME"))
 (define %scream:type:real
   ((make-object "de.michab.scream.fcos.Real") "TYPE_NAME"))
@@ -87,6 +87,9 @@
 (define scream:bytevector?
   (typePredicateGenerator "de.michab.scream.fcos.Bytevector" #t))
 
+(define scream:char?
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeCharacter" #t))
+
 (define scream:cons?
   (typePredicateGenerator "de.michab.scream.fcos.Cons" #t))
 
@@ -104,12 +107,16 @@
   (scream:assert func-name value scream:bytevector? scream:type:bytevector)
 )
 
+(define (scream:assert:char func-name value)
+  (scream:assert func-name value scream:char? scream:type:char)
+)
+
 (define (scream:assert:cons func-name value)
   (scream:assert func-name value scream:cons? scream:type:cons)
 )
 
 (define (scream:assert:char func-name value)
-  (scream:assert func-name value character? scream:type:character)
+  (scream:assert func-name value char? scream:type:char)
 )
 
 (define (scream:assert:cons func-name value)

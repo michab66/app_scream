@@ -8,36 +8,25 @@
 ;; Scream definitions.
 ;;
 
-(define scream:type-character
-  ((make-object "de.michab.scream.fcos.SchemeCharacter") "TYPE_NAME"))
-
 ;;
 ;; (char? obj) procedure; r5rs 29
 ;;
 (define char?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeCharacter" #t))
-
-
+  scream:char?)
 
 ;;
 ;; (char->integer char) procedure; r5rs 29
 ;;
 (define (char->integer char)
-  (if (char? char)
-    ((object char) ("asInteger"))
-    (error "TYPE_ERROR" %type-char (scream:typename char))))
-
-
+  ((object (scream:assert:char 'char->integer char)) ("asInteger"))
+)
 
 ;;
 ;; (integer->char n) procedure; r5rs 29
 ;;
 (define (integer->char i)
-  (if (integer? i)
-    ((make-object "de.michab.scream.SchemeCharacter") (createObject i))
-    (error "TYPE_ERROR" %type-integer (scream:typename i))))
-
-
+  ((make-object "de.michab.scream.fcos.SchemeCharacter") ("createObject:int" (scream:assert:integer 'integer->char i)))
+)
 
 ;;
 ;; Comparison procedures.  No locale information is used, just as
