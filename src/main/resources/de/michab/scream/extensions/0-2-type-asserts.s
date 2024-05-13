@@ -56,16 +56,20 @@
   ((make-object "de.michab.scream.fcos.SchemeCharacter") "TYPE_NAME"))
 (define scream:type:cons
   ((make-object "de.michab.scream.fcos.Cons") "TYPE_NAME"))
+(define scream:type:port
+  ((make-object "de.michab.scream.fcos.Port") "TYPE_NAME"))
 (define scream:type:input-port
   ((make-object "de.michab.scream.fcos.PortIn") "TYPE_NAME"))
+(define scream:type:binary-input-port
+  ((make-object "de.michab.scream.fcos.PortInBinary") "TYPE_NAME"))
+(define scream:type:output-port
+  ((make-object "de.michab.scream.fcos.PortOut") "TYPE_NAME"))
+(define scream:type:binary-output-port
+  ((make-object "de.michab.scream.fcos.PortOutBinary") "TYPE_NAME"))
 (define scream:type:integer
   ((make-object "de.michab.scream.fcos.Int") "TYPE_NAME"))
 (define scream:type:number
   ((make-object "de.michab.scream.fcos.Number") "TYPE_NAME"))
-(define scream:type:output-port
-  ((make-object "de.michab.scream.fcos.PortOut") "TYPE_NAME"))
-(define scream:type:port
-  ((make-object "de.michab.scream.fcos.Port") "TYPE_NAME"))
 (define scream:type:procedure
   ((make-object "de.michab.scream.fcos.Procedure") "TYPE_NAME"))
 (define %scream:type:real
@@ -76,7 +80,6 @@
   ((make-object "de.michab.scream.fcos.Symbol") "TYPE_NAME"))
 (define scream:type:vector
   ((make-object "de.michab.scream.fcos.Vector") "TYPE_NAME"))
-
 
 #|
  | Low-level type predicate definitions.
@@ -95,6 +98,20 @@
 
 (define scream:integer?
   (typePredicateGenerator "de.michab.scream.fcos.Int" #t))
+
+(define scream:port?
+  (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
+(define scream:input-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortIn" #t))
+(define scream:binary-input-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortInBinary" #t))
+(define scream:output-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
+(define scream:binary-output-port?
+  (typePredicateGenerator "de.michab.scream.fcos.PortOutBinary" #t))
+
+(define scream:procedure?
+  (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
 
 #|
  | Type assertions.
@@ -120,7 +137,7 @@
 )
 
 (define (scream:assert:cons func-name value)
-  (scream:assert func-name value pair? scream:type:cons)
+  (scream:assert func-name value scream:cons? scream:type:cons)
 )
 
 (define (scream:assert:integer func-name value)
@@ -128,8 +145,29 @@
 )
 
 (define (scream:assert:list func-name value)
-  (scream:assert func-name value list? "list")
+  (scream:assert func-name value scream:list? "list")
 )
+
+(define (scream:assert:port func-name value)
+  (scream:assert func-name value scream:port? scream:type:port)
+)
+(define (scream:assert:input-port func-name value)
+  (scream:assert func-name value scream:input-port? scream:type:input-port)
+)
+(define (scream:assert:binary-input-port func-name value)
+  (scream:assert func-name value scream:binary-input-port? scream:type:binary-input-port)
+)
+(define (scream:assert:output-port func-name value)
+  (scream:assert func-name value scream:output-port? scream:type:output-port)
+)
+(define (scream:assert:binary-output-port func-name value)
+  (scream:assert func-name value scream:binary-output-port? scream:type:binary-output-port)
+)
+
+(define (scream:assert:procedure func-name value)
+  (scream:assert func-name value scream:procedure? scream:type:procedure)
+)
+
 (define (scream:assert:string func-name value)
   (scream:assert func-name value string? scream:type:string)
 )

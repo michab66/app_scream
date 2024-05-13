@@ -200,10 +200,10 @@
 
 
 #|
- | (procedure? obj) essential procedure; r5rs 27
+ | (procedure? obj) essential procedure; r7rs 50
  |#
 (define procedure?
-  (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
+  scream:procedure?)
 
 #|
  | (apply proc arg₁ ... args)  procedure; r7rs 50

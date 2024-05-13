@@ -7,7 +7,6 @@ package de.michab.scream.language;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
@@ -20,12 +19,9 @@ import java.util.UUID;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import de.michab.scream.RuntimeX;
 import de.michab.scream.RuntimeX.Code;
 import de.michab.scream.ScreamBaseTest;
-import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Cons;
-import de.michab.scream.fcos.Procedure;
 
 /**
  * r7rs 6.13.1 Ports p56
@@ -63,24 +59,42 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
     }
 
     @Test
-    public void call_with_port_err_1() throws Exception
+    public void call_with_port_err() throws Exception
     {
-        expectError( "(call-with-port)", Code.WRONG_NUMBER_OF_ARGUMENTS );
-    }
+        var t = makeTester();
 
-    @Test
-    public void call_with_port_err_2() throws Exception
-    {
-        RuntimeX rx = expectError( "(call-with-port 1 2)", Code.TYPE_ERROR );
-        assertEquals( str( "port" ), rx.getArgument( 0 ) );
-        assertEquals( str( "integer" ),rx.getArgument( 1 ) );
-    }
-    @Test
-    public void call_with_port_err_3() throws Exception
-    {
-        var rx = expectError( "(call-with-port (current-input-port) 2)", Code.TYPE_ERROR );
-        assertEquals( str( "procedure" ), rx.getArgument( 0 ) );
-        assertEquals( str( "integer" ) , rx.getArgument( 1 ) );
+        t.expectError(
+                "(call-with-port)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+
+        {
+            var rx = t.expectError(
+                    "(call-with-port 1 2)",
+                    Code.TYPE_ERROR );
+            assertEquals(
+                    str( "port" ),
+                    rx.getArgument( 0 ) );
+            assertEquals(
+                    str( "integer" ),
+                    rx.getArgument( 1 ) );
+            assertEqualq(
+                    s("call-with-port"),
+                    rx.getOperationName() );
+        }
+        {
+            var rx = expectError(
+                    "(call-with-port (current-input-port) 2)",
+                    Code.TYPE_ERROR );
+            assertEquals(
+                    str( "procedure" ),
+                    rx.getArgument( 0 ) );
+            assertEquals(
+                    str( "integer" ) ,
+                    rx.getArgument( 1 ) );
+            assertEqualq(
+                    s("call-with-port"),
+                    rx.getOperationName() );
+        }
     }
 
     /**
@@ -112,6 +126,45 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
     public void call_with_input_file() throws Exception
     {
         withFile( this::call_with_input_file );
+    }
+
+    @Test
+    public void call_with_input_file_err() throws Exception
+    {
+        var t = makeTester();
+
+        t.expectError(
+                "(call-with-input-file)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+
+        {
+            var rx = t.expectError(
+                    "(call-with-input-file 1 2)",
+                    Code.TYPE_ERROR );
+            assertEquals(
+                    str( "string" ),
+                    rx.getArgument( 0 ) );
+            assertEquals(
+                    str( "integer" ),
+                    rx.getArgument( 1 ) );
+            assertEqualq(
+                    s("call-with-input-file"),
+                    rx.getOperationName() );
+        }
+        {
+            var rx = expectError(
+                    "(call-with-input-file \"tmp\" 2)",
+                    Code.TYPE_ERROR );
+            assertEquals(
+                    str( "procedure" ),
+                    rx.getArgument( 0 ) );
+            assertEquals(
+                    str( "integer" ) ,
+                    rx.getArgument( 1 ) );
+            assertEqualq(
+                    s("call-with-input-file"),
+                    rx.getOperationName() );
+        }
     }
 
     /**
@@ -209,6 +262,7 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
 
         return null;
     }
+
     @Test
     @Disabled( "needs open-binary-input-file" )
     public void binary_port_Q2() throws Exception
@@ -220,7 +274,7 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
      * p56
      */
     @Test
-    public void port_Q() throws Exception
+    public void portQ() throws Exception
     {
         expectFco( "(port? (current-input-port))", bTrue );
         expectFco( "(port? (current-output-port))", bTrue );
@@ -234,24 +288,45 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
      * p56
      */
     @Test
-    public void basic_1() throws Exception
+    public void close_port() throws Exception
     {
-        var se = scriptEngine();
+        var t = makeTester();
 
-        {
-            var result = se.evalFco(
-                """
-                current-input-port
-                """ );
-            assertInstanceOf( Procedure.class, result );
-        }
-        {
-            var result = se.evalFco(
-                """
-                (port? (current-input-port))
-                """ );
-            assertEquals( Bool.T, result );
-        }
+        assertEqualq(
+                s( "close-port" ),
+                t.expectError(
+                        "(close-port 0)",
+                        Code.TYPE_ERROR ).getOperationName() );
+    }
+
+    /**
+     * p56
+     */
+    @Test
+    public void close_input_port() throws Exception
+    {
+        var t = makeTester();
+
+        assertEqualq(
+                s( "close-input-port" ),
+                t.expectError(
+                        "(close-input-port 0)",
+                        Code.TYPE_ERROR ).getOperationName() );
+    }
+
+    /**
+     * p56
+     */
+    @Test
+    public void close_output_port() throws Exception
+    {
+        var t = makeTester();
+
+        assertEqualq(
+                s( "close-output-port" ),
+                t.expectError(
+                        "(close-output-port 0)",
+                        Code.TYPE_ERROR ).getOperationName() );
     }
 
     /**
@@ -260,70 +335,57 @@ public class R7rs_6_13_1_Ports_Test extends ScreamBaseTest
     @Test
     public void open_input_bytevector() throws Exception
     {
-        var se = scriptEngine();
+        var t = makeTester();
 
-        {
-        	expectFco(
-        			se,
+        t.expectFco(
                 """
                 (define ibv (open-input-bytevector #u8(1 2 3)))
                 (and (input-port? ibv) (binary-port? ibv))
                 """,
-               bTrue );
-        }
-        {
-        	expectFco(
-        			se,
-        			"(read-u8 ibv)",
-        			i(1) );
-        }
-        {
-        	expectFco(
-        			se,
-        			"(read-u8 ibv)",
-        			i(2) );
-        }
-        {
-        	expectFco(
-        			se,
-        			"(read-u8 ibv)",
-        			i(3) );
-        }
-        {
-        	expectFco(
-        			se,
-        			"(eof-object? (read-u8 ibv))",
-        			bTrue );
-        }
+                bTrue );
+        t.expectFco(
+                "(read-u8 ibv)",
+                i(1) );
+        t.expectFco(
+                "(read-u8 ibv)",
+                i(2) );
+        t.expectFco(
+                "(read-u8 ibv)",
+                i(3) );
+        t.expectFco(
+                "(eof-object? (read-u8 ibv))",
+                bTrue );
+        t.execute(
+                "(close-port ibv)" );
     }
+
+    @Test
     public void open_input_bytevector_empty() throws Exception
     {
-        var se = scriptEngine();
+        var t = makeTester();
 
-        {
-        	expectFco(
-        			se,
+        t.expectFco(
                 """
                 (define ibv (open-input-bytevector #u8()))
                 (and (input-port? ibv) (binary-port? ibv))
                 """,
-               bTrue );
-        }
-        {
-        	expectFco(
-        			se,
-        			"(eof-object? (read-u8 ibv))",
-        			bTrue );
-        }
+                bTrue );
+        t.expectFco(
+                "(eof-object? (read-u8 ibv))",
+                bTrue );
+        t.execute(
+                "(close-port ibv)" );
     }
+
     @Test
     public void open_input_bytevector_err() throws Exception
     {
-    	expectError(
-    			"(open-input-bytevector 3)",
-    			Code.TYPE_ERROR );
-    	expectError(
-    			"(open-input-bytevector \"string\")",
-    			Code.TYPE_ERROR );
+        var t = makeTester();
+
+    	assertEqualq(
+    	        s("open-input-bytevector"),
+    	        t.expectError(
+    	                "(open-input-bytevector 3)",
+    	                Code.TYPE_ERROR ).getOperationName() );
     }
 }
