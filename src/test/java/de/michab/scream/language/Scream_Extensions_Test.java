@@ -176,6 +176,6 @@ public class Scream_Extensions_Test extends ScreamBaseTest
                 rx.getOperationName() );
         assertEqualq( str("string"), rx.getArgument( 0 ) );
         assertEqualq( str("integer"), rx.getArgument( 1 ) );
-        assertEqualq( parse("(1)"), rx.getArgument( 2 ) );
+        assertEqualq( parse("1"), rx.getArgument( 2 ) );
     }
 }
