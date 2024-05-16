@@ -104,9 +104,22 @@
 (define scream:cons?
   (typePredicateGenerator "de.michab.scream.fcos.Cons" #t))
 
+(define scream:procedure?
+  (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
+(define scream:string?
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
+(define scream:vector?
+  (typePredicateGenerator "de.michab.scream.fcos.Vector" #t))
+
+; Numbers
+(define scream:number?
+  (typePredicateGenerator "de.michab.scream.fcos.Number" #f))
 (define scream:integer?
   (typePredicateGenerator "de.michab.scream.fcos.Int" #t))
+(define scream:real?
+  (typePredicateGenerator "de.michab.scream.fcos.Real" #t))
 
+; Ports
 (define scream:port?
   (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
 (define scream:input-port?
@@ -117,11 +130,6 @@
   (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
 (define scream:binary-output-port?
   (typePredicateGenerator "de.michab.scream.fcos.PortOutBinary" #t))
-
-(define scream:procedure?
-  (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
-(define scream:string?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
 
 #|
  | Type assertions.
@@ -142,8 +150,14 @@
   (scream:assert func-name value scream:cons? scream:type:cons position)
 )
 
+(define (scream:assert:number func-name value . position)
+  (scream:assert func-name value scream:number? scream:type:number position)
+)
 (define (scream:assert:integer func-name value . position)
   (scream:assert func-name value scream:integer? scream:type:integer position)
+)
+(define (scream:assert:real func-name value . position)
+  (scream:assert func-name value scream:real? scream:type:real position)
 )
 
 (define (scream:assert:list func-name value . position)
@@ -179,3 +193,5 @@
 (define (scream:assert:vector func-name value . position)
   (scream:assert func-name value vector? scream:type:vector position)
 )
+
+

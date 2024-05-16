@@ -39,7 +39,7 @@
 
 (define (scream:to-transitive proc2)
   (define (transitiver a b . rest)
-         (if (null? rest)
+         (if (scream:null? rest)
            (proc2 a b)
            (apply transitiver (proc2 a b) rest)))
     transitiver)
@@ -51,7 +51,7 @@
  | and prints a newline after the last argument.
  |# 
 (define (scream:display-ln . rest)
-  (if (null? rest)
+  (if (scream:null? rest)
     (newline)
     (begin
       (display (car rest))
@@ -87,7 +87,7 @@
     (lambda (obj)
       (cond
         ;; If this is NIL false is returned.
-        ((null? obj) #f)
+        ((scream:null? obj) #f)
         ;; Exact match test.
         (exact-match
           (classObject ("equals:java.lang.Object" ((object obj) ("getClass")))))
@@ -139,7 +139,7 @@
 (define (scream:make-transitive proc)
   (define (_make-transitive . rest)
     ; (display rest)(newline)
-    (if (null? rest)
+    (if (scream:null? rest)
       #t
       (if (proc (car rest))
         (apply _make-transitive (cdr rest))
@@ -148,6 +148,6 @@
   (lambda list 
     ; (display list)(newline)
     ; Returns #f if called with an empty list.
-    (if (null? list)
+    (if (scream:null? list)
       #f
       (apply _make-transitive list))))
