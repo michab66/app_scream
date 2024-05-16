@@ -215,21 +215,13 @@
     ((eq? 1 (length list)) (car list))
     (else
       (begin
-        ; Ensure that o is a pair.
-        (define (assert-cons o position)
-          (if (pair? o)
-            o
-            (error "TYPE_ERROR"
-              scream:type:cons
-              (scream:typename o)
-              position)))
         ; Implement the actual append.
         (define (append-impl position list)
           (let ((current (car list)) (rest (cdr list)))
             (if (null? rest)
               current
               ; Calls fco.Cons#append
-              ((object (assert-cons current position))
+              ((object (scream:assert:cons 'append current position))
                 ("append:de.michab.scream.fcos.FirstClassObject" (append-impl (+ position 1) rest)))
             ) ; if
           ) ; let
