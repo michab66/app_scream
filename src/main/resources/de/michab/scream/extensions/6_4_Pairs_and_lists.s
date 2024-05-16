@@ -95,14 +95,14 @@
  | (car pair) procedure p41
  |#
 (define (car pair)
-  ((object (scream:assert:cons 'car pair)) ("getCar"))
+  (scream:car (scream:assert:cons 'car pair))
 )
 
 #|
  | (cdr pair) procedure p41
  |#
 (define (cdr pair)
-  ((object (scream:assert:cons 'cdr pair)) ("getCdr"))
+  (scream:cdr (scream:assert:cons 'cdr pair))
 )
 
 #|
@@ -158,8 +158,8 @@
 #|
  | (null? obj) procedure p42
  |#
-(define (null? obj)
-  (eqv? '() obj))
+(define null?
+  scream:null?)
 
 #|
  | (list? obj) procedure p42

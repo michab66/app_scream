@@ -25,9 +25,11 @@
 
 ; Perform common runtime initialization.
 (include
-  "0-0-equivalence-predicates.s"
+  "0-0-primitives.s"
   "0-1-runtime-tools.s"
   "0-2-type-asserts.s"
+
+  "6_1_equivalence-predicates.s"
   "object.s"
   "boolean.s"
   "vector.s"

@@ -18,7 +18,7 @@
 ;; (string? obj) procedure; r5rs 30
 ;;
 (define string?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
+  scream:string?)
 
 ;;
 ;; (make-string k) procedure; r7rs 46
@@ -213,35 +213,33 @@
 ;; Comparison procedures.
 ;;
 (define (string=? s1 s2)
-  (if (not (string? s1))
-    (error "TYPE_ERROR" scream:type:string (scream:typename s1) 1))
-  (if (not (string? s2))
-    (error "TYPE_ERROR" scream:type:string (scream:typename s1) 2))
-  (= 0 ((object s1) ("compareTo:de.michab.scream.fcos.SchemeString" s2))))
+  (scream:assert:string 'string=? s1 1)
+  (scream:assert:string 'string=? s2 2)
 
-; Note that this operation was fixed but the others
-; remain with errors, 
+  (= 0 ((object s1) ("compareTo:de.michab.scream.fcos.SchemeString" s2)))
+)
+
 (define (string-ci=? s1 s2)
-  (if (not (string? s1))
-    (error "TYPE_ERROR" scream:type:string s1 1))
-  (if (not (string? s2))
-    (error "TYPE_ERROR" scream:type:string s2 2))
-  (= 0 ((object s1) ("compareToIgnoreCase:de.michab.scream.fcos.SchemeString" s2))))
+  (scream:assert:string 'string-ci=? s1)
+  (scream:assert:string 'string-ci=? s2)
+
+  (= 0 ((object s1) ("compareToIgnoreCase:de.michab.scream.fcos.SchemeString" s2)))
+)
 
 (define (string<? s1 s2)
-  (if (not (string? s1))
-    (error "TYPE_ERROR" scream:type:string (scream:typename s1) 1))
-  (if (not (string? s2))
-    (error "TYPE_ERROR" scream:type:string (scream:typename s1) 2))
-  (> 0 ((object s1) ("compareTo:de.michab.scream.fcos.SchemeString" s2))))
+  (scream:assert:string 'string<? s1)
+  (scream:assert:string 'string<? s2)
+
+  (> 0 ((object s1) ("compareTo:de.michab.scream.fcos.SchemeString" s2)))
+)
 
 ; TODO NO TEST
 (define (string-ci<? s1 s2)
-  (if (not (string? s1))
-    (error "TYPE_ERROR" scream:type:string (scream:typename s1) 1))
-  (if (not (string? s2))
-    (error "TYPE_ERROR" scream:type:string (scream:typename s1) 2))
-  (> 0 ((object s1) ("compareToIgnoreCase:de.michab.scream.fcos.SchemeString" s2))))
+  (scream:assert:string 'string-ci< s1)
+  (scream:assert:string 'string-ci< s2)
+
+  (> 0 ((object s1) ("compareToIgnoreCase:de.michab.scream.fcos.SchemeString" s2)))
+)
 
 (define (string>? s1 s2)
   (if (not (string? s1))

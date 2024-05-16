@@ -161,4 +161,21 @@ public class Scream_Extensions_Test extends ScreamBaseTest
                 "(scream:assert:vector 'test '#())",
                 "#()" );
     }
+
+    @Test
+    public void runtime$scream_assert_2()
+            throws Exception
+    {
+        var t = makeTester();
+
+        var rx = t.expectError(
+                "(scream:assert:string 'mic 0 1)",
+                Code.TYPE_ERROR );
+        assertEqualq(
+                s("mic"),
+                rx.getOperationName() );
+        assertEqualq( str("string"), rx.getArgument( 0 ) );
+        assertEqualq( str("integer"), rx.getArgument( 1 ) );
+        assertEqualq( parse("(1)"), rx.getArgument( 2 ) );
+    }
 }

@@ -13,8 +13,8 @@
 ;;
 ;; (not obj) library procedure; r7rs 6.3 p40
 ;;
-(define (not obj)
-  (eqv? obj #f))
+(define not
+  scream:not)
 
 ;;
 ;; (boolean=? boolean1 boolean2 boolean3 ...) procedure r7rs 6.3 p 40

@@ -270,6 +270,12 @@ public class R7rs_6_7_Strings_Test extends ScreamBaseTest
                 (string=? "a" "A")
                 """,
                 bFalse );
+
+        assertEqualq(
+                s("string=?"),
+                t.expectError(
+                        "(string=? \"a\" 'a)",
+                        Code.TYPE_ERROR ).getOperationName() );
     }
 
     @Test

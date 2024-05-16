@@ -31,15 +31,23 @@
  | object and returns the passed object.  If the predicate does not
  | evaluate to true, then a type_error is thrown.
  |#
-(define (scream:assert func-name object predicate expected-type)
+(define (scream:assert func-name object predicate expected-type . position)
   (cond
     ((predicate object)
       object)
+    ((scream:null? position)
+      (error 
+        (scream:assert:error-arg func-name "TYPE_ERROR")
+        expected-type
+        (scream:typename object)
+      )
+    )
     (else
       (error 
         (scream:assert:error-arg func-name "TYPE_ERROR")
         expected-type
         (scream:typename object)
+        (car position)
       )
     )
   )
@@ -56,6 +64,10 @@
   ((make-object "de.michab.scream.fcos.SchemeCharacter") "TYPE_NAME"))
 (define scream:type:cons
   ((make-object "de.michab.scream.fcos.Cons") "TYPE_NAME"))
+(define scream:type:integer
+  ((make-object "de.michab.scream.fcos.Int") "TYPE_NAME"))
+(define scream:type:number
+  ((make-object "de.michab.scream.fcos.Number") "TYPE_NAME"))
 (define scream:type:port
   ((make-object "de.michab.scream.fcos.Port") "TYPE_NAME"))
 (define scream:type:input-port
@@ -66,10 +78,6 @@
   ((make-object "de.michab.scream.fcos.PortOut") "TYPE_NAME"))
 (define scream:type:binary-output-port
   ((make-object "de.michab.scream.fcos.PortOutBinary") "TYPE_NAME"))
-(define scream:type:integer
-  ((make-object "de.michab.scream.fcos.Int") "TYPE_NAME"))
-(define scream:type:number
-  ((make-object "de.michab.scream.fcos.Number") "TYPE_NAME"))
 (define scream:type:procedure
   ((make-object "de.michab.scream.fcos.Procedure") "TYPE_NAME"))
 (define %scream:type:real
@@ -112,6 +120,8 @@
 
 (define scream:procedure?
   (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
+(define scream:string?
+  (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
 
 #|
  | Type assertions.
@@ -168,8 +178,8 @@
   (scream:assert func-name value scream:procedure? scream:type:procedure)
 )
 
-(define (scream:assert:string func-name value)
-  (scream:assert func-name value string? scream:type:string)
+(define (scream:assert:string func-name value . position)
+  (scream:assert func-name value string? scream:type:string position)
 )
 (define (scream:assert:symbol func-name value)
   (scream:assert func-name value symbol? scream:type:symbol)
