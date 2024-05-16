@@ -34,13 +34,12 @@
       (make-string k #\space))
 
     ((k char)
-      (cond
-        ((not (integer? k))
-          (error "TYPE_ERROR" scream:type-integer to))
-        ((not (char? char))
-          (error "TYPE_ERROR" scream:type-character from))
-        (else
-          (make-object ("de.michab.scream.fcos.SchemeString:int,char" k char)))))
+      (begin
+        (scream:assert:integer 'make-string k 1)
+        (scream:assert:char 'make-string char 2)
+        (make-object ("de.michab.scream.fcos.SchemeString:int,char" k char))
+      )
+    )
   ) ; case-lambda
 
   )) ; <--
@@ -51,26 +50,22 @@
 ;; (string char ...) library procedure; r5rs 30
 ;;
 (define (string char . optional-chars)
-  (if (char? char)
-    (do
-      ; Init
-      ((result (make-string (+ 1 (length optional-chars)) char))
-       (insert-position 1 (+ 1 insert-position))
-       (insert-list optional-chars (cdr insert-list)))
+  (scream:assert:char 'string char 1)
+  (do
+    ; Init
+    ((result (make-string (+ 1 (length optional-chars)) char))
+     (insert-position 1 (+ 1 insert-position))
+     (insert-list optional-chars (cdr insert-list)))
 
-      ; Test
-      ((null? insert-list) result)
+    ; Test
+    ((null? insert-list) result)
 
-      ; Body
-      (if (char? (car insert-list))
-        ((object result) ("setCharAt:int,char" insert-position (car insert-list)))
-        (error "TYPE_ERROR"
-               scream:type:char
-               (scream:typename (car insert-list))
-               (+ 1 insert-position))))
-
-    ;; Error handler for first argument slot.
-    (error "TYPE_ERROR" scream:type:char (scream:typename char) 1)))
+    ; Body
+    ((object result) ("setCharAt:int,char" 
+                       insert-position
+                       (scream:assert:char 'string (car insert-list) (+ 1 insert-position))))
+  )
+)
 
 
 
@@ -78,9 +73,9 @@
 ;; (string-length string) procedure; r5rs 30
 ;;
 (define (string-length string)
-  (if (string? string)
-    ((object string) ("length"))
-    (error "TYPE_ERROR" scream:type:string (scream:typename string))))
+  (scream:assert:string 'string-length string) 
+  ((object string) ("length"))
+)
 
 
 
@@ -88,36 +83,30 @@
 ;; (string-ref string k) procedure; r5rs 30
 ;;
 (define (string-ref string k)
-  (if (string? string)
-    ((object string) ("getCharAt:int" k))
-    (error "TYPE_ERROR" scream:type:string (scream:typename string) 1)))
+  (scream:assert:string 'string-ref string 1) 
+  (scream:assert:integer 'string-ref k 2) 
+  ((object string) ("getCharAt:int" k))
+)
 
 ;;
 ;; (string-set! string k char) procedure; r5rs 30
 ;;
 (define (string-set! string k char)
-  (if (not (string? string))
-    (error "TYPE_ERROR" scream:type:string (scream:typename string) 1))
-  (if (not (integer? k))
-    (error "TYPE_ERROR" scream:type:integer (scream:typename k) 2))
-  (if (not (char? char))
-    (error "TYPE_ERROR" scream:type:char (scream:typename char) 3))
-
-  ((object string) ("setCharAt:int,char" k char)))
-
-
+  (scream:assert:string 'string-set! string 1)
+  (scream:assert:integer 'string-set! k 2)
+  (scream:assert:char 'string-set! char 3)
+  ((object string) ("setCharAt:int,char" k char))
+)
 
 ;;
 ;; (substring string start end) library procedure; r5rs 30
 ;;
 (define (substring string start end)
-  (if (not (string? string))
-    (error "TYPE_ERROR" scream:type:string (scream:typename string) 1))
-  (if (not (integer? start))
-    (error "TYPE_ERROR" scream:type:integer (scream:typename start) 2))
-  (if (not (integer? end))
-    (error "TYPE_ERROR" scream:type:integer (scream:typename end) 3))
-  ((object string) ("substring:int,int" start end)))
+  (scream:assert:string 'substring string 1)
+  (scream:assert:integer 'substring start 2)
+  (scream:assert:integer 'substring end 3)
+  ((object string) ("substring:int,int" start end))
+)
 
 ;;
 ;; (string-append string ...) library procedure; r5rs 30
