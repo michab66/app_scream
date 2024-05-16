@@ -15,7 +15,7 @@
 ;; (symbol? symbol) procedure; r5rs 30
 ;;
 (define symbol?
-  (typePredicateGenerator "de.michab.scream.fcos.Symbol" #t))
+  scream:symbol?)
 
 
 
@@ -31,9 +31,9 @@
 ;; string-set! to strings returned by this procedure.
 ;;
 (define (symbol->string symbol)
-  (if (symbol? symbol)
-    ((object symbol) ("toString"))
-    (error "TYPE_ERROR" %type-symbol (scream:typename symbol))))
+  (scream:assert:symbol 'symbol->string symbol)
+  ((object symbol) ("toString"))
+)
 
 
 ;;
@@ -43,6 +43,6 @@
 ;; implementations of Scheme they cannot be read as themselves.
 ;;
 (define (string->symbol string)
-  (if (string? string)
-    ((make-object "de.michab.scream.fcos.Symbol") ("createObject:java.lang.String" string))
-    (error "TYPE_ERROR" %type-string (scream:typename symbol))))
+  (scream:assert:string 'string->symbol string)
+  ((make-object "de.michab.scream.fcos.Symbol") ("createObject:java.lang.String" string))
+)

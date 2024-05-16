@@ -94,20 +94,18 @@
  |#
 (define scream:boolean?
   (typePredicateGenerator "de.michab.scream.fcos.Bool" #t))
-
 (define scream:bytevector?
   (typePredicateGenerator "de.michab.scream.fcos.Bytevector" #t))
-
 (define scream:char?
   (typePredicateGenerator "de.michab.scream.fcos.SchemeCharacter" #t))
-
 (define scream:cons?
   (typePredicateGenerator "de.michab.scream.fcos.Cons" #t))
-
 (define scream:procedure?
   (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
 (define scream:string?
   (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
+(define scream:symbol?
+  (typePredicateGenerator "de.michab.scream.fcos.Symbol" #t))
 (define scream:vector?
   (typePredicateGenerator "de.michab.scream.fcos.Vector" #t))
 
@@ -137,18 +135,29 @@
 (define (scream:assert:boolean func-name value . position)
   (scream:assert func-name value scream:boolean? scream:type:boolean position)
 )
-
 (define (scream:assert:bytevector func-name value . position)
   (scream:assert func-name value scream:bytevector? scream:type:bytevector position)
 )
-
 (define (scream:assert:char func-name value . position)
-  (scream:assert func-name value char? scream:type:char position)
+  (scream:assert func-name value scream:char? scream:type:char position)
 )
-
 (define (scream:assert:cons func-name value . position)
   (scream:assert func-name value scream:cons? scream:type:cons position)
 )
+(define (scream:assert:procedure func-name value . position)
+  (scream:assert func-name value scream:procedure? scream:type:procedure position)
+)
+(define (scream:assert:string func-name value . position)
+  (scream:assert func-name value scream:string? scream:type:string position)
+)
+(define (scream:assert:symbol func-name value . position)
+  (scream:assert func-name value scream:symbol? scream:type:symbol position)
+)
+(define (scream:assert:vector func-name value . position)
+  (scream:assert func-name value scream:vector? scream:type:vector position)
+)
+
+; Numbers
 
 (define (scream:assert:number func-name value . position)
   (scream:assert func-name value scream:number? scream:type:number position)
@@ -159,10 +168,11 @@
 (define (scream:assert:real func-name value . position)
   (scream:assert func-name value scream:real? scream:type:real position)
 )
-
 (define (scream:assert:list func-name value . position)
   (scream:assert func-name value scream:list? "list" position)
 )
+
+; Ports
 
 (define (scream:assert:port func-name value . position)
   (scream:assert func-name value scream:port? scream:type:port position)
@@ -179,19 +189,3 @@
 (define (scream:assert:binary-output-port func-name value . position)
   (scream:assert func-name value scream:binary-output-port? scream:type:binary-output-port position)
 )
-
-(define (scream:assert:procedure func-name value . position)
-  (scream:assert func-name value scream:procedure? scream:type:procedure position)
-)
-
-(define (scream:assert:string func-name value . position)
-  (scream:assert func-name value string? scream:type:string position)
-)
-(define (scream:assert:symbol func-name value . position)
-  (scream:assert func-name value symbol? scream:type:symbol position)
-)
-(define (scream:assert:vector func-name value . position)
-  (scream:assert func-name value vector? scream:type:vector position)
-)
-
-
