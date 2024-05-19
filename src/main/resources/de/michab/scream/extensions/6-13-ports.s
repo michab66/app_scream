@@ -315,7 +315,3 @@
     (make-object ("de.michab.scream.fcos.Bytevector:byte[]" array))
   )
 )
-
-(include 
-  "i-ports-input.s"
-  "6_13_3_Output.s")
