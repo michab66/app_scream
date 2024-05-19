@@ -40,7 +40,7 @@
 ;;
 (define (vector-ref v idx)
   (scream:assert:vector 'vector-ref v 1)
-  (scream:assert:integer 'vector-ref idx 2)
+  (scream:assert:positive-integer 'vector-ref idx 2)
   ((object v) ("get:long" idx))
 )
 

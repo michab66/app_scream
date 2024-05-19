@@ -8,16 +8,11 @@
 ;; scream specific
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define scream:type-symbol
-  ((make-object "de.michab.scream.fcos.Symbol") "TYPE_NAME"))
-
 ;;
 ;; (symbol? symbol) procedure; r5rs 30
 ;;
 (define symbol?
   scream:symbol?)
-
-
 
 ;;
 ;; Returns the name of symbol as a string. If the symbol was part of an object
@@ -34,7 +29,6 @@
   (scream:assert:symbol 'symbol->string symbol)
   ((object symbol) ("toString"))
 )
-
 
 ;;
 ;; Returns the symbol whose name is string. This procedure can create symbols

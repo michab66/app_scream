@@ -20,7 +20,7 @@
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation
-        (scream:assert-type operation string? scream:type-symbol))
+        (scream:assert-type operation string? scream:type:symbol))
     )
     (if (not (textual-port? port))
       (error "EXPECTED_TEXTUAL_PORT" port)

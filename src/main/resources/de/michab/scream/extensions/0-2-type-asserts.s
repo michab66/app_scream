@@ -17,10 +17,10 @@
       (function
         (scream:class:fco ("forWrite:de.michab.scream.fcos.FirstClassObject" symbol-name)))
       (function-colon
-        ((object function) ("append:de.michab.scream.fcos.SchemeString" ":")))
+        (scream:string-append function ":"))
     )
     
-    ((object function-colon) ("append:de.michab.scream.fcos.SchemeString" string-error))
+    (scream:string-append function-colon string-error)
   )
 )
 

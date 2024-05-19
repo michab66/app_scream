@@ -127,6 +127,11 @@ public class R7rs_6_8_Vectors_Test extends ScreamBaseTest
                 t.expectError(
                         "(vector-ref #(1 2 3) 'x)",
                         Code.TYPE_ERROR ).getOperationName() );
+        assertEqualq(
+                s("vector-ref"),
+                t.expectError(
+                        "(vector-ref #(1 2 3) -1)",
+                        Code.TYPE_ERROR ).getOperationName() );
     }
 
     @Test
