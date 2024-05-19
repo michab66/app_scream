@@ -38,3 +38,11 @@
   ((object pair) ("getCdr"))
 )
 
+(define (scream:positive? number)
+  ((object number) ("r7rsGreaterOrEqualThan:de.michab.scream.fcos.Number" 0))
+)
+
+(define (scream:string-append s1 s2)
+  ((object s1) ("append:de.michab.scream.fcos.SchemeString" s2))
+)
+

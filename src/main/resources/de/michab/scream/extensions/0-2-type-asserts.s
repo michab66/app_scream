@@ -170,7 +170,7 @@
 )
 (define (scream:assert:positive-integer func-name value . position)
   (scream:assert func-name value scream:integer? scream:type:integer position)
-  (scream:assert func-name value scream:positive? "positive integer" position)
+  (scream:assert func-name value scream:positive? (scream:string-append "positive " scream:type:integer) position)
 )
 (define (scream:assert:real func-name value . position)
   (scream:assert func-name value scream:real? scream:type:real position)

@@ -111,6 +111,8 @@
 ;;
 ;; (string-append string ...) library procedure; r7rs 47
 ;;
+
+;; TODO use (scream:string-append a b)
 (define (string-append string . optional-string-list)
   (scream:assert:string 'string-append string 1)
   (do
