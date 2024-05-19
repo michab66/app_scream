@@ -68,16 +68,16 @@ public class R7rs_4_2_9_CaseLambda_Test extends ScreamBaseTest
 
         t.expectFco(
                     "(default3)",
-                    parse( "(ad bd cd)" ) );
+                    "(ad bd cd)" );
         t.expectFco(
                     "(default3 1)",
-                    parse( "(1 bd cd)" ) );
+                    "(1 bd cd)" );
         t.expectFco(
                     "(default3 1 2)",
-                    parse( "(1 2 cd)" ) );
+                    "(1 2 cd)" );
         t.expectFco(
                     "(default3 1 2 3)",
-                    parse( "(1 2 3)" ) );
+                    "(1 2 3)" );
 
         var rx = t.expectError(
                 "(default3 1 2 3 4)",

@@ -1,7 +1,7 @@
 ;
 ; Scream @ https://github.com/urschleim/scream
 ;
-; Copyright © 1998-2023 Michael G. Binz
+; Copyright © 1998-2024 Michael G. Binz
 ;
 
 ;;
@@ -12,28 +12,6 @@
 ;; Scream definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Port type name.
-(define scream:type-port
-  ((make-object "de.michab.scream.fcos.Port") "TYPE_NAME"))
-
-;; Output port type name.
-(define scream:type-output-port
-  ((make-object "de.michab.scream.fcos.PortOut") "TYPE_NAME"))
-
-;; Input port type name.
-(define scream:type-input-port
-  ((make-object "de.michab.scream.fcos.PortIn") "TYPE_NAME"))
-
-;; Predicates for the port implementation types.
-(define scream:input-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortIn" #t))
-(define scream:binary-input-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortInBinary" #t))
-(define scream:output-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
-(define scream:binary-output-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortOutBinary" #t))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; r7rs definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -42,52 +20,43 @@
 ;; call-with-port procedure
 ;;
 (define (call-with-port port proc)
-  (scream:assert-type 
-    port
-    port?
-    scream:type-port)
-  (scream:assert-type
-    proc
-    procedure?
-    scream:type-procedure)
-  
-  (let ((result (proc port)))
+  (let* 
+    (
+      (port
+        (scream:assert:port 'call-with-port port))
+      (proc
+        (scream:assert:procedure 'call-with-port proc))
+      (result (proc port))
+    )
+
     (close-port port)
-    result))
+    result
+  )
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; call-with-input-file file library procedure
 ;;
 (define (call-with-input-file string proc)
-  (scream:assert-type 
-    string
-    string?
-    scream:type-string)
-  (scream:assert-type
-    proc
-    procedure?
-    scream:type-procedure)
+  (scream:assert:string 'call-with-input-file string)
+  (scream:assert:procedure 'call-with-input-file proc)
 
   (call-with-port
     (open-input-file string)
-    proc))
+    proc)
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; call-with-output-file file library procedure
 ;;
 (define (call-with-output-file string proc)
-  (scream:assert-type 
-    string
-    string?
-    scream:type-string)
-  (scream:assert-type
-    proc
-    procedure?
-    scream:type-procedure)
+  (scream:assert:string 'call-with-output-file string)
+  (scream:assert:procedure 'call-with-output-file proc)
 
   (call-with-port
     (open-output-file string)
-    proc))
+    proc)
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; input-port? procedure
@@ -123,7 +92,7 @@
 ;; port? procedure
 ;;
 (define port?
-  (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
+  scream:port?)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; input-port-open? procedure
@@ -164,7 +133,7 @@
       (scream:assert-type 
         port
         input-port?
-        scream:type-port)
+        scream:type:port)
 
       (set! current-input-port-stack (cons port current-input-port-stack))))
 
@@ -197,7 +166,7 @@
       (scream:assert-type 
         port
         output-port?
-        scream:type-port)
+        scream:type:port)
 
       (set! current-output-port-stack (cons port current-output-port-stack))))
 
@@ -251,7 +220,7 @@
 ;; open-output-file file library procedure
 ;;
 (define (open-output-file string)
-   (make-object ("de.michab.scream.fcos.PortOut:java.lang.String" string)))
+  (make-object ("de.michab.scream.fcos.PortOut:java.lang.String" string)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-binary-output-file file library procedure
@@ -263,25 +232,22 @@
 ;; close-port  procedure
 ;;
 (define (close-port port)
-  (if (not (port? port))
-    (error "EXPECTED_PORT"))
-  ((object port) ("close")))
+  ((object (scream:assert:port 'close-port port)) ("close"))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; close-input-port procedure
 ;;
 (define (close-input-port port)
-  (if (not (input-port? port))
-    (error "EXPECTED_INPUT_PORT"))
-  (close-port port))
+  (close-port (scream:assert:input-port 'close-input-port port))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; close-output-port  procedure
 ;;
 (define (close-output-port port)
-  (if (not (output-port? port))
-    (error "EXPECTED_OUTPUT_PORT"))
-  (close-port port))
+  (close-port (scream:assert:output-port 'close-output-port port))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-input-string procedure
@@ -289,7 +255,7 @@
 (define (open-input-string string)
   (let
     ((reader (make-object ("java.io.StringReader:java.lang.String" string))))
-    (make-object ("de.michab.scream.fcos.PortIn:java.lang.String,java.io.Reader" "input-string" reader))))
+    (make-object ("de.michab.scream.fcos.PortIn:java.lang.String,java.io.Reader" "scream:input-string" reader))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-output-string procedure
@@ -297,7 +263,7 @@
 (define (open-output-string)
   (let
     ((writer (make-object ("java.io.StringWriter"))))
-    (make-object ("de.michab.scream.fcos.PortOut:java.lang.String,java.io.Writer" "output-string" writer))))
+    (make-object ("de.michab.scream.fcos.PortOut:java.lang.String,java.io.Writer" "scream:output-string" writer))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; get-output-string procedure
@@ -316,15 +282,13 @@
 ;; open-input-bytevector procedure
 ;;
 (define (open-input-bytevector bytevector)
-  (scream:assert-type 
-    bytevector
-    bytevector?
-    scream:type-bytevector)
-  
+  (scream:assert:bytevector 'open-input-bytevector bytevector)
+
   (make-object 
     ("de.michab.scream.fcos.PortInBinary:java.lang.String,java.io.InputStream"
-      "input-bytevector" 
-      ((object bytevector) ("asStream")))))
+      "scream:input-bytevector" 
+      ((object bytevector) ("asStream"))))
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; open-output-bytevector procedure
@@ -332,7 +296,7 @@
 (define (open-output-bytevector)
   (make-object
     ("de.michab.scream.fcos.PortOutBinary:java.lang.String,java.io.OutputStream"
-      "output-bytevector"
+      "scream:output-bytevector"
       (make-object
         ("java.io.ByteArrayOutputStream")))))
 
@@ -340,6 +304,10 @@
 ;; get-output-bytevector procedure
 ;;
 (define (get-output-bytevector port)
+  (scream:assert:binary-output-port 'get-output-bytevector port)
+
+  ; TODO check name of port.  Must be "scream:output-bytevector".
+  
   (let* (
     (stream ((object port) ("stream")))
     (array ((object stream) ("toByteArray"))) )
@@ -347,7 +315,3 @@
     (make-object ("de.michab.scream.fcos.Bytevector:byte[]" array))
   )
 )
-
-(include 
-  "i-ports-input.s"
-  "6_13_3_Output.s")

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Port;
-import de.michab.scream.fcos.SchemeCharacter;
 
 /**
  * r7rs 6.13.2 Ports p57
@@ -22,73 +21,88 @@ public class R7rs_6_13_2_Input_Test extends ScreamBaseTest
     @Test
     public void read() throws Exception
     {
-        expectFco(
-"""
-                (read (open-input-string "'elvis"))
-""",
-                parse( "'elvis" ) );
+        var t = makeTester();
+
+        t.execute(
+                "(define port (open-input-string \"'elvis\"))" );
+        t.expectFco(
+                "(read port)",
+                "'elvis" );
+        t.expectFco(
+                "(eof-object? (read port))",
+                bTrue );
+        t.execute(
+                "(close-input-port port)" );
     }
 
     @Test
     public void read_char() throws Exception
     {
-        expectFco(
-"""
-                (read-char (open-input-string "elvis"))
-""",
-                SchemeCharacter.createObject( 'e' ) );
-    }
+        var t = makeTester();
 
-    @Test
-    public void read_char_eof() throws Exception
-    {
-        expectFco(
-"""
-                (eof-object?
-                  (let ((port (open-input-string "elvis")))
-                    (read-char port) ; e
-                    (read-char port) ; l
-                    (read-char port) ; v
-                    (read-char port) ; i
-                    (read-char port) ; s
-                    (read-char port) ; -> EOF
-                  )
-                )
-""",
+        t.execute(
+                "(define port (open-input-string \"elvis\"))" );
+        t.expectFco(
+                "(read-char port)",
+                "#\\e" );
+        t.expectFco(
+                "(read-char port)",
+                "#\\l" );
+        t.expectFco(
+                "(read-char port)",
+                "#\\v" );
+        t.expectFco(
+                "(read-char port)",
+                "#\\i" );
+        t.expectFco(
+                "(read-char port)",
+                "#\\s" );
+        t.expectFco(
+                "(eof-object? (read-char port))",
                 bTrue );
+        t.execute(
+                "(close-input-port port)" );
     }
 
     @Test
     public void peek_char() throws Exception
     {
-        expectFco(
-"""
-                (peek-char (open-input-string "elvis"))
-""",
-                SchemeCharacter.createObject( 'e' ) );
-    }
+        var t = makeTester();
 
-    @Test
-    public void read_line() throws Exception
-    {
-        expectFco(
-"""
-                (read-line (open-input-string "elvis"))
-""",
-                str( "elvis" ) );
+        t.execute(
+                "(define port (open-input-string \"elvis\"))" );
+
+        t.expectFco(
+                "(peek-char port)",
+                "#\\e" );
+        t.expectFco(
+                "(peek-char port)",
+                "#\\e" );
+        t.expectFco(
+                "(read-char port)",
+                "#\\e" );
+        t.expectFco(
+                "(read-char port)",
+                "#\\l" );
+        t.execute(
+                "(close-input-port port)" );
     }
 
     @Test
     public void read_line_eof() throws Exception
     {
-        expectFco(
-"""
-        (let ((port (open-input-string "elvis")))
-          (read-line port) ; Consume elvis.
-          (read-line port) ; -> EOF
-        )
-""",
-                Port.EOF );
+        var t = makeTester();
+
+        t.execute(
+                "(define port (open-input-string \"elvis\"))" );
+        t.expectFco(
+                "(read-line port)",
+                "\"elvis\"" );
+        t.expectFco(
+                "(eof-object? (read-line port))",
+                bTrue );
+        t.execute(
+                "(close-input-port port)" );
     }
 
     @Test
@@ -102,7 +116,7 @@ public class R7rs_6_13_2_Input_Test extends ScreamBaseTest
     }
 
     @Test
-    public void eof_q() throws Exception
+    public void eofQ() throws Exception
     {
         expectFco( "(eof-object? (eof-object))", bTrue );
         expectFco( "(eof-object? 1)", bFalse );
@@ -113,23 +127,50 @@ public class R7rs_6_13_2_Input_Test extends ScreamBaseTest
     }
 
     @Test
-    public void char_ready_q() throws Exception
+    public void char_readyQ() throws Exception
     {
-        expectFco(
-"""
-                (char-ready? (open-input-string "elvis"))
-""",
+        var t = makeTester();
+
+        t.execute(
+                "(define port (open-input-string \"e\"))" );
+        t.expectFco(
+                "(char-ready? port)",
                 bTrue );
+        t.expectFco(
+                "(read-char port)",
+                "#\\e" );
+        // So it is specified (r7rs.p58):
+        t.expectFco(
+                "(char-ready? port)",
+                bTrue );
+        t.expectFco(
+                "(eof-object? (read-char port))",
+                bTrue );
+        t.execute(
+                "(close-input-port port)" );
     }
 
     @Test
     public void read_string() throws Exception
     {
-        expectFco(
-"""
-                (read-string 2 (open-input-string "elvis"))
-""",
+        var t = makeTester();
+
+        t.execute(
+                "(define port (open-input-string \"elvis\"))" );
+        t.expectFco(
+                "(read-string 2 port)",
                 str( "el") );
+        t.expectFco(
+                "(read-string 2 port)",
+                str( "vi") );
+        t.expectFco(
+                "(read-string 2 port)",
+                str( "s") );
+        t.expectFco(
+                "(eof-object? (read-string 2 port))",
+                bTrue );
+        t.execute(
+                "(close-input-port port)" );
     }
 
     @Test

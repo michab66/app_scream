@@ -13,12 +13,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #|
- | Init type name.
- |#
-(define scream:type-bytevector
-  ((make-object "de.michab.scream.fcos.Bytevector") "TYPE_NAME"))
-
-#|
  | (scream-bytevector:align-to-java byte)
  | Performs a byte range-check when it is passed via reflection.
  | Bytes [-128..127] are returned unchanged.
@@ -56,78 +50,72 @@
  | (bytevector? obj) library procedure; 6.9 r7rs 49
  |#
 (define bytevector?
-  (typePredicateGenerator "de.michab.scream.fcos.Bytevector" #t))
+  scream:bytevector?)
 
 #|
  | (make-bytevector k)
  | (make-bytevector k byte) library procedure; r7rs 6.9 p49
  |#
-(define (make-bytevector k . byte)
-  (if (not (integer? k))
-    (error "TYPE_ERROR" k scream:type-integer))
+(define make-bytevector
 
-  (cond
-    ;; If the optional argument is not given.
-    ((null? byte)
-      (make-object ("de.michab.scream.fcos.Bytevector:long" k)))
-    ;; If the optional argument exists.
-    ((= (length byte) 1)
-      (let ((byte (car byte)))
-        (cond
-          ((not (integer? byte))
-             (error "TYPE_ERROR" byte scream:type-integer))
-          (else
-             (make-object (
-               "de.michab.scream.fcos.Bytevector:long,long"
-               k
-               (scream:bytevector:align-to-java byte))))
+  (scream:delay-op (delay ; -->
+    (case-lambda
+  
+      ((k)
+        (make-object
+          ("de.michab.scream.fcos.Bytevector:long"
+          (scream:assert:integer 'make-bytevector k))
         )
-      ))
-    ;; If there is more than one optional argument.
-    (else (error "TOO_MANY_ARGUMENTS" 2))
-  ) ; cond
+      )
+  
+      ((k byte)
+        (make-object
+          ("de.michab.scream.fcos.Bytevector:long,long"
+            (scream:assert:integer 'make-bytevector k)
+            (scream:bytevector:align-to-java
+              (scream:assert:integer 'make-bytevector byte)
+            )
+          )
+        )
+      )
+    )
+  )) ; <--
 )
 
 #| "de.michab.scream.fcos.Bytevector:byte[]"
  | (bytevector byte ...)  procedure; r7rs 6.9 p49
  |#
-(if #f
-(define (bytevector . bytes)
-  (if (null? bytes)
-    (make-bytevector 0)
-	(make-object (de.michab.scream.fcos.Bytevector bytes))))
 (define (bytevector . bytes)
   (if (null? bytes)
     (make-bytevector 0)
 	(make-object (
 	  "de.michab.scream.fcos.Bytevector:byte[]"
 	  (scream:bytevector:align-list-to-java bytes)))))
-)	
 
 #|
  | (bytevector-length byte ...)  procedure; r7rs 6.9 p50
  |#
 (define (bytevector-length bytevector)
-  (if (not (bytevector? bytevector))
-    (error "TYPE_ERROR" scream:type-bytevector bytevector)
-    ((object bytevector) ("size"))))
+    ((object (scream:assert:bytevector 'bytevector-length bytevector)) ("size"))
+)
 
 #|
- | (bytevector-ref bytevector k)  procedure; r7rs 6.9 p50
- TODO NO TEST
+ | (bytevector-u8-ref bytevector k)  procedure; r7rs 6.9 p50
  |#
-(define (bytevector-ref bytevector k)
-  (if (not (bytevector? bytevector))
-    (error "TYPE_ERROR" scream:type-bytevector bytevector)
-    ((object bytevector) ("get:long" k))))
+(define (bytevector-u8-ref bytevector k)
+  (
+    (object 
+      (scream:assert:bytevector 'bytevector-u8-ref bytevector)
+    ) 
+    ("get:long" k))
+)
 
 #|
  | (bytevector-set! bytevector k)  procedure; r7rs 6.9 p50
  |#
 (define (bytevector-set! bytevector k byte)
-  (if (not (bytevector? bytevector))
-    (error "TYPE_ERROR" scream:type-bytevector bytevector)
-    ((object bytevector) ("set:long,long" k byte))))
+    ((object (scream:assert:bytevector 'bytevector-set! bytevector)) ("set:long,long" k byte))
+)
 
 #|
  | (bytevector-copy bytevector)  procedure; r7rs 6.9 p50
@@ -147,15 +135,13 @@
       (bytevector-copy bytevector start (bytevector-length bytevector)))
 
     ((bytevector start end)
-      (cond
-        ((not (bytevector? bytevector))
-          (error "TYPE_ERROR" scream:type-bytevector bytevector))
-        ((not (integer? start))
-          (error "TYPE_ERROR" scream:type-integer start))
-        ((not (integer? end))
-          (error "TYPE_ERROR" scream:type-integer start))
-        (else
-          ((object bytevector) ("copy:long,long" start end)))))
+      (begin
+        (scream:assert:bytevector 'bytevector-copy bytevector 1)
+        (scream:assert:integer 'bytevector-copy start 2)
+        (scream:assert:integer 'bytevector-copy end 3)
+        ((object bytevector) ("copy:long,long" start end))
+      )
+    )
 
   ) ; case-lambda
 
@@ -180,17 +166,15 @@
       (bytevector-copy! to at from start (bytevector-length from)))
 
     ((to at from start end)
-      (cond
-        ((not (bytevector? to))
-          (error "TYPE_ERROR" scream:type-bytevector to))
-        ((not (bytevector? from))
-          (error "TYPE_ERROR" scream:type-bytevector from))
-        ((not (integer? start))
-          (error "TYPE_ERROR" scream:type-integer start))
-        ((not (integer? end))
-          (error "TYPE_ERROR" scream:type-integer end))
-        (else
-          ((object to) ("copyFrom:long,de.michab.scream.fcos.Bytevector,long,long" at from start end)))))
+      (begin
+        (scream:assert:bytevector 'bytevector-copy! to 1)
+        (scream:assert:integer 'bytevector-copy! at 2)
+        (scream:assert:bytevector 'bytevector-copy! from 3)
+        (scream:assert:integer 'bytevector-copy! start 4)
+        (scream:assert:integer 'bytevector-copy! end 5)
+        ((object to) ("copyFrom:long,de.michab.scream.fcos.Bytevector,long,long" at from start end))
+      )
+    )
   ) ; case-lambda
 
   )) ; <--
@@ -204,11 +188,10 @@
 
   ; A local, binary, append.
   (define (bva_2 a b)
-    (if (not (bytevector? a))
-      (error "TYPE_ERROR" scream:type-bytevector a))
-    (if (not (bytevector? b))
-      (error "TYPE_ERROR" scream:type-bytevector b))
-  ((object a) ("append:de.michab.scream.fcos.Bytevector" b)))
+    (scream:assert:bytevector 'bytevector-append a)
+    (scream:assert:bytevector 'bytevector-append b)
+    ((object a) ("append:de.michab.scream.fcos.Bytevector" b))
+  )
 
   ; Local append transitive.
   (define bva_n
@@ -223,7 +206,7 @@
       (car args))
     ; One arg, no bv => error.
     ((= 1 (length args))
-      (error "TYPE_ERROR" scream:type-bytevector b))
+      (error "TYPE_ERROR" scream:type:bytevector b))
     ; Process arg lengths >= 2.
     (else
       (apply bva_n args))))
@@ -251,15 +234,13 @@
         (bytevector-length bv)))
 
     ((bv start end)
-      (cond
-        ((not (bytevector? bv))
-          (error "TYPE_ERROR" scream:type-bytevector bv))
-        ((not (integer? start))
-          (error "TYPE_ERROR" scream:type-integer start))
-        ((not (integer? end))
-          (error "TYPE_ERROR" scream:type-integer end))
-        (else
-          ((object bv) ("asString:long,long" start end)))))
+      (begin
+        (scream:assert:bytevector 'utf8->string bv 1)
+        (scream:assert:integer 'utf8->string start 2)
+        (scream:assert:integer 'utf8->string end 3)
+        ((object bv) ("asString:long,long" start end))
+      )
+    )
   )
   )) ; <--
 )
@@ -287,14 +268,13 @@
           (string-length string)))
 
       ((string start end)
-       (cond
-         ((not (string? string))
-           (error "TYPE_ERROR" scream:type-string string))
-         ((not (integer? start))
-           (error "TYPE_ERROR" scream:type-integer start))
-         ((not (integer? end))
-           (error "TYPE_ERROR" scream:type-integer end))
-         (else
-           ((object string) ("toBytevector:long,long" start end))))))
+        (begin
+          (scream:assert:string 'string->utf8 string 1)
+          (scream:assert:integer 'utf8->string start 2)
+          (scream:assert:integer 'utf8->string end 3)
+          ((object string) ("toBytevector:long,long" start end))
+        )
+      )
+    )
   )) ; <--
 )

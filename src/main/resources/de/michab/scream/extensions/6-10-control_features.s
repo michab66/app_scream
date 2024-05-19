@@ -8,10 +8,6 @@
 ;; Scream definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Procedure type name.
-(define scream:type-procedure
-  ((scream:java:make-class "de.michab.scream.fcos.Procedure") "TYPE_NAME"))
-
 ;
 ; Returns true if none of the passed lists is null.
 ; (scream:valid-list-slice? list1 ...)
@@ -204,10 +200,10 @@
 
 
 #|
- | (procedure? obj) essential procedure; r5rs 27
+ | (procedure? obj) essential procedure; r7rs 50
  |#
 (define procedure?
-  (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
+  scream:procedure?)
 
 #|
  | (apply proc arg₁ ... args)  procedure; r7rs 50

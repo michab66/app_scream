@@ -16,11 +16,11 @@
           ((null? port)
             (current-input-port))
           ((= 1 (length port))
-            (scream:assert-type (car port) input-port? scream:type-input-port) )
+            (scream:assert-type (car port) input-port? scream:type:input-port) )
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation
-        (scream:assert-type operation string? scream:type-symbol))
+        (scream:assert-type operation string? scream:type:symbol))
     )
     (if (not (textual-port? port))
       (error "EXPECTED_TEXTUAL_PORT" port)
@@ -39,11 +39,11 @@
           ((null? port)
             (current-input-port))
           ((= 1 (length port))
-            (scream:assert-type (car port) input-port? scream:type-input-port) )
+            (scream:assert-type (car port) input-port? scream:type:input-port) )
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation
-        (scream:assert-type operation procedure? scream:type-procedure))
+        (scream:assert-type operation procedure? scream:type:procedure))
     )
     (if (not (textual-port? port))
       (error "EXPECTED_TEXTUAL_PORT" port)
@@ -60,11 +60,11 @@
           ((null? port)
             (current-input-port))
           ((= 1 (length port))
-            (scream:assert-type (car port) input-port? scream:type-input-port) )
+            (scream:assert-type (car port) input-port? scream:type:input-port) )
           (else
             (scream:error:wrong-number-of-arguments 1 (length port)))))
       (operation
-        (scream:assert-type operation procedure? scream:type-procedure))
+        (scream:assert-type operation procedure? scream:type:procedure))
     )
     (if (not (binary-port? port))
       (error "EXPECTED_BINARY_PORT" port)

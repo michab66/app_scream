@@ -205,9 +205,9 @@ public class SchemeString
         if ( other == null )
             return this;
 
-        StringBuffer combined = new StringBuffer( getValue() );
+        var combined = new StringBuilder( getValue() );
         combined.append( other.getValue() );
-        return new SchemeString( combined.toString(), false );
+        return new SchemeString( combined );
     }
 
     /**

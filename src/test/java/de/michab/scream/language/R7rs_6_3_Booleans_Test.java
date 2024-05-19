@@ -84,5 +84,6 @@ public class R7rs_6_3_Booleans_Test extends ScreamBaseTest
         t.expectError( "(boolean=? #t #t #t #t #t 1)", Code.TYPE_ERROR );
         t.expectError( "(boolean=? #t #t #t #t #t '())", Code.TYPE_ERROR );
         t.expectError( "(boolean=? '())", Code.TYPE_ERROR );
+        t.expectError( "(boolean=? #T #F 6)", Code.TYPE_ERROR );
     }
 }

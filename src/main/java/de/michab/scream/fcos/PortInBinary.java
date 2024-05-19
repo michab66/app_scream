@@ -28,7 +28,7 @@ public class PortInBinary
      *
      * @see FirstClassObject#typename()
      */
-    public static final String TYPE_NAME = "input-port";
+    public static final String TYPE_NAME = "binary-input-port";
 
     private static final int NOT_PEEKED = -2;
 

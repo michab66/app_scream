@@ -30,7 +30,7 @@
     ((obj port)
       (cond
         ((not (output-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
+          (error "TYPE_ERROR" scream:type:output-port port))
         (else
           ((object port) ("write:de.michab.scream.fcos.FirstClassObject" obj))
           scream:unspecified)
@@ -73,9 +73,9 @@
     ((obj port)
       (cond
         ((not (output-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
+          (error "TYPE_ERROR" scream:type:output-port port))
         ((not (textual-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
+          (error "TYPE_ERROR" scream:type:output-port port))
         (else
           ((object port) ("display:de.michab.scream.fcos.FirstClassObject" obj))
           scream:unspecified)
@@ -105,7 +105,7 @@
       
       (cond
         ((not (textual-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
+          (error "TYPE_ERROR" scream:type:output-port port))
         (else
           (write-char #\newline port)
           (flush-output-port port)
@@ -136,7 +136,7 @@
         ((not (char? character))
           (error "TYPE_ERROR" scream:type-character character))
         ((not (output-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
+          (error "TYPE_ERROR" scream:type:output-port port))
         (else
           ((object port) ("display:de.michab.scream.fcos.FirstClassObject" character))
           scream:unspecified)
@@ -173,9 +173,9 @@
     ((string port start end)
       (cond
         ((not (string? string))
-          (error "TYPE_ERROR" scream:type-string string))
+          (error "TYPE_ERROR" scream:type:string string))
         ((not (output-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
+          (error "TYPE_ERROR" scream:type:output-port port))
         ((not (textual-port? port))
           (error "TYPE_ERROR" scream:textual-port port))
         ((not (integer? start))
@@ -207,17 +207,12 @@
       (write-u8 byte (current-output-port)))
 
     ((byte port)
-      (cond
-        ((not (integer? byte))
-          (error "TYPE_ERROR" scream:type-integer byte))
-        ((not (output-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
-        ((not (binary-port? port))
-          (error "TYPE_ERROR" scream:binary-port port))
-        (else
-          ((object port) ("writeByte:de.michab.scream.fcos.Int" byte))
-          scream:unspecified)
-      ) ; cond
+      (begin
+        (scream:assert:integer 'write-u8 byte)
+        (scream:assert:binary-output-port 'write-u8 port)
+        ((object port) ("writeByte:de.michab.scream.fcos.Int" byte))
+        scream:unspecified
+      )
     )
 
   ) ; case-lambda
@@ -247,9 +242,9 @@
     ((bytevector port start end)
       (cond
         ((not (bytevector? bytevector))
-          (error "TYPE_ERROR" scream:type-bytevector bytevcetor))
+          (error "TYPE_ERROR" scream:type:bytevector bytevcetor))
         ((not (output-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
+          (error "TYPE_ERROR" scream:type:output-port port))
         ((not (binary-port? port))
           (error "TYPE_ERROR" scream:binary-port port))
         (else
@@ -281,7 +276,7 @@
     ((port)
       (cond
         ((not (output-port? port))
-          (error "TYPE_ERROR" scream:type-output-port port))
+          (error "TYPE_ERROR" scream:type:output-port port))
         (else
           ((object port) ("flush:"))
           scream:unspecified)

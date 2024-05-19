@@ -24,7 +24,7 @@
     ((k fill)
       (cond
         ((not (integer? k))
-          (error "TYPE_ERROR" scream:type-integer k))
+          (error "TYPE_ERROR" scream:type:integer k))
         ((<= k 0)
           '())
         (else

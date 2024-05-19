@@ -4,20 +4,18 @@
 ; Copyright © 1998-2024 Michael G. Binz
 ;
 
-
 ;;
 ;; (vector? obj) procedure; r5rs 31
 ;;
 (define vector?
-  (typePredicateGenerator "de.michab.scream.fcos.Vector" #t))
-
-
+  scream:vector?)
 
 ;;
-;; (make-vector k) procedure; r5rs 31
-;; (make-vector k i) procedure; r5rs 31
+;; (make-vector k) procedure; r7rs p48
+;; (make-vector k i) procedure; r7rs 48
 ;;
 (define (make-vector vlength . filler)
+  (scream:assert:integer 'make-vector vlength 1)
   (cond
     ;; If the optional argument is not given.
     ((null? filler)
@@ -26,39 +24,34 @@
     ((= (length filler) 1)
       (make-object ("de.michab.scream.fcos.Vector:long,de.michab.scream.fcos.FirstClassObject" vlength (car filler))))
     ;; If there are more than one optional arguments.
-    (else (error "TOO_MANY_ARGUMENTS" 2))))
-
-
+    (else (error "TOO_MANY_ARGUMENTS" 2)))
+)
 
 ;;
 ;; (vector-length vector) procedure; r5rs 31
 ;;
 (define (vector-length v)
-  (if (vector? v)
-    ((object v) ("size"))
-    (error "TYPE_ERROR" %type-vector (scream:typename v))))
-
-
+  (scream:assert:vector 'vector-length v)
+  ((object v) ("size"))
+)
 
 ;;
 ;; (vector-ref vector k) procedure; r5rs 31
 ;;
-(define (vector-ref v idx )
-  (if (vector? v)
-    ((object v) ("get:long" idx))
-    (error "TYPE_ERROR" %type-vector (scream:typename v) 1)))
-
-
+(define (vector-ref v idx)
+  (scream:assert:vector 'vector-ref v 1)
+  (scream:assert:positive-integer 'vector-ref idx 2)
+  ((object v) ("get:long" idx))
+)
 
 ;;
 ;; (vector-set! vector k obj) procedure; r5rs 31
 ;;
 (define (vector-set! v idx obj)
-  (if (vector? v)
-    ((object v) ("set:long,de.michab.scream.fcos.FirstClassObject" idx obj))
-    (error "TYPE_ERROR" %type-vector (scream:typename v) 1)))
-
-
+  (scream:assert:vector 'vector-set! v 1)
+  (scream:assert:integer 'vector-set! idx 2)
+  ((object v) ("set:long,de.michab.scream.fcos.FirstClassObject" idx obj))
+)
 
 ;;
 ;; (list->vector list) library procedure; r5rs 31
@@ -80,29 +73,27 @@
 
       ;; Body
       (vector-set! result idx (car rest-to-move)))
-    (error "EXPECTED_PROPER_LIST")))
-
-
+    (error "EXPECTED_PROPER_LIST"))
+)
 
 ;;
 ;; (vector->list vector) library procedure; r5rs 31
 ;;
 (define (vector->list v)
-  (if (vector? v)
-    (do
-      ;; Init
-      ((idx (- (vector-length v) 1) (- idx 1))
-       (result ()))
+  (scream:assert:vector 'vector->list v 1)
 
-      ;; Test
-      ((< idx 0) result)
+  (do
+    ;; Init
+    ((idx (- (vector-length v) 1) (- idx 1))
+     (result ()))
 
-      ;; Body
-      (set! result (cons (vector-ref v idx) result)))
+    ;; Test
+    ((< idx 0) result)
 
-    (error "TYPE_ERROR" %type-vector (scream:typename v))))
-
-
+    ;; Body
+    (set! result (cons (vector-ref v idx) result))
+  )
+)
 
 ;;
 ;; (vector obj ...) library procedure; r5rs 31
@@ -110,12 +101,10 @@
 (define (vector . elements)
   (list->vector elements))
 
-
-
 ;;
 ;; (vector-fill! v filler) library procedure; r5rs 31
 ;;
 (define (vector-fill! v filler)
-  (if (vector? v)
-    ((object v) ("fill:de.michab.scream.fcos.FirstClassObject" filler))
-    (error "TYPE_ERROR" %type-vector (scream:typename v) 1)))
+  (scream:assert:vector 'vector-fill! v 1)
+  ((object v) ("fill:de.michab.scream.fcos.FirstClassObject" filler))
+)

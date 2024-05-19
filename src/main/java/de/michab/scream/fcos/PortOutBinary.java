@@ -29,7 +29,7 @@ public class PortOutBinary
      *
      * @see FirstClassObject#typename()
      */
-    public static final String TYPE_NAME = "output-port";
+    public static final String TYPE_NAME = "binary-output-port";
 
     /**
      * Create an output port.  The name that is passed is used for generating
