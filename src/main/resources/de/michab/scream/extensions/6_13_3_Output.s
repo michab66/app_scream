@@ -207,17 +207,12 @@
       (write-u8 byte (current-output-port)))
 
     ((byte port)
-      (cond
-        ((not (integer? byte))
-          (error "TYPE_ERROR" scream:type-integer byte))
-        ((not (output-port? port))
-          (error "TYPE_ERROR" scream:type:output-port port))
-        ((not (binary-port? port))
-          (error "TYPE_ERROR" scream:binary-port port))
-        (else
-          ((object port) ("writeByte:de.michab.scream.fcos.Int" byte))
-          scream:unspecified)
-      ) ; cond
+      (begin
+        (scream:assert:integer 'write-u8 byte)
+        (scream:assert:binary-output-port 'write-u8 port)
+        ((object port) ("writeByte:de.michab.scream.fcos.Int" byte))
+        scream:unspecified
+      )
     )
 
   ) ; case-lambda

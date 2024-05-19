@@ -15,7 +15,7 @@
 ;;
 
 ;;
-;; (string? obj) procedure; r5rs 30
+;; (string? obj) procedure; r7rs 46
 ;;
 (define string?
   scream:string?)
@@ -47,7 +47,7 @@
 
 
 ;;
-;; (string char ...) library procedure; r5rs 30
+;; (string char ...) library procedure; r7rs 46
 ;;
 (define (string char . optional-chars)
   (scream:assert:char 'string char 1)
@@ -70,7 +70,7 @@
 
 
 ;;
-;; (string-length string) procedure; r5rs 30
+;; (string-length string) procedure; r7rs 46
 ;;
 (define (string-length string)
   (scream:assert:string 'string-length string) 
@@ -80,7 +80,7 @@
 
 
 ;;
-;; (string-ref string k) procedure; r5rs 30
+;; (string-ref string k) procedure; r7rs 46
 ;;
 (define (string-ref string k)
   (scream:assert:string 'string-ref string 1) 
@@ -89,7 +89,7 @@
 )
 
 ;;
-;; (string-set! string k char) procedure; r5rs 30
+;; (string-set! string k char) procedure; r7rs 46
 ;;
 (define (string-set! string k char)
   (scream:assert:string 'string-set! string 1)
@@ -99,7 +99,7 @@
 )
 
 ;;
-;; (substring string start end) library procedure; r5rs 30
+;; (substring string start end) library procedure; r7rs 47
 ;;
 (define (substring string start end)
   (scream:assert:string 'substring string 1)
@@ -109,36 +109,37 @@
 )
 
 ;;
-;; (string-append string ...) library procedure; r5rs 30
+;; (string-append string ...) library procedure; r7rs 47
 ;;
 (define (string-append string . optional-string-list)
-  (if (string? string)
-    (do
-      ; Init
-      ((result ((make-object "de.michab.scream.fcos.SchemeString") ("makeEscaped:java.lang.String" string)))
-       (append-list optional-string-list (cdr append-list)))
+  (scream:assert:string 'string-append string 1)
+  (do
+    ; Init
+    ((result ((make-object "de.michab.scream.fcos.SchemeString") ("makeEscaped:java.lang.String" string)))
+      (append-list optional-string-list (cdr append-list)))
 
-      ; Test
-      ((null? append-list) result)
+    ; Test
+    ((null? append-list) result)
 
-      ; Body
-      (if (string? (car append-list))
-        (set! result ((object result) ("append:de.michab.scream.fcos.SchemeString" (car append-list))))
-        (error
-          "TYPE_ERROR"
-          scream:type:string
-          (scream:typename (car append-list))
-          ; Complex parameter position calculation.  The difference between
-          ; the length of the original input list and the rest of that list
-          ; that is left for processing plus an offset of 2 because of the
-          ; static parameter.
-          (+ 2 (- (length optional-string-list) (length append-list))))))
-    (error "TYPE_ERROR" scream:type:string (scream:typename string) 1)))
-
-
+    ; Body
+    (if (string? (car append-list))
+      (set! result ((object result) ("append:de.michab.scream.fcos.SchemeString" (car append-list))))
+      (error
+        "TYPE_ERROR"
+        scream:type:string
+        (scream:typename (car append-list))
+        ; Complex parameter position calculation.  The difference between
+        ; the length of the original input list and the rest of that list
+        ; that is left for processing plus an offset of 2 because of the
+        ; static parameter.
+        (+ 2 (- (length optional-string-list) (length append-list)))
+      )
+    )
+  )
+)
 
 ;;
-;; (string->list string) library procedure; r5rs 30
+;; (string->list string) library procedure; r7rs 47
 ;;
 (define (string->list string)
   (scream:assert:string 'string->list string)
@@ -146,7 +147,7 @@
 )
 
 ;;
-;; (list->string list) library procedure; r5rs 30
+;; (list->string list) library procedure; r7rs 47
 ;;
 (define (list->string character-list)
   (if (list? character-list)
@@ -171,10 +172,8 @@
            (scream:typename character-list)
            1)))
 
-
-
 ;;
-;; (string-copy string) library procedure; r5rs 30
+;; (string-copy string) library procedure; r7rs 47
 ;;
 (define (string-copy string)
   (scream:assert:string 'string-copy string)
@@ -182,7 +181,7 @@
 )
 
 ;;
-;; (string-fill! string char) library procedure; r5rs 31
+;; (string-fill! string char) library procedure; r7rs 48
 ;;
 (define (string-fill! string char)
   (scream:assert:string 'string-fill! string 1)

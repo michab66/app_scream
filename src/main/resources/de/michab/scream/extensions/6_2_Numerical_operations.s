@@ -25,14 +25,6 @@
   (scream:java:make-class "de.michab.scream.fcos.Number"))
 
 #|
- | Checks if the passed object if of type Int.
- |#
-(define scream:integer?
-  scream:integer?)
-(define scream:double?
-  (typePredicateGenerator "de.michab.scream.fcos.Real" #t))
-
-#|
  | Support-operation for the implementation of the math comparison operators.
  |
  | Expects an operation (op z1 z2) => bool.
