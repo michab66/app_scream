@@ -13,10 +13,16 @@
   scream:java:lang:system
   (make-object "java.lang.System")
 )
+(define
+  scream:java:lang:math
+  (make-object "java.lang.Math")
+)
 
 ;;
 (define scream:class:fco
   (make-object "de.michab.scream.fcos.FirstClassObject"))
+(define scream:class:number
+  (scream:java:make-class "de.michab.scream.fcos.Number"))
 
 ;;
 ;; An object to be returned if the spec defines 'unspecified'.

@@ -116,6 +116,9 @@
   (typePredicateGenerator "de.michab.scream.fcos.Int" #t))
 (define scream:real?
   (typePredicateGenerator "de.michab.scream.fcos.Real" #t))
+(define (scream:positive? number)
+  ((object number) ("r7rsGreaterOrEqualThan:de.michab.scream.fcos.Number" 0))
+)
 
 ; Ports
 (define scream:port?
@@ -164,6 +167,10 @@
 )
 (define (scream:assert:integer func-name value . position)
   (scream:assert func-name value scream:integer? scream:type:integer position)
+)
+(define (scream:assert:positive-integer func-name value . position)
+  (scream:assert func-name value scream:integer? scream:type:integer position)
+  (scream:assert func-name value scream:positive? "positive integer" position)
 )
 (define (scream:assert:real func-name value . position)
   (scream:assert func-name value scream:real? scream:type:real position)

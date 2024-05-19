@@ -12,18 +12,6 @@
 ;; Scream definitions.
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define scream:type-integer
-  ((scream:java:make-class "de.michab.scream.fcos.Int") "TYPE_NAME"))
-
-#|
- | Encapsulates java.lang.Math.
- |#
-(define scream:math
-  (scream:java:make-class "java.lang.Math"))
-
-(define scream:class:number
-  (scream:java:make-class "de.michab.scream.fcos.Number"))
-
 #|
  | Support-operation for the implementation of the math comparison operators.
  |
@@ -116,7 +104,7 @@
   (number? obj))
 
 #|
- | (complex? obj) procedure; r7rs 35
+ | (rational? obj) procedure; r7rs 35
  |#
 (define (rational? obj)
   (error "NOT_IMPLEMENTED" 'rational?))
@@ -268,9 +256,9 @@
 (define (abs x)
   (cond
     ((exact? x)
-      (scream:math ("abs:long" x)))
+      (scream:java:lang:math ("abs:long" x)))
     ((inexact? x)
-      (scream:math ("abs:double" x)))
+      (scream:java:lang:math ("abs:double" x)))
     (else
       (error "TYPE_ERROR" scream:type:number (scream:typename x)))
   )
@@ -296,7 +284,7 @@
   ((if (and (exact? n1) (exact? n2))
       exact
       inexact)
-  (scream:math ("floorDiv:long,long" (exact n1) (exact n2)))))
+  (scream:java:lang:math ("floorDiv:long,long" (exact n1) (exact n2)))))
 
 #|
  | (floor-remainder n₁ n₂) procedure r7rs p36
@@ -437,7 +425,7 @@
     ((integer? x)
       x)
     (else
-      (round (scream:math ("floor:double" x))))))
+      (round (scream:java:lang:math ("floor:double" x))))))
 
 #|
  | (ceiling x) procedure - 6.2.6 p37
@@ -449,7 +437,7 @@
     ((integer? x)
       x)
     (else
-      (round (scream:math ("ceil:double" x))))))
+      (round (scream:java:lang:math ("ceil:double" x))))))
 
 #|
  | (truncate x) procedure; r7rs 6.2.6 p37
@@ -469,7 +457,7 @@
 (define (round x)
   (if (exact? x)
     x
-    (scream:math ("rint:double" x))))
+    (scream:java:lang:math ("rint:double" x))))
 
 #|
  | (rationalize x y)
@@ -481,7 +469,7 @@
  | (exp z) inexact library procedure r7rs p38
  |#
 (define (exp x)
-  (scream:math 
+  (scream:java:lang:math 
     ("exp:double" (scream:assert-number x))))
 
 #|
@@ -495,7 +483,7 @@
   (case-lambda
 
     ((z)
-      (scream:math ("log:double" (scream:assert-number z))))
+      (scream:java:lang:math ("log:double" (scream:assert-number z))))
 
     ((z1 z2)
       (/ 
@@ -511,35 +499,35 @@
  | (sin z) procedure r7rs p38
  |#
 (define (sin z)
-  (scream:math 
+  (scream:java:lang:math 
     ("sin:double" (scream:assert-number z))))
 
 #|
  | (cos z) procedure r7rs p38
  |#
 (define (cos z)
-  (scream:math 
+  (scream:java:lang:math 
     ("cos:double" (scream:assert-number z))))
 
 #|
  | (tan z) procedure r7rs p38
  |#
 (define (tan z)
-  (scream:math
+  (scream:java:lang:math
     ("tan:double" (scream:assert-number z))))
 
 #|
  | (asin z) procedure r7rs p38
  |#
 (define (asin z)
-  (scream:math 
+  (scream:java:lang:math 
     ("asin:double" (scream:assert-number z))))
 
 #|
  | (acos z) procedure r7rs p38
  |#
 (define (acos z)
-  (scream:math 
+  (scream:java:lang:math 
     ("acos:double" (scream:assert-number z))))
 
 #|
@@ -552,11 +540,11 @@
   (case-lambda
 
     ((z)
-      (scream:math 
+      (scream:java:lang:math 
         ("atan:double" (scream:assert-number z))))
 
     ((x y)
-      (scream:math 
+      (scream:java:lang:math 
         ("atan2:double,double" 
           (scream:assert-number x) 
           (scream:assert-number y))))
@@ -576,7 +564,7 @@
  | (sqrt z) inexact library procedure; r7rs 38
  |#
 (define (sqrt z) 
-  (let ((result (scream:math ("sqrt:double" (scream:assert-number z)))))
+  (let ((result (scream:java:lang:math ("sqrt:double" (scream:assert-number z)))))
     (if (and (exact? z) (integer? result))
   	  (exact result)
       result
@@ -595,7 +583,7 @@
   (let*
     (
       (result
-        (exact (truncate (scream:math ("sqrt:double" k)))))
+        (exact (truncate (scream:java:lang:math ("sqrt:double" k)))))
       (result-square (* result result))
       (rest (- k result-square))
     )
@@ -611,7 +599,7 @@
   (let 
     (
       (result 
-        (scream:math ("pow:double,double" (scream:assert-number z1) (scream:assert-number z2))))
+        (scream:java:lang:math ("pow:double,double" (scream:assert-number z1) (scream:assert-number z2))))
     )
     
     (if (and (exact? z1) (exact? z2) (integer? result))
