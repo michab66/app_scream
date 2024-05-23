@@ -34,11 +34,9 @@
       (make-string k #\space))
 
     ((k char)
-      (begin
-        (scream:assert:integer 'make-string k 1)
-        (scream:assert:char 'make-string char 2)
-        (make-object ("de.michab.scream.fcos.SchemeString:int,char" k char))
-      )
+      (scream:assert:integer 'make-string k 1)
+      (scream:assert:char 'make-string char 2)
+      (make-object ("de.michab.scream.fcos.SchemeString:int,char" k char))
     )
   ) ; case-lambda
 
