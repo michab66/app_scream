@@ -207,12 +207,10 @@
       (write-u8 byte (current-output-port)))
 
     ((byte port)
-      (begin
-        (scream:assert:integer 'write-u8 byte)
-        (scream:assert:binary-output-port 'write-u8 port)
-        ((object port) ("writeByte:de.michab.scream.fcos.Int" byte))
-        scream:unspecified
-      )
+      (scream:assert:integer 'write-u8 byte)
+      (scream:assert:binary-output-port 'write-u8 port)
+      ((object port) ("writeByte:de.michab.scream.fcos.Int" byte))
+      scream:unspecified
     )
 
   ) ; case-lambda

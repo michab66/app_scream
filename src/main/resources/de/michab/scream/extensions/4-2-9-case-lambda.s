@@ -15,7 +15,7 @@
   (define clauses (cons clause clauses))
 
   (define (clause-to-line clause)
-    `(list ,(length (car clause)) (lambda ,(car clause) ,(cadr clause)))
+    `(list ,(length (car clause)) ,(cons 'lambda clause))
   )
 
   (define (clauses-to-lines clauses)

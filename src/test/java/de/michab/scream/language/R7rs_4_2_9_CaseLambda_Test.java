@@ -29,22 +29,22 @@ public class R7rs_4_2_9_CaseLambda_Test extends ScreamBaseTest
                     ((e f g) (+ g f e))))
                 """ );
 
-            t.expectFco(
-                    "(range)",
-                    bFalse );
-            t.expectFco(
-                    "(range 1)",
-                    i2 );
-            t.expectFco(
-                    "(range 1 2)",
-                    i3 );
-            t.expectFco(
-                    "(range 1 2 3)",
-                    i(6) );
-            var rx = t.expectError(
-                    "(range 1 2 3 4)",
-                    Code.WRONG_NUMBER_OF_ARGUMENTS );
-            assertEquals( i4, rx.getArgument( 0 ) );
+        t.expectFco(
+                "(range)",
+                bFalse );
+        t.expectFco(
+                "(range 1)",
+                i2 );
+        t.expectFco(
+                "(range 1 2)",
+                i3 );
+        t.expectFco(
+                "(range 1 2 3)",
+                i(6) );
+        var rx = t.expectError(
+                "(range 1 2 3 4)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        assertEquals( i4, rx.getArgument( 0 ) );
     }
 
     @Test
@@ -78,6 +78,44 @@ public class R7rs_4_2_9_CaseLambda_Test extends ScreamBaseTest
         t.expectFco(
                     "(default3 1 2 3)",
                     "(1 2 3)" );
+
+        var rx = t.expectError(
+                "(default3 1 2 3 4)",
+                Code.WRONG_NUMBER_OF_ARGUMENTS );
+        assertEquals( i4, rx.getArgument( 0 ) );
+    }
+
+    @Test
+    public void caseLambda2() throws Exception
+    {
+        var t = makeTester();
+
+        t.execute(
+                """
+                (define default3
+                  (case-lambda
+                    (()
+                      (default3 'ad 'bd 'cd) 'first)
+                    ((a)
+                      (default3 a 'bd 'cd)   'second)
+                    ((a b)
+                      (default3 a b 'cd)     'third)
+                    ((a b c)
+                      (list a b c)           'fourth)))
+                """ );
+
+        t.expectFco(
+                    "(default3)",
+                    "first" );
+        t.expectFco(
+                    "(default3 1)",
+                    "second" );
+        t.expectFco(
+                    "(default3 1 2)",
+                    "third" );
+        t.expectFco(
+                    "(default3 1 2 3)",
+                    "fourth" );
 
         var rx = t.expectError(
                 "(default3 1 2 3 4)",
