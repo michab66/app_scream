@@ -208,13 +208,7 @@
 #|
  | (apply proc arg₁ ... args)  procedure; r7rs 50
  |#
-(define (apply op . list)
-  (define (make-argument-list list)
-    (let ((first (car list)) (rest (cdr list)))
-      (if (null? rest)
-        first
-        (cons first (make-argument-list rest)))))
-  (scream:apply op (make-argument-list list)))
+(define apply scream:apply)
 
 #|
  | (map proc list₁ list₂ ... ) r7rs 6.10 p51 procedure

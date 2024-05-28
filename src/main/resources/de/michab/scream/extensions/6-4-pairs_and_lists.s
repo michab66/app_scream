@@ -94,15 +94,15 @@
 #|
  | (car pair) procedure p41
  |#
-(define (car pair)
-  (scream:car (scream:assert:cons 'car pair))
+(define car
+  scream:car
 )
 
 #|
  | (cdr pair) procedure p41
  |#
-(define (cdr pair)
-  (scream:cdr (scream:assert:cons 'cdr pair))
+(define cdr
+  scream:cdr
 )
 
 #|

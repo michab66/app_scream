@@ -189,6 +189,18 @@ public class RuntimeX
                 Objects.requireNonNull( args );
     }
 
+    public RuntimeX( Symbol function, Code c, FirstClassObject ... args )
+    {
+        super( Objects.requireNonNull( c ).toString() );
+
+        _operationName =
+                Objects.requireNonNull( function );
+        _code =
+                c;
+        _irritants =
+                Objects.requireNonNull( args );
+    }
+
     private static String validateMessage( SchemeString ss )
     {
         var result = Objects.requireNonNull( ss ).getValue();
