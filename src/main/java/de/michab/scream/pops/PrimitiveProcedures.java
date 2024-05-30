@@ -14,6 +14,7 @@ import de.michab.scream.fcos.Procedure;
 import de.michab.scream.fcos.Symbol;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
+import de.michab.scream.util.FunctionX;
 import de.michab.scream.util.Scut;
 
 /**
@@ -47,7 +48,9 @@ public abstract class PrimitiveProcedures
                 if ( Cons.NIL == rest )
                     return Scut.as( Cons.class, first );
 
-                return new Cons( first, makeArgumentList( rest ) );
+                return new Cons(
+                        first,
+                        makeArgumentList( rest ) );
             }
 
             @Override
@@ -73,46 +76,65 @@ public abstract class PrimitiveProcedures
         };
     }
 
-    static private Procedure car( Environment e )
+    private static class CadrSupport extends Procedure
     {
-        return new Procedure( "scream:car", e )
+        private final FunctionX<Cons,FirstClassObject,RuntimeX> _f;
+        private final Symbol _name;
+
+        public CadrSupport( String name, FunctionX<Cons,FirstClassObject,RuntimeX> f )
         {
-            @Override
-            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                    throws RuntimeX
-            {
-                checkArgumentCount( 1, args );
-                var firstArgument = Scut.assertType(
-                        Cons.class,
-                        args.getCar(),
-                        Symbol.createObject( "car" ),
-                        1 );
-                return c.accept( firstArgument.getCar() );
-            }
-        };
+            super( "scream:" + name, null );
+
+            _f = f;
+            _name = Symbol.createObject( name );
+        }
+
+        @Override
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                throws RuntimeX
+        {
+            checkArgumentCount( 1, args );
+            var firstArgument = Scut.assertType(
+                    Cons.class,
+                    args.getCar(),
+                    _name,
+                    1 );
+
+            return c.accept(
+                    _f.apply( firstArgument ) );
+        }
     }
 
-    static private Procedure cdr( Environment e )
-    {
-        return new Procedure( "scream:cdr", e )
-        {
-            @Override
-            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                    throws RuntimeX
-            {
-                checkArgumentCount( 1, args );
-                var firstArgument = Scut.assertType(
-                        Cons.class,
-                        args.getCar(),
-                        Symbol.createObject( "cdr" ),
-                        1 );
-                return c.accept( firstArgument.getCdr() );
-            }
-        };
+    static private Procedure car =
+            new CadrSupport( "car", cons -> { return cons.getCar(); } );
+
+    static private Procedure cdr =
+            new CadrSupport( "cdr", cons -> { return cons.getCdr(); } );
+
+    @FunctionalInterface
+    public interface BiFunctionX<T1, T2, R, X extends Exception> {
+
+        /**
+         * Applies this function to the given arguments.
+         *
+         * @param t the first function argument
+         * @return the function result
+         */
+        R apply(T1 t1, T2 t2)
+            throws X;
     }
 
-    static private Procedure eq = new Procedure( "scream:eq?", null )
+    private static class EquivalenceSupport extends Procedure
     {
+        private final BiFunctionX<FirstClassObject, FirstClassObject, Boolean, RuntimeX> _f;
+
+        public EquivalenceSupport( String name, BiFunctionX<FirstClassObject, FirstClassObject, Boolean, RuntimeX> f )
+        {
+            super( name, null );
+
+            _f = f;
+        }
+
         @Override
         protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
                 throws RuntimeX
@@ -121,52 +143,30 @@ public abstract class PrimitiveProcedures
             var arguments = args.asArray();
             return c.accept(
                     Bool.createObject(
-                            FirstClassObject.eq( arguments[0], arguments[1] ) ) );
+                            _f.apply( arguments[0], arguments[1] ) ) );
         }
-    };
-
-    static private Procedure eqv = new Procedure( "scream:eqv?", null )
-    {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
-        {
-            checkArgumentCount( 2, args );
-            var arguments = args.asArray();
-            return c.accept(
-                    Bool.createObject(
-                            FirstClassObject.eqv( arguments[0], arguments[1] ) ) );
-        }
-    };
-
-    static private Procedure equal = new Procedure( "scream:equal?", null )
-    {
-        @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
-        {
-            checkArgumentCount( 2, args );
-            var arguments = args.asArray();
-            return c.accept(
-                    Bool.createObject(
-                            FirstClassObject.equal( arguments[0], arguments[1] ) ) );
-        }
-    };
-
-    static private Procedure nullq( Environment e )
-    {
-        return new Procedure( "scream:null?", e )
-        {
-            @Override
-            protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                    throws RuntimeX
-            {
-                checkArgumentCount( 1, args );
-                return c.accept(
-                        Bool.createObject( Cons.NIL == args.getCar() ) );
-            }
-        };
     }
+
+    static private Procedure eq =
+            new EquivalenceSupport( "scream:eq?", FirstClassObject::eq );
+
+    static private Procedure eqv =
+            new EquivalenceSupport( "scream:eqv?", FirstClassObject::eqv );
+
+    static private Procedure equal =
+            new EquivalenceSupport( "scream:equal?", FirstClassObject::equal );
+
+    static private Procedure nullq = new Procedure( "scream:null?", null )
+    {
+        @Override
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                throws RuntimeX
+        {
+            checkArgumentCount( 1, args );
+            return c.accept(
+                    Bool.createObject( Cons.NIL == args.getCar() ) );
+        }
+    };
 
     /**
      * Base operations setup.
@@ -178,12 +178,12 @@ public abstract class PrimitiveProcedures
             throws RuntimeX
     {
         tle.setPrimitive( apply( tle ) );
-        tle.setPrimitive( car( tle ) );
-        tle.setPrimitive( cdr( tle ) );
+        tle.setPrimitive( car );
+        tle.setPrimitive( cdr );
         tle.setPrimitive( eq );
         tle.setPrimitive( eqv );
         tle.setPrimitive( equal );
-        tle.setPrimitive( nullq( tle ) );
+        tle.setPrimitive( nullq );
 
         return tle;
     }

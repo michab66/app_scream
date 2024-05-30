@@ -68,6 +68,20 @@ public class Scream_Extensions_Test extends ScreamBaseTest
         t.expectFco(
                 "(scream:eval '(+ 300 10 3))",
                 i313 );
+
+        t.execute( """
+                (define (offer-donaldian q-expression)
+                  (define donaldian 313)
+                  (scream:eval q-expression))
+                """ );
+        assertEqualq(
+                s("donaldian"),
+                t.expectError( "donaldian", Code.SYMBOL_NOT_DEFINED ).getArgument( 0 ) );
+
+        t.expectFco(
+                "(offer-donaldian '(+ 1 donaldian))",
+                "314" );
+
         t.expectError(
                 "(scream:eval 1 2)",
                 Code.WRONG_NUMBER_OF_ARGUMENTS );

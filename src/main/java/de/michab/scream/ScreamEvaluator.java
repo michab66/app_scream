@@ -685,9 +685,6 @@ public final class ScreamEvaluator implements ScriptEngine
         try
         {
             return FirstClassObject.toString( evalFco( reader ) );
-//            if ( result == Cons.NIL )
-//                return null;
-//            return result.toJava();
         }
         catch ( RuntimeX e )
         {
