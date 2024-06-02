@@ -89,7 +89,7 @@
  | (number? obj) procedure; r7rs 35
  |#
 (define number?
-  (typePredicateGenerator "de.michab.scream.fcos.Number" #f))
+  scream:number?)
 
 #|
  | (complex? obj) procedure; r7rs 35

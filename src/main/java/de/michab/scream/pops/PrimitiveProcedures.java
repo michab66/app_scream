@@ -7,11 +7,23 @@ package de.michab.scream.pops;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Bool;
+import de.michab.scream.fcos.Bytevector;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.Environment;
 import de.michab.scream.fcos.FirstClassObject;
+import de.michab.scream.fcos.Int;
+import de.michab.scream.fcos.Number;
+import de.michab.scream.fcos.Port;
+import de.michab.scream.fcos.PortIn;
+import de.michab.scream.fcos.PortInBinary;
+import de.michab.scream.fcos.PortOut;
+import de.michab.scream.fcos.PortOutBinary;
 import de.michab.scream.fcos.Procedure;
+import de.michab.scream.fcos.Real;
+import de.michab.scream.fcos.SchemeCharacter;
+import de.michab.scream.fcos.SchemeString;
 import de.michab.scream.fcos.Symbol;
+import de.michab.scream.fcos.Vector;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.FunctionX;
@@ -76,6 +88,117 @@ public abstract class PrimitiveProcedures
         };
     }
 
+    static private Procedure binaryInputPortQ =
+            new TypePredicate( "scream:binary-input-port?", PortInBinary.class );
+
+    static private Procedure binaryOutputPortQ =
+            new TypePredicate( "scream:binary-output-port?", PortOutBinary.class );
+
+    static private Procedure booleanQ =
+            new TypePredicate( "scream:boolean?", Bool.class );
+
+    static private Procedure bytevectorQ =
+            new TypePredicate( "scream:bytevector?", Bytevector.class );
+
+    static private Procedure car =
+            new CadrSupport( "car", cons -> { return cons.getCar(); } );
+
+    static private Procedure cdr =
+            new CadrSupport( "cdr", cons -> { return cons.getCdr(); } );
+
+    static private Procedure charQ =
+            new TypePredicate( "scream:char?", SchemeCharacter.class );
+
+    static private Procedure consQ =
+            new TypePredicate( "scream:cons?", Cons.class );
+
+    static private Procedure eq =
+            new EquivalenceSupport( "scream:eq?", FirstClassObject::eq );
+
+    static private Procedure eqv =
+            new EquivalenceSupport( "scream:eqv?", FirstClassObject::eqv );
+
+    static private Procedure equal =
+            new EquivalenceSupport( "scream:equal?", FirstClassObject::equal );
+
+    static private Procedure inputPortQ =
+            new TypePredicate( "scream:input-port?", PortIn.class );
+
+    static private Procedure integerQ =
+            new TypePredicate( "scream:integer?", Int.class );
+
+    static private Procedure nullq = new Procedure( "scream:null?", null )
+    {
+        @Override
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                throws RuntimeX
+        {
+            checkArgumentCount( 1, args );
+            return c.accept(
+                    Bool.createObject( Cons.NIL == args.getCar() ) );
+        }
+    };
+
+    static private Procedure numberQ =
+            new TypePredicate( "scream:number?", Number.class );
+
+    static private Procedure outputPortQ =
+            new TypePredicate( "scream:output-port?", PortOut.class );
+
+    static private Procedure portQ =
+            new TypePredicate( "scream:port?", Port.class );
+
+    static private Procedure procedureQ =
+            new TypePredicate( "scream:procedure?", Procedure.class );
+
+    static private Procedure realQ =
+            new TypePredicate( "scream:real?", Real.class );
+
+    static private Procedure stringQ =
+            new TypePredicate( "scream:string?", SchemeString.class );
+
+    static private Procedure symbolQ =
+            new TypePredicate( "scream:symbol?", Symbol.class );
+
+    static private Procedure vectorQ =
+            new TypePredicate( "scream:vector?", Vector.class );
+
+    /**
+     * Base operations setup.
+     *
+     * @param tle A reference to the environment to be extended.
+     * @return The extended environment.
+     */
+    public static Environment extendEnvironment( Environment tle )
+            throws RuntimeX
+    {
+        tle.setPrimitive( apply( tle ) );
+        tle.setPrimitive( binaryInputPortQ );
+        tle.setPrimitive( binaryOutputPortQ );
+        tle.setPrimitive( booleanQ );
+        tle.setPrimitive( bytevectorQ );
+        tle.setPrimitive( car );
+        tle.setPrimitive( cdr );
+        tle.setPrimitive( charQ );
+        tle.setPrimitive( consQ );
+        tle.setPrimitive( eq );
+        tle.setPrimitive( eqv );
+        tle.setPrimitive( equal );
+        tle.setPrimitive( integerQ );
+        tle.setPrimitive( inputPortQ );
+        tle.setPrimitive( nullq );
+        tle.setPrimitive( numberQ );
+        tle.setPrimitive( outputPortQ );
+        tle.setPrimitive( portQ );
+        tle.setPrimitive( procedureQ );
+        tle.setPrimitive( realQ );
+        tle.setPrimitive( stringQ );
+        tle.setPrimitive( symbolQ );
+        tle.setPrimitive( vectorQ );
+
+        return tle;
+    }
+
     private static class CadrSupport extends Procedure
     {
         private final FunctionX<Cons,FirstClassObject,RuntimeX> _f;
@@ -104,12 +227,6 @@ public abstract class PrimitiveProcedures
                     _f.apply( firstArgument ) );
         }
     }
-
-    static private Procedure car =
-            new CadrSupport( "car", cons -> { return cons.getCar(); } );
-
-    static private Procedure cdr =
-            new CadrSupport( "cdr", cons -> { return cons.getCdr(); } );
 
     @FunctionalInterface
     public interface BiFunctionX<T1, T2, R, X extends Exception> {
@@ -147,44 +264,35 @@ public abstract class PrimitiveProcedures
         }
     }
 
-    static private Procedure eq =
-            new EquivalenceSupport( "scream:eq?", FirstClassObject::eq );
-
-    static private Procedure eqv =
-            new EquivalenceSupport( "scream:eqv?", FirstClassObject::eqv );
-
-    static private Procedure equal =
-            new EquivalenceSupport( "scream:equal?", FirstClassObject::equal );
-
-    static private Procedure nullq = new Procedure( "scream:null?", null )
+    private static class TypePredicate extends Procedure
     {
+        private final Class<?> _class;
+
+        protected TypePredicate( String name, Class<?> cl )
+        {
+            super( name, null );
+
+            _class = cl;
+        }
+
         @Override
-        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
-                throws RuntimeX
+        protected Thunk _executeImpl(
+                Environment e,
+                Cons args,
+                Cont<FirstClassObject> c )
+                        throws RuntimeX
         {
             checkArgumentCount( 1, args );
+
+            var arg = args.getCar();
+
+            if ( arg == Cons.NIL )
+                return c.accept( Bool.F );
+
             return c.accept(
-                    Bool.createObject( Cons.NIL == args.getCar() ) );
+                    _class.isAssignableFrom( arg.getClass() ) ?
+                    Bool.T :
+                    Bool.F );
         }
     };
-
-    /**
-     * Base operations setup.
-     *
-     * @param tle A reference to the environment to be extended.
-     * @return The extended environment.
-     */
-    public static Environment extendEnvironment( Environment tle )
-            throws RuntimeX
-    {
-        tle.setPrimitive( apply( tle ) );
-        tle.setPrimitive( car );
-        tle.setPrimitive( cdr );
-        tle.setPrimitive( eq );
-        tle.setPrimitive( eqv );
-        tle.setPrimitive( equal );
-        tle.setPrimitive( nullq );
-
-        return tle;
-    }
 }
