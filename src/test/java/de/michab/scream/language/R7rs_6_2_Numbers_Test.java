@@ -172,7 +172,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 bTrue );
 
         t.expectError( "(=)",
-                Code.WRONG_NUMBER_OF_ARGUMENTS );
+                Code.NOT_ENOUGH_ARGUMENTS );
         t.expectError( "(= '())",
                 Code.TYPE_ERROR );
     }
@@ -217,7 +217,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 "(< 0)",
                 bTrue );
         t.expectError( "(<)",
-                Code.WRONG_NUMBER_OF_ARGUMENTS );
+                Code.NOT_ENOUGH_ARGUMENTS );
         t.expectError( "(< '())",
                 Code.TYPE_ERROR );
     }
@@ -262,7 +262,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 "(> 0)",
                 bTrue );
         t.expectError( "(>)",
-                Code.WRONG_NUMBER_OF_ARGUMENTS );
+                Code.NOT_ENOUGH_ARGUMENTS );
         t.expectError( "(> '())",
                 Code.TYPE_ERROR );
     }
@@ -313,7 +313,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 "(<= 0)",
                 bTrue );
         t.expectError( "(<=)",
-                Code.WRONG_NUMBER_OF_ARGUMENTS );
+                Code.NOT_ENOUGH_ARGUMENTS );
         t.expectError( "(<= '())",
                 Code.TYPE_ERROR );
     }
@@ -357,7 +357,7 @@ public class R7rs_6_2_Numbers_Test extends ScreamBaseTest
                 "(>= 0)",
                 bTrue );
         t.expectError( "(>=)",
-                Code.WRONG_NUMBER_OF_ARGUMENTS );
+                Code.NOT_ENOUGH_ARGUMENTS );
         t.expectError( "(>= '())",
                 Code.TYPE_ERROR );
     }

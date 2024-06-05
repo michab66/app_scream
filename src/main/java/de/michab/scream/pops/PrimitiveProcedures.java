@@ -121,11 +121,23 @@ public abstract class PrimitiveProcedures
     static private Procedure equal =
             new EquivalenceSupport( "scream:equal?", FirstClassObject::equal );
 
+    static private Procedure gtq =
+            new NumberComparisonSupport( ">", (a,b) -> { return a.r7rsGreaterThan( b ); } );
+
+    static private Procedure gteq =
+            new NumberComparisonSupport( ">=", (a,b) -> { return a.r7rsGreaterOrEqualThan( b ); } );
+
     static private Procedure inputPortQ =
             new TypePredicate( "scream:input-port?", PortIn.class );
 
     static private Procedure integerQ =
             new TypePredicate( "scream:integer?", Int.class );
+
+    static private Procedure ltq =
+            new NumberComparisonSupport( "<", (a,b) -> { return a.r7rsLessThan( b ); } );
+
+    static private Procedure lteq =
+            new NumberComparisonSupport( "<=", (a,b) -> { return a.r7rsLessOrEqualThan( b ); } );
 
     static private Procedure nullq = new Procedure( "scream:null?", null )
     {
@@ -141,6 +153,9 @@ public abstract class PrimitiveProcedures
 
     static private Procedure numberQ =
             new TypePredicate( "scream:number?", Number.class );
+
+    static private Procedure numEq =
+            new NumberComparisonSupport( "=", (a,b) -> { return a.r7rsEqual( b ); } );
 
     static private Procedure outputPortQ =
             new TypePredicate( "scream:output-port?", PortOut.class );
@@ -184,9 +199,14 @@ public abstract class PrimitiveProcedures
         tle.setPrimitive( eq );
         tle.setPrimitive( eqv );
         tle.setPrimitive( equal );
+        tle.setPrimitive( gtq );
+        tle.setPrimitive( gteq );
         tle.setPrimitive( integerQ );
         tle.setPrimitive( inputPortQ );
+        tle.setPrimitive( ltq );
+        tle.setPrimitive( lteq );
         tle.setPrimitive( nullq );
+        tle.setPrimitive( numEq );
         tle.setPrimitive( numberQ );
         tle.setPrimitive( outputPortQ );
         tle.setPrimitive( portQ );
@@ -225,6 +245,53 @@ public abstract class PrimitiveProcedures
 
             return c.accept(
                     _f.apply( firstArgument ) );
+        }
+    }
+
+    private static class NumberComparisonSupport extends Procedure
+    {
+        private final BiFunctionX<Number,Number, Boolean,RuntimeX> _f;
+        private final Symbol _name;
+
+        public NumberComparisonSupport( String name, BiFunctionX<Number,Number, Boolean,RuntimeX> f )
+        {
+            super( "scream:" + name, null );
+
+            _f = f;
+            _name = Symbol.createObject( name );
+        }
+
+        private Thunk _exec( int pos, Cons args, Cont<FirstClassObject> c )
+                throws RuntimeX
+        {
+            var first =
+                    Scut.assertType( Number.class, args.listRef( 0 ), _name, pos );
+
+            if ( args.length() == 1 )
+                return c.accept( Bool.T );
+
+            var next =
+                    Scut.assertType( Cons.class, args.getCdr(), _name, pos );
+            var second =
+                    Scut.assertType( Number.class, args.listRef( 1 ), _name, pos+1 );
+
+            if ( ! _f.apply( first, second ) )
+                return c.accept( Bool.F );
+
+            return () -> { return _exec(
+                    pos+1,
+                    next,
+                    c );
+            };
+        }
+
+        @Override
+        protected Thunk _executeImpl( Environment e, Cons args, Cont<FirstClassObject> c )
+                throws RuntimeX
+        {
+            checkArgumentCount( 1, Integer.MAX_VALUE, args );
+
+            return _exec( 1, args, c );
         }
     }
 

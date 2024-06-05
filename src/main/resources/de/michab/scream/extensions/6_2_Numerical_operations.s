@@ -13,50 +13,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 #|
- | Support-operation for the implementation of the math comparison operators.
- |
- | Expects an operation (op z1 z2) => bool.
- | Returns an operation (op' . z).
- |
- | Evaluation is:
- |  (op' 1) => #t
- |  (op' 1 2 3) => (if (op 1 2)
- |                   (op' 2 3)
- |                   #f)
- |
- | The implementation uses quasiquote rewriting which is
- | performance-expensive.  Optimisation options are
- |  * Speed up quasiquote, this is preferred.
- |  * Delay evaluation.  See usages of case-lambda.
- |#
-(define (scream:math:to-transitive-cmp cmp-operation)
-
-  (define q-comparer
-    `(lambda (z1 z2)
-      (cond
-        ((not (number? z1))
-          (error "TYPE_ERROR" scream:type:number z1))
-        ((not (number? z2))
-          (error "TYPE_ERROR" scream:type:number z2))
-        (else
-          ((object z1) (,cmp-operation z2))))))
-
-  (define comparer (scream:eval q-comparer))
-
-  (define (transitiver first . rest)
-    (cond
-         ((not (number? first))
-           (error "TYPE_ERROR" scream:type:number first))
-         ((null? rest)
-           #t)
-         ((comparer first (car rest))
-           (apply transitiver (car rest) (cdr rest)))
-         (else
-           #f)))
-
-    transitiver)
-
-#|
  | Support operation for implementing the min and max functions.
  |
  | compare is a comparison function (cmp a b) => boolean.
@@ -163,45 +119,35 @@
  | (= z₁ z₂ ...)  procedure; r7rs 36
  |#
 (define =
-  (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp "r7rsEqual:de.michab.scream.fcos.Number")
-  )) ; <--
+  scream:=
 )
 
 #|
  | (< z₁ z₂ ...)  procedure; r7rs 36
  |#
 (define <
-  (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp "r7rsLessThan:de.michab.scream.fcos.Number")
-  )) ; <--
+  scream:<
 )
 
 #|
  | (> z₁ z₂ ...)  procedure; r7rs 36
  |#
 (define >
-  (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp "r7rsGreaterThan:de.michab.scream.fcos.Number")
-  )) ; <--
+  scream:>
 )
 
 #|
  | (<= z₁ z₂ ...)  procedure; r7rs 36
  |#
 (define <= 
-  (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp "r7rsLessOrEqualThan:de.michab.scream.fcos.Number")
-  )) ; <--
+  scream:<=
 )
   
 #|
  | (>= z₁ z₂ ...)  procedure; r7rs 36
  |#
 (define >=
-  (scream:delay-op (delay ; -->
-    (scream:math:to-transitive-cmp "r7rsGreaterOrEqualThan:de.michab.scream.fcos.Number")
-  )) ; <--
+  scream:>=
 )
 
 #|
