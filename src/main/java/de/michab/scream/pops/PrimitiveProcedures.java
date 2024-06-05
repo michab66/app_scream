@@ -39,54 +39,51 @@ public abstract class PrimitiveProcedures
         throw new AssertionError();
     }
 
-    static private Procedure apply( Environment e )
+    static private Procedure apply = new Procedure( "scream:apply", null )
     {
-        return new Procedure( "scream:apply", e )
+        /**
+         * <pre>
+         * (define (make-argument-list list)
+         *   (let ((first (car list)) (rest (cdr list)))
+         *     (if (null? rest)
+         *       first
+         *       (cons first (make-argument-list rest)))))
+         * </pre>
+         */
+        private Cons makeArgumentList( Cons list ) throws RuntimeX
         {
-            /**
-             * <pre>
-             * (define (make-argument-list list)
-             *   (let ((first (car list)) (rest (cdr list)))
-             *     (if (null? rest)
-             *       first
-             *       (cons first (make-argument-list rest)))))
-             * </pre>
-             */
-            private Cons makeArgumentList( Cons list ) throws RuntimeX
-            {
-                var first = list.getCar();
-                var rest = Scut.as( Cons.class, list.getCdr() );
+            var first = list.getCar();
+            var rest = Scut.as( Cons.class, list.getCdr() );
 
-                if ( Cons.NIL == rest )
-                    return Scut.as( Cons.class, first );
+            if ( Cons.NIL == rest )
+                return Scut.as( Cons.class, first );
 
-                return new Cons(
-                        first,
-                        makeArgumentList( rest ) );
-            }
+            return new Cons(
+                    first,
+                    makeArgumentList( rest ) );
+        }
 
-            @Override
-            protected Thunk _executeImpl(
-                    Environment e,
-                    Cons args,
-                    Cont<FirstClassObject> c )
-                            throws RuntimeX
-            {
-                checkArgumentCount( 1, Integer.MAX_VALUE, args );
+        @Override
+        protected Thunk _executeImpl(
+                Environment e,
+                Cons args,
+                Cont<FirstClassObject> c )
+                        throws RuntimeX
+        {
+            checkArgumentCount( 1, Integer.MAX_VALUE, args );
 
-                Procedure proc = Scut.as(
-                        Procedure.class,
-                        args.listRef( 0 ) );
-                var list = Scut.as(
-                        Cons.class,
-                        args.getCdr() );
+            Procedure proc = Scut.as(
+                    Procedure.class,
+                    args.listRef( 0 ) );
+            var list = Scut.as(
+                    Cons.class,
+                    args.getCdr() );
 
-                return proc.apply(
-                        makeArgumentList( list ),
-                        c );
-            }
-        };
-    }
+            return proc.apply(
+                    makeArgumentList( list ),
+                    c );
+        }
+    };
 
     static private Procedure binaryInputPortQ =
             new TypePredicate( "scream:binary-input-port?", PortInBinary.class );
@@ -187,7 +184,7 @@ public abstract class PrimitiveProcedures
     public static Environment extendEnvironment( Environment tle )
             throws RuntimeX
     {
-        tle.setPrimitive( apply( tle ) );
+        tle.setPrimitive( apply );
         tle.setPrimitive( binaryInputPortQ );
         tle.setPrimitive( binaryOutputPortQ );
         tle.setPrimitive( booleanQ );
