@@ -92,45 +92,30 @@
 #|
  | Low-level type predicate definitions.
  |#
-(define scream:boolean?
-  (typePredicateGenerator "de.michab.scream.fcos.Bool" #t))
-(define scream:bytevector?
-  (typePredicateGenerator "de.michab.scream.fcos.Bytevector" #t))
-(define scream:char?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeCharacter" #t))
-(define scream:cons?
-  (typePredicateGenerator "de.michab.scream.fcos.Cons" #t))
-(define scream:procedure?
-  (typePredicateGenerator "de.michab.scream.fcos.Procedure" #f))
-(define scream:string?
-  (typePredicateGenerator "de.michab.scream.fcos.SchemeString" #t))
-(define scream:symbol?
-  (typePredicateGenerator "de.michab.scream.fcos.Symbol" #t))
-(define scream:vector?
-  (typePredicateGenerator "de.michab.scream.fcos.Vector" #t))
+
+;(define scream:boolean? -> PrimitiveProcedures
+;(define scream:bytevector? -> PrimitiveProcedures
+;(define scream:char? -> PrimitiveProcedures
+;(define scream:cons? -> PrimitiveProcedures
+;(define scream:procedure?
+;(define scream:string?
+;(define scream:symbol?
+;(define scream:vector?
 
 ; Numbers
-(define scream:number?
-  (typePredicateGenerator "de.michab.scream.fcos.Number" #f))
-(define scream:integer?
-  (typePredicateGenerator "de.michab.scream.fcos.Int" #t))
-(define scream:real?
-  (typePredicateGenerator "de.michab.scream.fcos.Real" #t))
+;(define scream:number?
+;(define scream:integer?
+;(define scream:real?
 (define (scream:positive? number)
   ((object number) ("r7rsGreaterOrEqualThan:de.michab.scream.fcos.Number" 0))
 )
 
 ; Ports
-(define scream:port?
-  (typePredicateGenerator "de.michab.scream.fcos.Port" #f))
-(define scream:input-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortIn" #t))
-(define scream:binary-input-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortInBinary" #t))
-(define scream:output-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortOut" #t))
-(define scream:binary-output-port?
-  (typePredicateGenerator "de.michab.scream.fcos.PortOutBinary" #t))
+;(define scream:port?
+;(define scream:input-port?
+;(define scream:binary-input-port?
+;(define scream:output-port?
+;(define scream:binary-output-port?
 
 #|
  | Type assertions.

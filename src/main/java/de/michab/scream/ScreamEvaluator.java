@@ -38,6 +38,7 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Syntax;
 import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Exceptions_6_11;
+import de.michab.scream.pops.PrimitiveProcedures;
 import de.michab.scream.pops.Primitives;
 import de.michab.scream.pops.SyntaxAnd;
 import de.michab.scream.pops.SyntaxAssign;
@@ -554,31 +555,6 @@ public final class ScreamEvaluator implements ScriptEngine
         }
     };
 
-    static private Procedure applyProcedure( Environment e )
-    {
-        return new Procedure( "scream:apply", e )
-        {
-            @Override
-            protected Thunk _executeImpl(
-                    Environment e,
-                    Cons args,
-                    Cont<FirstClassObject> c )
-                            throws RuntimeX
-            {
-                checkArgumentCount( 2, args );
-
-                Procedure proc = Scut.as(
-                        Procedure.class,
-                        args.listRef( 0 ) );
-                var list = Scut.as(
-                        Cons.class,
-                        args.listRef( 1 ) );
-
-                return proc.apply( list, c );
-            }
-        };
-    }
-
     /**
      * A reference to the top level environment.  This is a single common
      * instance holding all the core scheme definitions.  This instance is
@@ -600,8 +576,8 @@ public final class ScreamEvaluator implements ScriptEngine
 
         try
         {
+            PrimitiveProcedures.extendEnvironment( result );
             result.setPrimitive( evalProcedure( result ) );
-            result.setPrimitive( applyProcedure( result ) );
             de.michab.scream.fcos.Continuation.extendTopLevelEnvironment( result );
             Number.extendTopLevelEnvironment( result );
             SchemeObject.extendTopLevelEnvironment( result );
@@ -709,9 +685,6 @@ public final class ScreamEvaluator implements ScriptEngine
         try
         {
             return FirstClassObject.toString( evalFco( reader ) );
-//            if ( result == Cons.NIL )
-//                return null;
-//            return result.toJava();
         }
         catch ( RuntimeX e )
         {

@@ -63,39 +63,6 @@
   (scream:java:lang:system (gc)))
 
 ;;
-;;
-;; @proc typePredicateGenerator
-;;
-;; Is used for generating most of the type predicate procedures like vector?,
-;; char?, etc. in the system.
-;;
-;; @arg string-type-name : string
-;;   The java type name that has to be tested against.
-;;
-;; @arg exact-match : boolean
-;;   if #T the generated predicate checks for an
-;;   exact type match.  If #F it is allowed that
-;;   the object passed to the resulting predicate
-;;   is assignable to an element of the type
-;;   passed to this procedure.
-;;
-;; @returns A procedure that has the standard type predicate signature,
-;; accepting any single argument and returning a boolean.
-;;
-(define (typePredicateGenerator string-type-name exact-match)
-  (let ((classObject ((make-object "java.lang.Class") ("forName:java.lang.String" string-type-name))))
-    (lambda (obj)
-      (cond
-        ;; If this is NIL false is returned.
-        ((scream:null? obj) #f)
-        ;; Exact match test.
-        (exact-match
-          (classObject ("equals:java.lang.Object" ((object obj) ("getClass")))))
-        ;; Assignable match test.
-        (else
-          (classObject ("isAssignableFrom:java.lang.Class" ((object obj) ("getClass")))))))))
-
-;;
 ;; (transitiveBoolean proc)
 ;;
 ;; Accepts a procedure (proc arg1 arg2) that evaluates to a boolean.  Returns

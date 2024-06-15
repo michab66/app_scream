@@ -297,15 +297,13 @@ public class Primitives
             FirstClassObject previousResult,
             Cont<FirstClassObject> c )
     {
-        return () -> {
-            if ( body == Cons.NIL )
-                return c.accept( previousResult );
+        if ( body == Cons.NIL )
+            return c.accept( previousResult );
 
-            Cont<FirstClassObject> next =
-                    (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
+        Cont<FirstClassObject> next =
+                (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
 
-            return Primitives._eval( e, body.getCar(), next );
-        };
+                return Primitives._eval( e, body.getCar(), next );
     }
 
     /**

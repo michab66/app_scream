@@ -230,6 +230,24 @@ public class Raise
                 SchemeString.make( FirstClassObject.typename( found ) ),
                 Int.createObject( argumentIdx ) );
     }
+    public static  <T1 extends FirstClassObject, T2 extends FirstClassObject>
+    RuntimeX mTypeErrorF( Symbol function, Class<T1> expected, FirstClassObject found, int argumentIdx )
+    {
+        StringBuilder foundMessage =
+                new StringBuilder( FirstClassObject.getTypename( found ) );
+        if ( found != Cons.NIL )
+        {
+            foundMessage.append( "=" );
+            foundMessage.append( FirstClassObject.forWrite( found ) );
+        }
+
+        return new RuntimeX(
+                function,
+                Code.TYPE_ERROR,
+                SchemeString.make( FirstClassObject.typename( expected ) ),
+                SchemeString.make( foundMessage.toString() ),
+                Int.createObject( argumentIdx ) );
+    }
 
     //    NOT_ENOUGH_ARGUMENTS_1 = \
     //    Wrong number of arguments.  Expected at least {0}.

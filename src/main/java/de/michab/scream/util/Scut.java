@@ -12,6 +12,7 @@ import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
 import de.michab.scream.fcos.Int;
+import de.michab.scream.fcos.Symbol;
 
 /**
  * Scream utilities.
@@ -95,6 +96,31 @@ public class Scut
             throw Raise.mTypeError( c, Cons.NIL );
 
         return as( c, v );
+    }
+
+    /**
+     *
+     * @param <T>
+     * @param c
+     * @param v The object to validate, must not be Cons.NIL.
+     * @param caller
+     * @param position
+     * @return
+     * @throws RuntimeX
+     */
+    public static <T extends FirstClassObject> T assertType(
+            Class<T> c,
+            FirstClassObject v,
+            Symbol caller,
+            int position ) throws RuntimeX
+    {
+        if ( Cons.NIL == v )
+            throw Raise.mTypeErrorF( caller, c, v, position );
+
+        if ( FirstClassObject.is( c, v ) )
+            return as( c, v );
+
+        throw Raise.mTypeErrorF( caller, c, v, position );
     }
 
     /**
@@ -215,4 +241,5 @@ public class Scut
         for ( var c : list )
             as( type, c );
     }
+
 }

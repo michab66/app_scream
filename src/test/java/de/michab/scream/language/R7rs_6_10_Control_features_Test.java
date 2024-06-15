@@ -15,7 +15,7 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.fcos.Bool;
 
 /**
- * rsr7 6.10 Control features, p50
+ * r7rs 6.10 Control features, p50
  *
  * @author MICBINZ
  */
@@ -65,16 +65,25 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
             (apply + (list 3 4))
             """,
             i(7) );
+
         t.expectFco(
             """
             (define compose
               (lambda (f g)
                 (lambda args
                   (f (apply g args)))))
-            ; The original example uses sqrt.
-            ((compose - *) 12 75)
+            ((compose sqrt *) 12 75)
             """,
-            i(-900) );
+            i(30) );
+
+        t.expectFco(
+                "(apply + 3 '(4))",
+                "7" );
+
+        t.expectFco(
+                "(apply + 2 3 '(4))",
+                " 9 " );
+
         t.expectFco(
                 "(apply + 10 '(2 1))",
                 i(13) );
@@ -84,6 +93,7 @@ public class R7rs_6_10_Control_features_Test extends ScreamBaseTest
         t.expectFco(
                 "(apply cadr '((a b)))",
                 s("b") );
+
         // Last argument wrong.
         t.expectError(
                 "(apply + 300 10 3)",

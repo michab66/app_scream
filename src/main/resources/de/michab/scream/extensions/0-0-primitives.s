@@ -4,6 +4,7 @@
 ; Copyright © 2024 Michael G. Binz
 ;
 
+#|
 (define (scream:eq? x y)
   (scream:class:fco
     ("eq:de.michab.scream.fcos.FirstClassObject,de.michab.scream.fcos.FirstClassObject"
@@ -24,19 +25,16 @@
     x
     y))
 )
+|#
 
 (define (scream:not obj)
   (scream:eqv? obj #f))
 
-(define (scream:null? obj)
-  (scream:eqv? '() obj))
+; scream:null? --defined as Java primitive.
 
-(define (scream:car pair)
-  ((object pair) ("getCar"))
-)
-(define (scream:cdr pair)
-  ((object pair) ("getCdr"))
-)
+; scream:car - defined as Java primitive;
+
+; scream:cdr - defined as Java primitive;
 
 (define (scream:positive? number)
   ((object number) ("r7rsGreaterOrEqualThan:de.michab.scream.fcos.Number" 0))
