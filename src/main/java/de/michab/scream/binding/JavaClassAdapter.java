@@ -23,6 +23,7 @@ import org.smack.util.JavaUtil;
 import org.smack.util.Pair;
 import org.smack.util.ReflectionUtil;
 import org.smack.util.StringUtil;
+import org.smack.util.collections.MapWithProducer;
 
 import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
@@ -44,9 +45,9 @@ import de.michab.scream.util.Scut;
  */
 final class JavaClassAdapter
 {
-    private final static MapWithProducerX<Class<?>, JavaClassAdapter, RuntimeException>
+    private final static MapWithProducer<Class<?>, JavaClassAdapter>
     _classAdapterCache =
-            new MapWithProducerX<>( JavaClassAdapter::new );
+            new MapWithProducer<>( JavaClassAdapter::new );
 
     /**
      * The {@code java.lang.Class} this object is associated with.
