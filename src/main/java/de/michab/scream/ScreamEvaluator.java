@@ -22,6 +22,8 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptException;
 import javax.script.SimpleScriptContext;
 
+import org.smack.util.FunctionalUtil.FunctionX;
+import org.smack.util.FunctionalUtil.SupplierX;
 import org.smack.util.JavaUtil;
 
 import de.michab.scream.binding.SchemeObject;
@@ -59,10 +61,8 @@ import de.michab.scream.pops.SyntaxTime;
 import de.michab.scream.util.Continuation;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
-import de.michab.scream.util.FunctionX;
 import de.michab.scream.util.LoadContext;
 import de.michab.scream.util.Scut;
-import de.michab.scream.util.SupplierX;
 
 /**
  * The scream script engine.

@@ -5,13 +5,13 @@
 	
 	<groupId>urschleim</groupId>
 	<artifactId>scream</artifactId>
-	<version>7.17.1-SNAPSHOT</version>
+	<version>7.21.1-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Java version -->
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
 
         <!-- Dependencies versions -->
         <junit.version>5.8.2</junit.version>
@@ -29,7 +29,7 @@
         <dependency>
             <groupId>micbinz</groupId>
             <artifactId>smack_swing</artifactId>
-            <version>${maven.compiler.release}.10</version>
+            <version>${maven.compiler.release}.11</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>

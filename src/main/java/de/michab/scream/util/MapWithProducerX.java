@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import org.smack.util.FunctionalUtil.FunctionX;
+
 /**
  * A map that produces content on demand using a factory.
  *

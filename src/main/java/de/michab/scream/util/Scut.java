@@ -7,6 +7,8 @@ package de.michab.scream.util;
 
 import java.util.HashSet;
 
+import org.smack.util.FunctionalUtil.FunctionX;
+
 import de.michab.scream.Raise;
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Cons;

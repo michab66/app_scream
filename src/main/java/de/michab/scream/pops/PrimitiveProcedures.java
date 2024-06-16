@@ -5,6 +5,9 @@
  */
 package de.michab.scream.pops;
 
+import org.smack.util.FunctionalUtil.BiFunctionX;
+import org.smack.util.FunctionalUtil.FunctionX;
+
 import de.michab.scream.RuntimeX;
 import de.michab.scream.fcos.Bool;
 import de.michab.scream.fcos.Bytevector;
@@ -26,7 +29,6 @@ import de.michab.scream.fcos.Symbol;
 import de.michab.scream.fcos.Vector;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
-import de.michab.scream.util.FunctionX;
 import de.michab.scream.util.Scut;
 
 /**
@@ -290,19 +292,6 @@ public abstract class PrimitiveProcedures
 
             return _exec( 1, args, c );
         }
-    }
-
-    @FunctionalInterface
-    public interface BiFunctionX<T1, T2, R, X extends Exception> {
-
-        /**
-         * Applies this function to the given arguments.
-         *
-         * @param t the first function argument
-         * @return the function result
-         */
-        R apply(T1 t1, T2 t2)
-            throws X;
     }
 
     private static class EquivalenceSupport extends Procedure
