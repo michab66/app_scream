@@ -15,8 +15,8 @@ import de.michab.scream.ScreamBaseTest;
 import de.michab.scream.ScreamEvaluator;
 import de.michab.scream.fcos.Cons;
 import de.michab.scream.fcos.FirstClassObject;
-import de.michab.scream.fcos.Operation;
 import de.michab.scream.fcos.Int;
+import de.michab.scream.fcos.Operation;
 
 public class SyntaxTimeTest extends ScreamBaseTest
 {
@@ -41,7 +41,7 @@ public class SyntaxTimeTest extends ScreamBaseTest
     }
 
     @Test
-    void time_1() throws Exception
+    public void time_1() throws Exception
     {
         var result = scriptEngine().evalFco(
                 "(%time (+ 1 2))" );
