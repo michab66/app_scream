@@ -10,10 +10,6 @@ public class Mondo extends Continuation {
     static class Let extends Continuation {
         Continuation _k;
 
-        public Let()
-        {
-        }
-
         @Override
         public String toString() {
             return String.format( "%s : k=%s",
@@ -29,7 +25,7 @@ public class Mondo extends Continuation {
             _k.run(new C2());
         }
 
-        class C2 extends Continuation {
+        class C2 extends C {
             @Override
             public void runImpl(Continuation c) {
                 System.out.println("2");
@@ -37,7 +33,7 @@ public class Mondo extends Continuation {
             }
         }
 
-        class C3 extends Continuation {
+        class C3 extends C {
             @Override
             public void runImpl(Continuation c) {
                 System.out.println("3");
@@ -45,10 +41,19 @@ public class Mondo extends Continuation {
             }
         }
 
-        class C4 extends Continuation {
+        class C4 extends C {
             @Override
             public void runImpl(Continuation c) {
                 System.out.println("4");
+            }
+        }
+
+        abstract class C extends Continuation
+        {
+            @Override
+            public String toString()
+            {
+                return String.format( "%s w/ k=%s", super.toString(), _k );
             }
         }
     }
