@@ -68,7 +68,7 @@ public abstract class FirstClassObject
     {
         return  () -> {
             if ( _compiled == null )
-                _compiled = _compile( e );
+                _compiled = _compile();
             return _compiled.evaluate( e, c );
         };
     }
@@ -377,7 +377,7 @@ public abstract class FirstClassObject
         return _isConstant;
     }
 
-    protected Lambda _compile( Environment env )
+    protected Lambda _compile()
         throws RuntimeX
     {
         return new Lambda(
