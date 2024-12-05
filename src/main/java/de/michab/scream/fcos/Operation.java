@@ -424,9 +424,10 @@ extends FirstClassObject
     public String toString()
     {
         return  String.format(
-                "#<%s %s>",
+                "#<%s %s(%d)>",
                 typename(),
-                getName() );
+                getName(),
+                id() );
     }
 
     @Override

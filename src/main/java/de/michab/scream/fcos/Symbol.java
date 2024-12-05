@@ -58,7 +58,7 @@ extends FirstClassObject
     }
 
     @Override
-    protected Lambda _compile( Environment env )
+    protected Lambda _compile()
     {
         return new Lambda(
                 (e,c) ->

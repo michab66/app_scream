@@ -42,6 +42,7 @@ import de.michab.scream.frontend.SchemeParser;
 import de.michab.scream.pops.Exceptions_6_11;
 import de.michab.scream.pops.PrimitiveProcedures;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.REGS;
 import de.michab.scream.pops.SyntaxAnd;
 import de.michab.scream.pops.SyntaxAssign;
 import de.michab.scream.pops.SyntaxBegin;
@@ -228,6 +229,8 @@ public final class ScreamEvaluator implements ScriptEngine
      */
     private FirstClassObject evalFco(Reader reader) throws RuntimeX
     {
+        REGS.CENV( _interaction );
+
         return evalImpl(
                 _interaction,
                 new SchemeParser(
