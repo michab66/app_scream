@@ -134,4 +134,12 @@ public class Procedure
                 args,
                 c );
     }
+
+    /**
+     * @return The Procedure's closure.
+     */
+    protected Environment closure()
+    {
+        return _closure;
+    }
 }

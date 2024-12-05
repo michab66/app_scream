@@ -7,6 +7,7 @@ package de.michab.scream.fcos;
 
 import de.michab.scream.RuntimeX;
 import de.michab.scream.pops.Primitives;
+import de.michab.scream.pops.REGS;
 import de.michab.scream.util.Continuation.Cont;
 import de.michab.scream.util.Continuation.Thunk;
 import de.michab.scream.util.Scut;
@@ -31,6 +32,14 @@ public class Continuation extends Procedure implements Cont<FirstClassObject>
             Environment closure )
     {
         super( "callcc", closure );
+
+        _cont = continuation;
+    }
+    public Continuation(
+            Cont<FirstClassObject> continuation)
+    {
+        super( "callcc", REGS.CENV().copy() );
+
         _cont = continuation;
     }
 
@@ -57,14 +66,14 @@ public class Continuation extends Procedure implements Cont<FirstClassObject>
                 return proc.execute(
                         e,
                         Cons.create(
-                                new Continuation( c, e ) ),
+                                new Continuation( c ) ),
                         c );
             }
         };
     }
 
     /**
-     * (call-with-current-continuation ...
+     * (call-with-values ...
      */
     static private Procedure callWithValuesProc( Environment e )
     {
@@ -114,6 +123,9 @@ public class Continuation extends Procedure implements Cont<FirstClassObject>
         var values = args.length() == 1 ?
                 args.getCar() :
                 args;
+
+        // Recreates the original environment.
+        REGS.CENV( closure() );
 
         return _cont.accept( values );
     }

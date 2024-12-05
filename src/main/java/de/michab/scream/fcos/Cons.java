@@ -443,7 +443,7 @@ public class Cons
     }
 
     @Override
-    protected Lambda _compile( Environment env ) throws RuntimeX
+    protected Lambda _compile(  ) throws RuntimeX
     {
         if ( ! isProperList() )
             throw Raise.mExpectedProperList();

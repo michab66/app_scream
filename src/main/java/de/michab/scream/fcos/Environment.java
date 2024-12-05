@@ -68,6 +68,24 @@ public final class Environment
     }
 
     /**
+     * Copy an environment.
+     *
+     * @param env The environment to copy.
+     */
+    private Environment( Environment env )
+    {
+        _name = env._name;
+        _symbolMap.putAll( env._symbolMap );
+
+        if ( env._parent == null )
+            _parent = null;
+        else if ( env._parent.isConstant() )
+            _parent = env._parent;
+        else
+            _parent = new Environment( env._parent );
+    }
+
+    /**
      * Construct an Environment with the given parent environment.
      *
      * @param name A symbolic name tied to the environment.  Used for marking an
@@ -98,6 +116,14 @@ public final class Environment
     public Environment extend( String name )
     {
         return extend( Symbol.createObject( name ) );
+    }
+
+    @Override
+    public Environment copy()
+    {
+        if ( this.isConstant() )
+            return this;
+        return new Environment( this );
     }
 
     /**

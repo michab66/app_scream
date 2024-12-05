@@ -303,7 +303,7 @@ public class Primitives
         Cont<FirstClassObject> next =
                 (fco) -> _begin( e, (Cons)body.getCdr(), fco, c);
 
-                return Primitives._eval( e, body.getCar(), next );
+        return Primitives._eval( e, body.getCar(), next );
     }
 
     /**
@@ -525,10 +525,13 @@ public class Primitives
             Cont<FirstClassObject> c )
     {
         Cont<Environment> begin =
-                ext -> _begin(
+                ext -> {
+                    REGS.CENV( ext );
+                    return _begin(
                         ext,
                         body,
                         c );
+                };
 
         return _bind(
                 e,

@@ -724,7 +724,7 @@ public class Raise
      * exception is continuable and the result of the exception handler
      * defined by {@code (with-exception-handler ...)} will be passed.
      *
-     * @param continuable The continuation hat handles the raise result if
+     * @param continuable The continuation that handles the raise result if
      * continuable or {@code null} if the exception is non-continuable.
      * @param fco The raise procedure's parameter.
      * @return The initialized exception.
